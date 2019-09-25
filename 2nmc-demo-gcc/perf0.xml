@@ -1,0 +1,29 @@
+<?xml version='1.0' ?>
+<?xml-stylesheet type='text/xsl' href='profile.xsl'?>
+<profiling version="1.0">
+  <prof summary="1843081096  "	calls="517         "	average="3564953     "	addr="20005754"	name="__Z14nmglDrawArraysjii"/>
+  <prof summary="31006247    "	calls="37260       "	average="832         "	addr="00000D24"	name="_nmppsCmpGtC_v2nm32f"/>
+  <prof summary="31828086    "	calls="38295       "	average="831         "	addr="00000D54"	name="_nmppsCmpLtC_v2nm32f"/>
+  <prof summary="2561465     "	calls="2070        "	average="1237        "	addr="00000D84"	name="_nmppsAdd_32f"/>
+  <prof summary="7164555     "	calls="8485        "	average="844         "	addr="00000DAC"	name="_nmppsMul_Mul_Sub_32f"/>
+  <prof summary="17234914    "	calls="4144        "	average="4159        "	addr="00000DE6"	name="_nmppsMulC_32f"/>
+  <prof summary="5217552     "	calls="3108        "	average="1678        "	addr="00000E18"	name="_nmppsMulC_AddC_32f"/>
+  <prof summary="12719818    "	calls="37660       "	average="337         "	addr="00000E50"	name="_nmppsSub_32f"/>
+  <prof summary="5767387     "	calls="16140       "	average="357         "	addr="00000E78"	name="_nmppsSubC_32f"/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="00000EAA"	name="_nmppsSubCRev_32f"/>
+  <prof summary="118316244   "	calls="1035        "	average="114315      "	addr="00000EE2"	name="__Z21cullFaceSortTrianglesP9Trianglesi"/>
+  <prof summary="71180381    "	calls="5380        "	average="13230       "	addr="00001370"	name="__Z13fillPolygonsTP8PolygonsP9Trianglesiii"/>
+  <prof summary="597669859   "	calls="1036        "	average="576901      "	addr="00001606"	name="__Z5lightP9s_v4nm32fS0_i"/>
+  <prof summary="885705316   "	calls="1035        "	average="855753      "	addr="00001C1C"	name="__Z10rasterizeTP9Trianglesi"/>
+  <prof summary="64909791    "	calls="5381        "	average="12062       "	addr="00002072"	name="_copyArraysByMask"/>
+  <prof summary="6988637     "	calls="7454        "	average="937         "	addr="000022BE"	name="_findMinMax3"/>
+  <prof summary="32300122    "	calls="5382        "	average="6001        "	addr="00002358"	name="_maskSelectionLight_RGBA_BGRA"/>
+  <prof summary="1130057     "	calls="1036        "	average="1090        "	addr="000023E4"	name="_meanToInt3"/>
+  <prof summary="317390      "	calls="1554        "	average="204         "	addr="0000245E"	name="_mulC_v4nm32f"/>
+  <prof summary="16505342    "	calls="1036        "	average="15931       "	addr="00002496"	name="_replaceEq0_32f"/>
+  <prof summary="5584110     "	calls="1036        "	average="5390        "	addr="000024C2"	name="_set_v4nm32f"/>
+  <prof summary="6392631     "	calls="5384        "	average="1187        "	addr="00002522"	name="_sortByY3"/>
+  <prof summary="8189817     "	calls="16152       "	average="507         "	addr="00002580"	name="_split_v2nm32f"/>
+  <prof summary="15655417    "	calls="4144        "	average="3777        "	addr="000025C0"	name="_split_v4nm32f"/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="0000262C"	name="_subCRev_v4nm32f"/>
+</profiling>

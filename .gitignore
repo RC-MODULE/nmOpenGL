@@ -1,0 +1,25 @@
+# Visual Studio #
+##########################
+*.vcproj
+*.vcxproj
+*.ncb
+*.user
+*.sln
+*.suo
+*.db
+*.filters
+*.filters
+*.opendb
+bin/
+obj/
+.vs/
+
+# Compiler files #
+##################
+nmc4vars_win.mk
+ldscript
+*.elf
+*.o
+*.abs
+*.map
+*.dump
