@@ -11,7 +11,7 @@ inline void getNumbersPtrns(float* x0, float* y0, float* x1, float* y1, float* m
 
 	nmppsSub_32f(x1, x0, temp0, count);		//dx
 	nmppsSub_32f(y1, y0, temp1, count);		//dy
-	nmppsMulC_Add_32fcr((nm32fcr*)temp0, (nm32fcr*)temp1, (nm32fcr*)temp3, 2 * WIDTH_PTRN, count / 2);		//i
+	nmppsMulC_AddV_32f((nm32f*)temp0, (nm32f*)temp1, (nm32f*)temp3, 2 * WIDTH_PTRN, count);		//i
 	nmppsConvert_32f32s_rounding(temp3, (int*)temp0, 0, count);
 	remap_32u((nm32u*)cntxt.patterns->table_dydx, (nm32u*)temp1, (nm32s*)temp0, count);
 	nmppsConvert_32s32f((nm32s*)temp1, temp0, count);
@@ -74,8 +74,7 @@ void getDrawInfo(Triangles* triangles, DrawInfo* drawInfo, int count, int segX, 
 	float* temp1 = cntxt.buffer1 + 2 * NMGL_SIZE;
 	
 	absIfNegElse0_32f(triangles->y0, temp0, count);
-	nmppsMulC_32f(temp0, temp1, WIDTH_PTRN/16, count);
-	nmppsConvert_32f32s_rounding(temp1, drawInfo->offsetTrY, 0, count);
+	nmppsConvert_32f32s_rounding(temp0, drawInfo->offsetTrY, 0, count);
 
 	absIfNegElse0_32f(minX, temp0, count);
 	nmppsConvert_32f32s_rounding(temp0, drawInfo->offsetTrX, 0, count);
@@ -91,7 +90,7 @@ void getDrawInfo(Triangles* triangles, DrawInfo* drawInfo, int count, int segX, 
 	nmppsConvert_32f32s_rounding(cntxt.buffer3, drawInfo->heights, 0, count);
 
 	nmppsSubC_32f(triangles->y0, temp0, cntxt.windowInfo.y0_f[segX], count);
-	nmppsMulC_Add_32fcr((nm32fcr*)temp0, (nm32fcr*)minX, (nm32fcr*)temp1, WIDTH_SEG, count/2);
+	nmppsMulC_AddV_32f((nm32f*)temp0, (nm32f*)minX, (nm32f*)temp1, WIDTH_SEG, count);
 	nmppsConvert_32f32s_rounding(temp1, drawInfo->imageOffsets, 0, count);
 
 }
