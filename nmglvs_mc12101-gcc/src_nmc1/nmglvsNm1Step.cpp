@@ -87,6 +87,24 @@ SECTION(".text_nmglvs") int nmglvsNm1Step(NMGL_Context_NM1* cntxt)
 		break;
 	}
 
+	case NMC1_DRAW_TRIANGLES_TEST: {
+		int* temp0 = cntxt->buffer0;
+		int* temp1 = cntxt->buffer1;
+		int* temp2 = cntxt->buffer0 + SIZE_BANK / 2;
+		int* temp3 = cntxt->buffer1 + SIZE_BANK / 2;
+		DrawInfo* drawInfo = (DrawInfo*)currentCommand->params[0];
+		int size = currentCommand->params[1];
+		nm2s* ptrnsRight_2s = (nm2s*)cntxt->patterns->ptrns;
+		nm2s* ptrnsLeft_2s = nmppsAddr_2s((nm2s*)cntxt->patterns->ptrns, NPATTERNS*WIDTH_PTRN*HEIGHT_PTRN / 2);
+		selectPaintSide(drawInfo->crossProducts, (int)ptrnsLeft_2s, (int)ptrnsRight_2s, temp0, size);
+		nmppsAdd_32s(temp0, drawInfo->numbersPattrns01, temp1, size);
+		nmppsAdd_32s(temp0, drawInfo->numbersPattrns12, temp2, size);
+		selectPaintSide(drawInfo->crossProducts, (int)ptrnsRight_2s, (int)ptrnsLeft_2s, temp0, size);
+		nmppsAdd_32s(temp0, drawInfo->numbersPattrns12, temp3, size);
+		mergePtrnsAddr3((nm32s**)temp1, (nm32s**)temp2, (nm32s**)temp3, SMALL_SIZE, cntxt->ppSrcPackPtrns, size);
+
+		break;
+	}
 
 	case NMC1_SET_COLOR: {
 		int temp = currentCommand->params[2] & 0xFF;

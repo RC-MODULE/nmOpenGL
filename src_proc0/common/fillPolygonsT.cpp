@@ -37,19 +37,19 @@ void fillPolygonsT(Polygons* poly, Triangles* triangles, int count, int segX, in
 	nmppsSub_32f(maxX, minX, temp, count);
 	nmppsConvert_32f32s_rounding(temp, poly->maxDiffX, 0, count);
 
-	float* dxCA_float = cntxt.buffer2 + 6 * NMGL_SIZE;
-	float* dyCA_float = cntxt.buffer3 + 6 * NMGL_SIZE;
-	nmppsSub_32f(triangles->x2, triangles->x0, dxCA_float, count);
-	nmppsSub_32f(triangles->y2, triangles->y0, dyCA_float, count);
-	nmppsConvert_32f32s_rounding(dxCA_float, poly->dx02, 0, count);
-	nmppsConvert_32f32s_rounding(dyCA_float, poly->dy02, 0, count);
-
 	float* dx1A_float = cntxt.buffer0 + 7 * NMGL_SIZE;
 	float* dy1A_float = cntxt.buffer1 + 7 * NMGL_SIZE;
 	nmppsSub_32f(triangles->x2, triangles->x1, dx1A_float, count);
 	nmppsSub_32f(triangles->y2, triangles->y1, dy1A_float, count);
 	nmppsConvert_32f32s_rounding(dx1A_float, poly->dx12, 0, count);
 	nmppsConvert_32f32s_rounding(dy1A_float, poly->dy12, 0, count);
+
+	float* dxCA_float = cntxt.buffer2 + 6 * NMGL_SIZE;
+	float* dyCA_float = cntxt.buffer3 + 6 * NMGL_SIZE;
+	nmppsSub_32f(triangles->x2, triangles->x0, dxCA_float, count);
+	nmppsSub_32f(triangles->y2, triangles->y0, dyCA_float, count);
+	nmppsConvert_32f32s_rounding(dxCA_float, poly->dx02, 0, count);
+	nmppsConvert_32f32s_rounding(dyCA_float, poly->dy02, 0, count);
 
 	float* dxCB_float = cntxt.buffer2 + 8 * NMGL_SIZE;
 	float* dyCB_float = cntxt.buffer3 + 8 * NMGL_SIZE;

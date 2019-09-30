@@ -36,8 +36,8 @@ SECTION(".text_demo3d") void drawTriangles(NMGL_Context_NM1* context) {
 			(nm32u**)context->ppPtrnsCombined_2s_basic, 
 			&context->nSizePtrn32[point_x3], localSize);
 
-		nmppsAdd_32s((nm32s*)context->ppPtrnsCombined_2s_basic, 
-			(nm32s*)&context->offsetTrY[point], 
+		nmppsMulC_AddV_AddC_32s(&context->offsetTrY[point], WIDTH_PTRN / 16, 
+			(nm32s*)context->ppPtrnsCombined_2s_basic, 0,
 			(nm32s*)context->ppPtrnsCombined_2s, localSize);
 
 		if (context->depthBuffer->enabled == NMGL_FALSE) {

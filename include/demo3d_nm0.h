@@ -579,6 +579,10 @@ extern "C"{
 
 	int copyArraysByMask(void** srcPointers, nm1* mask, void** dstPointers, int nArrays, int size);
 	int maskSelectionLight_RGBA_BGRA(v4nm32s* srcLight, nm1* mask, v4nm32s* dstLight, int size);
+
+	void absIfNegElse0_32f(float* src, float* dst, int size);
+
+	void remap_32u(nm32u* pSrcVec, nm32u* pDstVec, nm32s* pRemapTable, int nSize);
 }
 
 void getDrawInfo(Triangles* triangles, DrawInfo* drawInfo, int count);

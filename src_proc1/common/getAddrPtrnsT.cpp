@@ -117,15 +117,14 @@ SECTION(".text_demo3d") int getAddrPtrnsT(NMGL_Context_NM1* context, Patterns* p
 	nmppsAndC_32u((nm32u*)polyTmp->minX, 1, (nm32u*)temp1, size);
 	nmppsSub_32s(polyTmp->minX, temp1, polyTmp->minX, size);
 	nmppsSub_32s(context->offsetTrX, temp1, context->offsetTrX, size);
-	nmppsAdd_32s(context->widths, temp1, context->widths, size);
+	nmppsAdd_32s(context->widths, temp1, temp2, size);
 
-	nmppsAndC_32u((nm32u*)context->widths, 1, (nm32u*)temp0, size);
-	nmppsAdd_32s(context->widths, temp0, context->widths, size);
+	nmppsAndC_32u((nm32u*)temp2, 1, (nm32u*)temp0, size);
+	nmppsAdd_32s(temp2, temp0, context->widths, size);
 
 	CHECK_STATUS(11);
 	nmppsAdd_32s(polyTmp->y0, polyTmp->dy02, temp1, size);		//maxY
-	absIfNegElse0(polyTmp->y0, temp0, size);
-	nmppsMulC_32s(temp0, WIDTH_PTRN / 16, context->offsetTrY, size);
+	absIfNegElse0(polyTmp->y0, context->offsetTrY, size);
 	nmppsClipCC_32s(polyTmp->y0, 0, poly->segHeight, temp0, size);
 	nmppsClipCC_32s(temp1, 0, poly->segHeight, temp3, size);
 	nmppsSub_32s(temp3, temp0, context->heights, size);
