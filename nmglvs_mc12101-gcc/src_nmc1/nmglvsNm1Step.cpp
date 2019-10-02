@@ -53,11 +53,11 @@ SECTION(".text_nmglvs") int nmglvsNm1Step(NMGL_Context_NM1* cntxt)
 		int y0 = currentCommand->params[1];
 		int width = currentCommand->params[2];
 		int height = currentCommand->params[3];
-		
 		if (cntxt->depthBuffer->enabled == NMGL_TRUE) {
-			cntxt->depthSegment.pop(cntxt->depthBuffer, x0, y0, width, height);
+			cntxt->depthSegment.pop(cntxt->depthBuffer, x0, y0, width, height); 
 		}
 		cntxt->colorSegment.pop(cntxt->colorBuffer, x0, y0, width, height);
+		msdStartCopy();
 		break;
 	}
 
@@ -67,11 +67,11 @@ SECTION(".text_nmglvs") int nmglvsNm1Step(NMGL_Context_NM1* cntxt)
 		int y0 = currentCommand->params[1];
 		int width = currentCommand->params[2];
 		int height = currentCommand->params[3];
-
 		if (cntxt->depthBuffer->enabled == NMGL_TRUE) {
-			cntxt->depthSegment.push(cntxt->depthBuffer, x0, y0, width, height);
+			cntxt->depthSegment.push(cntxt->depthBuffer, x0, y0, width, height); 
 		}
 		cntxt->colorSegment.push(cntxt->colorBuffer, x0, y0, width, height);
+		msdStartCopy();
 		break;
 	}
 
@@ -87,7 +87,7 @@ SECTION(".text_nmglvs") int nmglvsNm1Step(NMGL_Context_NM1* cntxt)
 		break;
 	}
 
-	case NMC1_DRAW_TRIANGLES_TEST: {
+	/*case NMC1_DRAW_TRIANGLES_TEST: {
 		int* temp0 = cntxt->buffer0;
 		int* temp1 = cntxt->buffer1;
 		int* temp2 = cntxt->buffer0 + SIZE_BANK / 2;
@@ -104,7 +104,7 @@ SECTION(".text_nmglvs") int nmglvsNm1Step(NMGL_Context_NM1* cntxt)
 		mergePtrnsAddr3((nm32s**)temp1, (nm32s**)temp2, (nm32s**)temp3, SMALL_SIZE, cntxt->ppSrcPackPtrns, size);
 
 		break;
-	}
+	}*/
 
 	case NMC1_SET_COLOR: {
 		int temp = currentCommand->params[2] & 0xFF;

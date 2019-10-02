@@ -3,35 +3,49 @@
 #include <nmpp.h>
 #include <stdio.h>
 
-struct ListCopy{
-	void* src;
+#define MSD_DMA 1
+#define MSD_DMA_2D 2
+
+struct MSD_DmaCopy{
+	const void* src;
 	void* dst;
 	int size;
+	int width;
+	int srcStride;
+	int dstStride;
+	int type;
 	volatile bool status;
 };
 
-SECTION(".data_demo3d") ListCopy list[100];
+SECTION(".data_demo3d") MSD_DmaCopy list[100];
 
 SECTION(".data_demo3d") volatile bool isBusy = false;
-SECTION(".data_demo3d") volatile bool listCopy = false;
 int countList = 0;
 int currentIndex;
 
 
 SECTION(".text_demo3d") void cbUpdate() {
-	if (listCopy) {
-		list[currentIndex].status = true;
-		currentIndex++;
-		if (currentIndex < countList) {
+	list[currentIndex].status = true;
+	currentIndex++;
+	if (currentIndex < countList) {
+		switch (list[currentIndex].type)
+		{
+		case MSD_DMA:
 			halDmaStartA(list[currentIndex].src, list[currentIndex].dst, list[currentIndex].size);
+			break;
+		case MSD_DMA_2D:
+			halDma2D_StartA(list[currentIndex].src, list[currentIndex].dst, 
+				list[currentIndex].size, list[currentIndex].width, 
+				list[currentIndex].srcStride, list[currentIndex].dstStride);
+			break;
+		default:
+			break;
 		}
-		else {
-			isBusy = false;
-			listCopy = false;
-		}
+		
 	}
 	else {
 		isBusy = false;
+		countList = 0;
 	}
 }
 
@@ -45,6 +59,7 @@ SECTION(".text_demo3d") void msdAddImage(ImageBuffer* buffer, ImageSegment* segm
 		list[listSize].src = segment->data;
 		list[listSize].dst = setPoint;
 		list[listSize].size = MIN(size, segment->size);
+		list[listSize].type = MSD_DMA;
 		list[listSize].status = false;
 		size -= segment->size;
 		setPoint += segment->size;
@@ -53,11 +68,24 @@ SECTION(".text_demo3d") void msdAddImage(ImageBuffer* buffer, ImageSegment* segm
 	}
 }
 
-SECTION(".text_demo3d") void msdAdd(void* src, void* dst, int size) {
+SECTION(".text_demo3d") void msdAdd(const void* src, void* dst, int size) {
 	list[countList].src = src;
 	list[countList].dst = dst;
 	list[countList].size = size;
 	list[countList].status = false;
+	list[countList].type = MSD_DMA;
+	countList++;
+}
+
+SECTION(".text_demo3d") void msdAdd2D(const void* src, void* dst, unsigned size, unsigned width, unsigned srcStride32, unsigned dstStride32) {
+	list[countList].src = src;
+	list[countList].dst = dst;
+	list[countList].size = size;
+	list[countList].status = false;
+	list[countList].type = MSD_DMA_2D;
+	list[countList].width = width;
+	list[countList].srcStride = srcStride32;
+	list[countList].dstStride = dstStride32;
 	countList++;
 }
 
@@ -67,20 +95,27 @@ SECTION(".text_demo3d") bool msdGetStatusCopy(int index) {
 
 SECTION(".text_demo3d") void msdStartCopy() {
 	currentIndex = 0;
-	isBusy = true;
-	listCopy = true;
 	halDmaSetCallback((DmaCallback)cbUpdate);
-	halDmaStartA(list[currentIndex].src, list[currentIndex].dst, list[currentIndex].size);
+	if (countList) {
+		isBusy = true;
+		switch (list[currentIndex].type)
+		{
+		case MSD_DMA:
+			halDmaStartA(list[currentIndex].src, list[currentIndex].dst, list[currentIndex].size);
+			break;
+		case MSD_DMA_2D:
+			halDma2D_StartA(list[currentIndex].src, list[currentIndex].dst,
+				list[currentIndex].size, list[currentIndex].width,
+				list[currentIndex].srcStride, list[currentIndex].dstStride);
+			break;
+		default:
+			break;
+		}
+	}
 }
 
 SECTION(".text_demo3d") void msdWaitDma() {
 	while (isBusy);
-	countList = 0;
 }
 
-SECTION(".text_demo3d") void initMatrixCopy(const void* src, void* dst, unsigned size32, unsigned width, unsigned srcStride32, unsigned dstStride32) {
-	msdWaitDma();
-	isBusy = true;
-	halDmaSetCallback((DmaCallback)cbUpdate);
-	halDma2D_StartA(src, dst, size32, width, srcStride32, dstStride32);
-}
+

@@ -39,9 +39,6 @@ SECTION(".data_shmem1") nm32s* imagePoints[NMGL_SIZE];
 
 int exitNM1 = 0;
 
-void initMatrixCopy(const void* src, void* dst, unsigned size32, unsigned width, unsigned srcStride32, unsigned dstStride32);
-
-
 SECTION(".text_nmglvs") int nmglvsNm1Init(NMGL_Context_NM1* cntxt)
 {
 	halSetProcessorNo(1);
@@ -55,6 +52,7 @@ SECTION(".text_nmglvs") int nmglvsNm1Init(NMGL_Context_NM1* cntxt)
 	//nmprofiler_init();
 	// Check memory allocation
 	halInstrCacheEnable();
+	halDmaInit();
 
 	//Структура для общения процессорных ядер
 	cntxt->synchro = (Synchro*)halSyncAddr((int*)0, 0);
@@ -69,13 +67,12 @@ SECTION(".text_nmglvs") int nmglvsNm1Init(NMGL_Context_NM1* cntxt)
 	else
 		halHostSync(0x600DB00F);	// send ok to host
 
-	halDmaInit();
 	colorBuffer.set(imageArray, WIDTH_IMAGE, HEIGHT_IMAGE, COUNT_IMAGE_BUFFER, 0);
 	depthBuffer.set(ZBuffImage, WIDTH_IMAGE, HEIGHT_IMAGE, 1, 0);
 	cntxt->colorBuffer = &colorBuffer;
 	cntxt->depthBuffer = &depthBuffer;
-	cntxt->colorSegment.set(segImage, WIDTH_SEG, HEIGHT_SEG, initMatrixCopy);
-	cntxt->depthSegment.set(segZBuff, WIDTH_SEG, HEIGHT_SEG, initMatrixCopy);
+	cntxt->colorSegment.set(segImage, WIDTH_SEG, HEIGHT_SEG, msdAdd2D);
+	cntxt->depthSegment.set(segZBuff, WIDTH_SEG, HEIGHT_SEG, msdAdd2D);
 
 	//sync0
 	halHostSync((int)&patterns);

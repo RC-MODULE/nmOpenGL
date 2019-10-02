@@ -46,6 +46,7 @@ int nmglvsNm0Init()
 		return -1;
 	}
 
+	//halDmaInitC();
 	halInstrCacheEnable();
 	//nmprofiler_init();
 
@@ -139,7 +140,6 @@ int nmglvsNm0Init()
 	//Адрес кольцевого буфера Polygons-структур на nmc1
 	halSyncAddr((int*)nmglPolygonsRB, 1);
 
-	//halDmaInitC();
 	// Check memory allocation
 	if (cntxt.synchro == 0) {
 		halHostSync(0xDEADB00F);	// send error to host
@@ -155,7 +155,6 @@ int nmglvsNm0Init()
 
 	//sync4
 	halHostSync((int)0x600d600d);
-	halDmaInit();
 
 	nmglViewport(0, 0, WIDTH_IMAGE, HEIGHT_IMAGE);
 

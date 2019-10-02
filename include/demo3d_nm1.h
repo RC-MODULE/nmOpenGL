@@ -155,7 +155,8 @@ extern "C" {
 }
 
 void msdAddImage(ImageBuffer* buffer, ImageSegment* segment, int startIndex, int step);
-void msdAdd(void* src, void* dst, int size);
+void msdAdd(const void* src, void* dst, int size);
+void msdAdd2D(const void* src, void* dst, unsigned size, unsigned width, unsigned srcStride32, unsigned dstStride32);
 void msdStartCopy();
 void msdWaitDma();
 bool msdGetStatusCopy(int index);
