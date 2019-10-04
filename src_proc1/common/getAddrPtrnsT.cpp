@@ -66,7 +66,7 @@ SECTION(".text_demo3d") int getAddrPtrnsT(NMGL_Context_NM1* context, Patterns* p
 	nmppsAddC_32s(polyTmp->pointInImage, (int)context->depthSegment.data, (nm32s*)context->zBuffPoints, size);
 
 	CHECK_STATUS(7);
-	nmppsConvert_32s8s(polyTmp->color, (nm8s*)context->valuesC, 4 * size);	
+	nmppsConvert_32s8s(polyTmp->color, (nm8s*)context->valuesC, 4 * size);
 
 	int height = size / SMALL_SIZE;
 	int tail = size % SMALL_SIZE;

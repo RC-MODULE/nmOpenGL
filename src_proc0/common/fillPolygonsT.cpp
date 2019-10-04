@@ -24,10 +24,7 @@ inline void getNumbersPtrns(float* x0, float* y0, float* x1, float* y1, float* m
 
 SECTION(".text_demo3d")
 void fillPolygonsT(Polygons* poly, Triangles* triangles, int count, int segX, int segY){
-	poly->segX0 = cntxt.windowInfo.x0[segX];
-	poly->segY0 = cntxt.windowInfo.y0[segY];
-	poly->segWidth = cntxt.windowInfo.x1[segX] - cntxt.windowInfo.x0[segX];
-	poly->segHeight = cntxt.windowInfo.y1[segY] - cntxt.windowInfo.y0[segY];
+	
 
 	float* pAxy = cntxt.buffer0 + 2 * NMGL_SIZE;
 	float* pBxy = cntxt.buffer1 + 2 * NMGL_SIZE;
@@ -45,9 +42,7 @@ void fillPolygonsT(Polygons* poly, Triangles* triangles, int count, int segX, in
 	float* temp = cntxt.buffer2 + 2 * NMGL_SIZE;
 	findMinMax3(triangles->x2, triangles->x1, triangles->x0, minX, maxX, count);
 
-	float* dxBA_float = cntxt.buffer0 + 3 * NMGL_SIZE;
 	float* dyBA_float = cntxt.buffer1 + 3 * NMGL_SIZE;
-	nmppsSub_32f(triangles->x2, triangles->x1, dxBA_float, count);
 	nmppsSub_32f(triangles->y2, triangles->y1, dyBA_float, count);
 	nmppsMulC_32f(dyBA_float, temp, WIDTH_PTRN / 16, count);
 	nmppsConvert_32f32s_rounding(temp, poly->ptrnSizesOf32_12, 0, count);
@@ -101,6 +96,7 @@ void fillPolygonsT(Polygons* poly, Triangles* triangles, int count, int segX, in
 
 	nmppsSubC_32f(minX, temp0, cntxt.windowInfo.x0_f[segX], count);
 	nmppsSubC_32f(minY, temp1, cntxt.windowInfo.y0_f[segY], count);
-	nmppsMulC_AddV_32f(temp1, temp0, temp2, poly->segWidth, count);
+	int segWidth = cntxt.windowInfo.x1[segX] - cntxt.windowInfo.x0[segX];
+	nmppsMulC_AddV_32f(temp1, temp0, temp2, segWidth, count);
 	nmppsConvert_32f32s_rounding(temp2, poly->pointInImage, 0, count);
 }

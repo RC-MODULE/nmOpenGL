@@ -71,11 +71,7 @@ struct Polygons {
 	
 
 	int count;
-	int segX0;
-	int segY0;
-	int segWidth;
-	int segHeight;
-	int dummy[11];
+	int dummy[15];
 };
 
 
