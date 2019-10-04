@@ -7,8 +7,10 @@
 
 SECTION(".text_demo3d") void drawTriangles(NMGL_Context_NM1* context) {
 	Polygons* poly = (Polygons*)halRingBufferTail(context->polygonsRB);
+
 	getAddrPtrnsT(context, context->patterns, poly);
 
+	msdWaitDma();
 	int countTrangles = poly->count;
 	context->polygonsRB->tail++;
 

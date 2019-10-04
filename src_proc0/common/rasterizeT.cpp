@@ -94,12 +94,14 @@ void rasterizeT(Triangles* triangles, int count){
 				localTr.x0 = cntxt.buffer2;
 				localTr.y0 = cntxt.buffer2 + NMGL_SIZE;
 				localTr.z = poly->z;
+				//localTr.colors = (v4nm32s*)cntxt.buffer3 + 7 * NMGL_SIZE;
 				localTr.colors = (v4nm32s*)poly->color;
 				
 				int localSize = copyArraysByMask((void**)triangles, (nm1*)maskRes, (void**)&localTr, 7, count);
 				maskSelectionLight_RGBA_BGRA((v4nm32s*)triangles->colors, (nm1*)maskRes, (v4nm32s*)localTr.colors, count);
+				//addInstrNMC1(&cntxt.synchro->instantCommandsRB, NMC1_CNV_32S_8S, (int)localTr.colors + 0x40000, (int)poly->color, count);
 				fillPolygonsT(poly, &localTr, localSize, segX, segY);
-
+				while (!halRingBufferIsEmpty(&cntxt.synchro->instantCommandsRB));
 				nmglPolygonsRB->head++;
 				addInstrNMC1(&cntxt.synchro->commandsRB, NMC1_DRAW_TRIANGLES);
 

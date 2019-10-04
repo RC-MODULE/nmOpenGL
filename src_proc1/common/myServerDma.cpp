@@ -1,21 +1,8 @@
 #include "demo3d_common.h"
 #include "demo3d_nm1.h"
 #include <nmpp.h>
-#include <stdio.h>
+#include "myserverdma.h"
 
-#define MSD_DMA 1
-#define MSD_DMA_2D 2
-
-struct MSD_DmaCopy{
-	const void* src;
-	void* dst;
-	int size;
-	int width;
-	int srcStride;
-	int dstStride;
-	int type;
-	volatile bool status;
-};
 
 SECTION(".data_demo3d") MSD_DmaCopy list[100];
 
@@ -25,6 +12,9 @@ int currentIndex;
 
 
 SECTION(".text_demo3d") void cbUpdate() {
+	if (list[currentIndex].callback) {
+		list[currentIndex].callback();
+	}
 	list[currentIndex].status = true;
 	currentIndex++;
 	if (currentIndex < countList) {
@@ -74,6 +64,7 @@ SECTION(".text_demo3d") void msdAdd(const void* src, void* dst, int size) {
 	list[countList].size = size;
 	list[countList].status = false;
 	list[countList].type = MSD_DMA;
+	list[countList].callback = 0;
 	countList++;
 }
 
@@ -86,6 +77,7 @@ SECTION(".text_demo3d") void msdAdd2D(const void* src, void* dst, unsigned size,
 	list[countList].width = width;
 	list[countList].srcStride = srcStride32;
 	list[countList].dstStride = dstStride32;
+	list[countList].callback = 0;
 	countList++;
 }
 

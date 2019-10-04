@@ -4,7 +4,7 @@
 
 SECTION(".text_demo3d")
 void fillPolygonsL(Polygons* poly, Lines* lines, int count, int segX, int segY){
-	poly->segX0 = cntxt.windowInfo.x0[segX];
+	/*poly->segX0 = cntxt.windowInfo.x0[segX];
 	poly->segY0 = cntxt.windowInfo.y0[segY];
 	poly->segWidth = cntxt.windowInfo.x1[segX] - cntxt.windowInfo.x0[segX];
 	poly->segHeight = cntxt.windowInfo.y1[segY] - cntxt.windowInfo.y0[segY];
@@ -41,5 +41,5 @@ void fillPolygonsL(Polygons* poly, Lines* lines, int count, int segX, int segY){
 	nmppsConvert_32f32s_rounding(dx01_float, poly->dx01, 0, count);
 	nmppsConvert_32f32s_rounding(dy01_float, poly->dy01, 0, count);
 
-	poly->count = count;
+	poly->count = count;*/
 }

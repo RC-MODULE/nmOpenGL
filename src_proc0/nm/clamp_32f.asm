@@ -42,9 +42,11 @@ begin ".text_demo3d"
 <Next32>
 	fpu 0 rep 32 vreg0 = [ar0++];
 	fpu 0 .float vreg0 - vreg1, set mask if <;		//mask if src < min
+	fp0_lmask = fp0_lmask;
 	fpu 0 .float vreg0 = mask ? vreg1 : vreg0;
 	fpu 1 vreg0 = fpu 0 vreg0; 
 	fpu 1 .float vreg0 - vreg1, set mask if >;		//mask if src > max
+	fp1_lmask = fp1_lmask;
 	if > delayed goto Next32 with gr5--;
 		fpu 1 .float vreg0 = mask ? vreg1 : vreg0;
 		fpu 1 rep 32 [ar6++] = vreg0;
@@ -59,9 +61,11 @@ begin ".text_demo3d"
 	
 	fpu 0 rep vlen vreg0 = [ar0++];
 	fpu 0 .float vreg0 - vreg1, set mask if <;		//mask if src < min
+	fp0_lmask = fp0_lmask;
 	fpu 0 .float vreg0 = mask ? vreg1 : vreg0;
 	fpu 1 vreg0 = fpu 0 vreg0; 
 	fpu 1 .float vreg0 - vreg1, set mask if >;		//mask if src > max
+	fp1_lmask = fp1_lmask;
 	fpu 1 .float vreg0 = mask ? vreg1 : vreg0;
 	fpu 1 rep vlen [ar6++] = vreg0;
 <end_program>

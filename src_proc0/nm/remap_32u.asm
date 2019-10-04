@@ -10,7 +10,9 @@ begin ".text_nmplv"
 global _remap_32u:label;
 <_remap_32u>
     ar5 = ar7 - 2;
+	push ar0, gr0;
     push ar1, gr1;
+	push ar2, gr2;
 	push ar3, gr3;
 	push ar4, gr4;
 	push ar5, gr5;
@@ -23,9 +25,7 @@ global _remap_32u:label;
 
 	gr7 >>=1;
 	with gr3 = gr4;	//	src_base
-	next_Permutation:label;
-	gr5=next_Permutation with gr7--;
-
+	with gr7--;
 	<next_Permutation>
 		ar4 = [ar1++];		// src_disp1  =RemapTable[i]	
 		ar3 = [ar1++];		// src_disp2  =RemapTable[i+1]
@@ -40,6 +40,8 @@ global _remap_32u:label;
 	pop ar5, gr5;
 	pop ar4, gr4;
 	pop ar3, gr3;
+	pop ar2, gr2;
     pop ar1, gr1;
+	pop ar0, gr0;
     return;
 end ".text_nmplv";

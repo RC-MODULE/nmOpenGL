@@ -53,19 +53,23 @@ struct Patterns {
  *  Полигон должен вписываться в квадрат 32*32 пикселей
  */
 struct Polygons {
-	int dx01[NMGL_SIZE];
-	int dy01[NMGL_SIZE];
-	int dx12[NMGL_SIZE];
-	int dy12[NMGL_SIZE];
-	int dx02[NMGL_SIZE];
-	int dy02[NMGL_SIZE];
 	int crossProduct[NMGL_SIZE];
-	int maxDiffX[NMGL_SIZE];
-	int y0[NMGL_SIZE];
-	int x0[NMGL_SIZE];
-	int minX[NMGL_SIZE];
 	int color[4 * NMGL_SIZE];
-	int z[NMGL_SIZE];	
+	int z[NMGL_SIZE];
+	int numbersPattrns01[NMGL_SIZE];
+	int numbersPattrns12[NMGL_SIZE];
+	int numbersPattrns02[NMGL_SIZE];
+	int ptrnSizesOf32_01[NMGL_SIZE];
+	int ptrnSizesOf32_12[NMGL_SIZE];
+	int ptrnSizesOf32_02[NMGL_SIZE];
+	int pointInImage[NMGL_SIZE];
+
+	int offsetsX[NMGL_SIZE];
+	int offsetsY[NMGL_SIZE];
+	int widths[NMGL_SIZE];
+	int heights[NMGL_SIZE];
+	
+
 	int count;
 	int segX0;
 	int segY0;

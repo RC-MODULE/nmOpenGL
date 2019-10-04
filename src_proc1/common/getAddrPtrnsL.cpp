@@ -8,7 +8,7 @@
 #define CHECK_STATUS(a) while (dataCopy.statusData[a] == 0)
 
 SECTION(".text_demo3d") int getAddrPtrnsL(NMGL_Context_NM1* context, Patterns* patterns, Polygons* poly){
-	Polygons* polyTmp = (Polygons*)context->buffer0;
+	/*Polygons* polyTmp = (Polygons*)context->buffer0;
 	int size = poly->count;
 
 	nmppsCopy_32s((int*)poly, (int*)polyTmp, sizeof32(Polygons));
@@ -126,6 +126,6 @@ SECTION(".text_demo3d") int getAddrPtrnsL(NMGL_Context_NM1* context, Patterns* p
 			(int)context->depthSegment.data,
 			(nm32s*)context->zBuffPoints,
 			size);
-	}
+	}*/
 	return 0;
 }

@@ -134,7 +134,8 @@ int nmglvsNm0Init()
 	synchroInit(cntxt.synchro, WIDTH_IMAGE, HEIGHT_IMAGE);
 
 	//Массив Polygons-структур
-	halSyncAddr((int*)cntxt.synchro, 1);
+	cntxt.patterns = (Patterns*)halSyncAddr((int*)cntxt.synchro, 1);
+	//halSyncAddr((int*)cntxt.synchro, 1);
 	halRingBufferInit(nmglPolygonsRB, polyArray, sizeof32(Polygons), COUNT_POLYGONS_BUFFER, 0, 0, 0);
 
 	//Адрес кольцевого буфера Polygons-структур на nmc1

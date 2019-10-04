@@ -55,7 +55,7 @@ SECTION(".text_nmglvs") int nmglvsNm1Init(NMGL_Context_NM1* cntxt)
 	halDmaInit();
 
 	//Структура для общения процессорных ядер
-	cntxt->synchro = (Synchro*)halSyncAddr((int*)0, 0);
+	cntxt->synchro = (Synchro*)halSyncAddr((int*)&patterns, 0);
 
 	//Адрес кольцевого буфера Polygons-структур на nmc0 
 	cntxt->polygonsRB = (HalRingBuffer*)halSyncAddr(0, 0);
