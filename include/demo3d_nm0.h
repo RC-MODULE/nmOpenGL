@@ -583,6 +583,8 @@ extern "C"{
 	void absIfNegElse0_32f(float* src, float* dst, int size);
 
 	void remap_32u(nm32u* pSrcVec, nm32u* pDstVec, nm32s* pRemapTable, int nSize);
+	
+	void ternaryLt0_AddC_AddC_32f(nm32f* srcFlags, nm32f* srcVec, float valueLeft, float valueRight, float* dstVec, int size);
 }
 
 void getDrawInfo(Triangles* triangles, DrawInfo* drawInfo, int count);

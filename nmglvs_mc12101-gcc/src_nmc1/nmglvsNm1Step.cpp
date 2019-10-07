@@ -15,10 +15,17 @@
 
 extern int exitNM1;
 
+SECTION(".text_demo3d") void waitCommands(NMGL_Context_NM1* cntxt){
+	volatile int a = 0;
+	while (halRingBufferIsEmpty(&cntxt->synchro->commandsRB) && halRingBufferIsEmpty(&cntxt->synchro->instantCommandsRB)) {
+		a++;
+	}
+}
+
 SECTION(".text_nmglvs") int nmglvsNm1Step(NMGL_Context_NM1* cntxt)
 {
 	
-	while (halRingBufferIsEmpty(&cntxt->synchro->commandsRB) && halRingBufferIsEmpty(&cntxt->synchro->instantCommandsRB));
+	waitCommands(cntxt);
 
 	HalRingBuffer* currentBuffer = (halRingBufferIsEmpty(&cntxt->synchro->instantCommandsRB)) ? &cntxt->synchro->commandsRB : &cntxt->synchro->instantCommandsRB;
 	
@@ -76,7 +83,7 @@ SECTION(".text_nmglvs") int nmglvsNm1Step(NMGL_Context_NM1* cntxt)
 	}
 
 	case NMC1_DRAW_TRIANGLES: {
-		msdWaitDma();
+		//msdWaitDma();
 		drawTriangles(cntxt);
 		break;
 	}

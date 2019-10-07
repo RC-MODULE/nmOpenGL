@@ -5,7 +5,7 @@
 #include "stdio.h"
 #include "nmblas.h"
 
-inline void getNumbersPtrns(float* x0, float* y0, float* x1, float* y1, float* minX, int* dydx, int* dst, int count) {
+inline void getNumbersPtrns(float* x0, float* y0, float* x1, float* y1, float* minX, int* dydx, float* dst, int count) {
 	float* temp0 = cntxt.buffer0 + 3 * NMGL_SIZE;
 	float* temp1 = cntxt.buffer1 + 3 * NMGL_SIZE;
 	float* temp2 = cntxt.buffer2 + 3 * NMGL_SIZE;
@@ -18,8 +18,7 @@ inline void getNumbersPtrns(float* x0, float* y0, float* x1, float* y1, float* m
 	remap_32u((nm32u*)dydx, (nm32u*)temp1, temp0_int, count);
 	nmppsConvert_32s32f((nm32s*)temp1, temp0, count);
 	nmppsSub_32f(x0, minX, temp2, count);					//x0
-	nmppsAdd_32f(temp0, temp2, temp1, count);				//dydx(dx, dy) + x0
-	nmppsConvert_32f32s_rounding(temp1, dst, 0, count);
+	nmppsAdd_32f(temp0, temp2, dst, count);				//dydx(dx, dy) + x0
 }
 
 SECTION(".text_demo3d")
@@ -61,19 +60,27 @@ void fillPolygonsT(Polygons* poly, Triangles* triangles, int count, int segX, in
 	nmppsMulC_32f(dyCB_float, temp, WIDTH_PTRN / 16, count);
 	nmppsConvert_32f32s_rounding(temp, poly->ptrnSizesOf32_01, 0, count);
 
-	nmppsMul_Mul_Sub_32f(dxCA_float, dyCB_float, dyCA_float, dxCB_float, (float*)poly->crossProduct, count);
+	float* crossProducts = cntxt.buffer3 + 6 * NMGL_SIZE;
+	nmppsMul_Mul_Sub_32f(dxCA_float, dyCB_float, dyCA_float, dxCB_float, (float*)crossProducts, count);
+	
 
 	poly->count = count;
-	int* dydx = (int*)cntxt.buffer3 + 3 * NMGL_SIZE;
-	nmblas_scopy(2 * WIDTH_PTRN*(HEIGHT_PTRN + 2), (float*)cntxt.patterns->table_dydx, 1, (float*)dydx, 1);
-	getNumbersPtrns(triangles->x0, triangles->y0, triangles->x1, triangles->y1, minX, dydx, poly->numbersPattrns01, count);
-	getNumbersPtrns(triangles->x0, triangles->y0, triangles->x2, triangles->y2, minX, dydx, poly->numbersPattrns02, count);
-	getNumbersPtrns(triangles->x1, triangles->y1, triangles->x2, triangles->y2, minX, dydx, poly->numbersPattrns12, count);
-
 	float* temp0 = cntxt.buffer0 + 4 * NMGL_SIZE;
 	float* temp1 = cntxt.buffer1 + 4 * NMGL_SIZE;
 	float* temp2 = cntxt.buffer2 + 4 * NMGL_SIZE;
 	float* minY = cntxt.buffer3 + 4 * NMGL_SIZE;
+	int* dydx = (int*)cntxt.buffer3 + 3 * NMGL_SIZE;
+	nmblas_scopy(2 * WIDTH_PTRN*(HEIGHT_PTRN + 2), (float*)cntxt.patterns->table_dydx, 1, (float*)dydx, 1);
+	getNumbersPtrns(triangles->x0, triangles->y0, triangles->x1, triangles->y1, minX, dydx, temp0, count);
+	getNumbersPtrns(triangles->x0, triangles->y0, triangles->x2, triangles->y2, minX, dydx, temp1, count);
+	getNumbersPtrns(triangles->x1, triangles->y1, triangles->x2, triangles->y2, minX, dydx, temp2, count);
+	ternaryLt0_AddC_AddC_32f(crossProducts, temp0, NPATTERNS / 2, 0, minY, count);
+	nmppsConvert_32f32s_rounding(minY, poly->numbersPattrns01, 0, count);
+	ternaryLt0_AddC_AddC_32f(crossProducts, temp2, NPATTERNS / 2, 0, temp0, count);
+	nmppsConvert_32f32s_rounding(temp0, poly->numbersPattrns12, 0, count);
+	ternaryLt0_AddC_AddC_32f(crossProducts, temp1, 0, NPATTERNS / 2, temp2, count);
+	nmppsConvert_32f32s_rounding(temp2, poly->numbersPattrns02, 0, count);
+
 
 	nmppsSubC_32f(triangles->y0, temp0, cntxt.windowInfo.y0_f[segY], count);
 	absIfNegElse0_32f(temp0, temp1, count);

@@ -24,14 +24,14 @@ inline int andMask(MasksSeg* srcMask, int* dstMask, int size) {
 		size32++;
 	}
 	size32 += size32 & 1;
-	addInstrNMC1(&nmglSynchro->instantCommandsRB, NMC1_AND4,
+	addInstrNMC1(&cntxt.synchro->instantCommandsRB, NMC1_AND4,
 		(int)srcMask->xLt,
 		(int)srcMask->yLt,
 		(int)srcMask->xGt,
 		(int)srcMask->yGt,
 		(int)dstMask,
 		size32);
-	while (!halRingBufferIsEmpty(&nmglSynchro->instantCommandsRB));
+	while (!halRingBufferIsEmpty(&cntxt.synchro->instantCommandsRB));
 	i = 0;
 	while (size > 0) {
 		if (dstMask[i] != 0) {
@@ -49,6 +49,13 @@ inline int andMask(MasksSeg* srcMask, int* dstMask, int size) {
 		size -= 32;
 	}
 	return result;
+}
+
+SECTION(".text_demo3d") void waitPolygons() {
+	volatile int a = 0;
+	while (halRingBufferIsFull(nmglPolygonsRB)) {
+		a++;
+	}
 }
 
 SECTION(".text_demo3d")
@@ -84,7 +91,7 @@ void rasterizeT(Triangles* triangles, int count){
 					cntxt.windowInfo.x1[segX] - cntxt.windowInfo.x0[segX],
 					cntxt.windowInfo.y1[segY] - cntxt.windowInfo.y0[segY]);
 
-				while (halRingBufferIsFull(nmglPolygonsRB));
+				waitPolygons();
 				Polygons* poly = (Polygons*)halRingBufferHead(nmglPolygonsRB);
 				clock_t t0, t1;
 				localTr.x2 = cntxt.buffer0;
@@ -95,10 +102,15 @@ void rasterizeT(Triangles* triangles, int count){
 				localTr.y0 = cntxt.buffer2 + NMGL_SIZE;
 				localTr.z = poly->z;
 				localTr.colors = (v4nm32s*)poly->color;
+				//localTr.colors = (v4nm32s*)(cntxt.buffer3 + 8 * NMGL_SIZE);
 				
 				maskSelectionLight_RGBA_BGRA((v4nm32s*)triangles->colors, (nm1*)maskRes, (v4nm32s*)localTr.colors, count);
+				//addInstrNMC1(&cntxt.synchro->instantCommandsRB, NMC1_CNV_32S_8S, (int)localTr.colors, (int)poly->color, 4 * count);
 				int localSize = copyArraysByMask((void**)triangles, (nm1*)maskRes, (void**)&localTr, 7, count);
 				fillPolygonsT(poly, &localTr, localSize, segX, segY);
+				//while (!halRingBufferIsEmpty(&cntxt.synchro->instantCommandsRB));
+				//printf("head-tail=%d\n", cntxt.synchro->commandsRB.head - cntxt.synchro->commandsRB.tail);
+				//printf("instant head-tail=%d\n", cntxt.synchro->instantCommandsRB.head - cntxt.synchro->instantCommandsRB.tail);
 
 				nmglPolygonsRB->head++;
 				addInstrNMC1(&cntxt.synchro->commandsRB, NMC1_DRAW_TRIANGLES);

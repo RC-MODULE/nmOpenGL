@@ -107,7 +107,10 @@ SECTION(".text_demo3d") void msdStartCopy() {
 }
 
 SECTION(".text_demo3d") void msdWaitDma() {
-	while (isBusy);
+	volatile int a = 0;
+	while (isBusy) {
+		a++;
+	}
 }
 
 

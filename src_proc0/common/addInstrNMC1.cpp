@@ -9,7 +9,11 @@ void addInstrNMC1(HalRingBuffer* commandsRB, int instr,
 	int param3 = 0, 
 	int param4 = 0,
 	int param5 = 0) {
-	while (halRingBufferIsFull(commandsRB));
+	volatile int a = 0;
+	a++;
+	while (halRingBufferIsFull(commandsRB)) {
+		a++;
+	}
 	
 	CommandNm1* command = (CommandNm1*)halRingBufferHead(commandsRB);
 	command->params[0] = param0;
