@@ -9,33 +9,40 @@ SECTION(".data_demo3d") MSD_DmaCopy list[100];
 SECTION(".data_demo3d") volatile bool isBusy = false;
 int countList = 0;
 int currentIndex;
+bool isSimpleCopy = false;
 
 
 SECTION(".text_demo3d") void cbUpdate() {
-	if (list[currentIndex].callback) {
-		list[currentIndex].callback();
-	}
-	list[currentIndex].status = true;
-	currentIndex++;
-	if (currentIndex < countList) {
-		switch (list[currentIndex].type)
-		{
-		case MSD_DMA:
-			halDmaStartA(list[currentIndex].src, list[currentIndex].dst, list[currentIndex].size);
-			break;
-		case MSD_DMA_2D:
-			halDma2D_StartA(list[currentIndex].src, list[currentIndex].dst, 
-				list[currentIndex].size, list[currentIndex].width, 
-				list[currentIndex].srcStride, list[currentIndex].dstStride);
-			break;
-		default:
-			break;
-		}
-		
+	if (isSimpleCopy) {
+		isBusy = false;
+		isSimpleCopy = false;
 	}
 	else {
-		isBusy = false;
-		countList = 0;
+		if (list[currentIndex].callback) {
+			list[currentIndex].callback();
+		}
+		list[currentIndex].status = true;
+		currentIndex++;
+		if (currentIndex < countList) {
+			switch (list[currentIndex].type)
+			{
+			case MSD_DMA:
+				halDmaStartA(list[currentIndex].src, list[currentIndex].dst, list[currentIndex].size);
+				break;
+			case MSD_DMA_2D:
+				halDma2D_StartA(list[currentIndex].src, list[currentIndex].dst,
+					list[currentIndex].size, list[currentIndex].width,
+					list[currentIndex].srcStride, list[currentIndex].dstStride);
+				break;
+			default:
+				break;
+			}
+
+		}
+		else {
+			isBusy = false;
+			countList = 0;
+		}
 	}
 }
 
@@ -105,6 +112,14 @@ SECTION(".text_demo3d") void msdStartCopy() {
 		}
 	}
 }
+
+SECTION(".text_demo3d") void msdSimpleCopy(const void* src, void* dst, int size) {
+	halDmaSetCallback((DmaCallback)cbUpdate);
+	isSimpleCopy = true;
+	isBusy = true;
+	halDmaStart(src, dst, size);
+}
+
 
 SECTION(".text_demo3d") void msdWaitDma() {
 	volatile int a = 0;

@@ -104,7 +104,6 @@ int main()
 			//halProfilerPrint2tbl(".main0.map", 0);
 			flag = 0;
 		}
-		//drawMeshSegments(currentImage);
 		/*VS_Line(1, 0, 128, 768, 128, 0xFF);
 		VS_Line(1, 0, 256, 768, 256, 0xFF);
 		VS_Line(1, 0, 384, 768, 384, 0xFF);

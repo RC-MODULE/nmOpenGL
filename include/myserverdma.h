@@ -25,6 +25,7 @@ void msdAdd2D(const void* src, void* dst, unsigned size, unsigned width, unsigne
 void msdStartCopy();
 void msdWaitDma();
 bool msdGetStatusCopy(int index);
+void msdSimpleCopy(const void* src, void* dst, int size);
 
 
 #endif
