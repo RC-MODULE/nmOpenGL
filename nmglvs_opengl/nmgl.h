@@ -18,13 +18,13 @@
 
 
 struct Models {
-	char* sphere = "../../../models/sphere_31.stl";
-	char* test = "../../../models/test.stl";
-	char* cube = "../../../models/small_cube.stl";
-	char* two_sphere = "../../../models/2_sphere.stl";
-	char* rcm = "../../../models/out_RCM_32.stl";
-	char* nm = "../../../models/NM_32.stl";
-	char* snowman = "../../../models/snow_white_32.stl";
+	char* sphere = "../../models/sphere_31.stl";
+	char* test = "../../models/test.stl";
+	char* cube = "../../models/small_cube.stl";
+	char* two_sphere = "../../models/2_sphere.stl";
+	char* rcm = "../../models/out_RCM_32.stl";
+	char* nm = "../../models/NM_32.stl";
+	char* snowman = "../../models/snow_white_32.stl";
 };
 
 extern "C" {

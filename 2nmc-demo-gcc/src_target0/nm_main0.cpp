@@ -52,6 +52,10 @@ SECTION(".text_shared") int main()
 	char* filePath = models.nm;
 
 	FILE* fmodel = fopen(filePath, "r");
+	if (fmodel == 0) {
+		printf("File not opened\n");
+		return 1;
+	}
 	int amount = get_amm_poligone(fmodel);
 	fmodel = fopen(filePath, "r");
 	createArrayVec4(fmodel, vertices_DDR, normal_DDR, 1);
