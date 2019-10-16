@@ -48,6 +48,12 @@ struct MatrixStack {
 	}
 };
 
+struct SegmentMask {
+	int bits[NMGL_SIZE / 32];
+	int hasNotZeroBits;
+	int dummy;
+};
+
 struct NMGL_Context_NM0 {
 	Synchro* synchro;
 	NMGLenum error;
@@ -591,8 +597,8 @@ void getDrawInfo(Triangles* triangles, DrawInfo* drawInfo, int count);
 
 void addInstrNMC1(HalRingBuffer* commandsRB, int instr, int param0 = 0, int param1 = 0, int param2 = 0, int param3 = 0, int param4 = 0, int param5 = 0);
 
-
-void rasterizeT(Triangles* triangles, int count);
+void setSegmentMask(v2nm32f* minXY, v2nm32f* maxXY, SegmentMask* masks, int primCount);
+void rasterizeT(Triangles* triangles, SegmentMask* masks, int count);
 void rasterizeL(Lines* lines, int count);
 
 void fillPolygonsT(Polygons* poly, Triangles* triangles, int count, int segX, int segY);

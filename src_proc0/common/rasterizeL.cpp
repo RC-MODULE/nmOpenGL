@@ -6,30 +6,12 @@
 #include "stdio.h"
 #include "nmprofiler.h"
 
-extern float minXY[2 * NMGL_SIZE];
-extern float maxXY[2 * NMGL_SIZE];
-extern int maskRes[NMGL_SIZE / 32];
-extern MasksSeg masks;
-SECTION(".data_imu7")   Lines localLines;
 
-
-
-inline int andMask(MasksSeg* srcMask, int* dstMask, int size) {
-	int i = 0;
-	int result = 0;
-	while (size>0) {
-		dstMask[i] = (srcMask->xLt[i] & srcMask->yLt[i]) & (srcMask->xGt[i] & srcMask->yGt[i]);
-		result |= dstMask[i];
-		i++;
-		size -= 32;
-	}
-	return result;
-}
 
 SECTION(".text_demo3d")
 void rasterizeL(Lines* lines, int count){
 
-	float* minX = cntxt.buffer0;
+	/*float* minX = cntxt.buffer0;
 	float* maxX = cntxt.buffer1;
 	float* minY = cntxt.buffer2;
 	float* maxY = cntxt.buffer3;
@@ -85,5 +67,5 @@ void rasterizeL(Lines* lines, int count){
 				
 			}
 		}
-	}
+	}*/
 }

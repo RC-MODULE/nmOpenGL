@@ -23,3 +23,5 @@ ldscript
 *.abs
 *.map
 *.dump
+
+*.dll

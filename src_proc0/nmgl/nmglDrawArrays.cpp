@@ -30,7 +30,7 @@ SECTION(".data_imu6")	ArrayManager<float> vertexAM;
 SECTION(".data_imu6")	ArrayManager<v3nm32f> normalAM;
 SECTION(".data_imu6")	ArrayManager<v4nm32f> colorAM;
 SECTION(".data_imu6")   TrianglesDdr trianglesDdr;
-extern Triangles localTr;
+SECTION(".data_imu6")	SegmentMask masks[36];
 
 template < typename T >
 inline void copyVec(const T* src, T* dst, size_t size) {
@@ -212,6 +212,13 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 		nmppsConvert_32s32f((int*)cntxt.buffer0, vertexX, localSize);
 		nmppsConvert_32f32s_rounding(vertexY, (int*)cntxt.buffer0, 0, localSize);
 		nmppsConvert_32s32f((int*)cntxt.buffer0, vertexY, localSize);
+
+		float* minX = cntxt.buffer0;
+		float* maxX = cntxt.buffer1;
+		float* minY = cntxt.buffer2;
+		float* maxY = cntxt.buffer3;
+		float* minXY = cntxt.buffer2 + 6 * NMGL_SIZE;
+		float* maxXY = cntxt.buffer3 + 6 * NMGL_SIZE;
 		int localNPrim;
 		//---------------rasterize------------------------------------
 		switch (mode) {
@@ -236,7 +243,12 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			}
 
 			allRasterizeCount += localNPrim;
-			rasterizeT(&trianglesStat, localNPrim);
+			findMinMax3(x0, x1, x2, minX, maxX, localNPrim);
+			findMinMax3(y0, y1, y2, minY, maxY, localNPrim);
+			nmppsMerge_32f(minX, minY, minXY, localNPrim);
+			nmppsMerge_32f(maxX, maxY, maxXY, localNPrim);
+			setSegmentMask((v2nm32f*)minXY, (v2nm32f*)maxXY, masks, localNPrim);
+			rasterizeT(&trianglesStat, masks, localNPrim);
 			break;
 		case NMGL_LINES:
 			localNPrim = localSize / 2;
