@@ -38,6 +38,7 @@ void nmglEnableClientState(NMGLenum array);
 void nmglDisableClientState(NMGLenum array);
 void nmglVertexPointer(NMGLint size, NMGLenum type, NMGLsizei stride, const void *pointer);
 void nmglNormalPointer(NMGLenum type, NMGLsizei stride, const void *pointer);
+void nmglNormalPointerNM(NMGLenum type, NMGLsizei stride, const void *pointer);
 void nmglColorPointer(NMGLint size, NMGLenum type, NMGLsizei stride, const void *pointer);
 void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count);
 void nmglGetFloatv(NMGLenum pname, NMGLfloat * params);

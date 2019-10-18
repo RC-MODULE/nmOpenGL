@@ -12,9 +12,15 @@ void nmglGetFloatv(NMGLenum pname, NMGLfloat * params) {
 		params[0] = cntxt.currentMatrixStack->type;
 		break;
 	case NMGL_MODELVIEW_MATRIX:
-		nmblas_scopy(16, (float*)cntxt.modelviewMatrixStack.top(),1,params,1);
+		for (int i = 0; i < 16; i++) {
+			params[i] = cntxt.modelviewMatrixStack.top()->matr[i];
+		}
+		//nmblas_scopy(16, (float*)cntxt.modelviewMatrixStack.top(),1, params,1);
 	case NMGL_PROJECTION_MATRIX:
-		nmblas_scopy(16, (float*)cntxt.projectionMatrixStack.top(), 1, params, 1);
+		for (int i = 0; i < 16; i++) {
+			params[i] = cntxt.projectionMatrixStack.top()->matr[i];
+		}
+		//nmblas_scopy(16, (float*)cntxt.projectionMatrixStack.top(), 1, params, 1);
 	default:
 		cntxt.error = NMGL_INVALID_ENUM;
 	}
