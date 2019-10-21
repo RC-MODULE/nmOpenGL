@@ -4,7 +4,7 @@
 #include "hal.h"
 
 template <typename T>
-void addrManagerDefaultCopy(const T* src, T* dst, size_t size) {
+void addrManagerDefaultCopy(const void* src, void* dst, size_t size) {
 	halCopyRISC(src, dst, sizeof32(size));
 }
 
@@ -16,14 +16,14 @@ private:
 	int totalSize;
 	T* startAddr;
 	T* localAddr;
-	void (*copyFunction)(const T *, T *, size_t);
+	void (*copyFunction)(const void *, void *, size_t);
 public:
 
 	ArrayManager() : copyFunction(addrManagerDefaultCopy<T>){
 		
 	}
 
-	void set(T* arrayVec, int fullSize, int maxPartSize, void(*function)(const T *, T *, size_t)) {
+	void set(T* arrayVec, int fullSize, int maxPartSize, void(*function)(const void *, void *, size_t)) {
 		startAddr = arrayVec;
 		totalSize = fullSize;
 		maxLocalSize = maxPartSize;

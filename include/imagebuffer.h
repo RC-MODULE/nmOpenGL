@@ -26,7 +26,7 @@ public:
 	}
 
 	void next() {
-		while (halRingBufferIsFull(&ringbuffer));
+		while (halRingBufferIsFull(&ringbuffer) || halRingBufferIsBusy(&ringbuffer));
 		ringbuffer.head++;
 	}
 	

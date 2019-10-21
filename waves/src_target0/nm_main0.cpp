@@ -13,6 +13,10 @@
 #include "hal_target.h"
 #include "dma.h"
 
+#ifndef __OPEN_GL__
+#include "nmgl_data0.h"
+#endif
+
 
 #define			STR_SIZE			256
 #define			COL_SIZE			256
@@ -31,8 +35,13 @@ struct Triangle {
 	Vertex c;
 };
 
+struct Vector3f {
+	float x;
+	float y;
+	float z;
+};
+
 SECTION(".data_shared") float colorTriangles[4 * FRAME_SIZE];
-SECTION(".data_imu0") NMGL_Context_NM0 context;
 
 SECTION(".data_imu1") nm32fcr h0_sram[STR_SIZE];
 SECTION(".data_imu1") nm32f   re_im_sram[COL_SIZE];
@@ -61,9 +70,39 @@ SECTION(".data_DDR") nm32fcr  h0_conj_ddr[FRAME_SIZE];
 SECTION(".data_DDR") nm32fcr  fft_ddr[FRAME_SIZE];
 SECTION(".data_DDR") float    result_ddr[FRAME_SIZE];
 SECTION(".data_DDR") float    result_ddr_color[12 * COUNT_TRIANGLES];
+SECTION(".data_DDR") float    result_ddr_normal[12 * COUNT_TRIANGLES];
 
 extern "C" {
 	void SumReImParts(const nm32fcr* complex_nums, nm32f* sum_re_im, int size);
+}
+
+void computeNormal(const Triangle* triangle, float* dstNormal, int size) {
+	Vector3f BA;
+	Vector3f CB;
+	Vector3f normal;
+	for (int i = 0; i < size; i++) {
+		BA.x = triangle[i].a.x - triangle[i].b.x;
+		BA.y = triangle[i].a.y - triangle[i].b.y;
+		BA.z = triangle[i].a.z - triangle[i].b.z;
+		CB.x = triangle[i].b.x - triangle[i].c.x;
+		CB.y = triangle[i].b.y - triangle[i].c.y;
+		CB.z = triangle[i].b.z - triangle[i].c.z;
+		normal.x = (BA.y * CB.z - BA.z * CB.y);
+		normal.y = (BA.z * CB.x - BA.x * CB.z);
+		normal.z = (BA.x * CB.y - CB.x * BA.y);
+		dstNormal[12 * i + 0] = normal.x;
+		dstNormal[12 * i + 1] = normal.y;
+		dstNormal[12 * i + 2] = normal.z;
+		dstNormal[12 * i + 3] = 0;
+		dstNormal[12 * i + 4] = normal.x;
+		dstNormal[12 * i + 5] = normal.y;
+		dstNormal[12 * i + 6] = normal.z;
+		dstNormal[12 * i + 7] = 0;
+		dstNormal[12 * i + 8] = normal.x;
+		dstNormal[12 * i + 9] = normal.y;
+		dstNormal[12 * i + 10] = normal.z;
+		dstNormal[12 * i + 11] = 0;
+	}
 }
 
 void halCopy_32s(void* srcVec, void* dstVec, int size) {
@@ -107,6 +146,19 @@ void FillXy(Triangle* triangles, int width, int height) {
 	}
 }
 
+void printMatrix() {
+	double data[8];
+	float* matrix = (float*)data;
+	nmglGetFloatv(NMGL_MODELVIEW_MATRIX, matrix);
+	for (int j = 0; j < 4; j++) {
+		for (int i = 0; i < 4; i++) {
+			float var = matrix[4 * j + i];
+			//float var = cntxt.modelviewMatrix[0].matr[4 * j + i];
+			printf("%f ", var);
+		}
+		printf("\r\n");
+	}
+}
 
 void FillZw(const float* z_mtr, Triangle* triangles, int width, int height)
 {
@@ -138,6 +190,8 @@ void FillZw(const float* z_mtr, Triangle* triangles, int width, int height)
 int main()
 {
 	nmglvsNm0Init();
+	clock_t t0, t1;
+	int timeClock = 0;
 
 	FillXy(triangles, STR_SIZE, COL_SIZE);
 #ifdef __OPEN_GL__
@@ -154,6 +208,7 @@ int main()
 	halLed(1);
 	int fftIsInitialized = FFTFwdInitAlloc_32fcr(&fft_coeffs, STR_SIZE);
 	halLed(255);
+#ifndef __OPEN_GL__
 	if (fftIsInitialized == 0) {
 		halHostSync(0x600D600D);
 	}
@@ -161,31 +216,43 @@ int main()
 		halHostSync(fftIsInitialized);
 		return fftIsInitialized;
 	}
+#endif
 	nmglClearColor(0, 0, 0.2f, 0.0f);
 
+	
 	nmglMatrixMode(NMGL_MODELVIEW);
 	nmglTranslatef(-128, -128, 0);
 	nmglRotatef(-60, 1, 0, 0);	
 	nmglScalef(1, 1, 50);
-	nmglTranslatef(0, 100, 0);
-
-	//nmglRotatef(-60, 0, 1, 0);
+	//nmglTranslatef(0, 100, 0);
 	
 	nmglMatrixMode(NMGL_PROJECTION);
 	nmglOrthof(-128, 128, -128, 128, -200, 200);
 	nmglViewport(0, 0, 768, 768);
 
+	nmglMatrixMode(NMGL_MODELVIEW);
+
 	nmglEnable(NMGL_DEPTH_TEST);
-	//nmglEnable(NMGL_LIGHTING);
-	//nmglEnable(NMGL_LIGHT0);
-	//nmglEnable(NMGL_NORMALIZE);
+	nmglEnable(NMGL_LIGHTING);
+	nmglEnable(NMGL_LIGHT0);
+	float diffuse[4] = { 1,1,1,1 };
+	float position[4] = { 100, 100, 0, 0};
+	nmglLightfv(NMGL_LIGHT0, NMGL_DIFFUSE, diffuse);
+	nmglLightfv(NMGL_LIGHT0, NMGL_POSITION, position);
+	float materialSpec[4] = { 0.6,0.6,0.6,1 };
+	float materialDiffuse[4] = { 0,0,1,1 };
+	nmglMaterialf(NMGL_FRONT_AND_BACK, NMGL_SHININESS, 15);
+	nmglMaterialfv(NMGL_FRONT_AND_BACK, NMGL_DIFFUSE, materialDiffuse);
+	nmglMaterialfv(NMGL_FRONT_AND_BACK, NMGL_SPECULAR, materialSpec);
+	nmglEnable(NMGL_NORMALIZE);
+	//nmglEnable(NMGL_RESCALE_NORMAL);
 	//NMGLenum error = nmglGetError();
 
 	nmglEnableClientState(NMGL_VERTEX_ARRAY);
 	nmglEnableClientState(NMGL_COLOR_ARRAY);
-	//nmglEnableClientState(NMGL_NORMAL_ARRAY);
-	//nmglNormalPointer(NMGL_FLOAT, 0, nmglNormalArray);
+	nmglEnableClientState(NMGL_NORMAL_ARRAY);
 	nmglVertexPointer(4, NMGL_FLOAT, 0, triangles);
+	nmglNormalPointerNM(NMGL_FLOAT, 0, result_ddr_normal);
 	nmglColorPointer(4, NMGL_FLOAT, 0, result_ddr_color);
 
 
@@ -247,31 +314,26 @@ int main()
 		FillZw(result_ddr, triangles, STR_SIZE, COL_SIZE);
 		time += 0.5;
 
+		t0 = clock();
+		computeNormal(triangles, result_ddr_normal, COUNT_TRIANGLES);
+		t1 = clock();
+		timeClock = t1 - t0;
+		printf("computeNormal=%d\n", timeClock);
 
-		
-		
-		//if(0)
-		for (int i = 0, k=0; i < COUNT_TRIANGLES; i++) {
-			for (int j = 0; j < 3; j++, k++) {
-
-					//result_ddr_color[4 * k + 0] = 0;
-					//result_ddr_color[4 * k + 1] = 0;
-					result_ddr_color[4 * k + 2] = (triangles[i].a.z);
-					//result_ddr_color[4 * k + 3] = 0;
-			}
-			
-		}
-
+		t0 = clock();
 		//nmglDrawArrays(NMGL_TRIANGLES, 0, 8 * 3 * 2 * (COL_SIZE - 1));
 		nmglDrawArrays(NMGL_TRIANGLES, 0, COUNT_TRIANGLES*3);
+		t1 = clock();
+		timeClock = t1 - t0;
+		printf("nmglDrawArrays=%d\n", timeClock);
+		
 		//error = nmglGetError();
 		nmglvsSwapBuffer();
 
 	}
-
 	nmglDisableClientState(NMGL_VERTEX_ARRAY);
 	nmglDisableClientState(NMGL_COLOR_ARRAY);
-	//nmglDisableClientState(NMGL_NORMAL_ARRAY);
+	nmglDisableClientState(NMGL_NORMAL_ARRAY);
 	nmglvsExit_mc12101();
 	return 0x600D600D;
 }

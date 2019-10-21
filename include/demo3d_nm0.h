@@ -592,6 +592,7 @@ extern "C"{
 	
 	void ternaryLt0_AddC_AddC_32f(nm32f* srcFlags, nm32f* srcVec, float valueLeft, float valueRight, float* dstVec, int size);
 }
+void reverseMatrix3x3in4x4(mat4nm32f* src, mat4nm32f* dst);
 
 void getDrawInfo(Triangles* triangles, DrawInfo* drawInfo, int count);
 
