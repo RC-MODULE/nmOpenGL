@@ -49,9 +49,8 @@ struct MatrixStack {
 };
 
 struct SegmentMask {
-	int bits[NMGL_SIZE / 32];
+	int* bits;
 	int hasNotZeroBits;
-	int dummy;
 };
 
 struct NMGL_Context_NM0 {
@@ -67,6 +66,7 @@ struct NMGL_Context_NM0 {
 
 	mat4nm32f modelviewMatrix[16];
 	mat4nm32f projectionMatrix[2];
+	mat4nm32f normalMatrix;
 	MatrixStack modelviewMatrixStack;
 	MatrixStack projectionMatrixStack;
 	MatrixStack* currentMatrixStack;

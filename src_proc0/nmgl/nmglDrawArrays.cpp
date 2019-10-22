@@ -17,7 +17,6 @@ SECTION(".data_imu4")	float y2[NMGL_SIZE];
 SECTION(".data_imu6")	int z_int[NMGL_SIZE];
 SECTION(".data_imu6")	v4nm32s lightsValues[NMGL_SIZE];
 SECTION(".data_imu6")	Triangles trianglesStat = { x0, y0, x1, y1, x2, y2, z_int, lightsValues };
-SECTION(".data_imu6")	Lines linesStat = { x0, y0,  x1, y1, z_int, lightsValues };
 
 SECTION(".data_imu5")	float vertexX[3 * NMGL_SIZE];
 SECTION(".data_imu6")	float vertexY[3 * NMGL_SIZE];
@@ -31,7 +30,7 @@ SECTION(".data_imu6")	ArrayManager<float> normalAM;
 SECTION(".data_imu6")	ArrayManager<v4nm32f> colorAM;
 SECTION(".data_imu6")   TrianglesDdr trianglesDdr;
 SECTION(".data_imu6")	SegmentMask masks[36];
-SECTION(".data_imu6")	mat4nm32f normalMatrix;
+SECTION(".data_imu6")	int masksBits[36][NMGL_SIZE / 32];
 
 template < typename T >
 inline void copyVec(const void* src, void* dst, size_t size) {
@@ -51,6 +50,10 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 	float* srcDDR_vertex = (float*)cntxt.vertexArray.pointer + cntxt.vertexArray.size * first;
 	float* srcDDR_normal = (float*)cntxt.normalArray.pointer + cntxt.normalArray.size * first;
 	v4nm32f* srcDDR_color = (v4nm32f*)cntxt.colorArray.pointer + first;
+
+	for (int i = 0; i < 36; i++) {
+		masks[i].bits = masksBits[i];
+	}
 
 	int maxInnerCount;
 	int nAllPrimitives;
@@ -80,7 +83,7 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 
 	int allRasterizeCount = 0;
 
-	reverseMatrix3x3in4x4(cntxt.modelviewMatrixStack.top(), &normalMatrix);
+	reverseMatrix3x3in4x4(cntxt.modelviewMatrixStack.top(), &cntxt.normalMatrix);
 
 	while (!vertexAM.isEmpty()) {
 		//vertex
@@ -122,7 +125,7 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			else {
 				normalAM.pop(cntxt.buffer1);
 			}
-			MullMatrix_f(cntxt.buffer1, localSize, 4, &normalMatrix, 4, 4, colorOrNormal, 4, 4, 0);
+			MullMatrix_f(cntxt.buffer1, localSize, 4, &cntxt.normalMatrix, 4, 4, colorOrNormal, 4, 4, 0);
 			//mul_mat4nm32f_v4nm32f(cntxt.modelviewMatrixStack.top(), (v4nm32f*)cntxt.buffer1, colorOrNormal, localSize);
 			if (cntxt.normalizeEnabled) {
 				nmblas_scopy(4 * localSize, (float*)colorOrNormal, 1, cntxt.buffer2, 1);
@@ -206,17 +209,7 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			setSegmentMask((v2nm32f*)minXY, (v2nm32f*)maxXY, masks, localNPrim);
 			rasterizeT(&trianglesStat, masks, localNPrim);
 			break;
-		case NMGL_LINES:
-			localNPrim = localSize / 2;
-			nmblas_dcopy(2 * localNPrim, (double*)colorOrNormal, 2, (double*)cntxt.buffer0, 1);
-			nmppsConvert_32f32s_rounding(cntxt.buffer0, (int*)lightsValues, 0, 4 * localNPrim);
-
-			split_v2nm32f((v2nm32f*)vertexX, 1, x0, x1, localNPrim);
-			split_v2nm32f((v2nm32f*)vertexY, 1, y0, y1, localNPrim);
-			split_v2nm32f((v2nm32f*)vertexZ, 1, cntxt.buffer0, cntxt.buffer1, localNPrim);
-			meanToInt2(cntxt.buffer0, cntxt.buffer1, z_int, localNPrim);
-			rasterizeL(&linesStat, localNPrim);
-			break;
 		}
 	}
+
 }
