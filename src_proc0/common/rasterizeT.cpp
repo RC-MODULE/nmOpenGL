@@ -18,7 +18,7 @@ SECTION(".text_demo3d") void waitPolygons() {
 }
 
 SECTION(".text_demo3d")
-void rasterizeT(Triangles* triangles, SegmentMask* masks, int count){
+void rasterizeT(const Triangles* triangles, const SegmentMask* masks, int count){
 	for (int segY = 0, iSeg = 0; segY < cntxt.windowInfo.nRows; segY++) {
 		for (int segX = 0; segX < cntxt.windowInfo.nColumns; segX++, iSeg++) {
 			if (masks[iSeg].hasNotZeroBits) {
@@ -53,12 +53,14 @@ void rasterizeT(Triangles* triangles, SegmentMask* masks, int count){
 					localTr.z = poly->z;
 					localTr.colors = (v4nm32s*)poly->color;
 
-					maskSelectionLight_RGBA_BGRA(trianglesClone.colors, (nm1*)maskBits, (v4nm32s*)localTr.colors, localCount);
 					int resultSize = copyArraysByMask((void**)&trianglesClone, (nm1*)maskBits, (void**)&localTr, 7, localCount);
-					fillPolygonsT(poly, &localTr, resultSize, segX, segY);
+					if (resultSize != 0) {
+						maskSelectionLight_RGBA_BGRA(trianglesClone.colors, (nm1*)maskBits, (v4nm32s*)localTr.colors, localCount);
+						fillPolygonsT(poly, &localTr, resultSize, segX, segY);
 
-					nmglPolygonsRB->head++;
-					addInstrNMC1(&cntxt.synchro->commandsRB, NMC1_DRAW_TRIANGLES);
+						nmglPolygonsRB->head++;
+						addInstrNMC1(&cntxt.synchro->commandsRB, NMC1_DRAW_TRIANGLES);
+					}
 
 					countClone -= NMGL_SIZE;
 					trianglesClone.colors += NMGL_SIZE;

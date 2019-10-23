@@ -587,7 +587,7 @@ void addInstrNMC1(HalRingBuffer* commandsRB, int instr, int param0 = 0, int para
 
 void setSegmentMask(v2nm32f* minXY, v2nm32f* maxXY, SegmentMask* masks, int primCount);
 int pushToTriangles_t(const float *vertexX, const float *vertexY, const float *vertexZ, const v4nm32f* color, Triangles& triangles, int countVertex);
-void rasterizeT(Triangles* triangles, SegmentMask* masks, int count);
+void rasterizeT(const Triangles* triangles, const SegmentMask* masks, int count);
 void rasterizeL(Lines* lines, int count);
 
 void fillPolygonsT(Polygons* poly, Triangles* triangles, int count, int segX, int segY);

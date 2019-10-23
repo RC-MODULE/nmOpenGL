@@ -101,7 +101,6 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 
 	head_ddr = 0;
 	tail_ddr = 0;
-	halLed(1);
 	while (!vertexAM.isEmpty()) {
 		//vertex
 		int localSize = vertexAM.pop(cntxt.buffer0) / cntxt.vertexArray.size;
@@ -192,14 +191,16 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 		//---------------rasterize------------------------------------
 		switch (mode) {
 		case NMGL_TRIANGLES:
-			halLed(2);
 			int localNPrim = pushToTriangles_t(vertexX, vertexY, vertexZ, colorOrNormal, trianglesStat, localSize);
-			halLed(4);
+
 			if (cntxt.isCullFace) {
 				localNPrim = cullFaceSortTriangles(&trianglesStat, localNPrim);
 			}
-
-			halLed(8);
+			//halDmaStartC(trianglesStat.x0, (x0_ddr + head_ddr), localNPrim);
+			//while (!halDmaIsCompleted());
+			//halDmaStartC(trianglesStat.y0, (y0_ddr + head_ddr), localNPrim);
+			//while (!halDmaIsCompleted());
+	
 			nmblas_scopy(localNPrim, trianglesStat.x0, 1, (x0_ddr + head_ddr), 1);
 			nmblas_scopy(localNPrim, trianglesStat.y0, 1, (y0_ddr + head_ddr), 1);
 			nmblas_scopy(localNPrim, trianglesStat.x1, 1, (x1_ddr + head_ddr), 1);
@@ -211,7 +212,6 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			head_ddr += localNPrim;
 			allRasterizeCount += localNPrim;
 
-			halLed(16);
 			/*float* minXY = cntxt.buffer2 + 6 * NMGL_SIZE;
 			float* maxXY = cntxt.buffer3 + 6 * NMGL_SIZE;
 			findMinMax3(trianglesStat.x0, trianglesStat.x1, trianglesStat.x2, cntxt.buffer0, cntxt.buffer1, localNPrim);
@@ -224,7 +224,7 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 		}
 	}
 	while(tail_ddr < head_ddr){
-		int localSize = MIN(NMGL_SIZE, allRasterizeCount);
+		int localSize = MIN(NMGL_SIZE, head_ddr - tail_ddr);
 		nmblas_scopy(localSize, x0_ddr + tail_ddr, 1, trianglesStat.x0, 1);
 		nmblas_scopy(localSize, y0_ddr + tail_ddr, 1, trianglesStat.y0, 1);
 		nmblas_scopy(localSize, x1_ddr + tail_ddr, 1, trianglesStat.x1, 1);
@@ -247,10 +247,8 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 
 		tail_ddr += NMGL_SIZE;
 	}
-	halLed(127);
 	for (int i = 0; i < 36; i++) {
 		masks[i].bits = masksBits[i];
 	}
 	rasterizeT(&trianglesDdr, masks, allRasterizeCount);
-	halLed(255);
 }

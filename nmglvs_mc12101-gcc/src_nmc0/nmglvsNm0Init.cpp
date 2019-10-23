@@ -46,7 +46,7 @@ int nmglvsNm0Init()
 		return -1;
 	}
 
-	//halDmaInitC();
+	halDmaInitC();
 	halInstrCacheEnable();
 	//nmprofiler_init();
 

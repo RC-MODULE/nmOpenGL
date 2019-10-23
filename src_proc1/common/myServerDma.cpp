@@ -27,10 +27,10 @@ SECTION(".text_demo3d") void cbUpdate() {
 			switch (list[currentIndex].type)
 			{
 			case MSD_DMA:
-				halDmaStartA(list[currentIndex].src, list[currentIndex].dst, list[currentIndex].size);
+				halDmaStartCA(list[currentIndex].src, list[currentIndex].dst, list[currentIndex].size);
 				break;
 			case MSD_DMA_2D:
-				halDma2D_StartA(list[currentIndex].src, list[currentIndex].dst,
+				halDma2D_StartCA(list[currentIndex].src, list[currentIndex].dst,
 					list[currentIndex].size, list[currentIndex].width,
 					list[currentIndex].srcStride, list[currentIndex].dstStride);
 				break;
@@ -100,10 +100,10 @@ SECTION(".text_demo3d") void msdStartCopy() {
 		switch (list[currentIndex].type)
 		{
 		case MSD_DMA:
-			halDmaStartA(list[currentIndex].src, list[currentIndex].dst, list[currentIndex].size);
+			halDmaStartCA(list[currentIndex].src, list[currentIndex].dst, list[currentIndex].size);
 			break;
 		case MSD_DMA_2D:
-			halDma2D_StartA(list[currentIndex].src, list[currentIndex].dst,
+			halDma2D_StartCA(list[currentIndex].src, list[currentIndex].dst,
 				list[currentIndex].size, list[currentIndex].width,
 				list[currentIndex].srcStride, list[currentIndex].dstStride);
 			break;
@@ -117,7 +117,7 @@ SECTION(".text_demo3d") void msdSimpleCopy(const void* src, void* dst, int size)
 	halDmaSetCallback((DmaCallback)cbUpdate);
 	isSimpleCopy = true;
 	isBusy = true;
-	halDmaStart(src, dst, size);
+	halDmaStartC(src, dst, size);
 }
 
 
