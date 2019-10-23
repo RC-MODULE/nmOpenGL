@@ -11,8 +11,8 @@
 #include "nmgl_data0.h"
 
 #define CHECK_EXIT0 if(nmglSynchro->exit_nm==EXIT) {	break;	}
-#define STACK_COMMAND_SIZE 256
-#define INSTANT_STACK_COMMAND_SIZE 4
+#define STACK_COMMAND_SIZE 512
+#define INSTANT_STACK_COMMAND_SIZE 8
 
 SECTION(".data_shared")	Synchro s_synchro;
 SECTION(".data_shmem0")	HalRingBuffer s_nmglPolygonsRB;

@@ -156,15 +156,18 @@ SECTION(".text_nmglvs") int nmglvsNm1Step(NMGL_Context_NM1* cntxt)
 		int* src3Ext = (int*)currentCommand->params[3];
 		nm64u* dst = (nm64u*)currentCommand->params[4];
 		int size = currentCommand->params[5];
-		nm64u* src0 = (nm64u*)(cntxt->buffer0);
-		nm64u* src1 = (nm64u*)(cntxt->buffer1);
-		nm64u* src2 = (nm64u*)(cntxt->buffer0 + size);
-		nm64u* src3 = (nm64u*)(cntxt->buffer1 + size);
-		nmppsCopy_32s(src0Ext, (nm32s*)src0, size);
-		nmppsCopy_32s(src1Ext, (nm32s*)src1, size);
-		nmppsCopy_32s(src2Ext, (nm32s*)src2, size);
-		nmppsCopy_32s(src3Ext, (nm32s*)src3, size);
-		nmppsAnd4V_64u(src0, src1, src2, src3, dst, size/2);
+		while (size > 0) {
+			int localSize = (size, SIZE_BANK / 2);
+			nm64u* src0 = (nm64u*)(cntxt->buffer0);
+			nm64u* src1 = (nm64u*)(cntxt->buffer1);
+			nm64u* src2 = (nm64u*)(cntxt->buffer0 + SIZE_BANK / 2);
+			nm64u* src3 = (nm64u*)(cntxt->buffer1 + SIZE_BANK / 2);
+			nmppsCopy_32s(src0Ext, (nm32s*)src0, localSize);
+			nmppsCopy_32s(src1Ext, (nm32s*)src1, localSize);
+			nmppsCopy_32s(src2Ext, (nm32s*)src2, localSize);
+			nmppsCopy_32s(src3Ext, (nm32s*)src3, localSize);
+			nmppsAnd4V_64u(src0, src1, src2, src3, dst, localSize / 2);
+		}
 		break;
 	}
 	case NMC1_OR: {

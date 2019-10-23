@@ -7,6 +7,7 @@
 #include "arraymanager.h"
 #include "stdio.h"
 
+#define BIG_NMGL_SIZE 130080
 
 SECTION(".data_imu6")	float x0[NMGL_SIZE];
 SECTION(".data_imu6")	float y0[NMGL_SIZE];
@@ -18,6 +19,22 @@ SECTION(".data_imu6")	int z_int[NMGL_SIZE];
 SECTION(".data_imu6")	v4nm32s lightsValues[NMGL_SIZE];
 SECTION(".data_imu6")	Triangles trianglesStat = { x0, y0, x1, y1, x2, y2, z_int, lightsValues };
 
+SECTION(".data_shared")	float x0_ddr[BIG_NMGL_SIZE];
+SECTION(".data_shared")	float y0_ddr[BIG_NMGL_SIZE];
+SECTION(".data_shared")	float x1_ddr[BIG_NMGL_SIZE];
+SECTION(".data_shared")	float y1_ddr[BIG_NMGL_SIZE];
+SECTION(".data_shared")	float x2_ddr[BIG_NMGL_SIZE];
+SECTION(".data_shared")	float y2_ddr[BIG_NMGL_SIZE];
+SECTION(".data_shared")	int z_int_ddr[BIG_NMGL_SIZE];
+SECTION(".data_shared")	v4nm32s color_ddr[BIG_NMGL_SIZE];
+SECTION(".data_shared")	int masksBits[36][BIG_NMGL_SIZE / 32];
+SECTION(".data_imu6")	SegmentMask masks[36];
+SECTION(".data_shared") int head_ddr;
+SECTION(".data_shared") int tail_ddr;
+
+SECTION(".data_shared")	Triangles trianglesDdr = { x0_ddr, y0_ddr, x1_ddr, y1_ddr, x2_ddr, y2_ddr,
+													z_int_ddr, color_ddr };
+
 SECTION(".data_imu5")	float vertexX[3 * NMGL_SIZE];
 SECTION(".data_imu6")	float vertexY[3 * NMGL_SIZE];
 SECTION(".data_imu4")	float vertexZ[3 * NMGL_SIZE];
@@ -28,9 +45,6 @@ SECTION(".data_imu6")	v4nm32f colorOrNormal[3 * NMGL_SIZE];
 SECTION(".data_imu6")	ArrayManager<float> vertexAM;
 SECTION(".data_imu6")	ArrayManager<float> normalAM;
 SECTION(".data_imu6")	ArrayManager<v4nm32f> colorAM;
-SECTION(".data_imu6")   TrianglesDdr trianglesDdr;
-SECTION(".data_imu6")	SegmentMask masks[36];
-SECTION(".data_imu6")	int masksBits[36][NMGL_SIZE / 32];
 
 template < typename T >
 inline void copyVec(const void* src, void* dst, size_t size) {
@@ -53,6 +67,7 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 
 	for (int i = 0; i < 36; i++) {
 		masks[i].bits = masksBits[i];
+		masks[i].hasNotZeroBits = 0;
 	}
 
 	int maxInnerCount;
@@ -82,9 +97,11 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 	}
 
 	int allRasterizeCount = 0;
-
 	reverseMatrix3x3in4x4(cntxt.modelviewMatrixStack.top(), &cntxt.normalMatrix);
 
+	head_ddr = 0;
+	tail_ddr = 0;
+	halLed(1);
 	while (!vertexAM.isEmpty()) {
 		//vertex
 		int localSize = vertexAM.pop(cntxt.buffer0) / cntxt.vertexArray.size;
@@ -171,45 +188,69 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 		nmppsConvert_32f32s_rounding(vertexY, (int*)cntxt.buffer0, 0, localSize);
 		nmppsConvert_32s32f((int*)cntxt.buffer0, vertexY, localSize);
 
-		float* minX = cntxt.buffer0;
-		float* maxX = cntxt.buffer1;
-		float* minY = cntxt.buffer2;
-		float* maxY = cntxt.buffer3;
-		float* minXY = cntxt.buffer2 + 6 * NMGL_SIZE;
-		float* maxXY = cntxt.buffer3 + 6 * NMGL_SIZE;
-		int localNPrim;
+
 		//---------------rasterize------------------------------------
 		switch (mode) {
 		case NMGL_TRIANGLES:
-			nmblas_dcopy(localSize / 3, (double*)colorOrNormal, 6, (double*)cntxt.buffer0, 2);
-			nmblas_dcopy(localSize / 3, (double*)colorOrNormal + 1, 6, (double*)cntxt.buffer0 + 1, 2);
-			nmppsConvert_32f32s_rounding(cntxt.buffer0, (int*)lightsValues, 0, 4 * localSize / 3);
-
-			cnv32f_v3v4(vertexX, cntxt.buffer3, 0, localSize);
-			split_v4nm32f((v4nm32f*)cntxt.buffer3, 1, x0, x1, x2, cntxt.buffer3 + 4 * localSize / 3, localSize / 3);
-
-			cnv32f_v3v4(vertexY, cntxt.buffer3, 0, localSize);
-			split_v4nm32f((v4nm32f*)cntxt.buffer3, 1, y0, y1, y2, cntxt.buffer3 + 4 * localSize / 3, localSize / 3);
-
-			cnv32f_v3v4(vertexZ, cntxt.buffer3, 0, localSize);
-			split_v4nm32f((v4nm32f*)cntxt.buffer3, 1, cntxt.buffer0, cntxt.buffer1, cntxt.buffer2, cntxt.buffer3 + 4 * localSize / 3, localSize / 3);
-			meanToInt3(cntxt.buffer0, cntxt.buffer1, cntxt.buffer2, z_int, localSize / 3);
-
-			localNPrim = localSize / 3;
-
+			halLed(2);
+			int localNPrim = pushToTriangles_t(vertexX, vertexY, vertexZ, colorOrNormal, trianglesStat, localSize);
+			halLed(4);
 			if (cntxt.isCullFace) {
 				localNPrim = cullFaceSortTriangles(&trianglesStat, localNPrim);
 			}
 
+			halLed(8);
+			nmblas_scopy(localNPrim, trianglesStat.x0, 1, (x0_ddr + head_ddr), 1);
+			nmblas_scopy(localNPrim, trianglesStat.y0, 1, (y0_ddr + head_ddr), 1);
+			nmblas_scopy(localNPrim, trianglesStat.x1, 1, (x1_ddr + head_ddr), 1);
+			nmblas_scopy(localNPrim, trianglesStat.y1, 1, (y1_ddr + head_ddr), 1);
+			nmblas_scopy(localNPrim, trianglesStat.x2, 1, (x2_ddr + head_ddr), 1);
+			nmblas_scopy(localNPrim, trianglesStat.y2, 1, (y2_ddr + head_ddr), 1);
+			nmblas_scopy(localNPrim, (float*)trianglesStat.z, 1, (float*)(z_int_ddr + head_ddr), 1);
+			nmblas_scopy(4 * localNPrim, (float*)trianglesStat.colors, 1, (float*)(color_ddr + head_ddr), 1);
+			head_ddr += localNPrim;
 			allRasterizeCount += localNPrim;
-			findMinMax3(x0, x1, x2, minX, maxX, localNPrim);
-			findMinMax3(y0, y1, y2, minY, maxY, localNPrim);
-			nmppsMerge_32f(minX, minY, minXY, localNPrim);
-			nmppsMerge_32f(maxX, maxY, maxXY, localNPrim);
+
+			halLed(16);
+			/*float* minXY = cntxt.buffer2 + 6 * NMGL_SIZE;
+			float* maxXY = cntxt.buffer3 + 6 * NMGL_SIZE;
+			findMinMax3(trianglesStat.x0, trianglesStat.x1, trianglesStat.x2, cntxt.buffer0, cntxt.buffer1, localNPrim);
+			findMinMax3(trianglesStat.y0, trianglesStat.y1, trianglesStat.y2, cntxt.buffer2, cntxt.buffer3, localNPrim);
+			nmppsMerge_32f(cntxt.buffer0, cntxt.buffer2, minXY, localNPrim);
+			nmppsMerge_32f(cntxt.buffer1, cntxt.buffer3, maxXY, localNPrim);
 			setSegmentMask((v2nm32f*)minXY, (v2nm32f*)maxXY, masks, localNPrim);
-			rasterizeT(&trianglesStat, masks, localNPrim);
+			rasterizeT(&trianglesStat, masks, localNPrim);*/
 			break;
 		}
 	}
+	while(tail_ddr < head_ddr){
+		int localSize = MIN(NMGL_SIZE, allRasterizeCount);
+		nmblas_scopy(localSize, x0_ddr + tail_ddr, 1, trianglesStat.x0, 1);
+		nmblas_scopy(localSize, y0_ddr + tail_ddr, 1, trianglesStat.y0, 1);
+		nmblas_scopy(localSize, x1_ddr + tail_ddr, 1, trianglesStat.x1, 1);
+		nmblas_scopy(localSize, y1_ddr + tail_ddr, 1, trianglesStat.y1, 1);
+		nmblas_scopy(localSize, x2_ddr + tail_ddr, 1, trianglesStat.x2, 1);
+		nmblas_scopy(localSize, y2_ddr + tail_ddr, 1, trianglesStat.y2, 1);
+		nmblas_scopy(localSize, (float*)(z_int_ddr + tail_ddr), 1, (float*)trianglesStat.z, 1);
+		nmblas_scopy(4 * localSize, (float*)(color_ddr + tail_ddr), 1, (float*)(trianglesStat.colors), 1);
 
+		float* minXY = cntxt.buffer2 + 6 * NMGL_SIZE;
+		float* maxXY = cntxt.buffer3 + 6 * NMGL_SIZE;
+		findMinMax3(trianglesStat.x0, trianglesStat.x1, trianglesStat.x2, cntxt.buffer0, cntxt.buffer1, localSize);
+		findMinMax3(trianglesStat.y0, trianglesStat.y1, trianglesStat.y2, cntxt.buffer2, cntxt.buffer3, localSize);
+		nmppsMerge_32f(cntxt.buffer0, cntxt.buffer2, minXY, localSize);
+		nmppsMerge_32f(cntxt.buffer1, cntxt.buffer3, maxXY, localSize);
+		setSegmentMask((v2nm32f*)minXY, (v2nm32f*)maxXY, masks, localSize);
+		for (int i = 0; i < 36; i++) {
+			masks[i].bits += NMGL_SIZE / 32;
+		}
+
+		tail_ddr += NMGL_SIZE;
+	}
+	halLed(127);
+	for (int i = 0; i < 36; i++) {
+		masks[i].bits = masksBits[i];
+	}
+	rasterizeT(&trianglesDdr, masks, allRasterizeCount);
+	halLed(255);
 }

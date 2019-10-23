@@ -21,20 +21,7 @@ struct Triangles{
 	float* x2;
 	float* y2;
 	int* z;
-	v4nm32s* colors;
-};
-
-struct TrianglesDdr {
-	float* x0;
-	float* y0;
-	float* x1;
-	float* y1;
-	float* x2;
-	float* y2;
-	int* z;
-	v4nm32s* colors;
-	int offset;
-	void* mallocAddr;
+	v4nm32s* colors;	
 };
 
 struct MatrixStack {
@@ -502,10 +489,10 @@ extern "C"{
 	 *  \endxmlonly
 	 */
 	 //! \{
-	void cnv32f_v2v4(v2nm32f* srcVec, int stride, float value3, float value4, v4nm32f* dstVec, int countVec);
+	void cnv32f_v2v4(const v2nm32f* srcVec, int stride, float value3, float value4, v4nm32f* dstVec, int countVec);
 	 //! \}
 	 
-	void cnv32f_v3v4(nm32f* src_v3nm32f, nm32f* dst_v4nm32f, float value4, int size);
+	void cnv32f_v3v4(const nm32f* src_v3nm32f, nm32f* dst_v4nm32f, float value4, int size);
 
 	/**
 	 *  \defgroup set_v4nm32f set_v4nm32f
@@ -599,6 +586,7 @@ void getDrawInfo(Triangles* triangles, DrawInfo* drawInfo, int count);
 void addInstrNMC1(HalRingBuffer* commandsRB, int instr, int param0 = 0, int param1 = 0, int param2 = 0, int param3 = 0, int param4 = 0, int param5 = 0);
 
 void setSegmentMask(v2nm32f* minXY, v2nm32f* maxXY, SegmentMask* masks, int primCount);
+int pushToTriangles_t(const float *vertexX, const float *vertexY, const float *vertexZ, const v4nm32f* color, Triangles& triangles, int countVertex);
 void rasterizeT(Triangles* triangles, SegmentMask* masks, int count);
 void rasterizeL(Lines* lines, int count);
 

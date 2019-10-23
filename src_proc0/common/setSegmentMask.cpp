@@ -3,11 +3,10 @@
 #include "nmgl_data0.h"
 #include "stdio.h"
 
-SECTION(".text_nmgl")
+SECTION(".text_demo3d")
 void setSegmentMask(v2nm32f* minXY, v2nm32f* maxXY, SegmentMask* masks, int primCount) {
 	for (int segY = 0, iSeg = 0; segY < cntxt.windowInfo.nRows; segY++) {
 		for (int segX = 0; segX < cntxt.windowInfo.nColumns; segX++, iSeg++) {
-			masks[iSeg].hasNotZeroBits = 0;
 			v2nm32f* lowerLimit = (v2nm32f*)&cntxt.tmp;
 			v2nm32f* upperLimit = (v2nm32f*)&cntxt.tmp.vec[2];
 			lowerLimit->v0 = cntxt.windowInfo.x0_f[segX];
