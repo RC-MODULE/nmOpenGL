@@ -1,7 +1,10 @@
 #include "ringbuffer.h"
 #include "nmsynchro.h"
+#include "demo3d_common.h"
+//#include "stdio.h"
+//#include "nmgl_data0.h"
 
-
+SECTION(".text_demo3d")
 void addInstrNMC1(HalRingBuffer* commandsRB, int instr, 
 	int param0 = 0, 
 	int param1 = 0, 
@@ -9,6 +12,8 @@ void addInstrNMC1(HalRingBuffer* commandsRB, int instr,
 	int param3 = 0, 
 	int param4 = 0,
 	int param5 = 0) {
+
+	//printf("head-tail=%d\n", cntxt.synchro->commandsRB.head - cntxt.synchro->commandsRB.tail);
 	volatile int a = 0;
 	a++;
 	while (halRingBufferIsFull(commandsRB)) {

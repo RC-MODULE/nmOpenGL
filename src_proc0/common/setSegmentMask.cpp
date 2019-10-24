@@ -3,6 +3,7 @@
 #include "nmgl_data0.h"
 #include "stdio.h"
 
+
 SECTION(".text_demo3d")
 void setSegmentMask(v2nm32f* minXY, v2nm32f* maxXY, SegmentMask* masks, int primCount) {
 	for (int segY = 0, iSeg = 0; segY < cntxt.windowInfo.nRows; segY++) {
@@ -22,6 +23,14 @@ void setSegmentMask(v2nm32f* minXY, v2nm32f* maxXY, SegmentMask* masks, int prim
 			nmppsCmpGtC_v2nm32f(maxXY, lowerLimit, (nm1*)maskXGt, (nm1*)maskYGt, 1, primCount);
 			int i = 0;
 			int tmpCount = primCount;
+			/*while (halRingBufferIsEmpty(&cntxt.synchro->instantCommandsRB) != 0);
+			addInstrNMC1(&cntxt.synchro->instantCommandsRB, NMC1_AND4,
+				(int)maskXLt + 0x40000,
+				(int)maskYLt + 0x40000,
+				(int)maskXGt + 0x40000,
+				(int)maskYGt + 0x40000,
+				(int)masks[iSeg].bits,
+				primCount);*/
 			while (tmpCount > 0) {
 				masks[iSeg].bits[i] = (maskXLt[i] & maskYLt[i]) & (maskXGt[i] & maskYGt[i]);
 				masks[iSeg].hasNotZeroBits |= masks[iSeg].bits[i];

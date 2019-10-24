@@ -570,6 +570,7 @@ extern "C"{
 	
 	void findMinMax2(float* src1, float* src2, float* dstMin, float* dstMax, int nSize);
 
+	void copyArraysByIndices(void** srcPointers, int* indices, void** dstPointers, int nArrays, int size);
 	int copyArraysByMask(void** srcPointers, nm1* mask, void** dstPointers, int nArrays, int size);
 	int maskSelectionLight_RGBA_BGRA(v4nm32s* srcLight, nm1* mask, v4nm32s* dstLight, int size);
 
@@ -578,6 +579,7 @@ extern "C"{
 	void remap_32u(nm32u* pSrcVec, nm32u* pDstVec, nm32s* pRemapTable, int nSize);
 	
 	void ternaryLt0_AddC_AddC_32f(nm32f* srcFlags, nm32f* srcVec, float valueLeft, float valueRight, float* dstVec, int size);
+	int readMask(nm1* mask, int* dstNumbers, int size);
 }
 void reverseMatrix3x3in4x4(mat4nm32f* src, mat4nm32f* dst);
 
