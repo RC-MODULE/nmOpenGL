@@ -64,7 +64,7 @@ void fillPolygonsT(Polygons* poly, Triangles* triangles, int count, int segX, in
 	nmppsSub_32f(triangles->x2, triangles->x0, temp0, count);
 	nmppsSub_32f(triangles->x1, triangles->x0, temp1, count);
 	nmppsMul_Mul_Sub_32f(temp0, dyCB_float, dyCA_float, temp1, (float*)crossProducts, count);
-
+	
 	float* minX = cntxt.buffer0 + 4 * NMGL_SIZE;
 	float* maxX = cntxt.buffer1 + 4 * NMGL_SIZE; 
 	findMinMax3(triangles->x0, triangles->x1, triangles->x2, minX, maxX, count);

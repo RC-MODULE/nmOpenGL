@@ -7,21 +7,32 @@
 #include "nmprofiler.h"
 
 SECTION(".data_imu7")   Triangles localTr;
-SECTION(".data_imu7")   Triangles trianglesClone;
+SECTION(".data_imu7")   int numbers[NMGL_SIZE];
+SECTION(".data_imu7")   int maskBitsTemp[BIG_NMGL_SIZE / 32];
 
 
-SECTION(".text_demo3d") void waitPolygons() {
+SECTION(".text_demo3d") Polygons* getPolygonsHead() {
 	volatile int a = 0;
+	//printf("Polygons: head-tail=%d\n", nmglPolygonsRB->head - nmglPolygonsRB->tail);
 	while (halRingBufferIsFull(nmglPolygonsRB)) {
 		a++;
 	}
+	return (Polygons*)halRingBufferHead(nmglPolygonsRB);
 }
 
 SECTION(".text_demo3d")
 void rasterizeT(const Triangles* triangles, const SegmentMask* masks, int count){
+
+	localTr.x2 = cntxt.buffer0;
+	localTr.y2 = cntxt.buffer0 + NMGL_SIZE;
+	localTr.x1 = cntxt.buffer1;
+	localTr.y1 = cntxt.buffer1 + NMGL_SIZE;
+	localTr.x0 = cntxt.buffer2;
+	localTr.y0 = cntxt.buffer2 + NMGL_SIZE;
+
 	for (int segY = 0, iSeg = 0; segY < cntxt.windowInfo.nRows; segY++) {
 		for (int segX = 0; segX < cntxt.windowInfo.nColumns; segX++, iSeg++) {
-			if (masks[iSeg].hasNotZeroBits) {
+			if (masks[iSeg].hasNotZeroBits != 0) {
 				addInstrNMC1(&cntxt.synchro->commandsRB,
 					NMC1_COPY_SEG_FROM_IMAGE,
 					cntxt.windowInfo.x0[segX],
@@ -29,51 +40,25 @@ void rasterizeT(const Triangles* triangles, const SegmentMask* masks, int count)
 					cntxt.windowInfo.x1[segX] - cntxt.windowInfo.x0[segX],
 					cntxt.windowInfo.y1[segY] - cntxt.windowInfo.y0[segY]);
 
-				trianglesClone.colors = triangles->colors;
-				trianglesClone.z = triangles->z;
-				trianglesClone.x0 = triangles->x0;
-				trianglesClone.y0 = triangles->y0;
-				trianglesClone.x1 = triangles->x1;
-				trianglesClone.y1 = triangles->y1;
-				trianglesClone.x2 = triangles->x2;
-				trianglesClone.y2 = triangles->y2;
-				int* maskBits = masks[iSeg].bits;
-				int countClone = count;
+				int sizeMask32 = MIN(BIG_NMGL_SIZE / 32, count / 32 + 2);
+				nmblas_scopy(sizeMask32, (float*)masks[iSeg].bits, 1, (float*)maskBitsTemp, 1);
 
-				while (countClone > 0) {
-					int localCount = MIN(countClone, NMGL_SIZE);
-					waitPolygons();
-					Polygons* poly = (Polygons*)halRingBufferHead(nmglPolygonsRB);
-					localTr.x2 = cntxt.buffer0;
-					localTr.y2 = cntxt.buffer0 + NMGL_SIZE;
-					localTr.x1 = cntxt.buffer1;
-					localTr.y1 = cntxt.buffer1 + NMGL_SIZE;
-					localTr.x0 = cntxt.buffer2;
-					localTr.y0 = cntxt.buffer2 + NMGL_SIZE;
+				int* treatedBitInMask = (int*)&cntxt.tmp.vec[0];
+				treatedBitInMask[0] = 0;
+				while (treatedBitInMask[0] < count) {
+					Polygons* poly = getPolygonsHead();
+
 					localTr.z = poly->z;
 					localTr.colors = (v4nm32s*)poly->color;
-					int* numbers = (int*)cntxt.buffer3;
 
-					int resultSize = readMask(maskBits, numbers, localCount);
-					if(resultSize != 0){
-						copyArraysByIndices((void**)&trianglesClone, numbers, (void**)&localTr, 7, resultSize);
-						maskSelectionLight_RGBA_BGRA(trianglesClone.colors, (nm1*)maskBits, (v4nm32s*)localTr.colors, localCount);
-						
-						fillPolygonsT(poly, &localTr, resultSize, segX, segY);
-						nmglPolygonsRB->head++;
-						addInstrNMC1(&cntxt.synchro->commandsRB, NMC1_DRAW_TRIANGLES);
-					}
+					
+					int resultSize = readMask(maskBitsTemp, numbers, treatedBitInMask, count, NMGL_SIZE);
+					copyArraysByIndices((void**)triangles, numbers, (void**)&localTr, 7, resultSize);
+					copyColorByIndices_BGRA_RGBA(triangles->colors, numbers, (v4nm32s*)localTr.colors, resultSize);
+					fillPolygonsT(poly, &localTr, resultSize, segX, segY);
 
-					countClone -= NMGL_SIZE;
-					trianglesClone.colors += NMGL_SIZE;
-					trianglesClone.z += NMGL_SIZE;
-					trianglesClone.x0 += NMGL_SIZE;
-					trianglesClone.y0 += NMGL_SIZE;
-					trianglesClone.x1 += NMGL_SIZE;
-					trianglesClone.y1 += NMGL_SIZE;
-					trianglesClone.x2 += NMGL_SIZE;
-					trianglesClone.y2 += NMGL_SIZE;
-					maskBits += NMGL_SIZE / 32;
+					nmglPolygonsRB->head++;
+					addInstrNMC1(&cntxt.synchro->commandsRB, NMC1_DRAW_TRIANGLES);
 				}
 
 				addInstrNMC1(&cntxt.synchro->commandsRB,
@@ -86,4 +71,5 @@ void rasterizeT(const Triangles* triangles, const SegmentMask* masks, int count)
 			}
 		}
 	}
+
 }

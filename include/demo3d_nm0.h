@@ -4,6 +4,8 @@
 #include "demo3d_common.h"
 #include "arraymanager.h"
 
+#define BIG_NMGL_SIZE (128 * NMGL_SIZE)
+
 struct Lines{
 	float* x0;
 	float* y0;
@@ -571,15 +573,14 @@ extern "C"{
 	void findMinMax2(float* src1, float* src2, float* dstMin, float* dstMax, int nSize);
 
 	void copyArraysByIndices(void** srcPointers, int* indices, void** dstPointers, int nArrays, int size);
-	int copyArraysByMask(void** srcPointers, nm1* mask, void** dstPointers, int nArrays, int size);
-	int maskSelectionLight_RGBA_BGRA(v4nm32s* srcLight, nm1* mask, v4nm32s* dstLight, int size);
+	void copyColorByIndices_BGRA_RGBA(v4nm32s* srcColor, int* indices, v4nm32s* dstColor, int size);
 
 	void absIfNegElse0_32f(float* src, float* dst, int size);
 
 	void remap_32u(nm32u* pSrcVec, nm32u* pDstVec, nm32s* pRemapTable, int nSize);
 	
 	void ternaryLt0_AddC_AddC_32f(nm32f* srcFlags, nm32f* srcVec, float valueLeft, float valueRight, float* dstVec, int size);
-	int readMask(nm1* mask, int* dstNumbers, int size);
+	int readMask(nm1* mask, int* dstIndices, int* treated, int size, int maxSize);
 }
 void reverseMatrix3x3in4x4(mat4nm32f* src, mat4nm32f* dst);
 
@@ -587,7 +588,7 @@ void getDrawInfo(Triangles* triangles, DrawInfo* drawInfo, int count);
 
 void addInstrNMC1(HalRingBuffer* commandsRB, int instr, int param0 = 0, int param1 = 0, int param2 = 0, int param3 = 0, int param4 = 0, int param5 = 0);
 
-void setSegmentMask(v2nm32f* minXY, v2nm32f* maxXY, SegmentMask* masks, int primCount);
+void setSegmentMask(const v2nm32f* minXY, const v2nm32f* maxXY, SegmentMask* masks, int primCount);
 int pushToTriangles_t(const float *vertexX, const float *vertexY, const float *vertexZ, const v4nm32f* color, Triangles& triangles, int countVertex);
 void rasterizeT(const Triangles* triangles, const SegmentMask* masks, int count);
 void rasterizeL(Lines* lines, int count);

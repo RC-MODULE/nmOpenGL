@@ -205,9 +205,7 @@ int main()
 	halHostSync(0x12300123);
 #endif
 	NmppsFFTSpec_32fcr* fft_coeffs;					// FFT variable
-	halLed(1);
 	int fftIsInitialized = FFTFwdInitAlloc_32fcr(&fft_coeffs, STR_SIZE);
-	halLed(255);
 #ifndef __OPEN_GL__
 	if (fftIsInitialized == 0) {
 		halHostSync(0x600D600D);
@@ -228,6 +226,7 @@ int main()
 	
 	nmglMatrixMode(NMGL_PROJECTION);
 	nmglOrthof(-128, 128, -128, 128, -200, 200);
+	//nmglOrthof(-255, 256, -255, 256, -200, 200);
 	nmglViewport(0, 0, 768, 768);
 
 	nmglMatrixMode(NMGL_MODELVIEW);

@@ -114,10 +114,10 @@ $(TMP_DIR)/%.o: %.asm
 	$(AS) $(AS_FLAGS) $(<) -o$(@)
 	
 $(TMP_DIR)/%.o: %.cpp 
-	$(CC) $(CC_FLAGS) -c $(<) -o$(@) $(INC_DIRS) -O2
+	$(CC) $(CC_FLAGS) -c $(<) -o$(@) $(INC_DIRS) -O2 -fno-builtin-printf
 
 $(TMP_DIR)/%.o: %.c
-	$(CC) $(CC_FLAGS) -c $(<) -o$(@) $(INC_DIRS) -O2
+	$(CC) $(CC_FLAGS) -c $(<) -o$(@) $(INC_DIRS) -O2 -fno-builtin-printf
 	
 #========================== Visual Studio  ===================
 export ALL_CPP ALL_ASM ALL_C ALL_H
