@@ -39,8 +39,6 @@ int main()
 	if (!VS_Init())
 		return 0;
 	VS_CreateImage("Source Image", 1, WIDTH_IMAGE, HEIGHT_IMAGE, VS_RGB32, 0);	// Create window for 8-bit source grayscale image
-	VS_CreateImage("Pattern", 2, WIDTH_PTRN, HEIGHT_PTRN, VS_RGB8, 0);
-	VS_CreateImage("Table", 3, 2 * WIDTH_PTRN, HEIGHT_PTRN, VS_RGB32, 0);
 	VS_OpRunForward();
 
 	float* vertices = new float[4000 * 12];
@@ -88,18 +86,11 @@ int main()
 
 	while(VS_Run())	{
 		nmglvsHostReadImage(currentImage);
-
-		VS_SetData(2, nmppsAddr_8s((nm8s*)temp_8s, counter++ * WIDTH_PTRN * HEIGHT_PTRN));
-		if (counter == NPATTERNS) {
-			halSleep(5000);
-			counter = 0;
-		}
-		VS_SetData(3, dydx);
 		VS_SetData(1, currentImage);
 		int counter[2] = { 0 ,0};
 		ok = halReadMemBlock(&counter, synchro_nm, 2, 1);
 		if (counter[0]>=256 && flag) {
-			halProfilerPrint2xml(".main0.map", 0, "../perf0.xml");
+			//halProfilerPrint2xml(".main0.map", 0, "../perf0.xml");
 			//halProfilerPrint2xml(".main1.map", 1, "../perf1.xml");
 			//halProfilerPrint2tbl(".main0.map", 0);
 			flag = 0;

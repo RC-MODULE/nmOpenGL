@@ -27,8 +27,15 @@ void setSegmentMask(const v2nm32f* minXY, const v2nm32f* maxXY, SegmentMask* mas
 			for (int i = 0, cnt = 0; cnt < primCount; i++, cnt += 32) {
 				int result = (maskXLt[i] & maskYLt[i]) & (maskXGt[i] & maskYGt[i]);
 				result = (maskXLt[i] & maskYLt[i]) & (maskXGt[i] & maskYGt[i]);
-				haveFillBit |= result;
 				maskTmp[i] = result;
+			}
+			if (haveFillBit == 0) {
+				for (int i = 0, cnt = 0; cnt < primCount; i++, cnt += 32) {
+					if (maskTmp[i]) {
+						haveFillBit = 1;
+						break;
+					}
+				}
 			}
 			masks[iSeg].hasNotZeroBits = haveFillBit;
 			int size32 = MIN(NMGL_SIZE / 32, primCount / 32 + 2);

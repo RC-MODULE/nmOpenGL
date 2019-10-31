@@ -26,6 +26,18 @@ SECTION(".data_imu3")	float nmglBuffer2[12 * NMGL_SIZE];
 SECTION(".data_imu4")	float nmglBuffer3[12 * NMGL_SIZE];
 
 
+SECTION(".data_imu6")	float x0[NMGL_SIZE];
+SECTION(".data_imu6")	float y0[NMGL_SIZE];
+SECTION(".data_imu5")	float x1[NMGL_SIZE];
+SECTION(".data_imu5")	float y1[NMGL_SIZE];
+SECTION(".data_imu4")	float x2[NMGL_SIZE];
+SECTION(".data_imu4")	float y2[NMGL_SIZE];
+SECTION(".data_imu6")	int z_int[NMGL_SIZE];
+SECTION(".data_imu6")	v4nm32s lightsValues[NMGL_SIZE];
+
+SECTION(".data_shared")	float dataDdr[11 * BIG_NMGL_SIZE];
+
+
 void synchroInit(Synchro* nmglSynchro, int widthImage, int heightImage) {
 	nmglSynchro->exit_nm = 0;
 	nmglSynchro->counter_nmc0 = 0;
@@ -45,6 +57,23 @@ int nmglvsNm0Init()
 	if (fromHost != 0xC0DE0086) {					// get  handshake from host
 		return -1;
 	}
+	cntxt.trianInner.x0 = x0;
+	cntxt.trianInner.y0 = y0;
+	cntxt.trianInner.x1 = x1;
+	cntxt.trianInner.y1 = y1;
+	cntxt.trianInner.x2 = x2;
+	cntxt.trianInner.y2 = y2;
+	cntxt.trianInner.z = z_int;
+	cntxt.trianInner.colors = lightsValues;
+
+	cntxt.trianDdr.x0 = dataDdr;
+	cntxt.trianDdr.y0 = dataDdr + BIG_NMGL_SIZE;
+	cntxt.trianDdr.x1 = dataDdr + 2 * BIG_NMGL_SIZE;
+	cntxt.trianDdr.y1 = dataDdr + 3 * BIG_NMGL_SIZE;
+	cntxt.trianDdr.x2 = dataDdr + 4 * BIG_NMGL_SIZE;
+	cntxt.trianDdr.y2 = dataDdr + 5 * BIG_NMGL_SIZE;
+	cntxt.trianDdr.z = (int*)(dataDdr + 6 * BIG_NMGL_SIZE);
+	cntxt.trianDdr.colors = (v4nm32s*)(dataDdr + 7 * BIG_NMGL_SIZE);
 
 	halDmaInitC();
 	halInstrCacheEnable();

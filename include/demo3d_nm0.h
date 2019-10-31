@@ -53,6 +53,9 @@ struct NMGL_Context_NM0 {
 	float* buffer2;
 	float* buffer3;
 
+	Triangles trianInner;
+	Triangles trianDdr;
+
 	mat4nm32f modelviewMatrix[16];
 	mat4nm32f projectionMatrix[2];
 	mat4nm32f normalMatrix;

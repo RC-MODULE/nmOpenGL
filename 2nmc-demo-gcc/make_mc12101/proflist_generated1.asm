@@ -5,8 +5,8 @@ import from "nmprofiler.mlb";
 begin ".text_nmprofiler"
 PROFILE_BEGIN(16);
 
-FUNCTION(__ZN11DepthBuffer6updateEv,"__ZN11DepthBuffer6updateEv");// 0x00000000270001e6 [.text]
-FUNCTION(_print_32x,      "_print_32x      ");// 0x00000000270002f0 [.text]
+//FUNCTION(__ZN11DepthBuffer6updateEv,"__ZN11DepthBuffer6updateEv");// 0x00000000270001e6 [.text]
+/*FUNCTION(_print_32x,      "_print_32x      ");// 0x00000000270002f0 [.text]
 NONCFUNC(ARShift32,       "ARShift32       ");// 0x0000000027000330 [.text]
 NONCFUNC(DAdd,            "DAdd            ");// 0x00000000270003bc [.text]
 NONCFUNC(DFrExp,          "DFrExp          ");// 0x000000002700047c [.text]
@@ -42,7 +42,7 @@ FUNCTION(__fstat,         "__fstat         ");// 0x0000000027000fe2 [.text]
 FUNCTION(__isatty,        "__isatty        ");// 0x0000000027001082 [.text]
 FUNCTION(__link,          "__link          ");// 0x000000002700108c [.text]
 FUNCTION(__unlink,        "__unlink        ");// 0x0000000027001096 [.text]
-FUNCTION(_printf,         "_printf         ");// 0x0000000027001392 [.text_printf]
+FUNCTION(_printf,         "_printf         ");// 0x0000000027001392 [.text_printf]*/
 FUNCTION(__Z12waitCommandsP16NMGL_Context_NM1,"__Z12waitCommandsP16NMGL_Context_NM1");// 0x0000000000000200 [.text_demo3d]
 FUNCTION(__Z9drawLinesP16NMGL_Context_NM1,"__Z9drawLinesP16NMGL_Context_NM1");// 0x0000000000000254 [.text_demo3d]
 FUNCTION(__Z13drawTrianglesP16NMGL_Context_NM1,"__Z13drawTrianglesP16NMGL_Context_NM1");// 0x00000000000004ae [.text_demo3d]

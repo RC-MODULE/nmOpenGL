@@ -6,14 +6,12 @@
 #include "stdio.h"
 #include "nmprofiler.h"
 
-SECTION(".data_imu7")   Triangles localTr;
 SECTION(".data_imu7")   int numbers[NMGL_SIZE];
 SECTION(".data_imu7")   int maskBitsTemp[BIG_NMGL_SIZE / 32];
 
 
 SECTION(".text_demo3d") Polygons* getPolygonsHead() {
 	volatile int a = 0;
-	//printf("Polygons: head-tail=%d\n", nmglPolygonsRB->head - nmglPolygonsRB->tail);
 	while (halRingBufferIsFull(nmglPolygonsRB)) {
 		a++;
 	}
@@ -22,13 +20,6 @@ SECTION(".text_demo3d") Polygons* getPolygonsHead() {
 
 SECTION(".text_demo3d")
 void rasterizeT(const Triangles* triangles, const SegmentMask* masks, int count){
-
-	localTr.x2 = cntxt.buffer0;
-	localTr.y2 = cntxt.buffer0 + NMGL_SIZE;
-	localTr.x1 = cntxt.buffer1;
-	localTr.y1 = cntxt.buffer1 + NMGL_SIZE;
-	localTr.x0 = cntxt.buffer2;
-	localTr.y0 = cntxt.buffer2 + NMGL_SIZE;
 
 	for (int segY = 0, iSeg = 0; segY < cntxt.windowInfo.nRows; segY++) {
 		for (int segX = 0; segX < cntxt.windowInfo.nColumns; segX++, iSeg++) {
@@ -47,15 +38,13 @@ void rasterizeT(const Triangles* triangles, const SegmentMask* masks, int count)
 				treatedBitInMask[0] = 0;
 				while (treatedBitInMask[0] < count) {
 					Polygons* poly = getPolygonsHead();
-
-					localTr.z = poly->z;
-					localTr.colors = (v4nm32s*)poly->color;
-
 					
 					int resultSize = readMask(maskBitsTemp, numbers, treatedBitInMask, count, NMGL_SIZE);
-					copyArraysByIndices((void**)triangles, numbers, (void**)&localTr, 7, resultSize);
-					copyColorByIndices_BGRA_RGBA(triangles->colors, numbers, (v4nm32s*)localTr.colors, resultSize);
-					fillPolygonsT(poly, &localTr, resultSize, segX, segY);
+					copyArraysByIndices((void**)triangles, numbers, (void**)&cntxt.trianInner, 7, resultSize);
+					copyColorByIndices_BGRA_RGBA(triangles->colors, numbers, (v4nm32s*)cntxt.trianInner.colors, resultSize);
+					fillPolygonsT(poly, &cntxt.trianInner, resultSize, segX, segY);
+					nmblas_scopy(resultSize, (float*)cntxt.trianInner.z, 1, (float*)poly->z, 1);
+					nmblas_scopy(4 * resultSize, (float*)cntxt.trianInner.colors, 1, (float*)poly->color, 1);
 
 					nmglPolygonsRB->head++;
 					addInstrNMC1(&cntxt.synchro->commandsRB, NMC1_DRAW_TRIANGLES);

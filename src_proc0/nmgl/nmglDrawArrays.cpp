@@ -7,30 +7,9 @@
 #include "arraymanager.h"
 #include "stdio.h"
 
-SECTION(".data_imu6")	float x0[NMGL_SIZE];
-SECTION(".data_imu6")	float y0[NMGL_SIZE];
-SECTION(".data_imu5")	float x1[NMGL_SIZE];
-SECTION(".data_imu5")	float y1[NMGL_SIZE];
-SECTION(".data_imu4")	float x2[NMGL_SIZE];
-SECTION(".data_imu4")	float y2[NMGL_SIZE];
-SECTION(".data_imu6")	int z_int[NMGL_SIZE];
-SECTION(".data_imu6")	v4nm32s lightsValues[NMGL_SIZE];
-SECTION(".data_imu6")	Triangles trianglesStat = { x0, y0, x1, y1, x2, y2, z_int, lightsValues };
-
-SECTION(".data_shared")	float x0_ddr[BIG_NMGL_SIZE];
-SECTION(".data_shared")	float y0_ddr[BIG_NMGL_SIZE];
-SECTION(".data_shared")	float x1_ddr[BIG_NMGL_SIZE];
-SECTION(".data_shared")	float y1_ddr[BIG_NMGL_SIZE];
-SECTION(".data_shared")	float x2_ddr[BIG_NMGL_SIZE];
-SECTION(".data_shared")	float y2_ddr[BIG_NMGL_SIZE];
-SECTION(".data_shared")	int z_int_ddr[BIG_NMGL_SIZE];
-SECTION(".data_shared")	v4nm32s color_ddr[BIG_NMGL_SIZE];
 SECTION(".data_shared")	int masksBits[36 * BIG_NMGL_SIZE / 32];
 SECTION(".data_imu6")	SegmentMask masks[36];
 SECTION(".data_shared") int head_ddr;
-
-SECTION(".data_shared")	Triangles trianglesDdr = { x0_ddr, y0_ddr, x1_ddr, y1_ddr, x2_ddr, y2_ddr,
-													z_int_ddr, color_ddr };
 
 SECTION(".data_imu5")	float vertexX[3 * NMGL_SIZE];
 SECTION(".data_imu6")	float vertexY[3 * NMGL_SIZE];
@@ -183,20 +162,20 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 		//---------------rasterize------------------------------------
 		switch (mode) {
 		case NMGL_TRIANGLES:
-			int localNPrim = pushToTriangles_t(vertexX, vertexY, vertexZ, colorOrNormal, trianglesStat, localSize);
+			int localNPrim = pushToTriangles_t(vertexX, vertexY, vertexZ, colorOrNormal, cntxt.trianInner, localSize);
 
 			if (cntxt.isCullFace) {
-				localNPrim = cullFaceSortTriangles(&trianglesStat, localNPrim);
+				localNPrim = cullFaceSortTriangles(&cntxt.trianInner, localNPrim);
 			}
-	
-			nmblas_scopy(localNPrim, trianglesStat.x0, 1, &x0_ddr[head_ddr], 1);
-			nmblas_scopy(localNPrim, trianglesStat.y0, 1, &y0_ddr[head_ddr], 1);
-			nmblas_scopy(localNPrim, trianglesStat.x1, 1, &x1_ddr[head_ddr], 1);
-			nmblas_scopy(localNPrim, trianglesStat.y1, 1, &y1_ddr[head_ddr], 1);
-			nmblas_scopy(localNPrim, trianglesStat.x2, 1, &x2_ddr[head_ddr], 1);
-			nmblas_scopy(localNPrim, trianglesStat.y2, 1, &y2_ddr[head_ddr], 1);
-			nmblas_scopy(localNPrim, (float*)trianglesStat.z, 1, (float*)&z_int_ddr[head_ddr], 1);
-			nmblas_scopy(4 * localNPrim, (float*)trianglesStat.colors, 1, (float*)&color_ddr[head_ddr], 1);
+
+			nmblas_scopy(localNPrim, cntxt.trianInner.x0, 1, &cntxt.trianDdr.x0[head_ddr], 1);
+			nmblas_scopy(localNPrim, cntxt.trianInner.y0, 1, &cntxt.trianDdr.y0[head_ddr], 1);
+			nmblas_scopy(localNPrim, cntxt.trianInner.x1, 1, &cntxt.trianDdr.x1[head_ddr], 1);
+			nmblas_scopy(localNPrim, cntxt.trianInner.y1, 1, &cntxt.trianDdr.y1[head_ddr], 1);
+			nmblas_scopy(localNPrim, cntxt.trianInner.x2, 1, &cntxt.trianDdr.x2[head_ddr], 1);
+			nmblas_scopy(localNPrim, cntxt.trianInner.y2, 1, &cntxt.trianDdr.y2[head_ddr], 1);
+			nmblas_scopy(localNPrim, (float*)cntxt.trianInner.z, 1, (float*)&cntxt.trianDdr.z[head_ddr], 1);
+			nmblas_scopy(4 * localNPrim, (float*)cntxt.trianInner.colors, 1, (float*)&cntxt.trianDdr.colors[head_ddr], 1);
 			head_ddr += localNPrim;
 			break;
 		}
@@ -214,19 +193,17 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 		for (int i = 0; i < 36; i++) {
 			masks[i].bits = &masksBits[(i * BIG_NMGL_SIZE + tail) / 32];
 		}
-		nmblas_scopy(localSize, &x0_ddr[tail], 1, trianglesStat.x0, 1);
-		nmblas_scopy(localSize, &y0_ddr[tail], 1, trianglesStat.y0, 1);
-		nmblas_scopy(localSize, &x1_ddr[tail], 1, trianglesStat.x1, 1);
-		nmblas_scopy(localSize, &y1_ddr[tail], 1, trianglesStat.y1, 1);
-		nmblas_scopy(localSize, &x2_ddr[tail], 1, trianglesStat.x2, 1);
-		nmblas_scopy(localSize, &y2_ddr[tail], 1, trianglesStat.y2, 1);
-
-		while (!halRingBufferIsEmpty(&cntxt.synchro->instantCommandsRB));
+		nmblas_scopy(localSize, &cntxt.trianDdr.x0[tail], 1, cntxt.trianInner.x0, 1);
+		nmblas_scopy(localSize, &cntxt.trianDdr.y0[tail], 1, cntxt.trianInner.y0, 1);
+		nmblas_scopy(localSize, &cntxt.trianDdr.x1[tail], 1, cntxt.trianInner.x1, 1);
+		nmblas_scopy(localSize, &cntxt.trianDdr.y1[tail], 1, cntxt.trianInner.y1, 1);
+		nmblas_scopy(localSize, &cntxt.trianDdr.x2[tail], 1, cntxt.trianInner.x2, 1);
+		nmblas_scopy(localSize, &cntxt.trianDdr.y2[tail], 1, cntxt.trianInner.y2, 1);
 
 		float* minXY = cntxt.buffer2 + 6 * NMGL_SIZE;
 		float* maxXY = cntxt.buffer3 + 6 * NMGL_SIZE;
-		findMinMax3(trianglesStat.x0, trianglesStat.x1, trianglesStat.x2, cntxt.buffer0, cntxt.buffer1, localSize);
-		findMinMax3(trianglesStat.y0, trianglesStat.y1, trianglesStat.y2, cntxt.buffer2, cntxt.buffer3, localSize);
+		findMinMax3(cntxt.trianInner.x0, cntxt.trianInner.x1, cntxt.trianInner.x2, cntxt.buffer0, cntxt.buffer1, localSize);
+		findMinMax3(cntxt.trianInner.y0, cntxt.trianInner.y1, cntxt.trianInner.y2, cntxt.buffer2, cntxt.buffer3, localSize);
 		nmppsMerge_32f(cntxt.buffer0, cntxt.buffer2, minXY, localSize);
 		nmppsMerge_32f(cntxt.buffer1, cntxt.buffer3, maxXY, localSize);
 		setSegmentMask((v2nm32f*)minXY, (v2nm32f*)maxXY, masks, localSize);
@@ -235,5 +212,5 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 		masks[i].bits = &masksBits[i * BIG_NMGL_SIZE / 32];
 	}
 	
-	rasterizeT(&trianglesDdr, masks, head_ddr);
+	rasterizeT(&cntxt.trianDdr, masks, head_ddr);
 }
