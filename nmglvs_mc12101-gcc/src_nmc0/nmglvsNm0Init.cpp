@@ -65,6 +65,8 @@ int nmglvsNm0Init()
 	cntxt.trianInner.y2 = y2;
 	cntxt.trianInner.z = z_int;
 	cntxt.trianInner.colors = lightsValues;
+	cntxt.trianInner.maxSize = NMGL_SIZE;
+	cntxt.trianInner.size = 0;
 
 	cntxt.trianDdr.x0 = dataDdr;
 	cntxt.trianDdr.y0 = dataDdr + BIG_NMGL_SIZE;
@@ -74,6 +76,8 @@ int nmglvsNm0Init()
 	cntxt.trianDdr.y2 = dataDdr + 5 * BIG_NMGL_SIZE;
 	cntxt.trianDdr.z = (int*)(dataDdr + 6 * BIG_NMGL_SIZE);
 	cntxt.trianDdr.colors = (v4nm32s*)(dataDdr + 7 * BIG_NMGL_SIZE);
+	cntxt.trianInner.maxSize = BIG_NMGL_SIZE;
+	cntxt.trianInner.size = 0;
 
 	halDmaInitC();
 	halInstrCacheEnable();

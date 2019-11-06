@@ -34,8 +34,8 @@ int nmglvsHostReadImage(int* dstImage)
 	int ok1 = halReadMemBlock(time, synchro_nm + 4, 2, 0);
 	int ok2 = halReadMemBlock(counter, synchro_nm, 2, 0);
 	int timeFrame = 0;
-	printf("counter0=%d, timeFrame0=%10d\n", counter[0], time[0]);
-	printf("counter1=%d, timeFrame1=%10d\n\n", counter[1], time[1]);
+	//printf("counter0=%d, timeFrame0=%10d\n", counter[0], time[0]);
+	//printf("counter1=%d, timeFrame1=%10d\n\n", counter[1], time[1]);
 	imagesRB.tail++;
 	return 0;
 };

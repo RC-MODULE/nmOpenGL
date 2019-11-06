@@ -9,7 +9,6 @@
 
 SECTION(".data_shared")	int masksBits[36 * BIG_NMGL_SIZE / 32];
 SECTION(".data_imu6")	SegmentMask masks[36];
-SECTION(".data_shared") int head_ddr;
 
 SECTION(".data_imu5")	float vertexX[3 * NMGL_SIZE];
 SECTION(".data_imu6")	float vertexY[3 * NMGL_SIZE];
@@ -68,10 +67,9 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 		mulC_v4nm32f(cntxt.lightSpecular, &cntxt.materialSpecular, cntxt.specularMul, MAX_LIGHTS);
 	}
 
-	int allRasterizeCount = 0;
+	cntxt.trianDdr.size = 0;
 	reverseMatrix3x3in4x4(cntxt.modelviewMatrixStack.top(), &cntxt.normalMatrix);
 
-	head_ddr = 0;
 	while (!vertexAM.isEmpty()) {
 		//vertex
 		int localSize = vertexAM.pop(cntxt.buffer0) / cntxt.vertexArray.size;
@@ -167,16 +165,8 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			if (cntxt.isCullFace) {
 				localNPrim = cullFaceSortTriangles(&cntxt.trianInner, localNPrim);
 			}
-
-			nmblas_scopy(localNPrim, cntxt.trianInner.x0, 1, &cntxt.trianDdr.x0[head_ddr], 1);
-			nmblas_scopy(localNPrim, cntxt.trianInner.y0, 1, &cntxt.trianDdr.y0[head_ddr], 1);
-			nmblas_scopy(localNPrim, cntxt.trianInner.x1, 1, &cntxt.trianDdr.x1[head_ddr], 1);
-			nmblas_scopy(localNPrim, cntxt.trianInner.y1, 1, &cntxt.trianDdr.y1[head_ddr], 1);
-			nmblas_scopy(localNPrim, cntxt.trianInner.x2, 1, &cntxt.trianDdr.x2[head_ddr], 1);
-			nmblas_scopy(localNPrim, cntxt.trianInner.y2, 1, &cntxt.trianDdr.y2[head_ddr], 1);
-			nmblas_scopy(localNPrim, (float*)cntxt.trianInner.z, 1, (float*)&cntxt.trianDdr.z[head_ddr], 1);
-			nmblas_scopy(4 * localNPrim, (float*)cntxt.trianInner.colors, 1, (float*)&cntxt.trianDdr.colors[head_ddr], 1);
-			head_ddr += localNPrim;
+			copyTriangles(cntxt.trianInner, 0, cntxt.trianDdr, cntxt.trianDdr.size, localNPrim);
+			cntxt.trianDdr.size += localNPrim;
 			break;
 		}
 	}
@@ -188,8 +178,8 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 	}
 
 	int step = NMGL_SIZE;
-	for(int tail = 0; tail < head_ddr; tail+= step){
-		int localSize = MIN(step, head_ddr - tail);
+	for(int tail = 0; tail < cntxt.trianDdr.size; tail+= step){
+		int localSize = MIN(step, cntxt.trianDdr.size - tail);
 		for (int i = 0; i < 36; i++) {
 			masks[i].bits = &masksBits[(i * BIG_NMGL_SIZE + tail) / 32];
 		}
@@ -212,5 +202,5 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 		masks[i].bits = &masksBits[i * BIG_NMGL_SIZE / 32];
 	}
 	
-	rasterizeT(&cntxt.trianDdr, masks, head_ddr);
+	rasterizeT(&cntxt.trianDdr, masks, cntxt.trianDdr.size);
 }

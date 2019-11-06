@@ -23,8 +23,11 @@ struct Triangles{
 	float* x2;
 	float* y2;
 	int* z;
-	v4nm32s* colors;	
+	v4nm32s* colors;
+	int size;
+	int maxSize;
 };
+void copyTriangles(const Triangles &src, int offsetSrc, Triangles &dst, int offsetDst, int size);
 
 struct MatrixStack {
 	mat4nm32f* base;
