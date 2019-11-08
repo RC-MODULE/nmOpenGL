@@ -27,15 +27,15 @@ int nmglvsHostReadImage(int* dstImage)
 		halSleep(2);
 	}
 	int* src = (int*)halRingBufferTail(&imagesRB);
-	nmppsCopy_32s(src, dstImage, WIDTH_IMAGE*HEIGHT_IMAGE);
+	nmppsCopy_32s(src, dstImage, imagesRB.size);
 	unsigned int time[2];
 	unsigned synchroRB[2];
-	int ok1 = halReadMemBlock(time, synchro_nm + 6, 2, 0);
-	int ok2 = halReadMemBlock(synchroRB, synchro_nm + 10, 2, 0);
 	int counter[2];
-	halReadMemBlock(counter, synchro_nm, 2, 0);
-	//printf("delayTime0=%u, delayTime1=%u\n", time[0], time[1]);
-
+	int ok1 = halReadMemBlock(time, synchro_nm + 4, 2, 0);
+	int ok2 = halReadMemBlock(counter, synchro_nm, 2, 0);
+	int timeFrame = 0;
+	//printf("counter0=%d, timeFrame0=%10d\n", counter[0], time[0]);
+	//printf("counter1=%d, timeFrame1=%10d\n\n", counter[1], time[1]);
 	imagesRB.tail++;
 	return 0;
 };

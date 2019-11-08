@@ -1,4 +1,21 @@
-#include "nmtype.h"
+#include "nmpp.h"
+
+
+int currentDepthTest;
+
+int* depthTestCore_N_rw;
+int* depthTestCore_Lt_rw;
+int* depthTestCore_Gt_rw;
+int* depthTestCore_A_rw;
+
+int* depthTestCore_N_r;
+int* depthTestCore_Lt_r;
+int* depthTestCore_Gt_r;
+int* depthTestCore_A_r;
+
+int addC4DepthTest;
+
+
 extern "C" {
 	
 	
@@ -22,7 +39,7 @@ extern "C" {
 							}
 							
 							
-	void depthFunc_rw(nm32s** pROI, int imageStride, nm32s* pTriangles, nm32s* pDst,  int* pTriangsHeight, int* pTriangsWidth, int count){
+	void depthTest(nm32s** pROI, int imageStride, nm32s* pTriangles, nm32s* pDst,  int* pTriangsHeight, int* pTriangsWidth, int count){
 		nm32s* rtr = pTriangles;
 		nm32s* dst = pDst;
 		for (int i = 0; i < count; i++) {
@@ -49,7 +66,7 @@ extern "C" {
 								
 								
 							}
-	
+							
 	void depthFunc_r(nm32s** pROI, int imageStride, nm32s* pTriangles, nm32s* pDst,  int* pTriangsHeight, int* pTriangsWidth, int count){
 		nm32s* rtr = pTriangles;
 		nm32s* dst = pDst;

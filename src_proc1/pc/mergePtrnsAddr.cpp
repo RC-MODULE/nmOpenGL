@@ -1,6 +1,6 @@
 #include "nmpp.h"
 extern "C" {
-	void mergePtrnsAddr(nm32s** ppSrcCA, nm32s** ppSrcCB, nm32s** ppSrcBA, int step, nm32s** ppDst, int count){
+	void mergePtrnsAddr3(nm32s** ppSrcCA, nm32s** ppSrcCB, nm32s** ppSrcBA, int step, nm32s** ppDst, int count){
 		int point=0;
 		while(count > 0){
 			int localSize = MIN(step, count);

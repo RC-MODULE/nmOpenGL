@@ -22,7 +22,7 @@
 
 using namespace std;
 
-#define SIZE_BUFFER 256
+#define SIZE_BUFFER 2
 unsigned char srcImg[4 * SIZE_BUFFER * WIDTH_IMAGE * HEIGHT_IMAGE];
 
 
@@ -40,7 +40,7 @@ void download() {
 			halSleep(2);
 		}
 		if (mouseStatus.nKey != VS_MOUSE_LBUTTON) {
-		//if (false) {
+		//if (mouseStatus.nKey == VS_MOUSE_LBUTTON) {
 			halHostRingBufferPop(&hostImageRB, halRingBufferHead(&imagesRB), 1);
 		}
 		else {
@@ -95,8 +95,9 @@ int nmglvsHostInit()
 //----------------init-ringbuffer-------------
 	//nmc1, sync3
 	int nmImageRB = halSync(4, 1);
+	nmppsFree(patterns);
 	halHostRingBufferInit(&hostImageRB, nmImageRB,1);
-	ok = halRingBufferInit(&imagesRB, srcImg, WIDTH_IMAGE * HEIGHT_IMAGE, SIZE_BUFFER, 0, 0, 0);
+	ok = halRingBufferInit(&imagesRB, srcImg, hostImageRB.size, SIZE_BUFFER, 0, 0, 0);
 	//nmc0, sync4
 	
 	thread downloadThread(download);

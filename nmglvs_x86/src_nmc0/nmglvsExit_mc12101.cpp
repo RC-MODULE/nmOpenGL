@@ -5,7 +5,5 @@
 #pragma code_section ".text_nmgl"
 
 void nmglvsExit_mc12101() {
-	LOCK_NMC1();
-	ADD_INSTR_NMC1(NMC1_EXIT);
-	UNLOCK_NMC1();
+	addInstrNMC1(&cntxt.synchro->commandsRB, NMC1_EXIT);
 }

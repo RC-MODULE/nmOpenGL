@@ -1,0 +1,65 @@
+class NMGLSynchro {
+private:
+	HalRingBuffer core1_priority0;
+	HalRingBuffer core1_priority1;
+	HalRingBuffer* tailRB;
+	HalRingBuffer* headRB;
+	
+
+	HalRingBuffer* getRingBuffer(int priority) {
+		HalRingBuffer* result;
+		switch (priority)
+		{
+		case 0:
+			result = &core1_priority0;
+			break;
+		case 1:
+			result = &core1_priority1;
+			break;
+		default:
+			break;
+		}
+		return result;
+	}
+
+public:
+	void init(SyncCommand* commands0, int size0, SyncCommand* commands1, int size1) {
+		halRingBufferInit(&core1_priority0, commands0, sizeof32(CommandNm1), size0, 0, 0, 0);
+		halRingBufferInit(&core1_priority1, commands1, sizeof32(CommandNm1), size1, 0, 0, 0);
+	}
+
+	SyncCommand* head(int priority) {
+		headRB = getRingBuffer(priority);
+		while (halRingBufferIsFull(headRB));
+		SyncCommand* result = (CommandNm1*)halRingBufferHead(headRB);
+		return result;
+	}
+
+	SyncCommand* tail() {
+		while (isEmpty());
+		if (halRingBufferIsEmpty(&core1_priority0)) {
+			tailRB = &core1_priority1;
+		}
+		else {
+			tailRB = &core1_priority0;
+		}
+		return (SyncCommand*)halRingBufferTail(tailRB);
+	}
+
+	void shiftHead() {
+		headRB->head++;
+	}
+
+	void shiftTail() {
+		tailRB->tail++;
+	}
+
+	bool isEmpty() {
+		return halRingBufferIsEmpty(&core1_priority0) && halRingBufferIsEmpty(&core1_priority1);
+	}
+
+	bool isEmpty(int priority) {
+		return halRingBufferIsEmpty(getRingBuffer(priority));
+	}
+
+};

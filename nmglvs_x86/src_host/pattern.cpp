@@ -2,128 +2,150 @@
 #include <cmath>
 #include "demo3d_nm1.h"
 
+#define PI 3.14159265359
 
-void fillLineRight(	int x1,
-					int y1,
-					int x2, 
-					int y2, 
-					int width, 
-					int height, 
-					nm8s* dst, 
-					int color)
-{
-	
-if (x2==x1)
+enum FillMode {
+	RIGHT,
+	LEFT,
+	LINE
+};
+
+struct Point {
+	int x;
+	int y;
+};
+
+struct Line {
+	Point p0;
+	Point p1;
+};
+
+void fill(nm8s* dst, int startX, int width, int y, int fillColor, FillMode fillMode) {
+	int xst;
+	switch (fillMode)
 	{
-		x1 = (x1==width) ? 0: x1;
-		for (int y=0;y<height;y++)
-		{
-			for (int x=x1;x<width;x++)
-				dst[y*width+x]=color;
-		}
-		return;
+	case RIGHT:
+		xst = MAX(startX, 0);
+		for (int xTmp = xst; xTmp<width; xTmp++)
+			dst[y*width + xTmp] = fillColor;
+		break;
+	case LEFT:
+		xst = MIN(startX + 1, width);
+		for (int xTmp = 0; xTmp < xst; xTmp++)
+			dst[y*width + xTmp] = fillColor;
+		break;
+	case LINE:
+		xst = MAX(startX, 0);
+		xst = MIN(xst, width);
+		dst[y*width + xst] = fillColor;
+		break;
+	default:
+		break;
 	}
-
-	if (y2==y1)
-	{
-		for (int y=0;y<height;y++)
-		{
-			for (int x=x1;x<width;x++)
-				dst[y*width+x]=color;
-		}
-		return;
-	}
-
-
-	float k,b;
-	if (x1==0 && y1==0)
-	{
-		k =(float)y2/x2;
-		for (int y=0;y<height;y++)
-		{
-			double xst = y/k;
-			//xst = floor(xst + 0.5);
-			xst = (xst>0) ?	xst: 0;
-			for (int x=xst;x<width;x++)
-				dst[y*width+x]=color;
-		}
-		return;
-	}
-
-	k = (float)(y2-y1)/(x2-x1);
-	b = y2-k*x2;
-	for (int y=0;y<height;y++)
-	{
-		float xst = (float)(y-b)/k;
-		//xst = floor(xst + 0.5);
-		xst = (xst>0) ?	xst: 0;
-		for (int x=xst;x<width;x++)
-			dst[y*width+x]=color;
-	}
-	return;
 }
 
-void fillLineLeft(	int x1,
-					int y1,
-					int x2, 
-					int y2, 
-					int width, 
-					int height, 
-					nm8s* dst, 
-					int color)
+//Bresenham's line algorithm
+void drawPattern(Line* line,
+	nm8s* dst,
+	int width,
+	int height,	
+	int fillColor,
+	FillMode fillMode) 
 {
-	
-	if (x2==x1)
-	{
-		x1 = (x1==width || x1<0) ? 0: x1;
-		for (int y=0;y<height;y++)
-		{
-			for (int x=0;x<x2;x++)
-				dst[y*width+x]=color;
+	int deltaX = line->p1.x - line->p0.x;
+	int deltaY = line->p1.y - line->p0.y;
+	int dx = (deltaX > 0) ? 1 : -1;
+	int dy = (deltaY > 0) ? 1 : -1;
+	double k, err;
+	if (abs(deltaX) >= abs(deltaY)) {
+		k = 2 * (double)ABS(deltaY) / ABS(deltaX);
+		err = 0;
+		int y = line->p0.y;
+		int xst;
+		for (int x = line->p0.x; x != line->p1.x; x += dx) {
+			if (err > 1) {
+				y += dy;
+				err -= 2;
+			}
+			err += k;
+			fill(dst, x, width, y, fillColor, fillMode);
 		}
-		return;
 	}
-
-	if (y2==y1)
-	{
-		for (int y=0;y<height;y++)
-		{
-			for (int x=0;x<x2;x++)
-				dst[y*width+x]=color;
+	else {
+		k = 2 * (double)ABS(deltaX) / ABS(deltaY);
+		err = 0;
+		int x = line->p0.x;
+		int xst;
+		for (int y = line->p0.y; y != line->p1.y; y += dy) {
+			if (err > 1) {
+				x += dx;
+				err -= 2;
+			}
+			err += k;
+			fill(dst, x, width, y, fillColor, fillMode);
 		}
-		return;
 	}
-
-
-	float k,b;
-	if (x1==0 && y1==0)
-	{
-		k =(float)y2/x2;
-		for (int y=0;y<height;y++)
-		{
-			float xst = y/k;
-			xst = floor(xst + 0.5);
-			//xst++;
-			xst = (xst<width) ?	xst: width;
-			for (int x=0;x<xst;x++)
-				dst[y*width+x]=color;
-		}
-		return;
-	}
-
-	k = (float)(y2-y1)/(x2-x1);
-	b = y1-k*x1;
-	for (int y=0;y<height;y++)
-	{
-		float xst = (float)(y-b)/k;
-		xst = floor(xst + 0.5);
-		//xst++;
-		xst = (xst<width) ?	xst: width;
-		for (int x=0;x<xst;x++)
-			dst[y*width+x]=color;
-	}
-	return;
 }
+
+/*void drawPattern(Point* point,
+	int angle,
+	nm8s* dst,
+	int width,
+	int height,
+	int fillColor,
+	FillMode fillMode)
+{
+	Line line;
+	double length = sqrt(width * width + height * height);
+	double a = angle * PI / 180;
+	line.p0.x = point->x;
+	line.p0.y = point->y;
+	line.p1.x = round(length * cos(a) + point->x);
+	line.p1.y = round(length * sin(a) + point->y);
+	int deltaX = line.p1.x - line.p0.x;
+	int deltaY = line.p1.y - line.p0.y;
+	int dx = (deltaX > 0) ? 1 : -1;
+	int dy = (deltaY > 0) ? 1 : -1;
+	double k, err;
+	if (abs(deltaX) >= abs(deltaY)) {
+		line.p1.x = MAX(0, line.p1.x);
+		line.p1.x = MIN(line.p1.x, width);
+		k = 2 * (double)ABS(deltaY) / ABS(deltaX);
+		err = 0;
+		int y = line.p0.y;
+		int xst;
+		for (int x = line.p0.x; x != line.p1.x; x += dx) {
+			if (err > 1) {
+				y += dy;
+				err -= 2;
+			}
+			err += k;
+			fill(dst, x, width, y, fillColor, fillMode);
+		}
+		if (angle >= 135 && fillMode == RIGHT || 
+			angle <= 45  && fillMode == LEFT) {
+			for (int i = y * width; i < width * height; i++) {
+				dst[i] = fillColor;
+			}
+		}
+	}
+	else {
+		line.p1.y = MAX(0, line.p1.y);
+		line.p1.y = MIN(line.p1.y, width);
+		k = 2 * (double)ABS(deltaX) / ABS(deltaY);
+		err = 0;
+		int x = line.p0.x;
+		int xst;
+		for (int y = line.p0.y; y != line.p1.y; y += dy) {
+			if (err > 1) {
+				x += dx;
+				err -= 2;
+			}
+			err += k;
+			fill(dst, x, width, y, fillColor, fillMode);
+		}
+	}
+}*/
 
 void fillPattern(nm8s* pDstSource,int width, int height)
 {
@@ -131,101 +153,88 @@ void fillPattern(nm8s* pDstSource,int width, int height)
 	int y=0;
 	int size = width*height;		//size of one pattern
 	int nOffSets_X = OFFSETS;
-	int step=STEP_PTRN;
-	int color= 1;
-	int cnt=0;
-	
+	int color = 1;
+	int cnt = 0;
+	Line line;
+	Point point;
+	FillMode mode[2] = { RIGHT, LEFT };
 
-//-------------------fill-right--------------
-//step on the left side
-	for(y=0;y<height;y+=step)
-	{
-			nm8s* dst = nmppsAddr_8s(pDstSource,y/step*OFFSETS*size);
-			for(int i=0;i<OFFSETS;i++)
-			{
-				nm8s* dsti =nmppsAddr_8s(dst,i*size);
-				if (y != 0)
-					fillLineRight(i, 0, i - width, y, width, height, (nm8s*)dsti, color);
-				else
-					fillLineRight(0, 0, 0, height, width, height, (nm8s*)dsti, color);
-			}
-	}	
-//step on the up side
-	for (x = 0; x<width; x += step)
-	{
-		nm8s* dst = nmppsAddr_8s(pDstSource, (x + height) / step*OFFSETS*size);
-		for (int i = 0; i<OFFSETS; i++)
-		{
-			nm8s* dsti = nmppsAddr_8s(dst, i*size);
-			fillLineRight(i, 0, x + i - width, height, width, height, (nm8s*)dsti, color);
+	/*for (int angle = 180; angle > 0; angle--) {
+		for (int i = 0; i < OFFSETS; i++) {
+			nm8s* dsti = nmppsAddr_8s(pDstSource, cnt++ * size);
+			point.x = i;
+			point.y = 0;
+			drawPattern(&point, angle, (nm8s*)dsti, width, height, color, RIGHT);
 		}
 	}
-	for(x=0;x<width;x+=step)
-	{
-			nm8s* dst = nmppsAddr_8s(pDstSource,(x+height+width)/step*OFFSETS*size);
-			for(int i=0;i<OFFSETS;i++)
-			{
-				nm8s* dsti =nmppsAddr_8s(dst,i*size);
-				fillLineRight(i, 0,  x+i, height, width, height, (nm8s*) dsti, color);
-			}
+	for (int angle = 180; angle > 0; angle--) {
+		for (int i = 0; i < OFFSETS; i++) {
+			nm8s* dsti = nmppsAddr_8s(pDstSource, cnt++ * size);
+			point.x = i;
+			point.y = 0;
+			drawPattern(&point, angle, (nm8s*)dsti, width, height, color, LEFT);
+		}
 	}
-//step on the right side
-	for(y=0;y<height;y+=step)
-	{
-			nm8s* dst = nmppsAddr_8s(pDstSource,(y+(height+ 2*width))/step*OFFSETS*size);
-			for(int i=0;i<OFFSETS;i++)
+	return;*/
+		 
+	for (int m = 0; m < 2; m++) {
+		cnt = m * NPATTERNS / 2;
+		//step on the left side (180..135 degrees)
+		for (y = 0; y < height; y++)
+		{
+			for (int i = 0; i < OFFSETS; i++, cnt++)
 			{
-				nm8s* dsti =nmppsAddr_8s(dst,i*size);
-				fillLineRight(i, 0, width +i, height-y, width, height, (nm8s*) dsti, color);
+				nm8s* dsti = nmppsAddr_8s(pDstSource, cnt * size);
+				line.p0.x = i;
+				line.p0.y = 0;
+				line.p1.x = i - width;
+				line.p1.y = y;
+				drawPattern(&line, (nm8s*)dsti, width, height, color, mode[m]);
+				for (int i = y * width; i < size; i++) {
+					dsti[i] = color;
+				}
 			}
+		}
+		//step on the up side (135..90 degrees)
+		for (x = width - 1; x >= 0; x--)
+		{
+			for (int i = 0; i < OFFSETS; i++, cnt++)
+			{
+				nm8s* dsti = nmppsAddr_8s(pDstSource, cnt * size);
+				line.p0.x = i;
+				line.p0.y = 0;
+				line.p1.x = i - x;
+				line.p1.y = height;
+				drawPattern(&line, (nm8s*)dsti, width, height, color, mode[m]);
+			}
+		}
+		//(90..45 degrees)
+		for (x = 0; x < width; x++)
+		{
+			for (int i = 0; i < OFFSETS; i++, cnt++)
+			{
+				nm8s* dsti = nmppsAddr_8s(pDstSource, cnt * size);
+				line.p0.x = i;
+				line.p0.y = 0;
+				line.p1.x = x + i;
+				line.p1.y = height;
+				drawPattern(&line, (nm8s*)dsti, width, height, color, mode[m]);
+			}
+		}
+		//step on the right side (45..0 degrees)
+		for (y = height - 1; y >=0 ; y--)
+		{
+			for (int i = 0; i < OFFSETS; i++, cnt++)
+			{
+				nm8s* dsti = nmppsAddr_8s(pDstSource, cnt * size);
+				line.p0.x = i;
+				line.p0.y = 0;
+				line.p1.x = x + i;
+				line.p1.y = y;
+				drawPattern(&line, (nm8s*)dsti, width, height, color, mode[m]);
+			}
+		}
+		//------------------------------------
 	}
-//------------------------------------
-
-
-
-//----------------------------------------fill-left--------------
-//step on the left side
-	for(y=0;y<height;y+=step)
-	{
-			nm8s* dst = nmppsAddr_8s(pDstSource,(y+ (2*height + 2*width))/step*OFFSETS*size);
-			for(int i=0;i<OFFSETS;i++)
-			{
-				nm8s* dsti =nmppsAddr_8s(dst,i*size);
-				if(y!=0)
-					fillLineLeft(i, 0, i- width, y, width, height, (nm8s*) dsti, color);
-				else
-					fillLineLeft(0, 0, 0, height, width, height, (nm8s*)dsti, 0);
-			}
-	}	
-//step on the up side
-	for(x=0;x<width;x+=step)
-	{
-			nm8s* dst = nmppsAddr_8s(pDstSource,(x+ (3*height + 2*width))/step*OFFSETS*size);
-			for(int i=0;i<OFFSETS;i++)
-			{
-				nm8s* dsti =nmppsAddr_8s(dst,i*size);
-				fillLineLeft(i, 0,  x+i- width, height, width, height, (nm8s*) dsti, color);
-			}
-	}
-	for (x = 0; x<width; x += step)
-	{
-			nm8s* dst = nmppsAddr_8s(pDstSource, (x + (3 * height + 3 * width)) / step*OFFSETS*size);
-			for (int i = 0; i<OFFSETS; i++)
-			{
-				nm8s* dsti = nmppsAddr_8s(dst, i*size);
-				fillLineLeft(i, 0, x + i, height, width, height, (nm8s*)dsti, color);
-			}
-	}
-//step on the right side
-	for(y=0;y<height;y+=step)
-	{
-			nm8s* dst = nmppsAddr_8s(pDstSource,(y+ (3 * height + 4* width))/step*OFFSETS*size);
-			for(int i=0;i<OFFSETS;i++)
-			{
-				nm8s* dsti =nmppsAddr_8s(dst,i*size);
-				fillLineLeft(i, 0, width +i, height-y, width, height, (nm8s*) dsti, color);
-			}
-	}
-//------------------------------------
 
 }

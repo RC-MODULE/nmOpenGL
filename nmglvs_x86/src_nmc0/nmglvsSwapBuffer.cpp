@@ -6,11 +6,15 @@
 #pragma code_section ".text_nmgl"
 
 void nmglvsSwapBuffer(){
-	LOCK_NMC1();
-	nmglSynchro->counter_nmc0++;
-	nmglSynchro->time0 = time_nmc0;
-	time_nmc0 = 0;
-	counter_measure_time0 = 0;
-	ADD_INSTR_NMC1(NMC1_SWAP_BUFFER);
-	UNLOCK_NMC1();
+	static int time = 0;
+	static clock_t t0, t1;
+	t1 = clock();
+	cntxt.synchro->counter_nmc0++;
+	cntxt.synchro->time0 = t1-t0;
+	t0 = clock();
+	/*if (halRingBufferIsFull(&cntxt.synchro->commandsRB)) {
+		while (!halRingBufferIsEmpty(&cntxt.synchro->commandsRB));
+	}*/
+	addInstrNMC1(&cntxt.synchro->commandsRB, NMC1_SWAP_BUFFER);
+	
 }

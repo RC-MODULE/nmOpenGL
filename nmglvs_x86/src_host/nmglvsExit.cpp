@@ -8,15 +8,21 @@
 
 #include "hal.h"
 #include "hal_host.h"
+#include "ringbuffer_host.h"
 
 using namespace std;
 extern int synchro_nm;
+extern HalHostRingBuffer hostImageRB; 
+extern HalRingBuffer imagesRB;
 
 int nmglvsExit(unsigned* result)
 {
 	int exit = 1;
-	halWriteMemBlock(&exit, synchro_nm + 4, 1, 0);
+	halWriteMemBlock(&exit, synchro_nm + 2, 1, 0);
+	while (!halHostRingBufferIsEmpty(&hostImageRB)) {
+		halHostRingBufferPop(&hostImageRB, halRingBufferHead(&imagesRB), 1);
+	}
 	halGetResult(result, 0);
-	halGetResult(result+1, 1);
+	halGetResult(result + 1, 1);
 	return 0;
 };

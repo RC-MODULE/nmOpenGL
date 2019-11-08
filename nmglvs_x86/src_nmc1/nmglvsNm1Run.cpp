@@ -10,14 +10,13 @@
 #include "cache.h"
 
 #include "nmgl.h"
-#include "nmgl_data1.h"
 
 
 //#pragma code_section ".text_demo3d"
 
 extern int exitNM1;
 
-int nmglvsNm1Run()
+SECTION(".text_nmglvs") int nmglvsNm1Run(NMGL_Context_NM1* cntxt)
 {
 	if(exitNM1 == 0){
 		return 1;

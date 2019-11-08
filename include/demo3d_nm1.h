@@ -14,6 +14,7 @@ class DepthBuffer : public ImageBuffer {
 private:
 	bool maskEnabled;
 	int mode;
+	//DepthTest currentTest;
 	int dummy;
 
 	void update();
