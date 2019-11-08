@@ -53,7 +53,7 @@ SECTION(".text_nmglvs") int nmglvsNm1Init(NMGL_Context_NM1* cntxt)
 	// Check memory allocation
 	halInstrCacheEnable();
 	halDmaInitC();
-
+	
 	Patterns* patterns = (Patterns*)halMalloc32(sizeof32(Patterns));
 	//Структура для общения процессорных ядер
 	cntxt->synchro = (Synchro*)halSyncAddr((int*)patterns, 0);
