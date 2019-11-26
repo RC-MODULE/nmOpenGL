@@ -11,7 +11,6 @@
 #endif
 
 
-
 #ifdef __GNUC__
 #define SECTION(sec) __attribute__((section(sec)))
 #else

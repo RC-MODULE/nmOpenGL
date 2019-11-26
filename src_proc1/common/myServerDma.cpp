@@ -12,6 +12,19 @@ int currentIndex;
 bool isSimpleCopy = false;
 
 
+#ifndef __GNUC__
+int empty() { return 0; }
+
+DmaCallback cb = empty;
+#define halDmaSetCallback(func) cb = func;
+
+#define halDmaStartA(src, dst, size) nmppsCopy_32s((nm32s*)src,(nm32s*)dst,size); cb()
+#define halDma2D_StartA(src, dst, size, width, srcStride, dstStride) nmppmCopy_32s((nm32s*)src, srcStride, \
+																					(nm32s*)dst, dstStride, \
+																					size/width, width); cb()
+#endif
+
+
 SECTION(".text_demo3d") void cbUpdate() {
 	if (isSimpleCopy) {
 		isBusy = false;
@@ -117,7 +130,7 @@ SECTION(".text_demo3d") void msdSimpleCopy(const void* src, void* dst, int size)
 	halDmaSetCallback((DmaCallback)cbUpdate);
 	isSimpleCopy = true;
 	isBusy = true;
-	halDmaStartC(src, dst, size);
+	halDmaStartA(src, dst, size);
 }
 
 

@@ -57,9 +57,11 @@ SECTION(".text_nmglvs") int nmglvsNm1Init(NMGL_Context_NM1* cntxt)
 	setHeap(10);
 	cntxt->patterns = myMallocT<Patterns>();
 
+#ifdef __GNUC__
 	//nmprofiler_init();
 	halInstrCacheEnable();
 	halDmaInit();
+#endif // __GNUC__
 
 	//Структура для общения процессорных ядер
 	cntxt->synchro = (Synchro*)halSyncAddr((int*)cntxt->patterns, 0);
@@ -74,10 +76,15 @@ SECTION(".text_nmglvs") int nmglvsNm1Init(NMGL_Context_NM1* cntxt)
 	else
 		halHostSync(0x600DB00F);	// send ok to host
 
-	colorBuffer.set(imageArray, WIDTH_IMAGE, HEIGHT_IMAGE, COUNT_IMAGE_BUFFER, 0);
-	depthBuffer.set(ZBuffImage, WIDTH_IMAGE, HEIGHT_IMAGE, 1, 0);
-	cntxt->colorBuffer = &colorBuffer;
+
+	//cntxt->colorBuffer = &colorBuffer;
 	cntxt->depthBuffer = &depthBuffer;
+	cntxt->colorBuffer = myMallocT<ImageBuffer>();
+	//cntxt->depthBuffer = myMallocT<DepthBuffer>();
+	printf("colorBuffer=0x%x\n", cntxt->colorBuffer);
+	printf("depthBuffer=0x%x\n", cntxt->depthBuffer);
+	cntxt->colorBuffer->set(imageArray, WIDTH_IMAGE, HEIGHT_IMAGE, COUNT_IMAGE_BUFFER, 0);
+	cntxt->depthBuffer->set(ZBuffImage, WIDTH_IMAGE, HEIGHT_IMAGE, 1, 0);
 	cntxt->colorSegment.set(segImage, WIDTH_SEG, HEIGHT_SEG, msdAdd2D);
 	cntxt->depthSegment.set(segZBuff, WIDTH_SEG, HEIGHT_SEG, msdAdd2D);
 
@@ -95,7 +102,7 @@ SECTION(".text_nmglvs") int nmglvsNm1Init(NMGL_Context_NM1* cntxt)
 		cntxt->minusOne[j] = -1;
 	}
 	//sync3
-	halHostSync((int)&cntxt->colorBuffer->ringbuffer);
+	halHostSync((int)cntxt->colorBuffer->getHalRingBuffer());
 
 	cntxt->offsetTrX = offsetTrX;
 	cntxt->offsetTrY = offsetTrY;

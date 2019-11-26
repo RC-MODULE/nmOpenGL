@@ -120,7 +120,7 @@ SECTION(".text_nmglvs") int nmglvsNm1Step(NMGL_Context_NM1* cntxt)
 	}
 	case NMC1_SWAP_BUFFER: {
 		msdWaitDma();
-		while (halRingBufferIsBusy(&cntxt->colorBuffer->ringbuffer));
+		while (halRingBufferIsBusy(cntxt->colorBuffer->getHalRingBuffer()));
 
 		cntxt->t1 = clock();
 

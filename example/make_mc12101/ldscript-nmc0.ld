@@ -26,7 +26,7 @@ SECTIONS
   .text_nmgl : ALIGN(0x8)
   {
     *(.text_nmgl);
-  } > C0_IMU0
+  } > EMI
   .text_nmplv : ALIGN(0x8)
   {
     *(.text_nmplv);
@@ -35,6 +35,10 @@ SECTIONS
   {
     *(.text_demo3d);
   } > C0_IMU0
+  .text_hal : ALIGN(0x8)
+  {
+    *(.text_hal);
+  } > EMI
   .text_hal_libc : ALIGN(0x8)
   {
     *(.text_hal_libc);
@@ -58,7 +62,7 @@ SECTIONS
   .bss : ALIGN(0x8)
   {
     *(.bss);
-  } > EMI
+  } > SHMEM0
   .data_imu0 : ALIGN(0x8)
   {
     *(.data_imu0);
@@ -118,7 +122,7 @@ SECTIONS
   .stack : ALIGN(0x8)
   {
     *(.stack);
-  } > SHMEM0
+  } > C0_IMU1
   .data_hal_syncro : ALIGN(0x8)
   {
     *(.data_hal_syncro);
@@ -131,15 +135,8 @@ SECTIONS
   {
     *(.rpc_services);
   } > EMI
+  
   .heap : ALIGN(0x8)
-  {
-    *(.heap);
-  } > C0_IMU1
-  .heap1 : ALIGN(0x8)
-  {
-    *(.heap1);
-  } > C0_IMU2
-/*    .heap : ALIGN(0x8)
   {
     *(.heap);
 	. = ORIGIN(C0_IMU0) + LENGTH(C0_IMU0);
@@ -150,7 +147,7 @@ SECTIONS
     *(.heap1);
 	. = ORIGIN(C0_IMU1) + LENGTH(C0_IMU1);
     __HEAP_1_END = .;
-  } > C0_IMU1*/
+  } > C0_IMU1
   .heap2 : ALIGN(0x8)
   {
     *(.heap2);
@@ -199,4 +196,6 @@ SECTIONS
 	. = ORIGIN(EMI) + LENGTH(EMI);
     __HEAP_10_END = .;
   } > EMI
+  
+  
 }

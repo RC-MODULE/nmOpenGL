@@ -89,9 +89,11 @@ int nmglvsNm0Init()
 	cntxt.trianInner.maxSize = BIG_NMGL_SIZE;
 	cntxt.trianInner.size = 0;
 
+#ifdef __GNUC__
 	halDmaInit();
 	halInstrCacheEnable();
 	//nmprofiler_init();
+#endif // __GNUC__
 
 	cntxt.buffer0 = nmglBuffer0;
 	cntxt.buffer1 = nmglBuffer1;

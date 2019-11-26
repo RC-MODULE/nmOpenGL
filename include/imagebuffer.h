@@ -9,8 +9,8 @@ class ImageBuffer{
 private:
 	int width;
 	int height;
-public:
 	HalRingBuffer ringbuffer;
+public:
 	int clearValue;
 	FuncClearImage funcClear;
 
@@ -40,6 +40,10 @@ public:
 	
 	int getSize(){
 		return ringbuffer.size;
+	}
+
+	HalRingBuffer* getHalRingBuffer() {
+		return &ringbuffer;
 	}
 
 	void clearImage() {
