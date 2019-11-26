@@ -11,8 +11,6 @@
 #include "nmgl_data0.h"
 
 #define CHECK_EXIT0 if(nmglSynchro->exit_nm==EXIT) {	break;	}
-#define STACK_COMMAND_SIZE 512
-#define INSTANT_STACK_COMMAND_SIZE 8
 
 SECTION(".data_imu1")	float nmglBuffer0[12 * NMGL_SIZE];
 SECTION(".data_imu2")	float nmglBuffer1[12 * NMGL_SIZE];
@@ -37,17 +35,6 @@ template<class T> T* myMallocT() {
 	return (T*)halMalloc32(sizeof32(T));
 }
 
-void synchroInit(Synchro* nmglSynchro, CommandNm1* commands0, CommandNm1* commands1) {
-	nmglSynchro->exit_nm = 0;
-	nmglSynchro->counter_nmc0 = 0;
-	nmglSynchro->counter_nmc1 = 0;
-	nmglSynchro->hasInstrHost = 0;
-	nmglSynchro->time0 = 0;
-	nmglSynchro->time1 = 0;
-	halRingBufferInit(&nmglSynchro->commandsRB, commands1, sizeof32(CommandNm1), STACK_COMMAND_SIZE, 0, 0, 0);
-	halRingBufferInit(&nmglSynchro->instantCommandsRB, commands0, sizeof32(CommandNm1), INSTANT_STACK_COMMAND_SIZE, 0, 0, 0);
-}
-
 #pragma code_section ".text_demo3d"
 int nmglvsNm0Init()
 {
@@ -58,12 +45,11 @@ int nmglvsNm0Init()
 	}
 	setHeap(8);
 	cntxt.polygonsRB = myMallocT<HalRingBuffer>();
-	CommandNm1* commands = myMallocT<CommandNm1>(STACK_COMMAND_SIZE);
-	CommandNm1* instantCommands = myMallocT<CommandNm1>(INSTANT_STACK_COMMAND_SIZE);
-
+	NMGLSynchroData* synchroData = myMallocT<NMGLSynchroData>();
 
 	setHeap(10);
-	cntxt.synchro = myMallocT<Synchro>();
+	cntxt.synchro = myMallocT<NMGLSynchro>();
+	cntxt.synchro->init(synchroData);
 	//halSetActiveHeap(10);
 
 	cntxt.trianInner.x0 = x0;
@@ -94,6 +80,7 @@ int nmglvsNm0Init()
 	halInstrCacheEnable();
 	//nmprofiler_init();
 #endif // __GNUC__
+
 
 	cntxt.buffer0 = nmglBuffer0;
 	cntxt.buffer1 = nmglBuffer1;
@@ -172,9 +159,6 @@ int nmglvsNm0Init()
 	cntxt.isCullFace = NMGL_FALSE;
 	cntxt.cullFaceType = NMGL_BACK;
 	cntxt.frontFaceOrientation = NMGL_CCW;
-	//
-	//Структура для общения процессорных ядер
-	synchroInit(cntxt.synchro, instantCommands, commands);
 
 	//Массив Polygons-структур
 	cntxt.patterns = (Patterns*)halSyncAddr((int*)cntxt.synchro, 1);

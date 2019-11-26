@@ -6,5 +6,5 @@
 
 SECTION(".text_nmgl")
 void nmglFinish (){
-	while (!halRingBufferIsEmpty(&cntxt.synchro->commandsRB));
+	while (!cntxt.synchro->isEmpty());
 }

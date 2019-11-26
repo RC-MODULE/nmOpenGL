@@ -9,12 +9,9 @@ void nmglvsSwapBuffer(){
 	static int time = 0;
 	static clock_t t0, t1;
 	t1 = clock();
-	cntxt.synchro->counter_nmc0++;
+	cntxt.synchro->counter0++;
 	cntxt.synchro->time0 = t1-t0;
 	t0 = clock();
-	/*if (halRingBufferIsFull(&cntxt.synchro->commandsRB)) {
-		while (!halRingBufferIsEmpty(&cntxt.synchro->commandsRB));
-	}*/
-	addInstrNMC1(&cntxt.synchro->commandsRB, NMC1_SWAP_BUFFER);
+	cntxt.synchro->writeInstr(1, NMC1_SWAP_BUFFER, 0, 0, 0, 0, 0, 0);
 	
 }

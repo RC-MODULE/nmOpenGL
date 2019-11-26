@@ -32,7 +32,7 @@ void nmglDisable(NMGLenum cap) {
 		break;	
 
 	case NMGL_DEPTH_TEST:
-		addInstrNMC1(&cntxt.synchro->commandsRB, NMC1_DEPTH, NMGL_FALSE);
+		cntxt.synchro->writeInstr(1, NMC1_DEPTH, NMGL_FALSE);
 		break;
 	
 	case NMGL_DITHER:

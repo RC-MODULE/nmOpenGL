@@ -6,5 +6,5 @@
 
 SECTION(".text_nmgl")
 void nmglDepthMask (NMGLboolean flag){
-	addInstrNMC1(&cntxt.synchro->commandsRB, NMC1_DEPTH_MASK, flag);
+	cntxt.synchro->writeInstr(1, NMC1_DEPTH_MASK, flag);
 }

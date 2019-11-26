@@ -7,7 +7,7 @@
 SECTION(".text_nmgl")
 void nmglDepthFunc (NMGLenum func){
 	if (func >= NMGL_NEVER && func <= NMGL_ALWAYS) {
-		addInstrNMC1(&cntxt.synchro->commandsRB, NMC1_DEPTH_FUNC, func);
+		cntxt.synchro->writeInstr(1, NMC1_DEPTH_FUNC, func);
 	}
 	else {
 		cntxt.error = NMGL_INVALID_ENUM;

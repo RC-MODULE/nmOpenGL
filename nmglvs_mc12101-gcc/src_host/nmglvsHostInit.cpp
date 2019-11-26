@@ -39,8 +39,8 @@ void download() {
 		while (halRingBufferIsFull(&imagesRB)) {
 			halSleep(2);
 		}
-		if (mouseStatus.nKey != VS_MOUSE_LBUTTON) {
 		//if (mouseStatus.nKey == VS_MOUSE_LBUTTON) {
+		if (mouseStatus.nKey != VS_MOUSE_LBUTTON) {
 			halHostRingBufferPop(&hostImageRB, halRingBufferHead(&imagesRB), 1);
 		}
 		else {

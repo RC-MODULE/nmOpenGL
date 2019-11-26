@@ -6,5 +6,5 @@
 
 SECTION(".text_nmgl")
 void nmglClear(NMGLbitfield mask) {
-	addInstrNMC1(&cntxt.synchro->commandsRB, NMC1_CLEAR, mask);
+	cntxt.synchro->writeInstr(1, NMC1_CLEAR, mask);
 }

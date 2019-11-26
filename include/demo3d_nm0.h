@@ -46,7 +46,7 @@ struct SegmentMask {
 };
 
 struct NMGL_Context_NM0 {
-	Synchro* synchro;
+	NMGLSynchro* synchro;
 	NMGLenum error;
 	Patterns* patterns;
 	HalRingBuffer* polygonsRB;
@@ -612,9 +612,7 @@ extern "C"{
 }
 void reverseMatrix3x3in4x4(mat4nm32f* src, mat4nm32f* dst);
 
-void getDrawInfo(Triangles* triangles, DrawInfo* drawInfo, int count);
-
-void addInstrNMC1(HalRingBuffer* commandsRB, int instr, int param0 = 0, int param1 = 0, int param2 = 0, int param3 = 0, int param4 = 0, int param5 = 0);
+//void addInstrNMC1(HalRingBuffer* commandsRB, int instr, int param0 = 0, int param1 = 0, int param2 = 0, int param3 = 0, int param4 = 0, int param5 = 0);
 
 void setSegmentMask(const v2nm32f* minXY, const v2nm32f* maxXY, SegmentMask* masks, int primCount);
 int pushToTriangles_t(const float *vertexX, const float *vertexY, const float *vertexZ, const v4nm32f* color, Triangles& triangles, int countVertex);

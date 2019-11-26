@@ -5,11 +5,12 @@
 #pragma code_section ".text_demo3d"
 int nmglvsNm0Run()
 {
-	if(cntxt.synchro->exit_nm != SYNCHRO_EXIT){
+	/*if(cntxt.synchro->exit_nm != SYNCHRO_EXIT){
 		return 1;
 	}
 	else{
 		return 0;
-	}
+	}*/
+	return 1;
 } 
 
