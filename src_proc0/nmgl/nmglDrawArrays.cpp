@@ -76,7 +76,7 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 		switch (cntxt.vertexArray.size)
 		{
 		case 2:
-			nmblas_dcopy(localSize, (double*)cntxt.buffer0, 1, (double*)cntxt.buffer1, 2);			
+			nmblas_dcopy(localSize, (double*)cntxt.buffer0, 1, (double*)cntxt.buffer1, 2);
 			cntxt.tmp.vec[0] = 0;
 			cntxt.tmp.vec[1] = 1;
 			nmblas_dcopy(localSize, (double*)&cntxt.tmp, 0, (double*)(cntxt.buffer1 + 2), 2);
@@ -110,8 +110,7 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			else {
 				normalAM.pop(cntxt.buffer1);
 			}
-			MullMatrix_f(cntxt.buffer1, localSize, 4, &cntxt.normalMatrix, 4, 4, colorOrNormal, 4, 4, 0);
-			//mul_mat4nm32f_v4nm32f(cntxt.modelviewMatrixStack.top(), (v4nm32f*)cntxt.buffer1, colorOrNormal, localSize);
+			mul_v4nm32f_mat4nm32f((v4nm32f*)cntxt.buffer1, &cntxt.normalMatrix, colorOrNormal, localSize);
 			if (cntxt.normalizeEnabled) {
 				nmblas_scopy(4 * localSize, (float*)colorOrNormal, 1, cntxt.buffer2, 1);
 				dotV_v4nm32f(colorOrNormal, (v4nm32f*)cntxt.buffer2, (v2nm32f*)cntxt.buffer0, localSize);

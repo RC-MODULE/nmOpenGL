@@ -4,6 +4,13 @@
 #include "nmgltype.h"
 #include "nmsynchro.h"
 
+#ifdef __GNUC__
+	#define setHeap(n) nmc_malloc_set_heap(n) 
+#else
+	#define setHeap(n)
+#endif
+
+
 
 #ifdef __GNUC__
 #define SECTION(sec) __attribute__((section(sec)))

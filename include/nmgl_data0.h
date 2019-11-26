@@ -5,7 +5,5 @@
 #include "ringbuffer.h"
 #include <time.h>
 
-extern HalRingBuffer* nmglPolygonsRB;
-
 extern NMGL_Context_NM0 cntxt;
 #endif

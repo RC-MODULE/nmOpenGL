@@ -14,12 +14,6 @@
 #define STACK_COMMAND_SIZE 512
 #define INSTANT_STACK_COMMAND_SIZE 8
 
-SECTION(".data_shared")	Synchro s_synchro;
-SECTION(".data_shmem0")	HalRingBuffer s_nmglPolygonsRB;
-SECTION(".data_shared")	Polygons polyArray[COUNT_POLYGONS_BUFFER];
-SECTION(".data_shmem0")	CommandNm1 commands[STACK_COMMAND_SIZE];
-SECTION(".data_shmem0")	CommandNm1 instantCommands[INSTANT_STACK_COMMAND_SIZE];
-
 SECTION(".data_imu1")	float nmglBuffer0[12 * NMGL_SIZE];
 SECTION(".data_imu2")	float nmglBuffer1[12 * NMGL_SIZE];
 SECTION(".data_imu3")	float nmglBuffer2[12 * NMGL_SIZE];
@@ -35,18 +29,23 @@ SECTION(".data_imu4")	float y2[NMGL_SIZE];
 SECTION(".data_imu6")	int z_int[NMGL_SIZE];
 SECTION(".data_imu6")	v4nm32s lightsValues[NMGL_SIZE];
 
-SECTION(".data_shared")	float dataDdr[11 * BIG_NMGL_SIZE];
+template<class T> T* myMallocT(int size) {
+	return (T*)halMalloc32(size * sizeof32(T));
+}
 
+template<class T> T* myMallocT() {
+	return (T*)halMalloc32(sizeof32(T));
+}
 
-void synchroInit(Synchro* nmglSynchro, int widthImage, int heightImage) {
+void synchroInit(Synchro* nmglSynchro, CommandNm1* commands0, CommandNm1* commands1) {
 	nmglSynchro->exit_nm = 0;
 	nmglSynchro->counter_nmc0 = 0;
 	nmglSynchro->counter_nmc1 = 0;
 	nmglSynchro->hasInstrHost = 0;
 	nmglSynchro->time0 = 0;
 	nmglSynchro->time1 = 0;
-	halRingBufferInit(&nmglSynchro->commandsRB, commands, sizeof32(CommandNm1), STACK_COMMAND_SIZE, 0, 0, 0);
-	halRingBufferInit(&nmglSynchro->instantCommandsRB, instantCommands, sizeof32(CommandNm1), INSTANT_STACK_COMMAND_SIZE, 0, 0, 0);
+	halRingBufferInit(&nmglSynchro->commandsRB, commands1, sizeof32(CommandNm1), STACK_COMMAND_SIZE, 0, 0, 0);
+	halRingBufferInit(&nmglSynchro->instantCommandsRB, commands0, sizeof32(CommandNm1), INSTANT_STACK_COMMAND_SIZE, 0, 0, 0);
 }
 
 #pragma code_section ".text_demo3d"
@@ -57,6 +56,16 @@ int nmglvsNm0Init()
 	if (fromHost != 0xC0DE0086) {					// get  handshake from host
 		return -1;
 	}
+	setHeap(8);
+	cntxt.polygonsRB = myMallocT<HalRingBuffer>();
+	CommandNm1* commands = myMallocT<CommandNm1>(STACK_COMMAND_SIZE);
+	CommandNm1* instantCommands = myMallocT<CommandNm1>(INSTANT_STACK_COMMAND_SIZE);
+
+
+	setHeap(10);
+	cntxt.synchro = myMallocT<Synchro>();
+	//halSetActiveHeap(10);
+
 	cntxt.trianInner.x0 = x0;
 	cntxt.trianInner.y0 = y0;
 	cntxt.trianInner.x1 = x1;
@@ -68,6 +77,7 @@ int nmglvsNm0Init()
 	cntxt.trianInner.maxSize = NMGL_SIZE;
 	cntxt.trianInner.size = 0;
 
+	float* dataDdr = (float*)halMalloc32(11 * BIG_NMGL_SIZE);
 	cntxt.trianDdr.x0 = dataDdr;
 	cntxt.trianDdr.y0 = dataDdr + BIG_NMGL_SIZE;
 	cntxt.trianDdr.x1 = dataDdr + 2 * BIG_NMGL_SIZE;
@@ -79,7 +89,7 @@ int nmglvsNm0Init()
 	cntxt.trianInner.maxSize = BIG_NMGL_SIZE;
 	cntxt.trianInner.size = 0;
 
-	halDmaInitC();
+	halDmaInit();
 	halInstrCacheEnable();
 	//nmprofiler_init();
 
@@ -161,18 +171,17 @@ int nmglvsNm0Init()
 	cntxt.cullFaceType = NMGL_BACK;
 	cntxt.frontFaceOrientation = NMGL_CCW;
 	//
-	cntxt.synchro = &s_synchro;
-	nmglPolygonsRB = &s_nmglPolygonsRB;
 	//Структура для общения процессорных ядер
-	synchroInit(cntxt.synchro, WIDTH_IMAGE, HEIGHT_IMAGE);
+	synchroInit(cntxt.synchro, instantCommands, commands);
 
 	//Массив Polygons-структур
 	cntxt.patterns = (Patterns*)halSyncAddr((int*)cntxt.synchro, 1);
 	//halSyncAddr((int*)cntxt.synchro, 1);
-	halRingBufferInit(nmglPolygonsRB, polyArray, sizeof32(Polygons), COUNT_POLYGONS_BUFFER, 0, 0, 0);
+	Polygons* polyArray = myMallocT<Polygons>(COUNT_POLYGONS_BUFFER);
+	halRingBufferInit(cntxt.polygonsRB, polyArray, sizeof32(Polygons), COUNT_POLYGONS_BUFFER, 0, 0, 0);
 
 	//Адрес кольцевого буфера Polygons-структур на nmc1
-	halSyncAddr((int*)nmglPolygonsRB, 1);
+	halSyncAddr((int*)cntxt.polygonsRB, 1);
 
 	// Check memory allocation
 	if (cntxt.synchro == 0) {

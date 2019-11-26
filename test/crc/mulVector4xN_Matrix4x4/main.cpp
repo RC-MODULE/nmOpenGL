@@ -28,7 +28,7 @@ int main()
 	clock_t t0,t1;
 
 	unsigned int crc = 0;
-	nmppsRand_32f(src, 4096, 0.1f, 1000.0f);
+	//nmppsRand_32f(src, 4096, 0.1f, 1000.0f);
 	for(int i=0;i<4096+2;i++){
 		dst[i]=1.0f;
 	}

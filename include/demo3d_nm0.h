@@ -49,7 +49,7 @@ struct NMGL_Context_NM0 {
 	Synchro* synchro;
 	NMGLenum error;
 	Patterns* patterns;
-	int dummy;
+	HalRingBuffer* polygonsRB;
 
 	float* buffer0;
 	float* buffer1;
@@ -137,7 +137,7 @@ extern "C"{
 	 *  \defgroup mul_mat4nm32f_v4nm32f mul_mat4nm32f_v4nm32f
 	 *  \brief Функция умножение матрицы 4х4 на массив 4хмерных векторов. Матрица задается по столбцам
 	 *  
-	 *  \param srcMatrix4x4 [in] Входная матрица 4х4
+	 *  \param srcMatrix4x4 [in] Входная матрица 4х4 (column-major order)
 	 *  \param srcVector4xN [in] Входной массив векторов
 	 *  \param dstVector4xN [in] Выходной массив
 	 *  \param count [in] Число векторов
@@ -154,6 +154,28 @@ extern "C"{
 	 *  \endxmlonly
 	 */
 	void mul_mat4nm32f_v4nm32f(mat4nm32f* srcMatrix4x4,	v4nm32f* srcVector4xN, v4nm32f* dstVector4xN, int count);
+
+	/**
+	*  \defgroup mul_v4nm32f_mat4nm32f mul_v4nm32f_mat4nm32f
+	*  \brief Функция массива 4хмерных векторов на матрицу 4х4. Матрица задается по строкам
+	*
+	*  \param srcMatrix4x4 [in] Входная матрица 4х4 (row-major order)
+	*  \param srcVector4xN [in] Входной массив векторов
+	*  \param dstVector4xN [in] Выходной массив
+	*  \param count [in] Число векторов
+	*  \retval Return description
+	*
+	*  \par
+	*  \xmlonly
+	*      <testperf>
+	*          <param> srcMatrix4x4 </param> <values>  </values>
+	*          <param> srcVector4xN </param> <values>  </values>
+	*          <param> dstVector4xN </param> <values>  </values>
+	*          <param> count </param> <values>  </values>
+	*      </testperf>
+	*  \endxmlonly
+	*/
+	void mul_v4nm32f_mat4nm32f(v4nm32f* srcVector4xN, mat4nm32f* srcMatrix4x4, v4nm32f* dstVector4xN, int count);
 
 	/**
 	 *  \defgroup split_v4nm32f split_v4nm32f

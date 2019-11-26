@@ -12,10 +12,11 @@ SECTION(".data_imu7")   int maskBitsTemp[BIG_NMGL_SIZE / 32];
 
 SECTION(".text_demo3d") Polygons* getPolygonsHead() {
 	volatile int a = 0;
-	while (halRingBufferIsFull(nmglPolygonsRB)) {
+	HalRingBuffer* tmp = cntxt.polygonsRB;
+	while (halRingBufferIsFull(tmp)) {
 		a++;
 	}
-	return (Polygons*)halRingBufferHead(nmglPolygonsRB);
+	return (Polygons*)halRingBufferHead(tmp);
 }
 
 SECTION(".text_demo3d")
@@ -67,7 +68,7 @@ void rasterizeT(const Triangles* triangles, const SegmentMask* masks, int count)
 					nmblas_scopy(usefulCount, (float*)localTrian.z, 1, (float*)poly->z, 1);
 					nmblas_scopy(4 * usefulCount, (float*)localTrian.colors, 1, (float*)poly->color, 1);
 
-					nmglPolygonsRB->head++;
+					cntxt.polygonsRB->head++;
 					addInstrNMC1(&cntxt.synchro->commandsRB, NMC1_DRAW_TRIANGLES);
 				}*/
 				
@@ -89,7 +90,7 @@ void rasterizeT(const Triangles* triangles, const SegmentMask* masks, int count)
 						nmblas_scopy(resultSize, (float*)localTrian.z, 1, (float*)poly->z, 1);
 						nmblas_scopy(4 * resultSize, (float*)localTrian.colors, 1, (float*)poly->color, 1);
 
-						nmglPolygonsRB->head++;
+						cntxt.polygonsRB->head++;
 						addInstrNMC1(&cntxt.synchro->commandsRB, NMC1_DRAW_TRIANGLES);
 					}
 				}

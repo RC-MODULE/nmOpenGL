@@ -17,7 +17,9 @@ extern int exitNM1;
 
 SECTION(".text_demo3d") void waitCommands(NMGL_Context_NM1* cntxt){
 	volatile int a = 0;
-	while (halRingBufferIsEmpty(&cntxt->synchro->commandsRB) && halRingBufferIsEmpty(&cntxt->synchro->instantCommandsRB)) {
+	HalRingBuffer* com0 = &cntxt->synchro->instantCommandsRB;
+	HalRingBuffer* com1 = &cntxt->synchro->commandsRB;
+	while (halRingBufferIsEmpty(com1) && halRingBufferIsEmpty(com0)) {
 		a++;
 	}
 }
@@ -27,7 +29,7 @@ SECTION(".text_nmglvs") int nmglvsNm1Step(NMGL_Context_NM1* cntxt)
 	
 	waitCommands(cntxt);
 
-	HalRingBuffer* currentBuffer = (halRingBufferIsEmpty(&cntxt->synchro->instantCommandsRB)) ? &cntxt->synchro->commandsRB : &cntxt->synchro->instantCommandsRB;
+	HalRingBuffer* currentBuffer = (halRingBufferIsEmpty(&cntxt->synchro->instantCommandsRB) != 0) ? &cntxt->synchro->commandsRB : &cntxt->synchro->instantCommandsRB;
 	
 	CommandNm1* currentCommand = (CommandNm1*)halRingBufferTail(currentBuffer);
 

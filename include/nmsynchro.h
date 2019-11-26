@@ -46,6 +46,11 @@ struct Synchro{
 
 };
 
+/*class NMGLSynchro {
+	HalRingBufferData<CommandNm1, 16> priority0;
+	HalRingBufferData<CommandNm1, 128> priority1;
+};*/
+
 
 
 #endif

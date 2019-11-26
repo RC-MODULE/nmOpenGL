@@ -1,4 +1,3 @@
-#include "malloc32.h"
 #include <time.h>
 #include "hal.h"
 #include "hal_target.h"
@@ -11,8 +10,6 @@
 
 #include "nmgl.h"
 
-
-SECTION(".data_shared3") Patterns patterns;
 SECTION(".data_shared3") int ZBuffImage[WIDTH_IMAGE * HEIGHT_IMAGE];
 SECTION(".data_shared3") int imageArray[COUNT_IMAGE_BUFFER * WIDTH_IMAGE * HEIGHT_IMAGE];
 
@@ -39,6 +36,14 @@ SECTION(".data_shmem1") nm32s* imagePoints[NMGL_SIZE];
 
 int exitNM1 = 0;
 
+template<class T> T* myMallocT(int size) {
+	return (T*)halMalloc32(size * sizeof32(T));
+}
+
+template<class T> T* myMallocT() {
+	return (T*)halMalloc32(sizeof32(T));
+}
+
 SECTION(".text_nmglvs") int nmglvsNm1Init(NMGL_Context_NM1* cntxt)
 {
 	halSetProcessorNo(1);
@@ -49,13 +54,15 @@ SECTION(".text_nmglvs") int nmglvsNm1Init(NMGL_Context_NM1* cntxt)
 	}
 	int ok=0;
 
+	setHeap(10);
+	cntxt->patterns = myMallocT<Patterns>();
+
 	//nmprofiler_init();
-	// Check memory allocation
 	halInstrCacheEnable();
-	halDmaInitC();
+	halDmaInit();
 
 	//Структура для общения процессорных ядер
-	cntxt->synchro = (Synchro*)halSyncAddr((int*)&patterns, 0);
+	cntxt->synchro = (Synchro*)halSyncAddr((int*)cntxt->patterns, 0);
 
 	//Адрес кольцевого буфера Polygons-структур на nmc0 
 	cntxt->polygonsRB = (HalRingBuffer*)halSyncAddr(0, 0);
@@ -75,8 +82,7 @@ SECTION(".text_nmglvs") int nmglvsNm1Init(NMGL_Context_NM1* cntxt)
 	cntxt->depthSegment.set(segZBuff, WIDTH_SEG, HEIGHT_SEG, msdAdd2D);
 
 	//sync0
-	halHostSync((int)&patterns);
-	cntxt->patterns = &patterns;
+	halHostSync((int)cntxt->patterns);
 
 	cntxt->buffer0 = pool0;
 	cntxt->buffer1 = pool1;

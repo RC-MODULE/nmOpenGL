@@ -129,13 +129,13 @@ SECTIONS
 	*(.heap);
 	. = ORIGIN(C1_IMU0) + LENGTH(C1_IMU0);
     __HEAP_0_END = .;
-  } > C1_IMU0*/
-  /*.heap1 : ALIGN(0x8)
+  } > C1_IMU0
+  .heap1 : ALIGN(0x8)
   {
     *(.heap1);
 	. = ORIGIN(C1_IMU1) + LENGTH(C1_IMU1);
     __HEAP_1_END = .;
-  } > C1_IMU1
+  } > C1_IMU1*/
   .heap2 : ALIGN(0x8)
   {
     *(.heap2);
@@ -159,5 +159,5 @@ SECTIONS
     *(.heap10);
 	. = ORIGIN(EMI2) + LENGTH(EMI2);
     __HEAP_10_END = .;
-  } > EMI2*/
+  } > EMI2
 }
