@@ -108,7 +108,6 @@ SECTION(".text_nmglvs") int nmglvsNm1Step(NMGL_Context_NM1* cntxt)
 	}
 	case NMC1_SWAP_BUFFER: {
 		msdWaitDma();
-		while (halRingBufferIsBusy(cntxt->colorBuffer->getHalRingBuffer()));
 
 		cntxt->t1 = clock();
 
@@ -140,12 +139,12 @@ SECTION(".text_nmglvs") int nmglvsNm1Step(NMGL_Context_NM1* cntxt)
 		break;
 	}
 	case NMC1_AND4: {
-		int result = 0;
 		int* src0Ext = (int*)currentCommand.params[0];
 		int* src1Ext = (int*)currentCommand.params[1];
 		int* src2Ext = (int*)currentCommand.params[2];
 		int* src3Ext = (int*)currentCommand.params[3];
 		nm64u* dst = (nm64u*)currentCommand.params[4];
+		
 		int size = currentCommand.params[5];
 		while (size > 0) {
 			int localSize = (size, SIZE_BANK / 2);
@@ -158,14 +157,12 @@ SECTION(".text_nmglvs") int nmglvsNm1Step(NMGL_Context_NM1* cntxt)
 			nmppsCopy_32s(src2Ext, (nm32s*)src2, localSize);
 			nmppsCopy_32s(src3Ext, (nm32s*)src3, localSize);
 			nmppsAnd4V_64u(src0, src1, src2, src3, dst, localSize / 2);
-			/*if (result == 0) {
-				for (int i = 0; i < localSize; i++) {
-					if (dst[i] != 0) {
-						result = 1;
-						break;
-					}
-				}
-			}*/
+			size -= localSize;
+			src0Ext += localSize;
+			src1Ext += localSize;
+			src2Ext += localSize;
+			src3Ext += localSize;
+			dst += localSize / 2;
 		}
 		break;
 	}

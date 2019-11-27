@@ -26,7 +26,7 @@ SECTIONS
   .text_nmgl : ALIGN(0x8)
   {
     *(.text_nmgl);
-  } > C0_IMU0
+  } > EMI
   .text_nmplv : ALIGN(0x8)
   {
     *(.text_nmplv);

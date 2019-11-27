@@ -6,8 +6,6 @@
 SECTION(".data_imu6") int maskTmp[BIG_NMGL_SIZE / 32];
 SECTION(".data_imu6") int maskTmp2[BIG_NMGL_SIZE / 32];
 
-extern "C" int firstNonZeroIndx_32s(int* pSrcVec, int nSize);
-
 SECTION(".text_demo3d")
 void setSegmentMask(const v2nm32f* minXY, const v2nm32f* maxXY, SegmentMask* masks, int primCount) {
 	for (int segY = 0, iSeg = 0; segY < cntxt.windowInfo.nRows; segY++) {
@@ -30,15 +28,6 @@ void setSegmentMask(const v2nm32f* minXY, const v2nm32f* maxXY, SegmentMask* mas
 				maskTmp[i] = result;
 			}
 			int size32 = MIN(NMGL_SIZE / 32, primCount / 32 + 2);
-			
-			/*addInstrNMC1(&cntxt.synchro->instantCommandsRB, NMC1_AND4,
-				(int)maskXLt + 0x40000,
-				(int)maskYLt + 0x40000,
-				(int)maskXGt + 0x40000,
-				(int)maskYGt + 0x40000,
-				(int)maskTmp2 + 0x40000,
-				size32);
-			while (halRingBufferIsEmpty(&cntxt.synchro->instantCommandsRB) == 0);*/
 
 			if (masks[iSeg].hasNotZeroBits == 0) {
 				if (firstNonZeroIndx_32s(maskTmp, size32) >= 0) {

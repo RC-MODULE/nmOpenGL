@@ -72,11 +72,11 @@ int nmglvsNm0Init()
 	cntxt.trianDdr.y2 = dataDdr + 5 * BIG_NMGL_SIZE;
 	cntxt.trianDdr.z = (int*)(dataDdr + 6 * BIG_NMGL_SIZE);
 	cntxt.trianDdr.colors = (v4nm32s*)(dataDdr + 7 * BIG_NMGL_SIZE);
-	cntxt.trianInner.maxSize = BIG_NMGL_SIZE;
-	cntxt.trianInner.size = 0;
+	cntxt.trianDdr.maxSize = BIG_NMGL_SIZE;
+	cntxt.trianDdr.size = 0;
 
 #ifdef __GNUC__
-	halDmaInit();
+	//halDmaInit();
 	halInstrCacheEnable();
 	//nmprofiler_init();
 #endif // __GNUC__
@@ -170,7 +170,8 @@ int nmglvsNm0Init()
 	halSyncAddr((int*)cntxt.polygonsRB, 1);
 
 	// Check memory allocation
-	if (cntxt.synchro == 0) {
+	if (cntxt.synchro == 0 || polyArray == 0 || cntxt.polygonsRB == 0 ||
+		synchroData == 0) {
 		halHostSync(0xDEADB00F);	// send error to host
 		return -1;
 	}

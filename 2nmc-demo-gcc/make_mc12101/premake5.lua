@@ -26,7 +26,7 @@ solution "demo3d-mc12101"
 	project "mc12101-nmc4-0"
       kind "Makefile"
       files { "../../include/*.h","../src_target0/*.*", "../../src_proc0/nm/*.*","../../src_proc0/common/*.*","../../src_proc0/nmgl/*.*","../../nmglvs_mc12101-gcc/src_nmc0/*.*", "mc12101brd-nmc0.cfg", "Makefile0" }
-	  includedirs { "$(MC12101)/include","$(HAL)/include","$(NMPP)/include","../../include", "$(NMPROFILER)/include"}
+	  includedirs { "$(MC12101)/include","$(HAL)/include","$(NMPP)/include","../../include"}
 	 
 	  configuration "Debug"
 		   buildcommands {"make DEBUG=y -f Makefile0"}
@@ -41,7 +41,7 @@ solution "demo3d-mc12101"
 	project "mc12101-nmc4-1"
       kind "Makefile"
       files { "../../include/*.h","../src_target1/*.*", "../../src_proc1/nm/*.*","../../src_proc1/common/*.*", "../../nmglvs_mc12101-gcc/src_nmc1/*.*","mc12101brd-nmc1.cfg", "Makefile1" }
-	  includedirs { "$(MC12101)/include","$(HAL)/include","$(NMPP)/include","../../include", "$(NMPROFILER)/include"}
+	  includedirs { "$(MC12101)/include","$(HAL)/include","$(NMPP)/include","../../include"}
 	 
 	  configuration "Debug"
 		   buildcommands {"make DEBUG=y -f Makefile1"}

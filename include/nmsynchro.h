@@ -50,17 +50,16 @@ inline int copyRisc(const void* src, void* dst, int size32) {
 
 class NMGLSynchro {
 private:
-	HalRingBuffer priority0RB;
-	HalRingBuffer priority1RB;
 public:
+	HalRingBuffer priorityRB[2];
 	int time0;
 	int time1;
 	int counter0;
 	int counter1;
 
 	void init(NMGLSynchroData* synchroData) {
-		halRingBufferInit(&priority0RB, synchroData->priority0, sizeof32(CommandNm1), PRIORITY0_SIZE, copyRisc, 0, 0);
-		halRingBufferInit(&priority1RB, synchroData->priority1, sizeof32(CommandNm1), PRIORITY1_SIZE, copyRisc, 0, 0);
+		halRingBufferInit(&priorityRB[0], synchroData->priority0, sizeof32(CommandNm1), PRIORITY0_SIZE, copyRisc, 0, 0);
+		halRingBufferInit(&priorityRB[1], synchroData->priority1, sizeof32(CommandNm1), PRIORITY1_SIZE, copyRisc, 0, 0);
 	}
 
 	void writeInstr(int priority, 
@@ -71,18 +70,7 @@ public:
 		int param3 = 0, 
 		int param4 = 0, 
 		int param5 = 0) {
-		HalRingBuffer* current;
-		switch (priority)
-		{
-		case 0:
-			current = &priority0RB;
-			break;
-		case 1:
-			current = &priority1RB;
-			break;
-		default:
-			return;
-		}
+		HalRingBuffer* current = &priorityRB[priority];
 		while (halRingBufferIsFull(current));
 		CommandNm1* command = (CommandNm1*)halRingBufferHead(current);
 		command->instr_nmc1 = instr;
@@ -97,17 +85,15 @@ public:
 	}
 
 	bool isEmpty() {
-		return halRingBufferIsEmpty(&priority1RB) && halRingBufferIsEmpty(&priority0RB);
+		return isEmpty(1) && isEmpty(0);
+	}
+
+	bool isEmpty(int priority) {
+		return halRingBufferIsEmpty(&priorityRB[priority]);
 	}
 
 	void readInstr(CommandNm1* dst) {
-		HalRingBuffer* currentBuffer;
-		if (halRingBufferIsEmpty(&priority0RB)) {
-			currentBuffer = &priority1RB;
-		}
-		else {
-			currentBuffer = &priority0RB;
-		}
+		HalRingBuffer* currentBuffer = (isEmpty(0)) ? &priorityRB[1] : &priorityRB[0];
 		halRingBufferPop(currentBuffer, dst, 1);
 	}
 };

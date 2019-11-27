@@ -609,11 +609,14 @@ extern "C"{
 	
 	void ternaryLt0_AddC_AddC_32f(nm32f* srcFlags, nm32f* srcVec, float valueLeft, float valueRight, float* dstVec, int size);
 	int readMask(nm1* mask, int* dstIndices, int* treated, int size, int maxSize);
+
+	int firstNonZeroIndx_32s(int* pSrcVec, int nSize);
 }
 void reverseMatrix3x3in4x4(mat4nm32f* src, mat4nm32f* dst);
 
 //void addInstrNMC1(HalRingBuffer* commandsRB, int instr, int param0 = 0, int param1 = 0, int param2 = 0, int param3 = 0, int param4 = 0, int param5 = 0);
 
+//void setSegmentMask(const Triangles* triangles, Triangles* trianglesInner, SegmentMask* masks);
 void setSegmentMask(const v2nm32f* minXY, const v2nm32f* maxXY, SegmentMask* masks, int primCount);
 int pushToTriangles_t(const float *vertexX, const float *vertexY, const float *vertexZ, const v4nm32f* color, Triangles& triangles, int countVertex);
 void rasterizeT(const Triangles* triangles, const SegmentMask* masks, int count);

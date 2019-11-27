@@ -69,7 +69,7 @@ SECTION(".text_nmglvs") int nmglvsNm1Init(NMGL_Context_NM1* cntxt)
 	//Адрес кольцевого буфера Polygons-структур на nmc0 
 	cntxt->polygonsRB = (HalRingBuffer*)halSyncAddr(0, 0);
 
-	if (false) {
+	if (cntxt->patterns == 0) {
 		halHostSync((int)0);	// send error to host
 		return -1;
 	}
