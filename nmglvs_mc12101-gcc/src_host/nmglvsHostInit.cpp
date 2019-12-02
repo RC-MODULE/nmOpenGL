@@ -36,8 +36,11 @@ void download() {
 		while (halRingBufferIsFull(&imagesRB)) {
 			halSleep(2);
 		}
-		//if (mouseStatus.nKey == VS_MOUSE_LBUTTON) {
+#if defined(PROFILER0) || defined(PROFILER1)
+		if (mouseStatus.nKey == VS_MOUSE_LBUTTON) {
+#else
 		if (mouseStatus.nKey != VS_MOUSE_LBUTTON) {
+#endif
 			halHostRingBufferPop(&hostImageRB, halRingBufferHead(&imagesRB), 1);
 		}
 		else {

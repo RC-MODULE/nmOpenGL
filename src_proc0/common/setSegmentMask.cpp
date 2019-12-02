@@ -48,4 +48,15 @@ void setSegmentMask(NMGL_Context_NM0 &cntxt, SegmentMask* masks) {
 			}
 		}
 	}
+
+	int size32 = MIN(BIG_NMGL_SIZE / 32, cntxt.trianDdr.size / 32 + 2);
+	for (int iSeg = 0; iSeg < 36; iSeg++) {
+		nmblas_scopy(size32, (float*)masks[iSeg].bits, 1, (float*)cntxt.buffer0, 1);
+		if (firstNonZeroIndx_32s((int*)cntxt.buffer0, size32) >= 0) {
+			masks[iSeg].hasNotZeroBits = 1;
+		}
+		else {
+			masks[iSeg].hasNotZeroBits = 0;
+		}
+	}
 }

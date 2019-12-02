@@ -62,7 +62,9 @@ SECTION(".text_nmglvs") int nmglvsNm1Init(NMGL_Context_NM1& cntxt)
 #ifdef __GNUC__
 	halInstrCacheEnable();
 	halDmaInit();
-	//nmprofiler_init();
+#ifdef PROFILER1
+	nmprofiler_init();
+#endif // PROFILER1	
 #endif // __GNUC__
 
 	//Структура для общения процессорных ядер

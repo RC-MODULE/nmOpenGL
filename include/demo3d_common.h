@@ -10,6 +10,8 @@
 	#define setHeap(n)
 #endif
 
+//#define PROFILER0
+//#define PROFILER1
 
 #ifdef __GNUC__
 #define SECTION(sec) __attribute__((section(sec)))

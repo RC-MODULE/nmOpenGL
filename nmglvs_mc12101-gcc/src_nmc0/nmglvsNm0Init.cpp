@@ -86,9 +86,11 @@ int nmglvsNm0Init()
 	Polygons* polyArray = myMallocT<Polygons>(COUNT_POLYGONS_BUFFER);
 
 #ifdef __GNUC__
-	//halDmaInit();
+	halDmaInit();
 	halInstrCacheEnable();
-	//nmprofiler_init();
+#ifdef PROFILER0
+	nmprofiler_init();
+#endif // PROFILER0	
 #endif // __GNUC__
 
 

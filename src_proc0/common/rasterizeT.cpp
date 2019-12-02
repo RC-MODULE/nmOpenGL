@@ -11,10 +11,9 @@ SECTION(".data_imu7")   int maskBitsTemp[BIG_NMGL_SIZE / 32];
 
 
 SECTION(".text_demo3d") Polygons* getPolygonsHead() {
-	volatile int a = 0;
 	HalRingBuffer* tmp = cntxt.polygonsRB;
 	while (halRingBufferIsFull(tmp)) {
-		a++;
+		halSleep(2);
 	}
 	return (Polygons*)halRingBufferHead(tmp);
 }

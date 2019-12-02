@@ -88,12 +88,18 @@ int main()
 		nmglvsHostReadImage(currentImage);
 		VS_SetData(1, currentImage);
 		counter++;
+#if defined(PROFILER0) || defined(PROFILER1)
 		if (counter>=256 && flag) {
-			//halProfilerPrint2xml(".main0.map", 0, "../perf0.xml");
-			//halProfilerPrint2xml(".main1.map", 1, "../perf1.xml");
+#ifdef PROFILER0
+			halProfilerPrint2xml(".main0.map", 0, "../perf0.xml");
+#endif // PROFILER0
+#ifdef PROFILER1
+			halProfilerPrint2xml(".main1.map", 1, "../perf1.xml");
+#endif // PROFILER1
 			//halProfilerPrint2tbl(".main0.map", 0);
 			flag = 0;
 		}
+#endif
 		/*VS_Line(1, 0, 128, 768, 128, 0xFF);
 		VS_Line(1, 0, 256, 768, 256, 0xFF);
 		VS_Line(1, 0, 384, 768, 384, 0xFF);
