@@ -257,7 +257,6 @@ int main()
 
 	float time = 0;
 	float invmax = (1 / 4.8) * 0.5;
-
 	while(nmglvsNm0Run()){
 		nmglClear(NMGL_COLOR_BUFFER_BIT | NMGL_DEPTH_BUFFER_BIT);
 
@@ -326,8 +325,11 @@ int main()
 		timeClock = t1 - t0;
 		printf("nmglDrawArrays=%d\n", timeClock);
 		
+
 		//error = nmglGetError();
 		nmglvsSwapBuffer();
+		
+
 
 	}
 	nmglDisableClientState(NMGL_VERTEX_ARRAY);

@@ -63,12 +63,23 @@ int main()
 	VS_CreateImage("Source Image", 1, WIDTH_IMAGE, HEIGHT_IMAGE, VS_RGB32, 0);	// Create window for 8-bit source grayscale image
 	VS_OpRunForward();
 
-
+	int flag = 1;
+	int counter = 0;
 	while(VS_Run())	{
 		nmglvsHostReadImage(currentImage);
-
 		VS_SetData(1, currentImage);
-
+#if defined(PROFILER0) || defined(PROFILER1)
+		if (counter > 8 && flag) {
+#ifdef PROFILER0
+			halProfilerPrint2xml(".main0.map", 0, "../perf0.xml");
+#endif // PROFILER0
+#ifdef PROFILER1
+			halProfilerPrint2xml(".main1.map", 1, "../perf1.xml");
+#endif // PROFILER1
+			flag = 0;
+		}
+#endif
+		counter++;
 		VS_Draw(VS_DRAW_ALL);
 	}
 

@@ -69,7 +69,7 @@ LINKER_FLAGS     =   -Xlinker -Map=.main1.map $(LIB_DIRS) "-Wl,-Tldscript-nmc1.l
 
 # regular search of *.c *.cpp,*.asm sources in all $(SRC_DIRS)
 ALL_CPP =$(wildcard $(addsuffix /*.cpp, $(SRC_DIRS)))
-ALL_ASM =$(wildcard $(addsuffix /*.asm, $(SRC_DIRS)))
+ALL_ASM =$(wildcard $(addsuffix /*.asm, $(SRC_DIRS))) proflist_generated1.asm
 ALL_C   =$(wildcard $(addsuffix /*.c, $(SRC_DIRS)))
 ALL_H   =$(wildcard $(addsuffix /*.h, $(HEADER_DIRS)))
 
@@ -108,7 +108,7 @@ $(OUT_DIR):
 	-mkdir "$(@)"
 	
 $(TMP_DIR)/%.o: %.asm 
-	$(AS) $(AS_FLAGS) $(<) -o$(@)
+	$(AS) $(AS_FLAGS) $(<) -o$(@)  $(INC_DIRS)
 	
 $(TMP_DIR)/%.o: %.cpp 
 	$(CC) $(CC_FLAGS) -c $(<) -o$(@) $(INC_DIRS) -O2
@@ -116,6 +116,8 @@ $(TMP_DIR)/%.o: %.cpp
 $(TMP_DIR)/%.o: %.c
 	$(CC) $(CC_FLAGS) -c $(<) -o$(@) $(INC_DIRS) -O2
 	
+proflist:
+	lua53 $(HAL)/script/profiler-gcc.lua .main1.map > proflist_generated1.asm 
 
 #========================== Visual Studio  ===================
 export ALL_CPP ALL_ASM ALL_C ALL_H

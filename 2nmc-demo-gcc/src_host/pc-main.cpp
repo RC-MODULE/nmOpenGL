@@ -96,7 +96,6 @@ int main()
 #ifdef PROFILER1
 			halProfilerPrint2xml(".main1.map", 1, "../perf1.xml");
 #endif // PROFILER1
-			//halProfilerPrint2tbl(".main0.map", 0);
 			flag = 0;
 		}
 #endif

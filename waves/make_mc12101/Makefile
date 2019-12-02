@@ -29,6 +29,18 @@ nm1 $(TARGET1):
 	
 host $(HOST): $(VS)
 
+proflist: proflist0 proflist1
+proflist0:
+	$(MAKE) -f Makefile0 proflist
+proflist1:
+	$(MAKE) -f Makefile1 proflist
+	
+dump0:
+	$(MAKE) -f Makefile0 dumps
+dump1:
+	$(MAKE) -f Makefile1 dumps
+
+
 	
 vs2005: $(HOST).vcproj 
 	"$(VS80COMNTOOLS)vsvars32" && vcbuild $(HOST).vcproj

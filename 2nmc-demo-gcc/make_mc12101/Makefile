@@ -35,14 +35,6 @@ proflist0:
 proflist1:
 	$(MAKE) -f Makefile1 proflist
 	
-dump0:
-	$(MAKE) -f Makefile0 dumps
-dump1:
-	$(MAKE) -f Makefile1 dumps
-
-
-proflist_generated.asm: 
-	#$(TCLSH) $(NMPROFILER)/script/generate_proflist.tcl proflist_generated.asm
 	
 vs2005: $(HOST).vcproj 
 	"$(VS80COMNTOOLS)vsvars32" && vcbuild $(HOST).vcproj
