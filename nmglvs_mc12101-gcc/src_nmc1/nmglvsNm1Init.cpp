@@ -12,6 +12,7 @@
 
 SECTION(".data_shared3") int ZBuffImage[WIDTH_IMAGE * HEIGHT_IMAGE];
 SECTION(".data_shared3") int imageArray[COUNT_IMAGE_BUFFER * WIDTH_IMAGE * HEIGHT_IMAGE];
+SECTION(".data_shared3") Patterns mPatterns;
 
 SECTION(".data_imu1")	int pool0[SIZE_BANK];
 SECTION(".data_imu3")	int pool1[SIZE_BANK];
@@ -44,7 +45,7 @@ template<class T> T* myMallocT() {
 	return (T*)halMalloc32(sizeof32(T));
 }
 
-SECTION(".text_nmglvs") int nmglvsNm1Init(NMGL_Context_NM1* cntxt)
+SECTION(".text_nmglvs") int nmglvsNm1Init(NMGL_Context_NM1& cntxt)
 {
 	halSetProcessorNo(1);
 	//---------- start nm program ------------
@@ -55,7 +56,8 @@ SECTION(".text_nmglvs") int nmglvsNm1Init(NMGL_Context_NM1* cntxt)
 	int ok=0;
 
 	setHeap(10);
-	cntxt->patterns = myMallocT<Patterns>();
+	//cntxt.patterns = myMallocT<Patterns>();
+	cntxt.patterns = &mPatterns;
 
 #ifdef __GNUC__
 	halInstrCacheEnable();
@@ -64,12 +66,13 @@ SECTION(".text_nmglvs") int nmglvsNm1Init(NMGL_Context_NM1* cntxt)
 #endif // __GNUC__
 
 	//Структура для общения процессорных ядер
-	cntxt->synchro = (NMGLSynchro*)halSyncAddr((int*)cntxt->patterns, 0);
+	NMGLSynchroData* synchroData = (NMGLSynchroData*)halSyncAddr((int*)cntxt.patterns, 0);
+	cntxt.synchro.init(synchroData); 
 
 	//Адрес кольцевого буфера Polygons-структур на nmc0 
-	cntxt->polygonsRB = (HalRingBuffer*)halSyncAddr(0, 0);
+	cntxt.polygonsRB = (HalRingBuffer*)halSyncAddr(0, 0);
 
-	if (cntxt->patterns == 0) {
+	if (cntxt.patterns == 0) {
 		halHostSync((int)0);	// send error to host
 		return -1;
 	}
@@ -77,45 +80,43 @@ SECTION(".text_nmglvs") int nmglvsNm1Init(NMGL_Context_NM1* cntxt)
 		halHostSync(0x600DB00F);	// send ok to host
 
 
-	cntxt->colorBuffer = &colorBuffer;
-	cntxt->depthBuffer = &depthBuffer;
-	//cntxt->colorBuffer = myMallocT<ImageBuffer>();
-	//cntxt->depthBuffer = myMallocT<DepthBuffer>();
-	cntxt->colorBuffer->set(imageArray, WIDTH_IMAGE, HEIGHT_IMAGE, COUNT_IMAGE_BUFFER, 0);
-	cntxt->depthBuffer->set(ZBuffImage, WIDTH_IMAGE, HEIGHT_IMAGE, 1, 0);
-	cntxt->colorSegment.set(segImage, WIDTH_SEG, HEIGHT_SEG, msdAdd2D);
-	cntxt->depthSegment.set(segZBuff, WIDTH_SEG, HEIGHT_SEG, msdAdd2D);
+	cntxt.colorBuffer = &colorBuffer;
+	cntxt.depthBuffer = &depthBuffer;
+	cntxt.colorBuffer->set(imageArray, WIDTH_IMAGE, HEIGHT_IMAGE, COUNT_IMAGE_BUFFER);
+	cntxt.depthBuffer->set(ZBuffImage, WIDTH_IMAGE, HEIGHT_IMAGE, 1);
+	cntxt.colorSegment.set(segImage, WIDTH_SEG, HEIGHT_SEG, msdAdd2D);
+	cntxt.depthSegment.set(segZBuff, WIDTH_SEG, HEIGHT_SEG, msdAdd2D);
 
 	//sync0
-	halHostSync((int)cntxt->patterns);
+	halHostSync((int)cntxt.patterns);
 
-	cntxt->buffer0 = pool0;
-	cntxt->buffer1 = pool1;
+	cntxt.buffer0 = pool0;
+	cntxt.buffer1 = pool1;
 
 	for (int j = 0; j < SMALL_SIZE; j++) {
 		int off = j * WIDTH_PTRN*HEIGHT_PTRN / 16;
-		cntxt->ppPtrns1_2s[j] = nmppsAddr_32s((nm32s*)pool0, off);
-		cntxt->ppPtrns2_2s[j] = nmppsAddr_32s((nm32s*)pool1, off);
-		cntxt->ppPtrnsCombined_2s_basic[j] = nmppsAddr_32s(cntxt->polyImgTmp, off);
-		cntxt->minusOne[j] = -1;
+		cntxt.ppPtrns1_2s[j] = nmppsAddr_32s((nm32s*)pool0, off);
+		cntxt.ppPtrns2_2s[j] = nmppsAddr_32s((nm32s*)pool1, off);
+		cntxt.ppPtrnsCombined_2s_basic[j] = nmppsAddr_32s(cntxt.polyImgTmp, off);
+		cntxt.minusOne[j] = -1;
 	}
 	//sync3
-	halHostSync((int)cntxt->colorBuffer->getHalRingBuffer());
+	halHostSync((int)cntxt.colorBuffer->getHalRingBuffer());
 
-	cntxt->offsetTrX = offsetTrX;
-	cntxt->offsetTrY = offsetTrY;
-	cntxt->widths = widths;
-	cntxt->heights = heights;
-	cntxt->valuesZ = valuesZ;
-	cntxt->valuesC = valuesC;
+	cntxt.offsetTrX = offsetTrX;
+	cntxt.offsetTrY = offsetTrY;
+	cntxt.widths = widths;
+	cntxt.heights = heights;
+	cntxt.valuesZ = valuesZ;
+	cntxt.valuesC = valuesC;
 
-	cntxt->ppSrcPackPtrns = ppSrcPackPtrns;
-	cntxt->ppDstPackPtrns = ppDstPackPtrns;
-	cntxt->nSizePtrn32 = nSizePtrn32;
+	cntxt.ppSrcPackPtrns = ppSrcPackPtrns;
+	cntxt.ppDstPackPtrns = ppDstPackPtrns;
+	cntxt.nSizePtrn32 = nSizePtrn32;
 
-	cntxt->zBuffPoints = zBuffPoints;
-	cntxt->imagePoints = imagePoints;
+	cntxt.zBuffPoints = zBuffPoints;
+	cntxt.imagePoints = imagePoints;
 
-	cntxt->t0 = clock();
+	cntxt.t0 = clock();
 } 
 

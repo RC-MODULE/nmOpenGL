@@ -73,7 +73,7 @@ LINKER_FLAGS     = -Xlinker -Map=.main0.map $(LIB_DIRS) -save-temps "-Wl,-Tldscr
 ALL_CPP =$(wildcard $(addsuffix /*.cpp, $(SRC_DIRS)))
 ALL_ASM =$(wildcard $(addsuffix /*.asm, $(SRC_DIRS))) proflist_generated0.asm
 ALL_C   =$(wildcard $(addsuffix /*.c, $(SRC_DIRS)))
-ALL_H   =$(wildcard $(addsuffix /*.h, $(HEADER_DIRS)))
+ALL_H   =$(wildcard $(addsuffix /*.h, $(INC_DIRS)))
 
 VPATH   = $(SRC_DIRS)
 
@@ -81,7 +81,8 @@ VPATH   = $(SRC_DIRS)
 OBJECTS_CPP = $(notdir $(patsubst %.cpp,%.o,$(ALL_CPP)))
 OBJECTS_ASM = $(notdir $(patsubst %.asm,%.o,$(ALL_ASM)))
 OBJECTS_C   = $(notdir $(patsubst %.c,%.o,$(ALL_C)))
-OBJECTS     = $(addprefix $(TMP_DIR)/, $(OBJECTS_C) $(OBJECTS_CPP)  $(OBJECTS_ASM))
+OBJECTS_H   = $(notdir $(patsubst %.h,%.o,$(ALL_H)))
+OBJECTS     = $(addprefix $(TMP_DIR)/, $(OBJECTS_C) $(OBJECTS_CPP)  $(OBJECTS_ASM)  $(OBJECTS_H))
 
 #======================== BUILD RULES ====================================
 .PHONY:all  clean skip
@@ -112,7 +113,7 @@ $(TMP_DIR)/dumps/%.dump: $(TMP_DIR)/%.o
 $(TMP_DIR):
 	-mkdir "$(@)"
 
-$(TARGET): $(TMP_DIR) $(OBJECTS) $(ALL_H) nmc4vars_win.mk Makefile
+$(TARGET): $(TMP_DIR) $(OBJECTS) nmc4vars_win.mk Makefile
 	$(CC) $(LINKER_FLAGS) $(OBJECTS) $(LIBS)
 
 nmc4vars_win.mk:
@@ -122,7 +123,7 @@ $(OUT_DIR):
 	-mkdir "$(@)"
 	
 $(TMP_DIR)/%.o: %.asm 
-	$(AS) $(AS_FLAGS) $(<) -o$(@)
+	$(AS) $(AS_FLAGS) $(<) -o$(@) $(INC_DIRS)
 	
 $(TMP_DIR)/%.o: %.cpp 
 	$(CC) $(CC_FLAGS) -c $(<) -o$(@) $(INC_DIRS) -O2 -fno-builtin-printf

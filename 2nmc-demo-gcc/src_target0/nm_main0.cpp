@@ -87,7 +87,7 @@ SECTION(".text_shared") int main()
 	halSleep(10);
 	ok = halHostSync((int)0x600D600D);
 #endif
-
+	
 	nmglClearColor(0, 0, 0.4, 0.0f);
 	//nmglClearColor(0.5, 0.5, 0.5, 1.0f);
 

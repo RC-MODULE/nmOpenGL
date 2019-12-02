@@ -29,9 +29,6 @@ unsigned char srcImg[4 * SIZE_BUFFER * WIDTH_IMAGE * HEIGHT_IMAGE];
 HalHostRingBuffer hostImageRB;
 HalRingBuffer imagesRB;
 
-
-int synchro_nm;
-
 void download() {
 	while (true) {
 		S_VS_MouseStatus mouseStatus;
@@ -84,8 +81,6 @@ int nmglvsHostInit()
 		printf("Memory nmc1 allocation error!");
 		return -1;
 	}
-//----------------init-nmc0---------------------------
-	synchro_nm = halSync(0, 0);
 //----------------init-nmc1------------------------------
 	//nmc1, sync0
 	int patternsNM = halSync(1,1);

@@ -21,6 +21,8 @@ SECTION(".data_imu6")	ArrayManager<float> vertexAM;
 SECTION(".data_imu6")	ArrayManager<float> normalAM;
 SECTION(".data_imu6")	ArrayManager<v4nm32f> colorAM;
 
+SECTION(".data_imu6") int maskTmp2[BIG_NMGL_SIZE / 32];
+
 template < typename T >
 inline void copyVec(const void* src, void* dst, size_t size) {
 	nmblas_scopy(size * sizeof32(T), (float*)src, 1, (float*)dst, 1);
@@ -69,6 +71,10 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 
 	cntxt.trianDdr.size = 0;
 	reverseMatrix3x3in4x4(cntxt.modelviewMatrixStack.top(), &cntxt.normalMatrix);
+
+	for (int i = 0; i < 36; i++) {
+		masks[i].bits = &masksBits[i * BIG_NMGL_SIZE / 32];
+	}
 
 	while (!vertexAM.isEmpty()) {
 		//vertex
@@ -170,36 +176,18 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			break;
 		}
 	}
+	setSegmentMask(cntxt, masks);
+	
 
-
-	for (int i = 0; i < 36; i++) {
-		masks[i].bits = &masksBits[i * BIG_NMGL_SIZE / 32];
-		masks[i].hasNotZeroBits = 0;
-	}
-
-	int step = NMGL_SIZE;
-	for(int tail = 0; tail < cntxt.trianDdr.size; tail+= step){
-		int localSize = MIN(step, cntxt.trianDdr.size - tail);
-		for (int i = 0; i < 36; i++) {
-			masks[i].bits = &masksBits[(i * BIG_NMGL_SIZE + tail) / 32];
+	int size32 = MIN(BIG_NMGL_SIZE / 32, cntxt.trianDdr.size / 32 + 2);
+	for (int iSeg = 0; iSeg < 36; iSeg++) {
+		nmblas_scopy(size32, (float*)masks[iSeg].bits, 1, (float*)cntxt.buffer0, 1);
+		if (firstNonZeroIndx_32s((int*)cntxt.buffer0, size32) >= 0) {
+			masks[iSeg].hasNotZeroBits = 1;
 		}
-		nmblas_scopy(localSize, &cntxt.trianDdr.x0[tail], 1, cntxt.trianInner.x0, 1);
-		nmblas_scopy(localSize, &cntxt.trianDdr.y0[tail], 1, cntxt.trianInner.y0, 1);
-		nmblas_scopy(localSize, &cntxt.trianDdr.x1[tail], 1, cntxt.trianInner.x1, 1);
-		nmblas_scopy(localSize, &cntxt.trianDdr.y1[tail], 1, cntxt.trianInner.y1, 1);
-		nmblas_scopy(localSize, &cntxt.trianDdr.x2[tail], 1, cntxt.trianInner.x2, 1);
-		nmblas_scopy(localSize, &cntxt.trianDdr.y2[tail], 1, cntxt.trianInner.y2, 1);
-
-		float* minXY = cntxt.buffer2 + 6 * NMGL_SIZE;
-		float* maxXY = cntxt.buffer3 + 6 * NMGL_SIZE;
-		findMinMax3(cntxt.trianInner.x0, cntxt.trianInner.x1, cntxt.trianInner.x2, cntxt.buffer0, cntxt.buffer1, localSize);
-		findMinMax3(cntxt.trianInner.y0, cntxt.trianInner.y1, cntxt.trianInner.y2, cntxt.buffer2, cntxt.buffer3, localSize);
-		nmppsMerge_32f(cntxt.buffer0, cntxt.buffer2, minXY, localSize);
-		nmppsMerge_32f(cntxt.buffer1, cntxt.buffer3, maxXY, localSize);
-		setSegmentMask((v2nm32f*)minXY, (v2nm32f*)maxXY, masks, localSize);
-	}
-	for (int i = 0; i < 36; i++) {
-		masks[i].bits = &masksBits[i * BIG_NMGL_SIZE / 32];
+		else {
+			masks[iSeg].hasNotZeroBits = 0;
+		}
 	}
 	
 	rasterizeT(&cntxt.trianDdr, masks, cntxt.trianDdr.size);

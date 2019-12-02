@@ -32,7 +32,7 @@ void nmglEnable(NMGLenum cap) {
 		break;	
 
 	case NMGL_DEPTH_TEST:
-		cntxt.synchro->writeInstr(1, NMC1_DEPTH, NMGL_TRUE);
+		cntxt.synchro.writeInstr(1, NMC1_DEPTH, NMGL_TRUE);
 		break;
 	
 	case NMGL_DITHER:

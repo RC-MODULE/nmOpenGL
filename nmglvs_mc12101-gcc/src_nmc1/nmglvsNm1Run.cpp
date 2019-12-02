@@ -16,7 +16,7 @@
 
 extern int exitNM1;
 
-SECTION(".text_nmglvs") int nmglvsNm1Run(NMGL_Context_NM1* cntxt)
+SECTION(".text_nmglvs") int nmglvsNm1Run(NMGL_Context_NM1 &cntxt)
 {
 	if(exitNM1 == 0){
 		return 1;

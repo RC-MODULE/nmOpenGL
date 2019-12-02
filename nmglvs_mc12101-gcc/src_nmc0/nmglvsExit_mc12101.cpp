@@ -5,5 +5,5 @@
 #pragma code_section ".text_nmgl"
 
 void nmglvsExit_mc12101() {
-	cntxt.synchro->writeInstr(1, NMC1_EXIT, 0, 0, 0, 0, 0, 0);
+	cntxt.synchro.writeInstr(1, NMC1_EXIT, 0, 0, 0, 0, 0, 0);
 }

@@ -5,7 +5,7 @@ import from "nmprofiler.mlb";
 begin ".text_nmprofiler"
 PROFILE_BEGIN(16);
 
-FUNCTION(__ZN11DepthBuffer6updateEv,"__ZN11DepthBuffer6updateEv");// 0x00000000270001e6 [.text]
+/*FUNCTION(__ZN11DepthBuffer6updateEv,"__ZN11DepthBuffer6updateEv");// 0x00000000270001e6 [.text]
 FUNCTION(_print_32x,      "_print_32x      ");// 0x00000000270002f0 [.text]
 NONCFUNC(ARShift32,       "ARShift32       ");// 0x000000002700030e [.text]
 NONCFUNC(DAdd,            "DAdd            ");// 0x000000002700039a [.text]
@@ -97,7 +97,7 @@ FUNCTION(_nmppsCopy_32s,  "_nmppsCopy_32s  ");// 0x0000000000004c74 [.text_nmplv
 FUNCTION(_nmppsRemap_32u, "_nmppsRemap_32u ");// 0x0000000000004c84 [.text_nmplv]
 FUNCTION(mtr_CpyCore_nm64,"mtr_CpyCore_nm64");// 0x0000000000004ca8 [.text_nmplm]
 FUNCTION(_nmppmCopy_32u,  "_nmppmCopy_32u  ");// 0x0000000000004cd0 [.text_nmplm]
-//FUNCTION(_nmppmCopy_32s,  "_nmppmCopy_32s  ");// 0x0000000000004cd0 [.text_nmplm]
+//FUNCTION(_nmppmCopy_32s,  "_nmppmCopy_32s  ");// 0x0000000000004cd0 [.text_nmplm]*/
 
 PROFILE_END();
 end ".text_nmprofiler";

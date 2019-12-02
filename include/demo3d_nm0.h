@@ -3,6 +3,7 @@
 
 #include "demo3d_common.h"
 #include "arraymanager.h"
+#include "nmgl.h"
 
 #define BIG_NMGL_SIZE (128 * NMGL_SIZE)
 
@@ -46,7 +47,8 @@ struct SegmentMask {
 };
 
 struct NMGL_Context_NM0 {
-	NMGLSynchro* synchro;
+	NMGLSynchro synchro;
+	int dummy;
 	NMGLenum error;
 	Patterns* patterns;
 	HalRingBuffer* polygonsRB;
@@ -101,6 +103,108 @@ struct NMGL_Context_NM0 {
 	float isEnabledLight[MAX_LIGHTS];
 	int isLighting;
 	float specularExp;
+
+	void init(NMGLSynchroData* syncroData){
+		synchro.init(syncroData);
+		currentMatrixStack = &modelviewMatrixStack;
+		isUseTwoSidedMode = NMGL_FALSE;
+		isCullFace = NMGL_FALSE;
+		cullFaceType = NMGL_BACK;
+		frontFaceOrientation = NMGL_CCW;
+		normalizeEnabled = NMGL_FALSE;
+		specularExp = 0;
+		isLighting = NMGL_FALSE;
+
+
+		modelviewMatrixStack.base = modelviewMatrix;
+		modelviewMatrixStack.current = 0;
+		modelviewMatrixStack.size = 16;
+		modelviewMatrixStack.type = NMGL_MODELVIEW_MATRIX;
+
+		projectionMatrixStack.base = projectionMatrix;
+		projectionMatrixStack.current = 0;
+		projectionMatrixStack.size = 2;
+		projectionMatrixStack.type = NMGL_PROJECTION_MATRIX;
+
+		materialAmbient.vec[2] = materialAmbient.vec[1] = materialAmbient.vec[0] = 0.2;
+		materialDiffuse.vec[2] = materialDiffuse.vec[1] = materialDiffuse.vec[0] = 0.8;
+		materialSpecular.vec[2] = materialSpecular.vec[1] = materialSpecular.vec[0] = 0;
+		materialEmissive.vec[2] = materialEmissive.vec[1] = materialEmissive.vec[0] = 0;
+		materialAmbient.vec[3] = materialDiffuse.vec[3] = materialSpecular.vec[3] = materialEmissive.vec[3] = 1;
+
+		for (int i = 0; i < MAX_LIGHTS; i++) {
+			if (i == 0) {
+				lightDiffuse[i].vec[0] = 1;
+				lightDiffuse[i].vec[1] = 1;
+				lightDiffuse[i].vec[2] = 1;
+				lightDiffuse[i].vec[3] = 1;
+
+				lightSpecular[i].vec[0] = 1;
+				lightSpecular[i].vec[1] = 1;
+				lightSpecular[i].vec[2] = 1;
+				lightSpecular[i].vec[3] = 1;
+			}
+			else {
+				lightDiffuse[i].vec[0] = 0;
+				lightDiffuse[i].vec[1] = 0;
+				lightDiffuse[i].vec[2] = 0;
+				lightDiffuse[i].vec[3] = 1;
+
+				lightSpecular[i].vec[0] = 0;
+				lightSpecular[i].vec[1] = 0;
+				lightSpecular[i].vec[2] = 0;
+				lightSpecular[i].vec[3] = 1;
+			}
+
+			lightAmbient[i].vec[2] = lightAmbient[i].vec[1] = lightAmbient[i].vec[1] = 0;
+			lightAmbient[i].vec[3] = 1;
+
+			lightPosition[i].vec[0] = 0;
+			lightPosition[i].vec[1] = 0;
+			lightPosition[i].vec[2] = 1;
+			lightPosition[i].vec[2] = 0;
+
+			lightSpotDirection[i].vec[0] = 0;
+			lightSpotDirection[i].vec[1] = 0;
+			lightSpotDirection[i].vec[2] = -1;
+			lightSpotDirection[i].vec[3] = 0;
+
+			lightSpotExp[i] = 0;
+			lightSpotCutoff[i] = 180;
+			lightConstAtt[i] = 1;
+			lightLinAtt[i] = 0;
+			lightQuadAtt[i] = 0;
+			isEnabledLight[i] = 0;
+		}
+
+		lightAmbient[MAX_LIGHTS].vec[0] = 0.2;
+		lightAmbient[MAX_LIGHTS].vec[1] = 0.2;
+		lightAmbient[MAX_LIGHTS].vec[2] = 0.2;
+		lightAmbient[MAX_LIGHTS].vec[3] = 1.0;
+
+		for (int i = 0; i < 4; i++) {
+			for (int j = 0; j < 4; j++) {
+				if (i == j) {
+					modelviewMatrix[0].matr[i * 4 + j] = 1;
+					projectionMatrix[0].matr[i * 4 + j] = 1;
+				}
+				else {
+					modelviewMatrix[0].matr[i * 4 + j] = 0;
+					projectionMatrix[0].matr[i * 4 + j] = 0;
+				}
+			}
+		}
+
+		windowInfo.segmentWidth = WIDTH_SEG;
+		windowInfo.segmentHeight = HEIGHT_SEG;
+		windowInfo.viewportMulZ = (1 - 0) * 0.5 * ZBUFF_MAX;
+		windowInfo.viewportAddZ = (1 + 0) * 0.5 * ZBUFF_MAX;
+
+		//массивы
+		nmglDisableClientState(NMGL_VERTEX_ARRAY);
+		nmglDisableClientState(NMGL_COLOR_ARRAY);
+		nmglDisableClientState(NMGL_NORMAL_ARRAY);
+	}
 };
 
 struct MasksSeg
@@ -616,8 +720,7 @@ void reverseMatrix3x3in4x4(mat4nm32f* src, mat4nm32f* dst);
 
 //void addInstrNMC1(HalRingBuffer* commandsRB, int instr, int param0 = 0, int param1 = 0, int param2 = 0, int param3 = 0, int param4 = 0, int param5 = 0);
 
-//void setSegmentMask(const Triangles* triangles, Triangles* trianglesInner, SegmentMask* masks);
-void setSegmentMask(const v2nm32f* minXY, const v2nm32f* maxXY, SegmentMask* masks, int primCount);
+void setSegmentMask(NMGL_Context_NM0 &cntxt, SegmentMask* masks);
 int pushToTriangles_t(const float *vertexX, const float *vertexY, const float *vertexZ, const v4nm32f* color, Triangles& triangles, int countVertex);
 void rasterizeT(const Triangles* triangles, const SegmentMask* masks, int count);
 void rasterizeL(Lines* lines, int count);

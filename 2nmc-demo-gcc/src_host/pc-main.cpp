@@ -87,10 +87,9 @@ int main()
 	while(VS_Run())	{
 		nmglvsHostReadImage(currentImage);
 		VS_SetData(1, currentImage);
-		int counter[2] = { 0 ,0};
-		ok = halReadMemBlock(&counter, synchro_nm, 2, 1);
-		if (counter[0]>=256 && flag) {
-			halProfilerPrint2xml(".main0.map", 0, "../perf0.xml");
+		counter++;
+		if (counter>=256 && flag) {
+			//halProfilerPrint2xml(".main0.map", 0, "../perf0.xml");
 			//halProfilerPrint2xml(".main1.map", 1, "../perf1.xml");
 			//halProfilerPrint2tbl(".main0.map", 0);
 			flag = 0;

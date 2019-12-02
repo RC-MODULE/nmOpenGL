@@ -4,6 +4,8 @@
 #include <time.h>
 #include "nmdef.h"
 #include "ringbuffer.h"
+#include "ringbuffert.h"
+#include "stdio.h"
 
 #define NMC1_DRAW_TRIANGLES 0xF0000000
 #define NMC1_DRAW_TRIANGLES_TEST 0xF0F00000
@@ -35,31 +37,20 @@ struct CommandNm1{
 #define PRIORITY1_SIZE 128
 
 struct NMGLSynchroData {
-	CommandNm1 priority0[PRIORITY0_SIZE];
-	CommandNm1 priority1[PRIORITY1_SIZE];
+	HalRingBufferData<CommandNm1, PRIORITY0_SIZE> priority0;
+	HalRingBufferData<CommandNm1, PRIORITY1_SIZE> priority1;
 };
-
-inline int copyRisc(const void* src, void* dst, int size32) {
-	int* srcInt = (int*)src;
-	int* dstInt = (int*)dst;
-	for (int i = 0; i < size32; i++) {
-		dstInt[i] = srcInt[i];
-	}
-	return 0;
-}
 
 class NMGLSynchro {
 private:
+	NMGLSynchroData* mSynchroData;
+	int dummy;
 public:
-	HalRingBuffer priorityRB[2];
-	int time0;
-	int time1;
-	int counter0;
-	int counter1;
+	int time;
+	int counter;
 
 	void init(NMGLSynchroData* synchroData) {
-		halRingBufferInit(&priorityRB[0], synchroData->priority0, sizeof32(CommandNm1), PRIORITY0_SIZE, copyRisc, 0, 0);
-		halRingBufferInit(&priorityRB[1], synchroData->priority1, sizeof32(CommandNm1), PRIORITY1_SIZE, copyRisc, 0, 0);
+		mSynchroData = synchroData;
 	}
 
 	void writeInstr(int priority, 
@@ -70,9 +61,24 @@ public:
 		int param3 = 0, 
 		int param4 = 0, 
 		int param5 = 0) {
-		HalRingBuffer* current = &priorityRB[priority];
-		while (halRingBufferIsFull(current));
-		CommandNm1* command = (CommandNm1*)halRingBufferHead(current);
+		
+		CommandNm1* command;
+		HalRingBufferConnector<CommandNm1, PRIORITY0_SIZE> connector0(&mSynchroData->priority0);
+		HalRingBufferConnector<CommandNm1, PRIORITY1_SIZE> connector1(&mSynchroData->priority1);
+		switch (priority)
+		{
+		case 0:
+			while (connector0.isFull());
+			command = connector0.ptrHead();
+			break;
+		case 1:
+			while (connector1.isFull());
+			command = connector1.ptrHead();
+			break;
+		default:
+			return;
+			break;
+		}
 		command->instr_nmc1 = instr;
 		command->done = false;
 		command->params[0] = param0;
@@ -81,20 +87,48 @@ public:
 		command->params[3] = param3;
 		command->params[4] = param4;
 		command->params[5] = param5;
-		current->head++;
+		switch (priority)
+		{
+		case 0:
+			connector0.head++;
+			break;
+		case 1:
+			connector1.head++;
+			break;
+		}
 	}
 
-	bool isEmpty() {
+	inline bool isEmpty() {
 		return isEmpty(1) && isEmpty(0);
 	}
 
 	bool isEmpty(int priority) {
-		return halRingBufferIsEmpty(&priorityRB[priority]);
+		switch (priority)
+		{
+		case 0: {
+			HalRingBufferConnector<CommandNm1, PRIORITY0_SIZE> connector0(&mSynchroData->priority0);
+			return connector0.isEmpty();
+		}
+		case 1: {
+			HalRingBufferConnector<CommandNm1, PRIORITY1_SIZE> connector1(&mSynchroData->priority1);
+			return connector1.isEmpty();
+		}
+		}
 	}
 
 	void readInstr(CommandNm1* dst) {
-		HalRingBuffer* currentBuffer = (isEmpty(0)) ? &priorityRB[1] : &priorityRB[0];
-		halRingBufferPop(currentBuffer, dst, 1);
+		HalRingBufferConnector<CommandNm1, PRIORITY1_SIZE> connector1(&mSynchroData->priority1);
+		while (isEmpty()) {
+			halSleep(2);
+		}
+		if (isEmpty(0)) {
+			HalRingBufferConnector<CommandNm1, PRIORITY1_SIZE> connector1(&mSynchroData->priority1);
+			connector1.pop(dst, 1);
+		}
+		else {
+			HalRingBufferConnector<CommandNm1, PRIORITY0_SIZE> connector0(&mSynchroData->priority0);
+			connector0.pop(dst, 1);
+		}
 	}
 };
 

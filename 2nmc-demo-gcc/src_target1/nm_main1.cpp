@@ -8,9 +8,9 @@ SECTION(".data_imu0")	NMGL_Context_NM1 nmglContextNM1;
 
 int main()
 { 
-	nmglvsNm1Init(&nmglContextNM1);
-	while (nmglvsNm1Run(&nmglContextNM1)) {
-		nmglvsNm1Step(&nmglContextNM1);
+	nmglvsNm1Init(nmglContextNM1);
+	while (nmglvsNm1Run(nmglContextNM1)) {
+		nmglvsNm1Step(nmglContextNM1);
 	}
 	return 0x611D611D;
 } 

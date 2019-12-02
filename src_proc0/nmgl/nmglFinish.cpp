@@ -6,5 +6,5 @@
 
 SECTION(".text_nmgl")
 void nmglFinish (){
-	while (!cntxt.synchro->isEmpty());
+	while (!cntxt.synchro.isEmpty());
 }

@@ -34,7 +34,7 @@ void rasterizeL(Lines* lines, int count){
 			nmppsCmpGtC_v2nm32f((v2nm32f*)maxXY, (v2nm32f*)lowerLimit, masks.xGt, masks.yGt, 1, count);
 			polygonsCheck = andMask(&masks, maskRes, count);
 			if (polygonsCheck) {
-				addInstrNMC1(&cntxt.synchro->commandsRB,
+				addInstrNMC1(&cntxt.synchro.commandsRB,
 					NMC1_COPY_SEG_FROM_IMAGE,
 					cntxt.windowInfo.x0[segX],
 					cntxt.windowInfo.y0[segY],
@@ -56,9 +56,9 @@ void rasterizeL(Lines* lines, int count){
 				fillPolygonsL(poly, &localLines, localSize, segX, segY);
 
 				nmglPolygonsRB->head++;
-				addInstrNMC1(&cntxt.synchro->commandsRB, NMC1_DRAW_TRIANGLES);
+				addInstrNMC1(&cntxt.synchro.commandsRB, NMC1_DRAW_TRIANGLES);
 
-				addInstrNMC1(&cntxt.synchro->commandsRB,
+				addInstrNMC1(&cntxt.synchro.commandsRB,
 					NMC1_COPY_SEG_TO_IMAGE,
 					cntxt.windowInfo.x0[segX],
 					cntxt.windowInfo.y0[segY],

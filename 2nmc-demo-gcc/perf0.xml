@@ -1,4 +1,5 @@
 <?xml version='1.0' ?>
 <?xml-stylesheet type='text/xsl' href='profile.xsl'?>
 <profiling version="1.0">
+  <prof summary="1104548940  "	calls="658         "	average="1678645     "	addr="200095D8"	name="__Z14nmglDrawArraysjii"/>
 </profiling>

@@ -9,9 +9,9 @@ void nmglvsSwapBuffer(){
 	static int time = 0;
 	static clock_t t0, t1;
 	t1 = clock();
-	cntxt.synchro->counter0++;
-	cntxt.synchro->time0 = t1-t0;
+	cntxt.synchro.counter++;
+	cntxt.synchro.time = t1-t0;
 	t0 = clock();
-	cntxt.synchro->writeInstr(1, NMC1_SWAP_BUFFER, 0, 0, 0, 0, 0, 0);
+	cntxt.synchro.writeInstr(1, NMC1_SWAP_BUFFER, 0, 0, 0, 0, 0, 0);
 	
 }

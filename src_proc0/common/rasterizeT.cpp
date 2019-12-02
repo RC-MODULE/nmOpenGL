@@ -35,7 +35,7 @@ void rasterizeT(const Triangles* triangles, const SegmentMask* masks, int count)
 	for (int segY = 0, iSeg = 0; segY < cntxt.windowInfo.nRows; segY++) {
 		for (int segX = 0; segX < cntxt.windowInfo.nColumns; segX++, iSeg++) {
 			if (masks[iSeg].hasNotZeroBits != 0) {
-				cntxt.synchro->writeInstr(1, NMC1_COPY_SEG_FROM_IMAGE,
+				cntxt.synchro.writeInstr(1, NMC1_COPY_SEG_FROM_IMAGE,
 					cntxt.windowInfo.x0[segX],
 					cntxt.windowInfo.y0[segY],
 					cntxt.windowInfo.x1[segX] - cntxt.windowInfo.x0[segX],
@@ -68,7 +68,7 @@ void rasterizeT(const Triangles* triangles, const SegmentMask* masks, int count)
 					nmblas_scopy(4 * usefulCount, (float*)localTrian.colors, 1, (float*)poly->color, 1);
 
 					cntxt.polygonsRB->head++;
-					addInstrNMC1(&cntxt.synchro->commandsRB, NMC1_DRAW_TRIANGLES);
+					addInstrNMC1(&cntxt.synchro.commandsRB, NMC1_DRAW_TRIANGLES);
 				}*/
 				
 				int sizeMask32 = MIN(BIG_NMGL_SIZE / 32, count / 32 + 2);
@@ -90,11 +90,11 @@ void rasterizeT(const Triangles* triangles, const SegmentMask* masks, int count)
 						nmblas_scopy(4 * resultSize, (float*)localTrian.colors, 1, (float*)poly->color, 1);
 
 						cntxt.polygonsRB->head++;
-						cntxt.synchro->writeInstr(1, NMC1_DRAW_TRIANGLES);
+						cntxt.synchro.writeInstr(1, NMC1_DRAW_TRIANGLES);
 					}
 				}
 
-				cntxt.synchro->writeInstr( 1,
+				cntxt.synchro.writeInstr( 1,
 					NMC1_COPY_SEG_TO_IMAGE,
 					cntxt.windowInfo.x0[segX],
 					cntxt.windowInfo.y0[segY],
