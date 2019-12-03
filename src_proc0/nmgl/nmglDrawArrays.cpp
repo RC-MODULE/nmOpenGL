@@ -69,13 +69,13 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 		mulC_v4nm32f(cntxt.lightSpecular, &cntxt.materialSpecular, cntxt.specularMul, MAX_LIGHTS);
 	}
 
-	cntxt.trianDdr.size = 0;
 	reverseMatrix3x3in4x4(cntxt.modelviewMatrixStack.top(), &cntxt.normalMatrix);
 
 	for (int i = 0; i < 36; i++) {
 		masks[i].bits = &masksBits[i * BIG_NMGL_SIZE / 32];
 	}
 
+	cntxt.trianDdr.size = 0;
 	while (!vertexAM.isEmpty()) {
 		//vertex
 		int localSize = vertexAM.pop(cntxt.buffer0) / cntxt.vertexArray.size;

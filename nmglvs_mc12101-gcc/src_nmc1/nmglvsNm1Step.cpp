@@ -18,7 +18,8 @@ SECTION(".data_imu0") CommandNm1 currentCommand;
 
 SECTION(".text_nmglvs") int nmglvsNm1Step(NMGL_Context_NM1 &cntxt)
 {	
-	cntxt.synchro.readInstr(&currentCommand);
+	CommandNm1* ptrCommand = cntxt.synchro.readInstr();
+	halCopyRISC(ptrCommand, &currentCommand, sizeof32(CommandNm1));
 
 	switch (currentCommand.instr_nmc1) {
 
@@ -187,6 +188,7 @@ SECTION(".text_nmglvs") int nmglvsNm1Step(NMGL_Context_NM1 &cntxt)
 	default:
 		break;
 	}
+	cntxt.synchro.getTail(currentCommand.priority)++;
 	//currentBuffer.tail++;
 	//printf("synchro: head-tail=%d\n", cntxt.synchro->commandsRB.head - cntxt.synchro->commandsRB.tail);
 	//printf("poly: head-tail=%d\n", cntxt.polygonsRB->head - cntxt.polygonsRB->tail);

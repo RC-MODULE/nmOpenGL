@@ -24,7 +24,7 @@ int main()
 	while(nmglvsNm0Run()){
 		nmglClear(NMGL_COLOR_BUFFER_BIT);
 
-		nmglDrawArrays(NMGL_TRIANGLES, 0, 6);
+		//nmglDrawArrays(NMGL_TRIANGLES, 0, 6);
 
 		nmglvsSwapBuffer();
 	}

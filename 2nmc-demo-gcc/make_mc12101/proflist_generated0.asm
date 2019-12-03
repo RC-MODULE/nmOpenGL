@@ -6,6 +6,7 @@ begin ".text_nmprofiler"
 PROFILE_BEGIN(16);
 
 FUNCTION(__Z14nmglDrawArraysjii,"__Z14nmglDrawArraysjii");// 0x0000000020003ea0 [.text_nmgl]
+FUNCTION(_nmblas_scopy,"_nmblas_scopy");// 0x0000000020003ea0 [.text_nmgl]
 FUNCTION(_nmppsMerge_32f, "_nmppsMerge_32f ");// 0x000000002000051c [.text]
 FUNCTION(_firstNonZeroIndx_32s,"_firstNonZeroIndx_32s");// 0x0000000000000d24 [.text_nmplv]
 FUNCTION(_remap_32u,      "_remap_32u      ");// 0x0000000000000d3e [.text_nmplv]

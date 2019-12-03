@@ -49,25 +49,25 @@ void rasterizeT(const Triangles* triangles, const SegmentMask* masks, int count)
 					int usefulCount = readMask(maskBitsTemp, indices, treatedBitInMask, count, NMGL_SIZE);
 					int start = indices[0];
 					int end = indices[usefulCount - 1];
-					start &= 0xFFFFFFFE;
+					start -= start & 1;
 					end += end & 1;
 					int packCount = end - start;
 
-					Polygons* poly = getPolygonsHead();
 					copyTriangles(*triangles, start, cntxt.trianInner, 0, packCount);
-					for (int i = 0; i < usefulCount; i++) {
-						indices[i] -= start;
-					}
+					nmppsConvert_32s32f(indices, cntxt.buffer0, packCount);
+					nmppsSubC_32f(cntxt.buffer0, cntxt.buffer1, start, packCount);
+					nmppsConvert_32f32s_rounding(cntxt.buffer1, indices, 0, packCount);
 
-					copyArraysByIndices((void**)triangles, indices, (void**)&localTrian, 7, usefulCount);
-					copyColorByIndices_BGRA_RGBA(triangles->colors, indices, (v4nm32s*)localTrian.colors, usefulCount);
+					Polygons* poly = getPolygonsHead();
+					copyArraysByIndices((void**)&cntxt.trianInner, indices, (void**)&localTrian, 7, usefulCount);
+					copyColorByIndices_BGRA_RGBA(cntxt.trianInner.colors, indices, (v4nm32s*)localTrian.colors, usefulCount);
 
 					fillPolygonsT(poly, &localTrian, usefulCount, segX, segY);
 					nmblas_scopy(usefulCount, (float*)localTrian.z, 1, (float*)poly->z, 1);
 					nmblas_scopy(4 * usefulCount, (float*)localTrian.colors, 1, (float*)poly->color, 1);
 
 					cntxt.polygonsRB->head++;
-					addInstrNMC1(&cntxt.synchro.commandsRB, NMC1_DRAW_TRIANGLES);
+					cntxt.synchro.writeInstr(1, NMC1_DRAW_TRIANGLES);
 				}*/
 				
 				int sizeMask32 = MIN(BIG_NMGL_SIZE / 32, count / 32 + 2);
@@ -76,12 +76,12 @@ void rasterizeT(const Triangles* triangles, const SegmentMask* masks, int count)
 				int* treatedBitInMask = (int*)&cntxt.tmp.vec[0];
 				for (int i = 0; i < count; i += NMGL_SIZE) {
 					int tmpSize = MIN(NMGL_SIZE, count - i);
-					Polygons* poly = getPolygonsHead();
 					treatedBitInMask[0] = 0;
 					copyTriangles(*triangles, i, cntxt.trianInner, 0, tmpSize);
 
 					int resultSize = readMask(&maskBitsTemp[i / 32], indices, treatedBitInMask, tmpSize, NMGL_SIZE);
 					if (resultSize != 0) {
+						Polygons* poly = getPolygonsHead();
 						copyArraysByIndices((void**)&cntxt.trianInner, indices, (void**)&localTrian, 7, resultSize);
 						copyColorByIndices_BGRA_RGBA(cntxt.trianInner.colors, indices, (v4nm32s*)localTrian.colors, resultSize);
 						fillPolygonsT(poly, &localTrian, resultSize, segX, segY);

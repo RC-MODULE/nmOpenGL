@@ -29,7 +29,7 @@
 
 struct CommandNm1{
 	volatile int instr_nmc1;
-	volatile bool done;
+	volatile int priority;
 	volatile int params[6];
 };
 
@@ -80,7 +80,7 @@ public:
 			break;
 		}
 		command->instr_nmc1 = instr;
-		command->done = false;
+		command->priority = priority;
 		command->params[0] = param0;
 		command->params[1] = param1;
 		command->params[2] = param2;
@@ -116,18 +116,45 @@ public:
 		}
 	}
 
-	void readInstr(CommandNm1* dst) {
-		HalRingBufferConnector<CommandNm1, PRIORITY1_SIZE> connector1(&mSynchroData->priority1);
+	CommandNm1* readInstr() {
 		while (isEmpty()) {
 			halSleep(2);
 		}
 		if (isEmpty(0)) {
 			HalRingBufferConnector<CommandNm1, PRIORITY1_SIZE> connector1(&mSynchroData->priority1);
-			connector1.pop(dst, 1);
+			return connector1.ptrTail();
 		}
 		else {
 			HalRingBufferConnector<CommandNm1, PRIORITY0_SIZE> connector0(&mSynchroData->priority0);
-			connector0.pop(dst, 1);
+			return connector0.ptrTail();
+		}
+	}
+	
+	unsigned int &getHead(int priority) {
+		switch (priority)
+		{
+		case 0: {
+			HalRingBufferConnector<CommandNm1, PRIORITY0_SIZE> connector0(&mSynchroData->priority0);
+			return connector0.head;
+		}
+		case 1: {
+			HalRingBufferConnector<CommandNm1, PRIORITY1_SIZE> connector1(&mSynchroData->priority1);
+			return connector1.head;
+		}
+		}
+	}
+
+	unsigned int &getTail(int priority) {
+		switch (priority)
+		{
+		case 0: {
+			HalRingBufferConnector<CommandNm1, PRIORITY0_SIZE> connector0(&mSynchroData->priority0);
+			return connector0.tail;
+		}
+		case 1: {
+			HalRingBufferConnector<CommandNm1, PRIORITY1_SIZE> connector1(&mSynchroData->priority1);
+			return connector1.tail;
+		}
 		}
 	}
 };
