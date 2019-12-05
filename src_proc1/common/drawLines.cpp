@@ -5,10 +5,13 @@
 #include <stdio.h>
 
 SECTION(".text_demo3d") void drawLines(NMGL_Context_NM1* context) {
-	Polygons* poly = (Polygons*)halRingBufferTail(context->polygonsRB);
+	PolygonsConnector connector(context->polygonsData);
+	Polygons* poly = connector.ptrTail();
+
 	getAddrPtrnsL(context, context->patterns, poly);
+
 	int countTr = poly->count;
-	context->polygonsRB->tail++;
+	(*connector.pTail)++;
 
 	nm32s* mulBuffer = context->buffer0;
 	nm32s* maskBuffer = context->buffer1;

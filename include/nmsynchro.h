@@ -39,6 +39,11 @@ struct CommandNm1{
 struct NMGLSynchroData {
 	HalRingBufferData<CommandNm1, PRIORITY0_SIZE> priority0;
 	HalRingBufferData<CommandNm1, PRIORITY1_SIZE> priority1;
+
+	void init() {
+		priority0.init();
+		priority1.init();
+	}
 };
 
 class NMGLSynchro {
@@ -90,10 +95,10 @@ public:
 		switch (priority)
 		{
 		case 0:
-			connector0.head++;
+			(*connector0.pHead)++;
 			break;
 		case 1:
-			connector1.head++;
+			(*connector1.pHead)++;
 			break;
 		}
 	}
@@ -135,11 +140,11 @@ public:
 		{
 		case 0: {
 			HalRingBufferConnector<CommandNm1, PRIORITY0_SIZE> connector0(&mSynchroData->priority0);
-			return connector0.head;
+			return *connector0.pHead;
 		}
 		case 1: {
 			HalRingBufferConnector<CommandNm1, PRIORITY1_SIZE> connector1(&mSynchroData->priority1);
-			return connector1.head;
+			return *connector1.pHead;
 		}
 		}
 	}
@@ -149,11 +154,11 @@ public:
 		{
 		case 0: {
 			HalRingBufferConnector<CommandNm1, PRIORITY0_SIZE> connector0(&mSynchroData->priority0);
-			return connector0.tail;
+			return *connector0.pTail;
 		}
 		case 1: {
 			HalRingBufferConnector<CommandNm1, PRIORITY1_SIZE> connector1(&mSynchroData->priority1);
-			return connector1.tail;
+			return *connector1.pTail;
 		}
 		}
 	}

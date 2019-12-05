@@ -52,13 +52,9 @@ int nmglvsNm0Init()
 	}
 	setHeap(8);
 	NMGLSynchroData* synchroData = myMallocT<NMGLSynchroData>();
-	synchroData->priority0.init();
-	synchroData->priority1.init();
-	cntxt.init(synchroData);
-	cntxt.polygonsRB = myMallocT<HalRingBuffer>();
-
 	setHeap(10);
-	//halSetActiveHeap(10);
+	PolygonsArray* polygonsArray = myMallocT<PolygonsArray>();
+	cntxt.init(synchroData, polygonsArray);
 
 	cntxt.trianInner.x0 = x0;
 	cntxt.trianInner.y0 = y0;
@@ -83,8 +79,6 @@ int nmglvsNm0Init()
 	cntxt.trianDdr.maxSize = BIG_NMGL_SIZE;
 	cntxt.trianDdr.size = 0;
 
-	Polygons* polyArray = myMallocT<Polygons>(COUNT_POLYGONS_BUFFER);
-
 #ifdef __GNUC__
 	halDmaInit();
 	halInstrCacheEnable();
@@ -99,18 +93,12 @@ int nmglvsNm0Init()
 	cntxt.buffer2 = nmglBuffer2;
 	cntxt.buffer3 = nmglBuffer3;
 
-	
 
-	//Массив Polygons-структур
 	cntxt.patterns = (Patterns*)halSyncAddr((int*)synchroData, 1);
-	halRingBufferInit(cntxt.polygonsRB, polyArray, sizeof32(Polygons), COUNT_POLYGONS_BUFFER, 0, 0, 0);
-
-	//Адрес кольцевого буфера Polygons-структур на nmc1
-	halSyncAddr((int*)cntxt.polygonsRB, 1);
+	halSyncAddr((int*)cntxt.polygonsData, 1);
 
 	// Check memory allocation
-	if (&cntxt.synchro == 0 || polyArray == 0 || cntxt.polygonsRB == 0 ||
-		synchroData == 0 || dataDdr == 0) {
+	if (cntxt.polygonsData == 0 || synchroData == 0 || dataDdr == 0) {
 		halHostSync(0xDEADB00F);	// send error to host
 		return -1;
 	}

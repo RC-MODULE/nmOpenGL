@@ -56,9 +56,9 @@ struct NMGL_Context_NM1 {
 	int* buffer1;
 	clock_t t0, t1;
 
-	HalRingBuffer* polygonsRB;
 	NMGLSynchro synchro;
 	int dummy;
+	PolygonsArray* polygonsData;
 
 	ImageBuffer* colorBuffer;
 	DepthBuffer* depthBuffer;

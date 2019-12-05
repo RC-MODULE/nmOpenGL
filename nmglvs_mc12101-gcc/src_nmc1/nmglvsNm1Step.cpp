@@ -110,13 +110,9 @@ SECTION(".text_nmglvs") int nmglvsNm1Step(NMGL_Context_NM1 &cntxt)
 		msdWaitDma();
 
 		cntxt.t1 = clock();
-
-		static int time = 0;
-		time = cntxt.t1 - cntxt.t0;
 		cntxt.synchro.counter++;
-		cntxt.synchro.time = time;
+		cntxt.synchro.time = cntxt.t1 - cntxt.t0;
 		cntxt.colorBuffer->next();
-
 		cntxt.t0 = clock();
 
 		break;
@@ -189,7 +185,6 @@ SECTION(".text_nmglvs") int nmglvsNm1Step(NMGL_Context_NM1 &cntxt)
 		break;
 	}
 	cntxt.synchro.getTail(currentCommand.priority)++;
-	//currentBuffer.tail++;
 	//printf("synchro: head-tail=%d\n", cntxt.synchro->commandsRB.head - cntxt.synchro->commandsRB.tail);
 	//printf("poly: head-tail=%d\n", cntxt.polygonsRB->head - cntxt.polygonsRB->tail);
 	//printf("image: head-tail=%d\n\n", cntxt.colorBuffer->ringbuffer.head - cntxt.colorBuffer->ringbuffer.tail);

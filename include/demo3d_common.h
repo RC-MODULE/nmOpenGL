@@ -81,21 +81,8 @@ struct Polygons {
 	int dummy[15];
 };
 
-
-struct DrawInfo {
-	nm32s numbersPattrns01[NMGL_SIZE];
-	nm32s numbersPattrns02[NMGL_SIZE];
-	nm32s numbersPattrns12[NMGL_SIZE];
-	nm32s dy12[NMGL_SIZE];
-	nm32s crossProducts[NMGL_SIZE];
-	nm32s imageOffsets[NMGL_SIZE];
-	nm32s offsetTrX[NMGL_SIZE];
-	nm32s offsetTrY[NMGL_SIZE];
-	nm32s widths[NMGL_SIZE];
-	nm32s heights[NMGL_SIZE];
-	nm32s valuesZ[NMGL_SIZE];
-	nm32s valuesC[4 * NMGL_SIZE];
-};
+typedef HalRingBufferData<Polygons, COUNT_POLYGONS_BUFFER> PolygonsArray;
+typedef HalRingBufferConnector<Polygons, COUNT_POLYGONS_BUFFER> PolygonsConnector;
 
 //typedef int matrix[16];
 typedef struct s_mat4nm32f{
@@ -130,12 +117,12 @@ struct WindowInfo {
 	int segmentHeight;
 	int imageWidth;
 	int imageHeight;	
-	int viewportMulX;
-	int viewportMulY;
-	int viewportMulZ;
-	int viewportAddX;
-	int viewportAddY;
-	int viewportAddZ;
+	float viewportMulX;
+	float viewportMulY;
+	float viewportMulZ;
+	float viewportAddX;
+	float viewportAddY;
+	float viewportAddZ;
 	int nColumns;
 	int nRows;
 };

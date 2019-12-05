@@ -48,10 +48,10 @@ struct SegmentMask {
 
 struct NMGL_Context_NM0 {
 	NMGLSynchro synchro;
-	int dummy;
+	PolygonsArray* polygonsData;
 	NMGLenum error;
 	Patterns* patterns;
-	HalRingBuffer* polygonsRB;
+	int dummy;
 
 	float* buffer0;
 	float* buffer1;
@@ -104,8 +104,12 @@ struct NMGL_Context_NM0 {
 	int isLighting;
 	float specularExp;
 
-	void init(NMGLSynchroData* syncroData){
+	void init(NMGLSynchroData* syncroData, PolygonsArray* polygonsArray){
+		syncroData->init();
+		polygonsArray->init();
 		synchro.init(syncroData);
+		polygonsData = polygonsArray;
+
 		currentMatrixStack = &modelviewMatrixStack;
 		isUseTwoSidedMode = NMGL_FALSE;
 		isCullFace = NMGL_FALSE;

@@ -55,6 +55,7 @@ SECTION(".text_demo3d") void cbUpdate() {
 		else {
 			isBusy = false;
 			countList = 0;
+			return;
 		}
 	}
 }

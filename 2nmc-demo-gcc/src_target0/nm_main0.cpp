@@ -8,10 +8,10 @@
 #include "nmglvs_nmc0.h"
 	
 #pragma data_section ".data_shared"
-SECTION(".data_shared") float vertices_DDR[2000 * 12];
-SECTION(".data_shared") float normal_DDR[2000 * 9];
-SECTION(".data_shared") float vertices_DDR2[2000 * 12];
-SECTION(".data_shared") float normal_DDR2[2000 * 9];
+//SECTION(".data_shared") float vertices_DDR[2000 * 12];
+//SECTION(".data_shared") float normal_DDR[2000 * 9];
+//SECTION(".data_shared") float vertices_DDR2[2000 * 12];
+//SECTION(".data_shared") float normal_DDR2[2000 * 9];
 SECTION(".data_shared") float twoTriangles[24 * 4] = {
 	110, 90, 0, 1,
 	90, 110, 0, 1,
@@ -46,6 +46,11 @@ SECTION(".data_shared") float twoTriangles[24 * 4] = {
 SECTION(".text_shared") int main()
 {
 	nmglvsNm0Init();
+	setHeap(10);
+	float* vertices_DDR = (float*)halMalloc32(2000 * 12);
+	float* normal_DDR = (float*)halMalloc32(2000 * 9);
+	float* vertices_DDR2 = (float*)halMalloc32(2000 * 12);
+	float* normal_DDR2 = (float*)halMalloc32(2000 * 9);
 	
 #ifdef __OPEN_GL__
 	Models models;
@@ -84,7 +89,6 @@ SECTION(".text_shared") int main()
 
 	//sync2
 	ok = halHostSync((int)normal_DDR2);
-	halSleep(10);
 	ok = halHostSync((int)0x600D600D);
 #endif
 	
@@ -114,8 +118,6 @@ SECTION(".text_shared") int main()
 	float angle = 0;
 	NMGLenum error;
 	unsigned time;
-	//nmppsMulC_32f(normal_DDR2, normal_DDR2, 30000, 9* 2000);
-	//nmppsMulC_32f(normal_DDR, normal_DDR, 30000, 9 * 2000);
 	while(nmglvsNm0Run()){
 		nmglEnableClientState(NMGL_VERTEX_ARRAY);
 		nmglEnableClientState(NMGL_NORMAL_ARRAY);
@@ -165,7 +167,10 @@ SECTION(".text_shared") int main()
 		//nmglFinish();
 		nmglvsSwapBuffer();
 	}
-
+	halFree(vertices_DDR);
+	halFree(vertices_DDR2);
+	halFree(normal_DDR);
+	halFree(normal_DDR2);
 	nmglvsExit_mc12101();
 	return 0x600D600D;
 } 

@@ -25,13 +25,13 @@ int pushToTriangles_t(const float *vertexX, const float *vertexY, const float *v
 	nmppsConvert_32f32s_rounding(cntxt.buffer3, (int*)HEAD_COLOR, 0, 4 * countPrim);
 
 	cnv32f_v3v4(vertexX, cntxt.buffer3, 0, countVertex);
-	split_v4nm32f((v4nm32f*)cntxt.buffer3, 1, HEAD_X0, HEAD_X1, HEAD_X2, cntxt.buffer3, countPrim);
+	split_v4nm32f((v4nm32f*)cntxt.buffer3, 1, HEAD_X0, HEAD_X1, HEAD_X2, cntxt.buffer3 + 6 * NMGL_SIZE, countPrim);
 
 	cnv32f_v3v4(vertexY, cntxt.buffer3, 0, countVertex);
-	split_v4nm32f((v4nm32f*)cntxt.buffer3, 1, HEAD_Y0, HEAD_Y1, HEAD_Y2, cntxt.buffer3, countPrim);
+	split_v4nm32f((v4nm32f*)cntxt.buffer3, 1, HEAD_Y0, HEAD_Y1, HEAD_Y2, cntxt.buffer3 + 6 * NMGL_SIZE, countPrim);
 
 	cnv32f_v3v4(vertexZ, cntxt.buffer3, 0, countVertex);
-	split_v4nm32f((v4nm32f*)cntxt.buffer3, 1, temp0, temp1, temp2, cntxt.buffer3 + 4 * NMGL_SIZE, countPrim);
+	split_v4nm32f((v4nm32f*)cntxt.buffer3, 1, temp0, temp1, temp2, cntxt.buffer3 + 6 * NMGL_SIZE, countPrim);
 	meanToInt3(temp0, temp1, temp2, HEAD_Z, countPrim);
 	return countPrim;
 }

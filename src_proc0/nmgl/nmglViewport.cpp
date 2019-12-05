@@ -19,7 +19,6 @@ void nmglViewport(int x, int y, int width, int height) {
 	cntxt.windowInfo.viewportAddX = viewportValues_f[1];
 	cntxt.windowInfo.viewportMulY = viewportValues_f[2];
 	cntxt.windowInfo.viewportAddY = viewportValues_f[3];
-
 	int widthSeg = cntxt.windowInfo.segmentWidth;
 	int heightSeg = cntxt.windowInfo.segmentHeight;
 	cntxt.windowInfo.nColumns = width / widthSeg;

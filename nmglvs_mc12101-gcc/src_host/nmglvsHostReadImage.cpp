@@ -28,12 +28,6 @@ int nmglvsHostReadImage(int* dstImage)
 	}
 	int* src = (int*)halRingBufferTail(&imagesRB);
 	nmppsCopy_32s(src, dstImage, imagesRB.size);
-	unsigned int time[2];
-	unsigned synchroRB[2];
-	int counter[2];
-	int timeFrame = 0;
-	//printf("counter0=%d, timeFrame0=%10d\n", counter[0], time[0]);
-	//printf("counter1=%d, timeFrame1=%10d\n\n", counter[1], time[1]);
 	imagesRB.tail++;
 	return 0;
 };

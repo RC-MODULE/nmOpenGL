@@ -160,4 +160,10 @@ SECTIONS
 	. = ORIGIN(EMI2) + LENGTH(EMI2);
     __HEAP_10_END = .;
   } > EMI2
+  .heap11 : ALIGN(0x8)
+  {
+    *(.heap11);
+	. = ORIGIN(EMI3) + LENGTH(EMI3);
+    __HEAP_11_END = .;
+  } > EMI3
 }

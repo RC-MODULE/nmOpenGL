@@ -11,11 +11,11 @@ SECTION(".data_imu7")   int maskBitsTemp[BIG_NMGL_SIZE / 32];
 
 
 SECTION(".text_demo3d") Polygons* getPolygonsHead() {
-	HalRingBuffer* tmp = cntxt.polygonsRB;
-	while (halRingBufferIsFull(tmp)) {
+	PolygonsConnector connector(cntxt.polygonsData);
+	while (connector.isFull()) {
 		halSleep(2);
 	}
-	return (Polygons*)halRingBufferHead(tmp);
+	return connector.ptrHead();
 }
 
 SECTION(".text_demo3d")
@@ -40,36 +40,6 @@ void rasterizeT(const Triangles* triangles, const SegmentMask* masks, int count)
 					cntxt.windowInfo.x1[segX] - cntxt.windowInfo.x0[segX],
 					cntxt.windowInfo.y1[segY] - cntxt.windowInfo.y0[segY]);
 
-				/*int sizeMask32 = MIN(BIG_NMGL_SIZE / 32, count / 32 + 2);
-				nmblas_scopy(sizeMask32, (float*)masks[iSeg].bits, 1, (float*)maskBitsTemp, 1);
-
-				int* treatedBitInMask = (int*)&cntxt.tmp.vec[0];
-				treatedBitInMask[0] = 0;
-				while (treatedBitInMask[0] < count) {
-					int usefulCount = readMask(maskBitsTemp, indices, treatedBitInMask, count, NMGL_SIZE);
-					int start = indices[0];
-					int end = indices[usefulCount - 1];
-					start -= start & 1;
-					end += end & 1;
-					int packCount = end - start;
-
-					copyTriangles(*triangles, start, cntxt.trianInner, 0, packCount);
-					nmppsConvert_32s32f(indices, cntxt.buffer0, packCount);
-					nmppsSubC_32f(cntxt.buffer0, cntxt.buffer1, start, packCount);
-					nmppsConvert_32f32s_rounding(cntxt.buffer1, indices, 0, packCount);
-
-					Polygons* poly = getPolygonsHead();
-					copyArraysByIndices((void**)&cntxt.trianInner, indices, (void**)&localTrian, 7, usefulCount);
-					copyColorByIndices_BGRA_RGBA(cntxt.trianInner.colors, indices, (v4nm32s*)localTrian.colors, usefulCount);
-
-					fillPolygonsT(poly, &localTrian, usefulCount, segX, segY);
-					nmblas_scopy(usefulCount, (float*)localTrian.z, 1, (float*)poly->z, 1);
-					nmblas_scopy(4 * usefulCount, (float*)localTrian.colors, 1, (float*)poly->color, 1);
-
-					cntxt.polygonsRB->head++;
-					cntxt.synchro.writeInstr(1, NMC1_DRAW_TRIANGLES);
-				}*/
-				
 				int sizeMask32 = MIN(BIG_NMGL_SIZE / 32, count / 32 + 2);
 				nmblas_scopy(sizeMask32, (float*)masks[iSeg].bits, 1, (float*)maskBitsTemp, 1);
 
@@ -88,7 +58,8 @@ void rasterizeT(const Triangles* triangles, const SegmentMask* masks, int count)
 						nmblas_scopy(resultSize, (float*)localTrian.z, 1, (float*)poly->z, 1);
 						nmblas_scopy(4 * resultSize, (float*)localTrian.colors, 1, (float*)poly->color, 1);
 
-						cntxt.polygonsRB->head++;
+						PolygonsConnector connector(cntxt.polygonsData);
+						(*connector.pHead)++;
 						cntxt.synchro.writeInstr(1, NMC1_DRAW_TRIANGLES);
 					}
 				}

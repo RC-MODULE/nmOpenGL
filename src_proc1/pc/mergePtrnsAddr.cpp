@@ -5,13 +5,9 @@ extern "C" {
 		while(count > 0){
 			int localSize = MIN(step, count);
 			for(int i=0;i<localSize;i++){
-				ppDst[3*point + i] = ppSrcCA[point + i];
-			}
-			for(int i=0;i<localSize;i++){
-				ppDst[3*point + localSize + i] = ppSrcCB[point + i];
-			}
-			for(int i=0;i<localSize;i++){
-				ppDst[3*point + 2 * localSize + i] = ppSrcBA[point + i];
+				ppDst[3 * point + i] = ppSrcCA[point + i];
+				ppDst[3 * point + localSize + i] = ppSrcCB[point + i];
+				ppDst[3 * point + 2 * localSize + i] = ppSrcBA[point + i];
 			}
 			point += step;
 			count -= step;

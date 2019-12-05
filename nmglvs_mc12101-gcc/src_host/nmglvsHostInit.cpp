@@ -29,6 +29,7 @@ unsigned char srcImg[4 * SIZE_BUFFER * WIDTH_IMAGE * HEIGHT_IMAGE];
 HalHostRingBuffer hostImageRB;
 HalRingBuffer imagesRB;
 
+
 void download() {
 	while (true) {
 		S_VS_MouseStatus mouseStatus;

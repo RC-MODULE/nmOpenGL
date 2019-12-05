@@ -6,13 +6,14 @@
 
 
 SECTION(".text_demo3d") void drawTriangles(NMGL_Context_NM1* context) {
-	Polygons* poly = (Polygons*)halRingBufferTail(context->polygonsRB);
+	PolygonsConnector connector(context->polygonsData);
+	Polygons* poly = connector.ptrTail();
 
 	getAddrPtrnsT(context, context->patterns, poly);
 
 	msdWaitDma();
 	int countTrangles = poly->count;
-	context->polygonsRB->tail++;
+	(*connector.pTail)++;
 
 	nm32s* mulBuffer = context->buffer0;
 	nm32s* maskBuffer = context->buffer1;
@@ -22,23 +23,23 @@ SECTION(".text_demo3d") void drawTriangles(NMGL_Context_NM1* context) {
 	while (countTrangles > 0) {
 		int localSize = MIN(countTrangles, SMALL_SIZE);
 		int point_x3 = point * 3;
-		int* widths = &context->widths[point];
-		int* heights = &context->heights[point];
-		int* offsetsX = &context->offsetTrX[point];
-		int* valuesC = &context->valuesC[point];
-		int* valuesZ = &context->valuesZ[point];
+		int* widths = context->widths + point;
+		int* heights = context->heights + point;
+		int* offsetsX = context->offsetTrX + point;
+		int* valuesC = context->valuesC + point;
+		int* valuesZ = context->valuesZ + point;
 
 
-		copyPacket_32s(&context->ppSrcPackPtrns[point_x3], 
-			&context->ppDstPackPtrns[point_x3], 
-			&context->nSizePtrn32[point_x3], 3 * localSize);
+		copyPacket_32s(context->ppSrcPackPtrns + point_x3, 
+			context->ppDstPackPtrns + point_x3, 
+			context->nSizePtrn32 + point_x3, 3 * localSize);
 
 		mAndVxN_32u((nm32u**)context->ppPtrns1_2s, 
 			(nm32u**)context->ppPtrns2_2s, 
 			(nm32u**)context->ppPtrnsCombined_2s_basic, 
-			&context->nSizePtrn32[point_x3], localSize);
+			context->nSizePtrn32 + point_x3, localSize);
 
-		nmppsMulC_AddV_AddC_32s(&context->offsetTrY[point], WIDTH_PTRN / 16, 
+		nmppsMulC_AddV_AddC_32s(context->offsetTrY + point, WIDTH_PTRN / 16, 
 			(nm32s*)context->ppPtrnsCombined_2s_basic, 0,
 			(nm32s*)context->ppPtrnsCombined_2s, localSize);
 
@@ -58,7 +59,7 @@ SECTION(".text_demo3d") void drawTriangles(NMGL_Context_NM1* context) {
 				(nm32s*)mulBuffer,
 				valuesZ, localSize);
 
-			depthTest(&context->zBuffPoints[point], WIDTH_SEG,
+			depthTest(context->zBuffPoints + point, WIDTH_SEG,
 				(nm32s*)mulBuffer,
 				(nm32s*)maskBuffer,
 				heights,
@@ -74,12 +75,11 @@ SECTION(".text_demo3d") void drawTriangles(NMGL_Context_NM1* context) {
 
 		mMaskVxN_32s((nm32s*)mulBuffer,
 			(nm32s*)maskBuffer,
-			&context->imagePoints[point], WIDTH_SEG,
+			context->imagePoints + point, WIDTH_SEG,
 			heights, widths, localSize);
 
 		countTrangles -= SMALL_SIZE;
 		point += SMALL_SIZE;
 	}
-	printf("\n");
 	return;
 }

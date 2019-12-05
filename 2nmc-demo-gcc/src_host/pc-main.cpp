@@ -1,11 +1,3 @@
-//------------------------------------------------------------------------
-//  Demostration for MAX 2017 
-//
-//  Author: Alexander Bolornikov
-//
-//  Copyright (c) 2017 RC Module Inc.
-//------------------------------------------------------------------------
-
 #include "VShell.h"
 #include "hal.h"
 #include "hal_host.h"
@@ -43,6 +35,8 @@ int main()
 
 	float* vertices = new float[4000 * 12];
 	float* normal = new float[4000 * 9];
+	//float* vertices = (float*)halMalloc32(4000 * 12);
+	//float* normal = (float)halMalloc32(4000 * 12);
 	int ok;
 
 	int sizePolygons = sizeof32(Polygons);
