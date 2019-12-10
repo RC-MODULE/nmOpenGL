@@ -17,16 +17,16 @@
 	
 	
 extern "C" void sortByY3(float* srcAxy, 
-								  float* srcBxy, 
-								  float* srcCxy, 
-								  int size);
+						 float* srcBxy, 
+						 float* srcCxy, 
+						 int size);
 
 int main()
 {
 	clock_t t0,t1;
-	nmppsRand_32f(srcAxy, 2 * NMGL_SIZE, 1, 10000);
-	nmppsRand_32f(srcBxy, 2 * NMGL_SIZE, 1, 10000);
-	nmppsRand_32f(srcCxy, 2 * NMGL_SIZE, 1, 10000);
+	nmppsRand_32f(srcAxy, 2 * NMGL_SIZE, 1, 5000);
+	nmppsRand_32f(srcBxy, 2 * NMGL_SIZE, 5000, 10000);
+	nmppsRand_32f(srcCxy, 2 * NMGL_SIZE, 3000, 7000);
 /*	printf("srcAxy=%f,%f\n", srcAxy[0], srcAxy[1]);
 	printf("srcBxy=%f,%f\n", srcBxy[0], srcBxy[1]);
 	printf("srcCxy=%f,%f\n", srcCxy[0], srcCxy[1]);
@@ -36,17 +36,17 @@ int main()
 	nmppsConvert_32s32f(temp, srcBxy, 2 * NMGL_SIZE);
 	nmppsConvert_32f32s_rounding(srcAxy, temp, 0, 2 * NMGL_SIZE);
 	nmppsConvert_32s32f(temp, srcCxy, 2 * NMGL_SIZE);*/
-		for(int i=0;i<36;i++){
+	/*for(int i=0;i<36;i++){
 		printf("y_a,b,c[%d]=%8.2f, ", i, srcAxy[2*i+1]);
 		printf("%8.2f, ", srcBxy[2*i+1]);
 		printf("%8.2f\n", srcCxy[2*i+1]);
-	}
+	}*/
 	printf("\n");
 	unsigned crc = 0;
 	//for (int size = 0; size < NMGL_SIZE; size++) {
 		int size = 36;
 		t0 = clock();
-		sortByYinTriangle(srcCxy, srcBxy, srcAxy, size);
+		sortByY3(srcCxy, srcBxy, srcAxy, size);
 		nmppsCrcAcc_32f(srcAxy, 4, size + 2, &crc);
 		nmppsCrcAcc_32f(srcBxy, 4, size + 2, &crc);
 		nmppsCrcAcc_32f(srcCxy, 4, size + 2, &crc);
@@ -59,5 +59,5 @@ int main()
 		printf("%8.2f\n", srcCxy[2*i+1]);
 	}
 	printf("crc=0x%x\n", crc);
-	return t1-t0;
+	return crc>>2;
 }

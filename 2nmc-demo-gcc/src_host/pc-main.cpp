@@ -69,13 +69,6 @@ int main()
 	delete vertices;
 	delete normal;
 	int flag = -1;
-
-	int dydx[2 * WIDTH_PTRN * (HEIGHT_PTRN + 2)];
-	nm8s* temp_8s = nmppsMalloc_8s(NPATTERNS*WIDTH_PTRN*HEIGHT_PTRN);
-	nmppsSet_8s((nm8s*)temp_8s, 0, NPATTERNS*WIDTH_PTRN*HEIGHT_PTRN);
-	fillPattern(temp_8s, WIDTH_PTRN, HEIGHT_PTRN);
-	create_tabl_dydx(temp_8s, dydx, WIDTH_PTRN, HEIGHT_PTRN);
-	nmppsMulC_8s(temp_8s, -1, temp_8s, NPATTERNS*WIDTH_PTRN*HEIGHT_PTRN);
 	int counter = 0;
 
 	while(VS_Run())	{
@@ -109,7 +102,6 @@ int main()
 		VS_Draw(VS_DRAW_ALL);
 		//VS_Text("");
 	}
-	nmppsFree(temp_8s);
 	unsigned int result[2];
 	nmglvsExit(result);
 	return 0;

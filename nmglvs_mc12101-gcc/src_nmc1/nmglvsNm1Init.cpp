@@ -12,6 +12,7 @@
 
 SECTION(".data_imu1")	int pool0[SIZE_BANK];
 SECTION(".data_imu3")	int pool1[SIZE_BANK];
+SECTION(".data_imu0")	DepthBuffer depthBuffer;
 
 SECTION(".data_imu2")	int segImage[WIDTH_SEG * HEIGHT_SEG];
 SECTION(".data_imu2")	int segZBuff[WIDTH_SEG * HEIGHT_SEG];
@@ -28,6 +29,8 @@ SECTION(".data_shmem1") nm32s* ppDstPackPtrns[3 * NMGL_SIZE];
 SECTION(".data_shmem1") nm32s nSizePtrn32[3 * NMGL_SIZE];
 SECTION(".data_shmem1") nm32s* zBuffPoints[NMGL_SIZE];
 SECTION(".data_shmem1") nm32s* imagePoints[NMGL_SIZE];
+
+
 
 int exitNM1 = 0;
 
@@ -51,7 +54,7 @@ SECTION(".text_nmglvs") int nmglvsNm1Init(NMGL_Context_NM1& cntxt)
 
 	setHeap(9);
 	cntxt.colorBuffer = myMallocT<ImageBuffer>();
-	cntxt.depthBuffer = myMallocT<DepthBuffer>();
+	cntxt.depthBuffer = &depthBuffer; // myMallocT<DepthBuffer>();
 
 	setHeap(11);
 	cntxt.patterns = myMallocT<Patterns>();
@@ -68,8 +71,8 @@ SECTION(".text_nmglvs") int nmglvsNm1Init(NMGL_Context_NM1& cntxt)
 	NMGLSynchroData* synchroData = (NMGLSynchroData*)halSyncAddr((int*)cntxt.patterns, 0);
 	cntxt.synchro.init(synchroData);
 	cntxt.polygonsData = (PolygonsArray*)halSyncAddr(0, 0);
+	nmppsSet_32s((nm32s*)cntxt.polygonsData, 0, sizeof32(PolygonsArray));
 
-	//cntxt.colorBuffer = &colorBuffer;
 	int* imageArray = halMalloc32(COUNT_IMAGE_BUFFER * WIDTH_IMAGE * HEIGHT_IMAGE);
 	int* ZBuffImage = halMalloc32(WIDTH_IMAGE * HEIGHT_IMAGE);
 	setHeap(10);

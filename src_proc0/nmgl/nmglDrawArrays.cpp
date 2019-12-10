@@ -73,7 +73,7 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 
 	for (int i = 0; i < 36; i++) {
 		masks[i].bits = &masksBits[i * BIG_NMGL_SIZE / 32];
-	}
+	}	
 
 	cntxt.trianDdr.size = 0;
 	while (!vertexAM.isEmpty()) {
@@ -156,14 +156,11 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 		nmppsMulC_AddC_32f(cntxt.buffer1 + localSize, cntxt.windowInfo.viewportMulX, cntxt.windowInfo.viewportAddX, vertexX, localSize);		//X
 		nmppsMulC_AddC_32f(cntxt.buffer2 + localSize, cntxt.windowInfo.viewportMulY, cntxt.windowInfo.viewportAddY, vertexY, localSize);		//Y
 		nmppsMulC_AddC_32f(cntxt.buffer0 + localSize, cntxt.windowInfo.viewportMulZ, cntxt.windowInfo.viewportAddZ, vertexZ, localSize);	//Z
-		
-
 
 		nmppsConvert_32f32s_rounding(vertexX, (int*)cntxt.buffer0, 0, localSize);
 		nmppsConvert_32s32f((int*)cntxt.buffer0, vertexX, localSize);
 		nmppsConvert_32f32s_rounding(vertexY, (int*)cntxt.buffer0, 0, localSize);
-		nmppsConvert_32s32f((int*)cntxt.buffer0, vertexY, localSize);
-		
+		nmppsConvert_32s32f((int*)cntxt.buffer0, vertexY, localSize);		
 
 		//---------------rasterize------------------------------------
 		switch (mode) {

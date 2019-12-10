@@ -52,6 +52,7 @@ void rasterizeT(const Triangles* triangles, const SegmentMask* masks, int count)
 					int resultSize = readMask(&maskBitsTemp[i / 32], indices, treatedBitInMask, tmpSize, NMGL_SIZE);
 					if (resultSize != 0) {
 						Polygons* poly = getPolygonsHead();
+						PolygonsConnector connector23(cntxt.polygonsData);
 						copyArraysByIndices((void**)&cntxt.trianInner, indices, (void**)&localTrian, 7, resultSize);
 						copyColorByIndices_BGRA_RGBA(cntxt.trianInner.colors, indices, (v4nm32s*)localTrian.colors, resultSize);
 						fillPolygonsT(poly, &localTrian, resultSize, segX, segY);

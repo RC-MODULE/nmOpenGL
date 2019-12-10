@@ -39,10 +39,16 @@ SECTION(".text_demo3d") int getAddrPtrnsT(NMGL_Context_NM1* context, Patterns* p
 	int startTail = size / SMALL_SIZE;
 	startTail *= SMALL_SIZE;
 	
-	nmppmCopy_32s((nm32s*)context->ppPtrns2_2s, 0, (nm32s*)temp1, SMALL_SIZE, height, SMALL_SIZE);
+	nmppmCopy_32s((nm32s*)context->ppPtrns2_2s, 0, temp1, SMALL_SIZE, height, SMALL_SIZE);
 	nmppsCopy_32s((nm32s*)context->ppPtrns2_2s, temp1 + startTail, tail);
 	CHECK_STATUS(0);
+#ifdef __GNUC__
 	nmppsAdd_32s((nm32s*)temp1, (nm32s*)polyTmp->ptrnSizesOf32_01, (nm32s*)temp0, size);
+#else
+	for (int i = 0; i < size; i++) {
+		temp0[i] = (int)((int*)temp1[i] + polyTmp->ptrnSizesOf32_01[i]);
+	}
+#endif
 	int dstStride = 3 * SMALL_SIZE;
 	nmppmCopy_32s((nm32s*)context->ppPtrns1_2s, 0, (nm32s*)context->ppDstPackPtrns, dstStride, height, SMALL_SIZE);
 	nmppmCopy_32s((nm32s*)context->ppPtrns2_2s, 0, (nm32s*)context->ppDstPackPtrns + SMALL_SIZE, dstStride, height, SMALL_SIZE);
@@ -61,7 +67,7 @@ SECTION(".text_demo3d") int getAddrPtrnsT(NMGL_Context_NM1* context, Patterns* p
 	nmppsAddC_32s(polyTmp->pointInImage, (int)context->colorSegment.data, (nm32s*)context->imagePoints, size);
 	nmppsAddC_32s(polyTmp->pointInImage, (int)context->depthSegment.data, (nm32s*)context->zBuffPoints, size);
 #else
-	for (int i = 0; i < size; i++) {
+	for (int i = 0; i < size; i++) { 
 		context->imagePoints[i] = (int*)context->colorSegment.data + polyTmp->pointInImage[i];
 		context->zBuffPoints[i] = (int*)context->depthSegment.data + polyTmp->pointInImage[i];
 	}
@@ -80,15 +86,14 @@ SECTION(".text_demo3d") int getAddrPtrnsT(NMGL_Context_NM1* context, Patterns* p
 	nmppsMulC_AddC_32s(polyTmp->numbersPattrns12, WIDTH_PTRN * HEIGHT_PTRN / 16, (int)patterns->ptrns, temp2, size);
 	CHECK_STATUS(6);
 	nmppsMulC_AddC_32s(polyTmp->numbersPattrns02, WIDTH_PTRN * HEIGHT_PTRN / 16, (int)patterns->ptrns, temp0, size);
-	mergePtrnsAddr3((nm32s**)temp0, (nm32s**)temp1, (nm32s**)temp2, SMALL_SIZE, context->ppSrcPackPtrns, size);
 #else
 	for (int i = 0; i < size; i++) {
-		temp1[i] = (int)&patterns->ptrns[polyTmp->numbersPattrns01[i] * WIDTH_PTRN * HEIGHT_PTRN / 16];
-		temp2[i] = (int)&patterns->ptrns[polyTmp->numbersPattrns12[i] * WIDTH_PTRN * HEIGHT_PTRN / 16];
-		temp0[i] = (int)&patterns->ptrns[polyTmp->numbersPattrns02[i] * WIDTH_PTRN * HEIGHT_PTRN / 16];
+		temp1[i] = (int)(&patterns->ptrns[polyTmp->numbersPattrns01[i] * WIDTH_PTRN * HEIGHT_PTRN / 16]);
+		temp2[i] = (int)(&patterns->ptrns[polyTmp->numbersPattrns12[i] * WIDTH_PTRN * HEIGHT_PTRN / 16]);
+		temp0[i] = (int)(&patterns->ptrns[polyTmp->numbersPattrns02[i] * WIDTH_PTRN * HEIGHT_PTRN / 16]);
 	}
-	mergePtrnsAddr3((nm32s**)temp0, (nm32s**)temp1, (nm32s**)temp2, SMALL_SIZE, context->ppSrcPackPtrns, size);
 #endif
+	mergePtrnsAddr3((nm32s**)temp0, (nm32s**)temp1, (nm32s**)temp2, SMALL_SIZE, context->ppSrcPackPtrns, size);
 
 	CHECK_STATUS(7);
 	nmppsConvert_32s8s(polyTmp->color, (nm8s*)context->valuesC, 4 * size);

@@ -18,6 +18,7 @@ void create_tabl_dydx(nm8s* srcPatterns,int* dydx, int width, int height){
 	nmppsSet_32s(dydx, 0, 2*width*height);
 
 //---------------dydx--------------------
+	//заполнение 0..31 строки
 	int i;
 	nm32s* accTemp = nmppsMalloc_32s(sizePtrn);
 	nm32s* temp = nmppsMalloc_32s(sizePtrn);	
@@ -46,6 +47,10 @@ void create_tabl_dydx(nm8s* srcPatterns,int* dydx, int width, int height){
 			dydx[y * 2 * width + (x+ width)] = accTemp[y*width + x];
 	}
 
+	//дублировнаие 31 строки в 32 строку
+	for (int i = 0; i < 2 * width; i++) {
+		dydx[32 * 2 * width + i] = dydx[31 * 2 * width + i];
+	}
 	nmppsFree(temp);
 	nmppsFree(accTemp);
 //--------------------------------------------------------------------------------------

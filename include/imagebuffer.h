@@ -12,14 +12,6 @@ private:
 public:
 	int clearValue;
 	
-	ImageBuffer() {
-	}
-
-	ImageBuffer(void* imageArray, int widthImage, int heightImage, int count)
-	: width(widthImage), height(heightImage){
-		
-	}
-
 	void set(void* imageArray, int widthImage, int heightImage, int count) {
 		width = widthImage;
 		height = heightImage;

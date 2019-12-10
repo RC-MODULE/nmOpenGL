@@ -14,7 +14,10 @@ void nmglRotatef(NMGLfloat angle, NMGLfloat x, NMGLfloat y, NMGLfloat z) {
 					 0,0,0,1};
 	float cos;
 	float sin;
+
 	float rad = angle*3.1415926 / 180;
+
+
 	//nmppsCos_32f(&angle, &cos, 1);
 	//nmppsSin_32f(&angle, &sin, 1);
 	cos = cosf(rad);
@@ -33,7 +36,8 @@ void nmglRotatef(NMGLfloat angle, NMGLfloat x, NMGLfloat y, NMGLfloat z) {
 	temp.matr[2*4+0] = ((1-cos)*x*z + y*sin);
 	temp.matr[2*4+1] = ((1-cos)*y*z - x*sin);
 	temp.matr[2*4+2] = (cos + z*z*(1-cos));
-	
+
 	mat4nm32f* current = cntxt.currentMatrixStack->top();
 	mul_mat4nm32f_v4nm32f(current, (v4nm32f*)&temp, (v4nm32f*)current, 4);
+	
 }

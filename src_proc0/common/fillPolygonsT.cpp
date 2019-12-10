@@ -10,13 +10,14 @@ inline void getNumbersPtrns(float* x0, float* y0, float* x1, float* y1, float* m
 	float* temp1 = cntxt.buffer1 + 3 * NMGL_SIZE;
 	float* temp2 = cntxt.buffer2 + 3 * NMGL_SIZE;
 	int* temp0_int = (int*)temp0;
+	int* temp1_int = (int*)temp1;
 
 	nmppsSub_32f(x1, x0, temp0, count);		//dx
 	nmppsSub_32f(y1, y0, temp1, count);		//dy
 	nmppsMulC_AddV_AddC_32f((nm32f*)temp1, 2 * WIDTH_PTRN, (nm32f*)temp0, WIDTH_PTRN, (nm32f*)temp2, count);		//i
 	nmppsConvert_32f32s_rounding(temp2, temp0_int, 0, count);
-	remap_32u((nm32u*)dydx, (nm32u*)temp1, temp0_int, count);
-	nmppsConvert_32s32f((nm32s*)temp1, temp0, count);
+	remap_32u((nm32u*)dydx, (nm32u*)temp1_int, temp0_int, count);
+	nmppsConvert_32s32f(temp1_int, temp0, count);
 	nmppsSub_32f(x0, minX, temp2, count);					//x0
 	nmppsAdd_32f(temp0, temp2, dst, count);				//dydx(dx, dy) + x0
 }
@@ -32,10 +33,6 @@ inline void sort(Triangles* triangles, int count) {
 	split_v2nm32f((v2nm32f*)pCxy, 1, triangles->x0, triangles->y0, count);
 	split_v2nm32f((v2nm32f*)pBxy, 1, triangles->x1, triangles->y1, count);
 	split_v2nm32f((v2nm32f*)pAxy, 1, triangles->x2, triangles->y2, count);
-}
-
-inline void getCrossProducts() {
-
 }
 
 SECTION(".text_demo3d")
@@ -75,13 +72,13 @@ void fillPolygonsT(Polygons* poly, Triangles* triangles, int count, int segX, in
 	getNumbersPtrns(triangles->x0, triangles->y0, triangles->x1, triangles->y1, minX, dydx, temp0, count);
 	getNumbersPtrns(triangles->x0, triangles->y0, triangles->x2, triangles->y2, minX, dydx, temp1, count);
 	getNumbersPtrns(triangles->x1, triangles->y1, triangles->x2, triangles->y2, minX, dydx, temp2, count);
+
 	ternaryLt0_AddC_AddC_32f(crossProducts, temp0, NPATTERNS / 2, 0, minY, count);
 	nmppsConvert_32f32s_rounding(minY, poly->numbersPattrns01, 0, count);
 	ternaryLt0_AddC_AddC_32f(crossProducts, temp2, NPATTERNS / 2, 0, temp0, count);
 	nmppsConvert_32f32s_rounding(temp0, poly->numbersPattrns12, 0, count);
 	ternaryLt0_AddC_AddC_32f(crossProducts, temp1, 0, NPATTERNS / 2, temp2, count);
 	nmppsConvert_32f32s_rounding(temp2, poly->numbersPattrns02, 0, count);
-
 
 	nmppsSubC_32f(triangles->y0, temp0, cntxt.windowInfo.y0_f[segY], count);
 	absIfNegElse0_32f(temp0, temp1, count);
