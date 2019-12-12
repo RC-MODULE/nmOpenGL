@@ -67,7 +67,7 @@ SECTION(".text_nmglvs") int nmglvsNm1Step(NMGL_Context_NM1 &cntxt)
 		if (cntxt.depthBuffer->enabled == NMGL_TRUE) {
 			cntxt.depthSegment.push(cntxt.depthBuffer, x0, y0, width, height); 
 		}
-		cntxt.depthSegment.push(cntxt.colorBuffer, x0, y0, width, height);
+		cntxt.colorSegment.push(cntxt.colorBuffer, x0, y0, width, height);
 		msdStartCopy();
 		break;
 	}
