@@ -1,6 +1,6 @@
 #include "demo3d_nm1.h"
 
-extern int addC4DepthTest;
+int addC4DepthTest = ZBUFF_MAX;
 
 extern "C" {
 	
@@ -31,8 +31,10 @@ extern "C" {
 				temp = src[y];
 				temp >>= (x0 * 2);
 				for(int x = 0; x<widths[c];x++){
-					//dst[y*width +x] = ((temp & 0x3) * valueC[c] + addC4DepthTest) & 0x7FFFFFFF;
-					dst[y*width + x] = (temp & 0x3) * valueC[c];
+					int mul = ((temp & 0x3) * valueC[c]);
+					int tmp = mul & 0x80000000;
+					dst[y*width +x] = (mul + addC4DepthTest) & 0x7FFFFFFF | tmp;
+					//dst[y*width + x] = (temp & 0x3) * valueC[c];
 					temp >>= 2;
 				}
 			}

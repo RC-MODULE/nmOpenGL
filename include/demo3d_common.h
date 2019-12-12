@@ -19,6 +19,8 @@
 #define SECTION(sec)
 #endif // __GNUC__
 
+typedef nm16s rgb565;
+
 //Возможные значения ширины или высоты: 768,960,1024,1152
 #define WIDTH_IMAGE 768
 #define HEIGHT_IMAGE 768
@@ -38,7 +40,7 @@
 #define COUNT_POLYGONS_BUFFER 32
 #define COUNT_IMAGE_BUFFER 8
 
-#define ZBUFF_MAX 32767
+#define ZBUFF_MAX 0x7FFFFFFF
 
 #define MAX_SIDE_POLYGON 32
 #define HEIGHT_PTRN   MAX_SIDE_POLYGON

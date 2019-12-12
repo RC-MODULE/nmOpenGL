@@ -43,7 +43,7 @@ int main()
 //			for(int h = 1; h < 33; h++){
 //				for(int w=2;w<=(32 - o);w+=2){
 					for(int i =0;i<32;i++){
-						valuesC[i] = 1;
+						valuesC[i] = -1;
 						offsets[i] = 0;
 						widths[i] = 32;
 						heights[i] = 32;

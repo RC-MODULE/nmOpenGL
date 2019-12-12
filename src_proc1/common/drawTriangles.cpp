@@ -9,18 +9,6 @@ SECTION(".text_demo3d") void drawTriangles(NMGL_Context_NM1* context) {
 	PolygonsConnector connector(context->polygonsData);
 	Polygons* poly = connector.ptrTail();
 	getAddrPtrnsT(context, context->patterns, poly);
-	/*static unsigned int crc = 0;
-	static int counter = 0;
-	nmppsCrcAcc_32s(poly->numbersPattrns01, poly->count, &crc);
-	nmppsCrcAcc_32s(poly->numbersPattrns12, poly->count, &crc);
-	nmppsCrcAcc_32s(poly->numbersPattrns02, poly->count, &crc);
-	nmppsCrcAcc_32s(poly->heights, poly->count, &crc);
-	nmppsCrcAcc_32s(poly->widths, poly->count, &crc);
-	nmppsCrcAcc_32s(poly->offsetsX, poly->count, &crc);
-	nmppsCrcAcc_32s(poly->offsetsY, poly->count, &crc);
-	nmppsCrcAcc_32s(poly->pointInImage, poly->count, &crc);
-	printf("counter=%d, crc=0x%x\n", counter++, crc);*/
-
 
 	msdWaitDma();
 	int countTrangles = poly->count;

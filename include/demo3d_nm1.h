@@ -41,6 +41,9 @@ public:
 
 };
 
+typedef void DepthCore(nm32s &trianSrcZ, nm32s &buffZ, nm32s &trianDstZ);
+
+
 void selectPatterns(nm32s* dydxTable, nm32s* dX, nm32s* dY, nm32s* x0, nm32s* pPtrnPaintSide, nm32s** pSrcPack, int nSize, int* pTmp);
 
 struct NMGL_Context_NM1 {

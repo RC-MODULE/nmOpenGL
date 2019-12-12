@@ -1,19 +1,45 @@
 #include "nmpp.h"
+#include "demo3d_nm1.h"
 
+extern "C" {
+	
 
-int currentDepthTest;
+	void depthTestCore_N_rw(nm32s &trianSrcZ, nm32s &buffZ, nm32s &trianDstZ) {
+		trianDstZ = 0;
+	}
 
-int* depthTestCore_N_rw;
-int* depthTestCore_Lt_rw;
-int* depthTestCore_Gt_rw;
-int* depthTestCore_A_rw;
+	void depthTestCore_Lt_rw(nm32s &trianSrcZ, nm32s &buffZ, nm32s &trianDstZ) {
+		trianDstZ = trianSrcZ - buffZ;
+		if (trianDstZ < 0) {
+			buffZ = trianSrcZ;
+		}
+	}
+	void depthTestCore_Gt_rw(nm32s &trianSrcZ, nm32s &buffZ, nm32s &trianDstZ) {
+		trianDstZ = buffZ - trianSrcZ;
+		if (trianDstZ < 0) {
+			buffZ = trianSrcZ;
+		}
+	}
+	void depthTestCore_A_rw(nm32s &trianSrcZ, nm32s &buffZ, nm32s &trianDstZ) {
+		buffZ = trianSrcZ;
+		trianDstZ = -1;
+	}
 
-int* depthTestCore_N_r;
-int* depthTestCore_Lt_r;
-int* depthTestCore_Gt_r;
-int* depthTestCore_A_r;
+	void depthTestCore_N_r(nm32s &trianSrcZ, nm32s &buffZ, nm32s &trianDstZ) {
+		trianDstZ = 0;
+	}
+	void depthTestCore_Lt_r(nm32s &trianSrcZ, nm32s &buffZ, nm32s &trianDstZ) {
+		trianDstZ = trianSrcZ - buffZ;
+	}
+	void depthTestCore_Gt_r(nm32s &trianSrcZ, nm32s &buffZ, nm32s &trianDstZ) {
+		trianDstZ = buffZ - trianSrcZ;
+	}
+	void depthTestCore_A_r(nm32s &trianSrcZ, nm32s &buffZ, nm32s &trianDstZ) {
+		trianDstZ = -1;
+	}
 
-int addC4DepthTest = 0x7FFFFFFF;
+	DepthCore* currentDepthTest = depthTestCore_Lt_rw;
+}
 
 
 extern "C" {
@@ -28,10 +54,7 @@ extern "C" {
 									int* src2 = pSrc2 + y*srcStride2;
 									int* dst  = pDst  + y*dstStride;
 									for(int x=0;x<nWidth;x++){
-										dst[x] = src1[x] - src2[x];
-										if(dst[x] < 0){
-											src1[x] = src2[x];
-										}
+										currentDepthTest(src1[x], src2[x], dst[x]);
 									}
 								}
 								
