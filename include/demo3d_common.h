@@ -20,6 +20,7 @@
 #endif // __GNUC__
 
 typedef nm16s rgb565;
+typedef v4nm8s rgb8888;
 
 //Возможные значения ширины или высоты: 768,960,1024,1152
 #define WIDTH_IMAGE 768
