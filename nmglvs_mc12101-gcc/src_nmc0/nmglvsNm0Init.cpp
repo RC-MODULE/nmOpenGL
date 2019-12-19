@@ -45,6 +45,7 @@ template<class T> T* myMallocT() {
 #pragma code_section ".text_demo3d"
 int nmglvsNm0Init()
 {
+	halSleep(100);
 	halSetProcessorNo(0);
 	int fromHost = halHostSync(0xC0DE0000);		// send handshake to host
 	if (fromHost != 0xC0DE0086) {					// get  handshake from host

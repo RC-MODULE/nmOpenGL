@@ -44,6 +44,7 @@ template<class T> T* myMallocT() {
 
 SECTION(".text_nmglvs") int nmglvsNm1Init(NMGL_Context_NM1& cntxt)
 {
+	halSleep(100);
 	halSetProcessorNo(1);
 	//---------- start nm program ------------
 	int fromHost=ncl_hostSync(0xC0DE0001);		// send handshake to host
