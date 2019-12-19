@@ -16,6 +16,8 @@
 
 #define SECTION(a) 
 
+#define setHeap(a)
+
 
 struct Models {
 	char* sphere = "../../models/sphere_31.stl";

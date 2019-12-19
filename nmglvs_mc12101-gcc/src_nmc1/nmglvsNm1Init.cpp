@@ -78,6 +78,8 @@ SECTION(".text_nmglvs") int nmglvsNm1Init(NMGL_Context_NM1& cntxt)
 	setHeap(10);
 	cntxt.colorBuffer->set(imageArray, WIDTH_IMAGE, HEIGHT_IMAGE, COUNT_IMAGE_BUFFER);
 	cntxt.depthBuffer->set(ZBuffImage, WIDTH_IMAGE, HEIGHT_IMAGE, 1);
+	cntxt.depthBuffer->clearValue = ZBUFF_MAX;
+	cntxt.colorBuffer->clearValue = 0;
 	cntxt.colorSegment.set(segImage, WIDTH_SEG, HEIGHT_SEG, msdAdd2D);
 	cntxt.depthSegment.set(segZBuff, WIDTH_SEG, HEIGHT_SEG, msdAdd2D);
 

@@ -8,7 +8,7 @@ extern "C"{
 							   srcVec1[i].vec[2] * srcVec2[i].vec[2] +
 							   srcVec1[i].vec[3] * srcVec2[i].vec[3];
 			dstValues[i].v0 = (dstValues[i].v0 > 0) ? dstValues[i].v0 : 0;
-			dstValues[i].v1 = dstValues[i].v1;
+			dstValues[i].v1 = dstValues[i].v0;
 		} 
 	}
 }

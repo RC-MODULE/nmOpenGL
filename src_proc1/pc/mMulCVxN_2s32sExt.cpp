@@ -13,7 +13,10 @@ extern "C" {
 			int width = widths[c];
 			nm32s* nextDst;
 
-			if (offsets[c] == -1) {
+			offsets[c] = (offsets[c] < 0) ? 0 : offsets[c];
+			nextDst = dst + heights[c] * width;
+			x0 = offsets[c] % 32;
+			/*if (offsets[c] == -1) {
 				width+=2;
 				for (int y = 0; y < heights[c]; y++) {
 					dst[y*width] = 0;
@@ -25,7 +28,7 @@ extern "C" {
 			else {
 				x0 = offsets[c] % 32;
 				nextDst = dst + heights[c] * width;
-			}
+			}*/
 			
 			for(int y = 0; y < heights[c]; y++){
 				temp = src[y];

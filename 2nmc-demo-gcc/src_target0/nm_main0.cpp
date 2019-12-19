@@ -71,6 +71,8 @@ SECTION(".text_shared") int main()
 	amount = get_amm_poligone(fmodel);
 	fmodel = fopen(filePath, "r");
 	createArrayVec4(fmodel, vertices_DDR2, normal_DDR2, 0.5);
+	
+
 
 	int amountPolygons2 = amount;
 	int ok;
@@ -160,7 +162,6 @@ SECTION(".text_shared") int main()
 		angle += 1.72;
 #endif // __OPEN_GL__
 
-		
 		nmglDisableClientState(NMGL_VERTEX_ARRAY);
 		nmglDisableClientState(NMGL_NORMAL_ARRAY);
 

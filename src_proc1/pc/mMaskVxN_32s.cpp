@@ -14,9 +14,6 @@ extern "C" {
 									int* result_32s    = pSameImg  + y * dstStride;
 									for(int x = 0; x < nWidth; x++) {
 										if (masks_32s[x] < 0) {
-											if (triangles_32s[x] != 0) {
-												triangles_32s[x] = triangles_32s[x];
-											}
 											result_32s[x] = triangles_32s[x];
 										}
 										else

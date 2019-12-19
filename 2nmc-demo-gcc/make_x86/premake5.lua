@@ -52,9 +52,9 @@ solution "demo3d-target1-x86"
       kind "ConsoleApp"
 	  language "C++"
       files { "../../include/*.h","../src_target1/*.*", "../../src_proc1/pc/*.*","../../src_proc1/common/*.*", "../../nmglvs_mc12101-gcc/src_nmc1/*.*", "Makefile1" }
-	  libdirs { "$(NMPP)/lib","$(HAL)/lib"}
-	  includedirs { "$(MC12101)/include","$(HAL)/include","$(NMPP)/include","../../include"}
-	  links { "nmpp-x86.lib","hal-virtual-x86.lib"}
+	  libdirs { "$(NMPP)/lib","$(HAL)/lib", "$(VSHELL)/lib"}
+	  includedirs { "$(MC12101)/include","$(HAL)/include","$(NMPP)/include","../../include", "$(VSHELL)/include"}
+	  links { "nmpp-x86.lib","hal-virtual-x86.lib", "vshell.lib"}
 	 
       configuration "Debug"
          defines { "DEBUG" }

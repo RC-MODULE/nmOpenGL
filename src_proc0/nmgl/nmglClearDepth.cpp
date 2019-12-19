@@ -7,5 +7,9 @@
 SECTION(".text_nmgl")
 void nmglClearDepthf(NMGLclampf depth) {
 	float depth_nm1 = ZBUFF_MAX * depth;
-	cntxt.synchro.writeInstr(1, NMC1_SET_DEPTH, depth_nm1);
+	unsigned int depth_int = (unsigned int)depth_nm1;
+	if (depth_int > ZBUFF_MAX) {
+		depth_int = ZBUFF_MAX;
+	}
+	cntxt.synchro.writeInstr(1, NMC1_SET_DEPTH, depth_int);
 }
