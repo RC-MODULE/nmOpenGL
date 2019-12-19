@@ -11,37 +11,30 @@ extern "C" {
 			long long int* src = (nm64s*) ppSrcTreangle_2s[c];
 			int x0;
 			int width = widths[c];
-			nm32s* nextDst;
 
-			offsets[c] = (offsets[c] < 0) ? 0 : offsets[c];
-			nextDst = dst + heights[c] * width;
-			x0 = offsets[c] % 32;
-			/*if (offsets[c] == -1) {
-				width+=2;
-				for (int y = 0; y < heights[c]; y++) {
-					dst[y*width] = 0;
-				}
-				nextDst = dst + heights[c] * width;
-				dst++;
-				x0 = 0;
+			if (offsets[c] == -1) {
+				width--;
 			}
-			else {
-				x0 = offsets[c] % 32;
-				nextDst = dst + heights[c] * width;
-			}*/
 			
 			for(int y = 0; y < heights[c]; y++){
 				temp = src[y];
-				temp >>= (x0 * 2);
-				for(int x = 0; x<widths[c];x++){
+				nm32s* pDst = dst + y * widths[c];
+				if (offsets[c] == -1) {
+					*pDst = addC4DepthTest;
+					pDst++;
+				}
+				else {
+					temp >>= (offsets[c] * 2);
+				}
+				for(int x = 0; x < width; x++){
 					int mul = ((temp & 0x3) * valueC[c]);
 					int tmp = mul & 0x80000000;
-					dst[y*width +x] = (mul + addC4DepthTest) & 0x7FFFFFFF | tmp;
-					//dst[y*width + x] = (temp & 0x3) * valueC[c];
+					*pDst = (mul + addC4DepthTest) & 0x7FFFFFFF | tmp;
+					pDst++;
 					temp >>= 2;
 				}
 			}
-			dst = nextDst;
+			dst += heights[c] * widths[c];
 			
 		}
 	}

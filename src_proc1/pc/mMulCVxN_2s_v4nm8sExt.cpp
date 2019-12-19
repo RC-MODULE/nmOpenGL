@@ -9,38 +9,34 @@ extern "C" {
 			long long int* src = (nm64s*)ppSrcTreangle_2s[c];
 			int x0;
 			int width = widths[c];
-			nm32s* nextDst;
-
-			offsets[c] = (offsets[c] < 0) ? 0 : offsets[c];
-			nextDst = (nm32s*)dst + heights[c] * width;
-			x0 = offsets[c] % 32;
-
-			/*if (offsets[c] == -1) {
-				width++;
-				for (int y = 0; y < heights[c]; y++) {
-					((nm32s*)dst)[y*width] = 0;
-				}
-				nextDst = (nm32s*)dst + heights[c] * width;
-				dst++;
-				x0 = 0;
+			
+			if (offsets[c] == -1) {
+				width--;
 			}
-			else {
-				x0 = offsets[c] % 32;
-				nextDst = (nm32s*)dst + heights[c] * width;
-			}*/
 
 			for (int y = 0; y < heights[c]; y++) {
 				temp = src[y];
-				temp >>= (x0 * 2);
+				nm8s* pDst = dst + 4 * y * widths[c];
+				if (offsets[c] == -1) {
+					for (int i = 0; i < 4; i++) {
+						*pDst = 0;
+						pDst++;
+					}					
+				}
+				else {
+					temp >>= (offsets[c] * 2);
+				}
+
 				for (int x = 0; x<widths[c]; x++) {
 					int position = y * widths[c] + x;
 					for (int i = 0; i < 4; i++) {
-						dst[4 * position + i] = (temp & 0x3) * colors[4 * c + i];
+						*pDst = (temp & 0x3) * colors[4 * c + i];
+						pDst++;
 					}
 					temp >>= 2;
 				}
 			}
-			dst = (nm8s*)nextDst;
+			dst += 4 * heights[c] * widths[c];
 
 		}
 	}

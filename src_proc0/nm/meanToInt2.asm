@@ -21,6 +21,7 @@ begin ".text_demo3d"
 	gr7 = gr5 << 26;
 	
 	ar5 = half with gr5 = gr5 >> 6;
+	fpu	1 rep 1 vreg3 = [ar5];
 	if =0 delayed goto REMINDER	with gr7 = gr7 >> 27;
 		fpu 1 rep 1 vreg0 = [ar5]; 
 		gr5--;
@@ -29,7 +30,7 @@ begin ".text_demo3d"
 	fpu 0 rep 32 vreg1 = [ar1++];//load src2
 	fpu 0 .float vreg2 = vreg1 + vreg0;
 	fpu 1 vreg1 = fpu 0 vreg2;
-	fpu 1 .float vreg2 = vreg1*.retrive(vreg0);
+	fpu 1 .float vreg2 = vreg1*.retrive(vreg0) + .retrive(vreg3);
 	if <>0 delayed goto LOOP with gr5--;
 		fpu 1 .packer = vreg2 with .fixed_32 <= .float;    
 		fpu rep 32 [ar3++] = .packer;
@@ -42,7 +43,7 @@ begin ".text_demo3d"
 	fpu 0 rep vlen vreg1 = [ar1++];//load src2
 	fpu 0 .float vreg2 = vreg1 + vreg0;
 	fpu 1 vreg1 = fpu 0 vreg2;
-	fpu 1 .float vreg2 = vreg1*.retrive(vreg0);
+	fpu 1 .float vreg2 = vreg1*.retrive(vreg0) + .retrive(vreg3);
 	fpu 1 .packer = vreg2 with .fixed_32 <= .float;    
 	fpu rep vlen [ar3++] = .packer;
 <END>
