@@ -72,7 +72,7 @@ int main()
 	int counter = 0;
 
 	while(VS_Run())	{
-#ifndef EMULATION
+#ifdef EMULATION
 		halSleep(100);
 #endif //EMULATION
 		nmglvsHostReadImage(currentImage);
