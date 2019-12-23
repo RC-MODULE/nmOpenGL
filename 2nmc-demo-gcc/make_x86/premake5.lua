@@ -13,11 +13,11 @@ solution "demo3d-host-x86"
 		links { "vshell.lib","nmpp-x86.lib","hal-virtual-x86.lib"}
 
       configuration "Debug"
-         defines { "DEBUG" }
+         defines { "DEBUG", "EMULATION" }
          symbols  "On" 
 
       configuration "Release"
-         defines { "NDEBUG" }
+         defines { "NDEBUG", "EMULATION" }
          symbols  "Off" 
 		 
 		 

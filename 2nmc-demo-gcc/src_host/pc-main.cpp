@@ -72,9 +72,9 @@ int main()
 	int counter = 0;
 
 	while(VS_Run())	{
-#ifndef __GNUC__
+#ifndef EMULATION
 		halSleep(100);
-#endif //__GNUC__
+#endif //EMULATION
 		nmglvsHostReadImage(currentImage);
 		VS_SetData(1, currentImage);
 		counter++;
