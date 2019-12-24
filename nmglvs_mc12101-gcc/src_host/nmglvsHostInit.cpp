@@ -42,6 +42,10 @@ void download() {
 #else
 		if (mouseStatus.nKey != VS_MOUSE_LBUTTON) {
 #endif
+			/*while (halHostRingBufferIsEmpty(&hostImageRB));
+			halReadMemBlock(&hostImageRB.head, hostImageRB.remoteHeadAddr, 1, 1);
+			halReadMemBlock(&hostImageRB.tail, hostImageRB.remoteTailAddr, 1, 1);
+			int freeImages = hostImageRB.head - hostImageRB.tail;*/
 			halHostRingBufferPop(&hostImageRB, halRingBufferHead(&imagesRB), 1);
 		}
 		else {

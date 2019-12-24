@@ -9,15 +9,6 @@
 SECTION(".data_imu7")   int indices[NMGL_SIZE];
 SECTION(".data_imu7")   int maskBitsTemp[BIG_NMGL_SIZE / 32];
 
-
-SECTION(".text_demo3d") Polygons* getPolygonsHead() {
-	PolygonsConnector connector(cntxt.polygonsData);
-	while (connector.isFull()) {
-		halSleep(2);
-	}
-	return connector.ptrHead();
-}
-
 SECTION(".text_demo3d")
 void rasterizeT(const Triangles* triangles, const SegmentMask* masks, int count){
 	Triangles tmpTrian;
@@ -30,6 +21,8 @@ void rasterizeT(const Triangles* triangles, const SegmentMask* masks, int count)
 	localTrian.y2 = cntxt.buffer2 + NMGL_SIZE;
 	localTrian.z = (int*)cntxt.buffer3;
 	localTrian.colors = (v4nm32s*)(cntxt.buffer3 + NMGL_SIZE);
+
+	PolygonsConnector connector(cntxt.polygonsData);
 
 	for (int segY = 0, iSeg = 0; segY < cntxt.windowInfo.nRows; segY++) {
 		for (int segX = 0; segX < cntxt.windowInfo.nColumns; segX++, iSeg++) {
@@ -51,15 +44,14 @@ void rasterizeT(const Triangles* triangles, const SegmentMask* masks, int count)
 
 					int resultSize = readMask(&maskBitsTemp[i / 32], indices, treatedBitInMask, tmpSize, NMGL_SIZE);
 					if (resultSize != 0) {
-						Polygons* poly = getPolygonsHead();
-						PolygonsConnector connector23(cntxt.polygonsData);
+						while (connector.isFull());
+						Polygons* poly = connector.ptrHead();
 						copyArraysByIndices((void**)&cntxt.trianInner, indices, (void**)&localTrian, 7, resultSize);
 						copyColorByIndices_BGRA_RGBA(cntxt.trianInner.colors, indices, (v4nm32s*)localTrian.colors, resultSize);
 						fillPolygonsT(poly, &localTrian, resultSize, segX, segY);
 						nmblas_scopy(resultSize, (float*)localTrian.z, 1, (float*)poly->z, 1);
 						nmblas_scopy(4 * resultSize, (float*)localTrian.colors, 1, (float*)poly->color, 1);
 
-						PolygonsConnector connector(cntxt.polygonsData);
 						(*connector.pHead)++;
 						cntxt.synchro.writeInstr(1, NMC1_DRAW_TRIANGLES);
 					}

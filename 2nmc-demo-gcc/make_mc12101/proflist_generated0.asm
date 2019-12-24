@@ -29,7 +29,6 @@ FUNCTION(__Z13fillPolygonsTP8PolygonsP9Trianglesiii,"__Z13fillPolygonsTP8Polygon
 FUNCTION(__Z5lightP9s_v4nm32fS0_i,"__Z5lightP9s_v4nm32fS0_i");// 0x00000000000019aa [.text_demo3d]
 FUNCTION(__Z17pushToTriangles_tPKfS0_S0_PK9s_v4nm32fR9Trianglesi,"__Z17pushToTriangles_tPKfS0_S0_PK9s_v4nm32fR9Trianglesi");// 0x0000000000001cb4 [.text_demo3d]
 FUNCTION(__Z10rasterizeLP5Linesi,"__Z10rasterizeLP5Linesi");// 0x0000000000001dfe [.text_demo3d]
-FUNCTION(__Z15getPolygonsHeadv,"__Z15getPolygonsHeadv");// 0x0000000000001e04 [.text_demo3d]
 FUNCTION(__Z10rasterizeTPK9TrianglesPK11SegmentMaski,"__Z10rasterizeTPK9TrianglesPK11SegmentMaski");// 0x0000000000001e3c [.text_demo3d]
 FUNCTION(_readMask,       "_readMask       ");// 0x0000000000002134 [.text_demo3d]
 FUNCTION(__Z21reverseMatrix3x3in4x4P11s_mat4nm32fS0_,"__Z21reverseMatrix3x3in4x4P11s_mat4nm32fS0_");// 0x0000000000002210 [.text_demo3d]

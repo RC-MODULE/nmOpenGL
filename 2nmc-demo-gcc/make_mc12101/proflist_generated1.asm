@@ -57,14 +57,14 @@ FUNCTION(_selectPaintSide,"_selectPaintSide");// 0x0000000000001c36 [.text_demo3
 FUNCTION(__Z13nmglvsNm1InitR16NMGL_Context_NM1,"__Z13nmglvsNm1InitR16NMGL_Context_NM1");// 0x0000000027008fc0 [.text_nmglvs]
 FUNCTION(__Z12nmglvsNm1RunR16NMGL_Context_NM1,"__Z12nmglvsNm1RunR16NMGL_Context_NM1");// 0x000000002700914e [.text_nmglvs]
 FUNCTION(__Z13nmglvsNm1StepR16NMGL_Context_NM1,"__Z13nmglvsNm1StepR16NMGL_Context_NM1");// 0x0000000027009160 [.text_nmglvs]
-FUNCTION(_depthTestCore_A_r,"_depthTestCore_A_r");// 0x000000002700a7ec [.text_demo3dExt]
+/* FUNCTION(_depthTestCore_A_r,"_depthTestCore_A_r");// 0x000000002700a7ec [.text_demo3dExt]
 FUNCTION(_depthTestCore_A_rw,"_depthTestCore_A_rw");// 0x000000002700ac1a [.text_demo3dExt]
 FUNCTION(_depthTestCore_Gt_r,"_depthTestCore_Gt_r");// 0x000000002700b048 [.text_demo3dExt]
 FUNCTION(_depthTestCore_Gt_rw,"_depthTestCore_Gt_rw");// 0x000000002700b476 [.text_demo3dExt]
 FUNCTION(_depthTestCore_Lt_r,"_depthTestCore_Lt_r");// 0x000000002700b8a4 [.text_demo3dExt]
 FUNCTION(_depthTestCore_Lt_rw,"_depthTestCore_Lt_rw");// 0x000000002700bcd2 [.text_demo3dExt]
 FUNCTION(_depthTestCore_N_r,"_depthTestCore_N_r");// 0x000000002700c100 [.text_demo3dExt]
-FUNCTION(_depthTestCore_N_rw,"_depthTestCore_N_rw");// 0x000000002700c52e [.text_demo3dExt]
+FUNCTION(_depthTestCore_N_rw,"_depthTestCore_N_rw");// 0x000000002700c52e [.text_demo3dExt] */
 FUNCTION(_nmppsAddC_32s,  "_nmppsAddC_32s  ");// 0x0000000000004b1e [.text_nmplv]
 FUNCTION(_nmppsAdd_32s,   "_nmppsAdd_32s   ");// 0x0000000000004b40 [.text_nmplv]
 FUNCTION(_nmppsMulC_AddC32s,"_nmppsMulC_AddC32s");// 0x0000000000004b5a [.text_nmplv]
@@ -83,6 +83,7 @@ FUNCTION(_nmppsRemap_32u, "_nmppsRemap_32u ");// 0x0000000000004c7e [.text_nmplv
 FUNCTION(_nmppmCopy_32u,  "_nmppmCopy_32u  ");// 0x0000000000004ca2 [.text_nmplm]
 //FUNCTION(_nmppmCopy_32s,  "_nmppmCopy_32s  ");// 0x0000000000004ca2 [.text_nmplm]
 FUNCTION(mtr_CpyCore_nm64,"mtr_CpyCore_nm64");// 0x0000000000004cc0 [.text_nmplm]
+FUNCTION(_totalSum,"_totalSum");// 0x0000000000004cc0 [.text_nmplm]
 
 PROFILE_END();
 end ".text_nmprofiler";

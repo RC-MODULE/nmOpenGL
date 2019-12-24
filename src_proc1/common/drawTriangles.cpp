@@ -14,8 +14,9 @@ SECTION(".text_demo3d") void drawTriangles(NMGL_Context_NM1* context) {
 	int countTrangles = poly->count;
 	(*connector.pTail)++;
 
-	nm32s* mulBuffer = context->buffer0;
-	nm32s* maskBuffer = context->buffer1;
+	nm32s* mulZ = context->buffer0;
+	nm32s* mulC = context->buffer0;
+	nm32s* zMaskBuffer = context->buffer1;
 	
 	int point = 0;
 	while (countTrangles > 0) {
@@ -26,7 +27,6 @@ SECTION(".text_demo3d") void drawTriangles(NMGL_Context_NM1* context) {
 		int* offsetsX = context->offsetTrX + point;
 		int* valuesC = context->valuesC + point;
 		int* valuesZ = context->valuesZ + point;
-		
 
 		copyPacket_32s(context->ppSrcPackPtrns + point_x3, 
 			context->ppDstPackPtrns + point_x3, 
@@ -46,26 +46,31 @@ SECTION(".text_demo3d") void drawTriangles(NMGL_Context_NM1* context) {
 				context->offsetTrY[point + i] * WIDTH_PTRN / 16);
 		}
 #endif // __GNUC__
-
+		//проверка активирования теста глубины
 		if (context->depthBuffer->enabled == NMGL_FALSE) {
 			mMulCVxN_2s32sExt(context->ppPtrnsCombined_2s,
 				offsetsX,
 				widths,
 				heights,
-				(nm32s*)maskBuffer,
+				(nm32s*)zMaskBuffer,
 				context->minusOne, localSize);
 		}
 		else {
+			//умножение бинарных масок на Z
 			mMulCVxN_2s32sExt(context->ppPtrnsCombined_2s,
 				offsetsX,
 				widths,
 				heights,
-				(nm32s*)mulBuffer,
+				(nm32s*)mulZ,
 				valuesZ, localSize);
 
+
+			//mulZ теперь хранит z-треугольники
+
+			//функция теста глубины
 			depthTest(context->zBuffPoints + point, WIDTH_SEG,
-				(nm32s*)mulBuffer,
-				(nm32s*)maskBuffer,
+				(nm32s*)mulZ,
+				(nm32s*)zMaskBuffer,
 				heights,
 				widths, localSize);
 		}
@@ -75,10 +80,15 @@ SECTION(".text_demo3d") void drawTriangles(NMGL_Context_NM1* context) {
 			offsetsX,
 			widths,
 			heights,
-			(v4nm8s*)mulBuffer, (v4nm8s*)valuesC, localSize);
+			(v4nm8s*)mulC, (v4nm8s*)valuesC, localSize);
 
-		mMaskVxN_32s((nm32s*)mulBuffer,
-			(nm32s*)maskBuffer,
+		//mulBuffer теперь хранит цвет
+
+
+		//функция накладывает маску на буфер с цветами 
+		//и копирует треугольник в изображение
+		mMaskVxN_32s((nm32s*)mulC,
+			(nm32s*)zMaskBuffer,
 			context->imagePoints + point, WIDTH_SEG,
 			heights, widths, localSize);
 

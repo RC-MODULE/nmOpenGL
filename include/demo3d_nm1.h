@@ -158,6 +158,8 @@ extern "C" {
 	void selectColorChannel(v4nm8s* srcImage, int channel, nm8s* dst, int size);
 
 	void absIfNegElse0(int* src, int* dst, int size);
+
+	int totalSum(nm32s* pVec, int size);
 }
 
 void drawTriangles(NMGL_Context_NM1* context);

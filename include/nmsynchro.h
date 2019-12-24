@@ -28,9 +28,9 @@
 #define SYNCHRO_EXIT 1
 
 struct CommandNm1{
-	volatile int instr_nmc1;
-	volatile int priority;
-	volatile int params[6];
+	int instr_nmc1;
+	int priority;
+	int params[6];
 };
 
 #define PRIORITY0_SIZE 16
@@ -122,9 +122,7 @@ public:
 	}
 
 	CommandNm1* readInstr() {
-		while (isEmpty()) {
-			halSleep(2);
-		}
+		while (isEmpty());
 		if (isEmpty(0)) {
 			HalRingBufferConnector<CommandNm1, PRIORITY1_SIZE> connector1(&mSynchroData->priority1);
 			return connector1.ptrTail();
