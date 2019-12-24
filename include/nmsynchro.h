@@ -122,7 +122,9 @@ public:
 	}
 
 	CommandNm1* readInstr() {
-		while (isEmpty());
+		while (isEmpty()) {
+			halSleep(2);
+		}
 		if (isEmpty(0)) {
 			HalRingBufferConnector<CommandNm1, PRIORITY1_SIZE> connector1(&mSynchroData->priority1);
 			return connector1.ptrTail();
