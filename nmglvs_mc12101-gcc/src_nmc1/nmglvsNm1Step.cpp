@@ -18,8 +18,11 @@ SECTION(".data_imu0") CommandNm1 currentCommand;
 
 SECTION(".text_nmglvs") int nmglvsNm1Step(NMGL_Context_NM1 &cntxt)
 {	
+	printf("command=0x%x");
 	CommandNm1* ptrCommand = cntxt.synchro.readInstr();
 	halCopyRISC(ptrCommand, &currentCommand, sizeof32(CommandNm1));
+	//printf("0x%x\n", currentCommand.instr_nmc1);
+	printf("0x%x\n", ptrCommand->instr_nmc1);
 
 	switch (currentCommand.instr_nmc1) {
 
@@ -28,14 +31,14 @@ SECTION(".text_nmglvs") int nmglvsNm1Step(NMGL_Context_NM1 &cntxt)
 		switch (currentCommand.params[0])
 		{
 		case NMGL_COLOR_BUFFER_BIT:
-			msdAddImage(cntxt.colorBuffer, &cntxt.colorSegment, 0, 1);
+			msdAddImage(&cntxt.colorBuffer, &cntxt.colorSegment, 0, 1);
 			break;
 		case NMGL_DEPTH_BUFFER_BIT:
-			msdAddImage(cntxt.depthBuffer, &cntxt.depthSegment, 0, 1);
+			msdAddImage(&cntxt.depthBuffer, &cntxt.depthSegment, 0, 1);
 			break;
 		case NMGL_COLOR_BUFFER_BIT | NMGL_DEPTH_BUFFER_BIT:
-			msdAddImage(cntxt.colorBuffer, &cntxt.colorSegment, 0, 2);
-			msdAddImage(cntxt.depthBuffer, &cntxt.depthSegment, 1, 2);
+			msdAddImage(&cntxt.colorBuffer, &cntxt.colorSegment, 0, 2);
+			msdAddImage(&cntxt.depthBuffer, &cntxt.depthSegment, 1, 2);
 			break;
 		default:
 			break;
@@ -50,10 +53,10 @@ SECTION(".text_nmglvs") int nmglvsNm1Step(NMGL_Context_NM1 &cntxt)
 		int y0 = currentCommand.params[1];
 		int width = currentCommand.params[2];
 		int height = currentCommand.params[3];
-		if (cntxt.depthBuffer->enabled == NMGL_TRUE) {
-			cntxt.depthSegment.pop(cntxt.depthBuffer, x0, y0, width, height); 
+		if (cntxt.depthBuffer.enabled == NMGL_TRUE) {
+			cntxt.depthSegment.pop(&cntxt.depthBuffer, x0, y0, width, height); 
 		}
-		cntxt.colorSegment.pop(cntxt.colorBuffer, x0, y0, width, height);
+		cntxt.colorSegment.pop(&cntxt.colorBuffer, x0, y0, width, height);
 		msdStartCopy();
 		break;
 	}
@@ -64,10 +67,10 @@ SECTION(".text_nmglvs") int nmglvsNm1Step(NMGL_Context_NM1 &cntxt)
 		int y0 = currentCommand.params[1];
 		int width = currentCommand.params[2];
 		int height = currentCommand.params[3];
-		if (cntxt.depthBuffer->enabled == NMGL_TRUE) {
-			cntxt.depthSegment.push(cntxt.depthBuffer, x0, y0, width, height); 
+		if (cntxt.depthBuffer.enabled == NMGL_TRUE) {
+			cntxt.depthSegment.push(&cntxt.depthBuffer, x0, y0, width, height); 
 		}
-		cntxt.colorSegment.push(cntxt.colorBuffer, x0, y0, width, height);
+		cntxt.colorSegment.push(&cntxt.colorBuffer, x0, y0, width, height);
 		msdStartCopy();
 		break;
 	}
@@ -89,21 +92,21 @@ SECTION(".text_nmglvs") int nmglvsNm1Step(NMGL_Context_NM1 &cntxt)
 		temp |= (currentCommand.params[1] & 0xFF) << 8;
 		temp |= (currentCommand.params[0] & 0xFF) << 16;
 		temp |= (currentCommand.params[3] & 0xFF) << 24;
-		cntxt.colorBuffer->clearValue = temp;
+		cntxt.colorBuffer.clearValue = temp;
 		break;
 	}
 	case NMC1_SET_DEPTH:
-		cntxt.depthBuffer->clearValue = currentCommand.params[0];
+		cntxt.depthBuffer.clearValue = currentCommand.params[0];
 		break;
 
 	case NMC1_DEPTH_MASK: {
 		bool maskEnabled = currentCommand.params[0];
-		cntxt.depthBuffer->setEnabledMask(maskEnabled);
+		cntxt.depthBuffer.setEnabledMask(maskEnabled);
 		break;
 	}
 	case NMC1_DEPTH_FUNC: {
 		int depthMode = currentCommand.params[0];
-		cntxt.depthBuffer->setMode(depthMode);
+		cntxt.depthBuffer.setMode(depthMode);
 		break;
 	}
 	case NMC1_SWAP_BUFFER: {
@@ -112,7 +115,12 @@ SECTION(".text_nmglvs") int nmglvsNm1Step(NMGL_Context_NM1 &cntxt)
 		cntxt.t1 = clock();
 		cntxt.synchro.counter++;
 		cntxt.synchro.time = cntxt.t1 - cntxt.t0;
-		cntxt.colorBuffer->next();
+		printf("nextImage\n");
+		//while (halRingBufferIsFull(cntxt.imagesData) || halRingBufferIsBusy(cntxt.imagesData));
+		while (cntxt.imagesData->isFull());
+		cntxt.imagesData->head++;
+		cntxt.colorBuffer.data = cntxt.imagesData->ptrHead();
+		//cntxt.colorBuffer.data = halRingBufferHead(cntxt.imagesData);
 		cntxt.t0 = clock();
 
 		break;
@@ -122,7 +130,7 @@ SECTION(".text_nmglvs") int nmglvsNm1Step(NMGL_Context_NM1 &cntxt)
 		break;
 
 	case NMC1_DEPTH:
-		cntxt.depthBuffer->enabled = currentCommand.params[0];
+		cntxt.depthBuffer.enabled = currentCommand.params[0];
 		break;
 	case NMC1_AND: {
 		int* src0 = (int*)currentCommand.params[0];

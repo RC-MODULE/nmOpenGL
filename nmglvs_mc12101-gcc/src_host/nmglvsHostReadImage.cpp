@@ -18,16 +18,10 @@
 #include "ringbuffer_host.h"
 #include <thread>
 
-extern HalRingBuffer imagesRB;
-extern int synchro_nm;
+extern VshellImageConnector vshellImagesConnector;
 
 int nmglvsHostReadImage(int* dstImage)
 {
-	while (halRingBufferIsEmpty(&imagesRB)) {
-		halSleep(2);
-	}
-	int* src = (int*)halRingBufferTail(&imagesRB);
-	nmppsCopy_32s(src, dstImage, imagesRB.size);
-	imagesRB.tail++;
+	vshellImagesConnector.pop((ImageRGB8888*)dstImage, 1);
 	return 0;
 };

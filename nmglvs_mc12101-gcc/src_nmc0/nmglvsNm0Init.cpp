@@ -53,8 +53,10 @@ int nmglvsNm0Init()
 	}
 	setHeap(8);
 	NMGLSynchroData* synchroData = myMallocT<NMGLSynchroData>();
+	synchroData->init();
 	setHeap(10);
 	PolygonsArray* polygonsArray = myMallocT<PolygonsArray>();
+	polygonsArray->init();
 	cntxt.init(synchroData, polygonsArray);
 
 	cntxt.trianInner.x0 = x0;
@@ -93,7 +95,6 @@ int nmglvsNm0Init()
 	cntxt.buffer1 = nmglBuffer1;
 	cntxt.buffer2 = nmglBuffer2;
 	cntxt.buffer3 = nmglBuffer3;
-
 
 	cntxt.patterns = (Patterns*)halSyncAddr((int*)synchroData, 1);
 	halSyncAddr((int*)cntxt.polygonsData, 1);

@@ -14,7 +14,6 @@ class DepthBuffer : public ImageBuffer {
 private:
 	bool maskEnabled;
 	int mode;
-	//DepthTest currentTest;
 	int dummy;
 
 	void update();
@@ -60,11 +59,11 @@ struct NMGL_Context_NM1 {
 	clock_t t0, t1;
 
 	NMGLSynchro synchro;
-	int dummy;
+	ImageData* imagesData;
 	PolygonsArray* polygonsData;
 
-	ImageBuffer* colorBuffer;
-	DepthBuffer* depthBuffer;
+	DepthBuffer depthBuffer;
+	ImageBuffer colorBuffer;
 	ImageSegment colorSegment;
 	ImageSegment depthSegment;
 

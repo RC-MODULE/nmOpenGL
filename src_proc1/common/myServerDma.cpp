@@ -62,9 +62,9 @@ SECTION(".text_demo3d") void cbUpdate() {
 
 
 SECTION(".text_demo3d") void msdAddImage(ImageBuffer* buffer, ImageSegment* segment, int startIndex, int step) {
-	int* setPoint = (int*)buffer->top();
+	int* setPoint = (int*)buffer->data;
 	nmppsSet_32s((nm32s*)segment->data, buffer->clearValue, segment->size);
-	int size = buffer->getSize();
+	int size = buffer->width * buffer->height;
 	int listSize = startIndex;
 	while(size > 0) {
 		list[listSize].src = segment->data;

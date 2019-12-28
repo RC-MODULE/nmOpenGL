@@ -37,6 +37,7 @@ struct CommandNm1{
 #define PRIORITY1_SIZE 128
 
 struct NMGLSynchroData {
+
 	HalRingBufferData<CommandNm1, PRIORITY0_SIZE> priority0;
 	HalRingBufferData<CommandNm1, PRIORITY1_SIZE> priority1;
 

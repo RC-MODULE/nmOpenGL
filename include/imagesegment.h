@@ -24,15 +24,14 @@ public:
 		size = widthSeg * heightSeg;
 	}
 
-
 	void push(ImageBuffer* image, int x0, int y0, int width, int height) {
-		nm32s* dst = nmppsAddr_32s((int*)image->top(), y0 * image->getWidth() + x0);
-		funcCopy(data, dst, width * height, width, widthSeg, image->getWidth());
+		nm32s* dst = nmppsAddr_32s((int*)image->data, y0 * image->width + x0);
+		funcCopy(data, dst, width * height, width, widthSeg, image->width);
 	}
 
 	void pop(ImageBuffer* image, int x0, int y0, int width, int height) {
-		nm32s* src = nmppsAddr_32s((int*)image->top(), y0 * image->getWidth() + x0);
-		funcCopy(src, data, width * height, width, image->getWidth(), widthSeg);
+		nm32s* src = nmppsAddr_32s((int*)image->data, y0 * image->width + x0);
+		funcCopy(src, data, width * height, width, image->width, widthSeg);
 	}
 
 };

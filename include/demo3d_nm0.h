@@ -105,8 +105,6 @@ struct NMGL_Context_NM0 {
 	float specularExp;
 
 	void init(NMGLSynchroData* syncroData, PolygonsArray* polygonsArray){
-		syncroData->init();
-		polygonsArray->init();
 		synchro.init(syncroData);
 		polygonsData = polygonsArray;
 

@@ -32,7 +32,7 @@ SECTION(".text_demo3d") void drawLines(NMGL_Context_NM1* context) {
 			(nm32s*)context->ppPtrnsCombined_2s_basic, 0,
 			(nm32s*)context->ppPtrnsCombined_2s, localSize);
 
-		if (context->depthBuffer->enabled == NMGL_FALSE) {
+		if (context->depthBuffer.enabled == NMGL_FALSE) {
 			mMulCVxN_2s32sExt(context->ppPtrnsCombined_2s,
 				&context->offsetTrX[point],
 				&context->widths[point],

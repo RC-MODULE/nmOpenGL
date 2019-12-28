@@ -1,49 +1,31 @@
 #ifndef __IMAGE_BUFFER_H__
 #define __IMAGE_BUFFER_H__
 
-#include "ringbuffer.h"
+
 
 class ImageBuffer{
-private:
+public:
 	int width;
 	int height;
-	HalRingBuffer ringbuffer;
-	int dummy;
-public:
+	void* data;
 	int clearValue;
-	
-	void set(void* imageArray, int widthImage, int heightImage, int count) {
+
+	ImageBuffer() {
+		clearValue = 0;
+	}
+
+	void init(void* imageAddr, int widthImage, int heightImage) {
 		width = widthImage;
 		height = heightImage;
-		halRingBufferInit(&ringbuffer, imageArray, width * height, count, 0, 0, 0);
+		data = imageAddr;
 	}
-
-	void* top() {
-		return halRingBufferHead(&ringbuffer);
-	}
-
-	void next() {
-		while (halRingBufferIsFull(&ringbuffer) || halRingBufferIsBusy(&ringbuffer));
-		ringbuffer.head++;
-	}
-	
-	int getWidth(){
-		return width;
-	}
-	
-	int getHeight(){
-		return height;
-	}
-	
-	int getSize(){
-		return ringbuffer.size;
-	}
-
-	HalRingBuffer* getHalRingBuffer() {
-		return &ringbuffer;
-	}
-
 };
 
+
+inline void copySubImage(ImageBuffer &srcImage, int srcX0, int srcY0, ImageBuffer &dstImage, int dstX0, int dstY0, int width, int height) {
+	nm32s* src = (nm32s*)nmppsAddr_32s((nm32s*)srcImage.data, srcY0 * srcImage.width + srcX0);
+	nm32s* dst = (nm32s*)nmppsAddr_32s((nm32s*)dstImage.data, dstY0 * dstImage.width + dstX0);
+	nmppmCopy_32s(src, srcImage.width, dst, dstImage.width, height, width);
+}
 
 #endif

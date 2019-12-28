@@ -15,26 +15,36 @@
 #include "nmpp.h"
 #include "demo3d_host.h"
 #include "demo3d_nm1.h"
-#include "ringbuffer_host.h"
+#include "ringbuffert.h"
 #include <thread>
 
 
 
 using namespace std;
 
-#define SIZE_BUFFER 2
-unsigned char srcImg[4 * SIZE_BUFFER * WIDTH_IMAGE * HEIGHT_IMAGE];
+VshellImageData vshellImages;
+VshellImageConnector vshellImagesConnector;
 
 
-HalHostRingBuffer hostImageRB;
-HalRingBuffer imagesRB;
+ImageConnector hostImageRB;
+
+
+inline void*  writeMem(const void* src, void* dst, unsigned int size32) {
+	halWriteMemBlock(src, (int)dst, size32, 1);
+	return 0;
+}
+
+inline void*  readMem(const void* src, void* dst, unsigned int size32) {
+	halReadMemBlock(dst, (int)src, size32, 1);
+	return 0;
+}
 
 
 void download() {
 	while (true) {
 		S_VS_MouseStatus mouseStatus;
 		VS_GetMouseStatus(&mouseStatus);
-		while (halRingBufferIsFull(&imagesRB)) {
+		while (vshellImagesConnector.isFull()) {
 			halSleep(2);
 		}
 #if defined(PROFILER0) || defined(PROFILER1)
@@ -42,20 +52,16 @@ void download() {
 #else
 		if (mouseStatus.nKey != VS_MOUSE_LBUTTON) {
 #endif
-			/*while (halHostRingBufferIsEmpty(&hostImageRB));
-			halReadMemBlock(&hostImageRB.head, hostImageRB.remoteHeadAddr, 1, 1);
-			halReadMemBlock(&hostImageRB.tail, hostImageRB.remoteTailAddr, 1, 1);
-			int freeImages = hostImageRB.head - hostImageRB.tail;*/
-			halHostRingBufferPop(&hostImageRB, halRingBufferHead(&imagesRB), 1);
+			//halHostRingBufferPop(&hostImageRB, vshellImagesConnector.ptrHead(), 1);
+			hostImageRB.pop(vshellImagesConnector.ptrHead(), 1);
 		}
 		else {
-			while (halHostRingBufferIsEmpty(&hostImageRB)) {
+			while (hostImageRB.isEmpty()) {
 				halSleep(2);
 			}
-			hostImageRB.tail++;
-			halWriteMemBlock(&hostImageRB.tail, hostImageRB.remoteTailAddr, 1, hostImageRB.processor);
+			hostImageRB.incTail();
 		}
-		imagesRB.head++;
+		(*vshellImagesConnector.pHead)++;
 	}
 }
 
@@ -97,15 +103,16 @@ int nmglvsHostInit()
 	ok = halWriteMemBlock(patterns, patternsNM, sizeof32(Patterns), 1);
 //----------------init-ringbuffer-------------
 	//nmc1, sync3
-	int nmImageRB = halSync(4, 1);
+	ImageData* nmImageRB = (ImageData*)halSync(4, 1);
 	nmppsFree(patterns);
-	halHostRingBufferInit(&hostImageRB, nmImageRB,1);
-	ok = halRingBufferInit(&imagesRB, srcImg, hostImageRB.size, SIZE_BUFFER, 0, 0, 0);
-	//nmc0, sync4
+
+	hostImageRB.init(nmImageRB, writeMem, readMem);
+	vshellImagesConnector.init(&vshellImages);
 	
 	thread downloadThread(download);
 	downloadThread.detach();
 	
+	//nmc0, sync4
 	halSync(0, 0);
 
 	return 0;

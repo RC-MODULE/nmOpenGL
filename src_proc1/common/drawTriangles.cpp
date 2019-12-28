@@ -47,7 +47,7 @@ SECTION(".text_demo3d") void drawTriangles(NMGL_Context_NM1* context) {
 		}
 #endif // __GNUC__
 		//проверка активирования теста глубины
-		if (context->depthBuffer->enabled == NMGL_FALSE) {
+		if (context->depthBuffer.enabled == NMGL_FALSE) {
 			mMulCVxN_2s32sExt(context->ppPtrnsCombined_2s,
 				offsetsX,
 				widths,
