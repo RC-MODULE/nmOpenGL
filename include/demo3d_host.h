@@ -17,7 +17,7 @@ struct Models{
 	char* snowman = "../../models/snow_white_32.stl";
 };
 
-#define VSHELL_SIZE_BUFFER 2
+#define VSHELL_SIZE_BUFFER 256
 
 typedef HalRingBufferData<ImageRGB8888, VSHELL_SIZE_BUFFER> VshellImageData;
 typedef HalRingBufferConnector<ImageRGB8888, VSHELL_SIZE_BUFFER> VshellImageConnector;

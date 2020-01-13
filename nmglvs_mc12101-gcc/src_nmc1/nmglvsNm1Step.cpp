@@ -18,27 +18,45 @@ SECTION(".data_imu0") CommandNm1 currentCommand;
 
 SECTION(".text_nmglvs") int nmglvsNm1Step(NMGL_Context_NM1 &cntxt)
 {	
-	printf("command=0x%x");
-	CommandNm1* ptrCommand = cntxt.synchro.readInstr();
-	halCopyRISC(ptrCommand, &currentCommand, sizeof32(CommandNm1));
-	//printf("0x%x\n", currentCommand.instr_nmc1);
-	printf("0x%x\n", ptrCommand->instr_nmc1);
+
+	cntxt.synchro.popInstr(&currentCommand);
 
 	switch (currentCommand.instr_nmc1) {
 
 	case NMC1_CLEAR:
 		msdWaitDma();
+		int imageSize, bufferSize;
 		switch (currentCommand.params[0])
 		{
 		case NMGL_COLOR_BUFFER_BIT:
-			msdAddImage(&cntxt.colorBuffer, &cntxt.colorSegment, 0, 1);
+			imageSize = cntxt.colorBuffer.width * cntxt.colorBuffer.height;
+			bufferSize = cntxt.colorSegment.widthSeg * cntxt.colorSegment.heightSeg;
+			nmppsSet_32s((nm32s*)cntxt.colorSegment.data, cntxt.colorBuffer.clearValue, bufferSize);
+			for (int i = 0; i < imageSize; i += bufferSize) {
+				msdAdd(cntxt.colorSegment.data, (nm32s*)cntxt.colorBuffer.data + i, bufferSize);
+			}
 			break;
 		case NMGL_DEPTH_BUFFER_BIT:
-			msdAddImage(&cntxt.depthBuffer, &cntxt.depthSegment, 0, 1);
+			imageSize = cntxt.depthBuffer.width * cntxt.depthBuffer.height;
+			bufferSize = cntxt.depthSegment.widthSeg * cntxt.depthSegment.heightSeg;
+			nmppsSet_32s((nm32s*)cntxt.depthSegment.data, cntxt.depthBuffer.clearValue, bufferSize);
+			for (int i = 0; i < imageSize; i += bufferSize) {
+				msdAdd(cntxt.depthSegment.data, (nm32s*)cntxt.depthBuffer.data + i, bufferSize);
+			}
 			break;
 		case NMGL_COLOR_BUFFER_BIT | NMGL_DEPTH_BUFFER_BIT:
-			msdAddImage(&cntxt.colorBuffer, &cntxt.colorSegment, 0, 2);
-			msdAddImage(&cntxt.depthBuffer, &cntxt.depthSegment, 1, 2);
+			imageSize = cntxt.colorBuffer.width * cntxt.colorBuffer.height;
+			bufferSize = cntxt.colorSegment.widthSeg * cntxt.colorSegment.heightSeg;
+			nmppsSet_32s((nm32s*)cntxt.colorSegment.data, cntxt.colorBuffer.clearValue, bufferSize);
+			for (int i = 0; i < imageSize; i += bufferSize) {
+				msdAdd(cntxt.colorSegment.data, (nm32s*)cntxt.colorBuffer.data + i, bufferSize);
+			}
+			imageSize = cntxt.depthBuffer.width * cntxt.depthBuffer.height;
+			bufferSize = cntxt.depthSegment.widthSeg * cntxt.depthSegment.heightSeg;
+			nmppsSet_32s((nm32s*)cntxt.depthSegment.data, cntxt.depthBuffer.clearValue, bufferSize);
+			for (int i = 0; i < imageSize; i += bufferSize) {
+				msdAdd(cntxt.depthSegment.data, (nm32s*)cntxt.depthBuffer.data + i, bufferSize);
+			}
 			break;
 		default:
 			break;
@@ -110,17 +128,15 @@ SECTION(".text_nmglvs") int nmglvsNm1Step(NMGL_Context_NM1 &cntxt)
 		break;
 	}
 	case NMC1_SWAP_BUFFER: {
-		msdWaitDma();
 
+		msdWaitDma();
+		
 		cntxt.t1 = clock();
 		cntxt.synchro.counter++;
 		cntxt.synchro.time = cntxt.t1 - cntxt.t0;
-		printf("nextImage\n");
-		//while (halRingBufferIsFull(cntxt.imagesData) || halRingBufferIsBusy(cntxt.imagesData));
-		while (cntxt.imagesData->isFull());
 		cntxt.imagesData->head++;
 		cntxt.colorBuffer.data = cntxt.imagesData->ptrHead();
-		//cntxt.colorBuffer.data = halRingBufferHead(cntxt.imagesData);
+		while (cntxt.imagesData->isFull());
 		cntxt.t0 = clock();
 
 		break;
@@ -192,7 +208,6 @@ SECTION(".text_nmglvs") int nmglvsNm1Step(NMGL_Context_NM1 &cntxt)
 	default:
 		break;
 	}
-	cntxt.synchro.getTail(currentCommand.priority)++;
 	//printf("synchro: head-tail=%d\n", cntxt.synchro->commandsRB.head - cntxt.synchro->commandsRB.tail);
 	//printf("poly: head-tail=%d\n", cntxt.polygonsRB->head - cntxt.polygonsRB->tail);
 	//printf("image: head-tail=%d\n\n", cntxt.colorBuffer->ringbuffer.head - cntxt.colorBuffer->ringbuffer.tail);

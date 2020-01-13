@@ -33,7 +33,6 @@ SECTION(".data_shared")	NMGLSynchro mSynchro(&mSynchroData);
 SECTION(".data_shared")	float mDataDdr[11 * BIG_NMGL_SIZE];
 SECTION(".data_shared")	Polygons mPolyArray[COUNT_POLYGONS_BUFFER];*/
 
-
 template<class T> T* myMallocT(int size) {
 	return (T*)halMalloc32(size * sizeof32(T));
 }
@@ -83,7 +82,7 @@ int nmglvsNm0Init()
 	cntxt.trianDdr.size = 0;
 
 #ifdef __GNUC__
-	halDmaInit();
+	halDmaInitC();
 	halInstrCacheEnable();
 #ifdef PROFILER0
 	nmprofiler_init();

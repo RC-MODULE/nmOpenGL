@@ -90,7 +90,6 @@ typedef HalRingBufferConnector<Polygons, COUNT_POLYGONS_BUFFER> PolygonsConnecto
 typedef int ImageRGB8888[WIDTH_IMAGE * HEIGHT_IMAGE];
 typedef int DepthImage32[WIDTH_IMAGE * HEIGHT_IMAGE];
 typedef HalRingBufferData<ImageRGB8888, COUNT_IMAGE_BUFFER> ImageData;
-//typedef HalRingBuffer ImageData;
 typedef HalRingBufferConnector<ImageRGB8888, COUNT_IMAGE_BUFFER> ImageConnector;
 
 

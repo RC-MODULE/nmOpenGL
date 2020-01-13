@@ -58,7 +58,7 @@ SECTION(".text_nmglvs") int nmglvsNm1Init(NMGL_Context_NM1& cntxt)
 
 #ifdef __GNUC__
 	halInstrCacheEnable();
-	halDmaInit();
+	halDmaInitC();
 #ifdef PROFILER1
 	nmprofiler_init();
 #endif // PROFILER1	
@@ -70,14 +70,11 @@ SECTION(".text_nmglvs") int nmglvsNm1Init(NMGL_Context_NM1& cntxt)
 
 	ImageData* imagesData = myMallocT<ImageData>();
 	cntxt.imagesData = imagesData;
-	imagesData->init();
+	cntxt.imagesData->init();
 
-	//ImageRGB8888* images = myMallocT<ImageRGB8888>(COUNT_IMAGE_BUFFER);
 	DepthImage32* depthImage = myMallocT<DepthImage32>();
 	
-	//halRingBufferInit(imagesData, images, sizeof32(ImageRGB8888), COUNT_IMAGE_BUFFER, 0, 0, 0);	
 	cntxt.colorBuffer.init(imagesData->ptrHead(), WIDTH_IMAGE, HEIGHT_IMAGE);
-	//cntxt.colorBuffer.init(halRingBufferHead(cntxt.imagesData), WIDTH_IMAGE, HEIGHT_IMAGE);
 	cntxt.depthBuffer.init(depthImage, WIDTH_IMAGE, HEIGHT_IMAGE);
 
 	cntxt.colorSegment.set(segImage, WIDTH_SEG, HEIGHT_SEG, msdAdd2D);

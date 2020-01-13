@@ -7,7 +7,9 @@ class ImageBuffer{
 public:
 	int width;
 	int height;
+	int size;
 	void* data;
+	ImageBuffer* subImage;
 	int clearValue;
 
 	ImageBuffer() {
@@ -17,15 +19,27 @@ public:
 	void init(void* imageAddr, int widthImage, int heightImage) {
 		width = widthImage;
 		height = heightImage;
+		setSize(widthImage, heightImage);
 		data = imageAddr;
 	}
+
+	inline int getWidth() {
+		return width;
+	}
+
+	inline int getHeight() {
+		return height;
+	}
+
+	inline int getSize() {
+		return size;
+	}
+
+	inline void setSize(int widthImage, int heightImage) {
+		width = widthImage;
+		height = heightImage;
+		size = width * height;
+	}
 };
-
-
-inline void copySubImage(ImageBuffer &srcImage, int srcX0, int srcY0, ImageBuffer &dstImage, int dstX0, int dstY0, int width, int height) {
-	nm32s* src = (nm32s*)nmppsAddr_32s((nm32s*)srcImage.data, srcY0 * srcImage.width + srcX0);
-	nm32s* dst = (nm32s*)nmppsAddr_32s((nm32s*)dstImage.data, dstY0 * dstImage.width + dstX0);
-	nmppmCopy_32s(src, srcImage.width, dst, dstImage.width, height, width);
-}
 
 #endif

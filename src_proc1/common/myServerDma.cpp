@@ -4,7 +4,7 @@
 #include "myserverdma.h"
 
 
-SECTION(".data_demo3d") MSD_DmaCopy list[100];
+SECTION(".data_demo3d") MSD_DmaCopy list[200];
 
 SECTION(".data_demo3d") volatile bool isBusy = false;
 int countList = 0;
@@ -12,16 +12,22 @@ int currentIndex;
 bool isSimpleCopy = false;
 
 
-#ifndef __GNUC__
+
+#ifdef __GNUC__
+#define msdSingleCopy(src, dst, size32) halDmaStart(src, dst, size32)
+#define msdMatrixCopy(src, dst, size, width, srcStride, dstStride) \
+		halDma2D_Start(src, dst, size, width, srcStride, dstStride)
+#else
 int empty() { return 0; }
 
 DmaCallback cb = empty;
 #define halDmaSetCallback(func) cb = func;
 
-#define halDmaStartA(src, dst, size) nmppsCopy_32s((nm32s*)src,(nm32s*)dst,size); cb()
-#define halDma2D_StartA(src, dst, size, width, srcStride, dstStride) nmppmCopy_32s((nm32s*)src, srcStride, \
-																					(nm32s*)dst, dstStride, \
-																					size/width, width); cb()
+#define msdSingleCopy(src, dst, size) halCopyRISC(src,dst,size); cb()
+#define msdMatrixCopy(src, dst, size, width, srcStride, dstStride) \
+			 nmppmCopy_32s((nm32s*)src, srcStride, \
+							(nm32s*)dst, dstStride, \
+							size/width, width); cb()
 #endif
 
 
@@ -40,10 +46,10 @@ SECTION(".text_demo3d") void cbUpdate() {
 			switch (list[currentIndex].type)
 			{
 			case MSD_DMA:
-				halDmaStartA(list[currentIndex].src, list[currentIndex].dst, list[currentIndex].size);
+				msdSingleCopy(list[currentIndex].src, list[currentIndex].dst, list[currentIndex].size);
 				break;
 			case MSD_DMA_2D:
-				halDma2D_StartA(list[currentIndex].src, list[currentIndex].dst,
+				msdMatrixCopy(list[currentIndex].src, list[currentIndex].dst,
 					list[currentIndex].size, list[currentIndex].width,
 					list[currentIndex].srcStride, list[currentIndex].dstStride);
 				break;
@@ -114,10 +120,10 @@ SECTION(".text_demo3d") void msdStartCopy() {
 		switch (list[currentIndex].type)
 		{
 		case MSD_DMA:
-			halDmaStartA(list[currentIndex].src, list[currentIndex].dst, list[currentIndex].size);
+			msdSingleCopy(list[currentIndex].src, list[currentIndex].dst, list[currentIndex].size);
 			break;
 		case MSD_DMA_2D:
-			halDma2D_StartA(list[currentIndex].src, list[currentIndex].dst,
+			msdMatrixCopy(list[currentIndex].src, list[currentIndex].dst,
 				list[currentIndex].size, list[currentIndex].width,
 				list[currentIndex].srcStride, list[currentIndex].dstStride);
 			break;
@@ -131,7 +137,7 @@ SECTION(".text_demo3d") void msdSimpleCopy(const void* src, void* dst, int size)
 	halDmaSetCallback((DmaCallback)cbUpdate);
 	isSimpleCopy = true;
 	isBusy = true;
-	halDmaStartA(src, dst, size);
+	msdSingleCopy(src, dst, size);
 }
 
 
@@ -140,6 +146,7 @@ SECTION(".text_demo3d") void msdWaitDma() {
 	while (isBusy) {
 		a++;
 	}
+	a *= 5;
 }
 
 

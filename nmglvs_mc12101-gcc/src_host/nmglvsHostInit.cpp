@@ -29,13 +29,22 @@ VshellImageConnector vshellImagesConnector;
 ImageConnector hostImageRB;
 
 
-inline void*  writeMem(const void* src, void* dst, unsigned int size32) {
-	halWriteMemBlock(src, (int)dst, size32, 1);
+void*  writeMem(const void* src, void* dst, unsigned int size32) {
+	int ok = halWriteMemBlock((void*)src, (int)dst, size32, 1);
 	return 0;
 }
 
-inline void*  readMem(const void* src, void* dst, unsigned int size32) {
-	halReadMemBlock(dst, (int)src, size32, 1);
+void*  readMem(const void* src, void* dst, unsigned int size32) {
+	int ok = halReadMemBlock(dst, (int)src, size32, 1);
+	return 0;
+}
+
+void* copy(const void* src, void* dst, unsigned int size32) {
+	int* src32 = (int*)src;
+	int* dst32 = (int*)dst;
+	for (int i = 0; i < size32; i++) {
+		dst32[i] = src32[i];
+	}
 	return 0;
 }
 
@@ -47,21 +56,24 @@ void download() {
 		while (vshellImagesConnector.isFull()) {
 			halSleep(2);
 		}
+		int countImages = 1;
 #if defined(PROFILER0) || defined(PROFILER1)
 		if (mouseStatus.nKey == VS_MOUSE_LBUTTON) {
 #else
 		if (mouseStatus.nKey != VS_MOUSE_LBUTTON) {
 #endif
-			//halHostRingBufferPop(&hostImageRB, vshellImagesConnector.ptrHead(), 1);
-			hostImageRB.pop(vshellImagesConnector.ptrHead(), 1);
+			//while (hostImageRB.isEmpty());
+			//countImages = MIN(hostImageRB.popAvail(), vshellImagesConnector.pushAvail());
+			hostImageRB.pop(vshellImagesConnector.ptrHead(), countImages);
+			
 		}
 		else {
 			while (hostImageRB.isEmpty()) {
 				halSleep(2);
 			}
-			hostImageRB.incTail();
+			hostImageRB.setTail(hostImageRB.getTail() + countImages);
 		}
-		(*vshellImagesConnector.pHead)++;
+		vshellImagesConnector.setHead(vshellImagesConnector.getHead() + countImages);
 	}
 }
 

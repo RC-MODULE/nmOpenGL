@@ -6,7 +6,6 @@ begin ".text_nmprofiler"
 PROFILE_BEGIN(16);
 
 FUNCTION(__Z10rasterizeTPK9TrianglesPK11SegmentMaski,"__Z10rasterizeTPK9TrianglesPK11SegmentMaski");// 0x000000000000262a [.text_demo3d]
-FUNCTION(__Z15getPolygonsHeadv,"__Z15getPolygonsHeadv");// 0x00000000000025f0 [.text_demo3d]
 FUNCTION(__Z13copyTrianglesRK9TrianglesiRS_ii,"__Z13copyTrianglesRK9TrianglesiRS_ii");// 0x00000000000017b6 [.text_demo3d]
 FUNCTION(_readMask,       "_readMask       ");// 0x0000000000002922 [.text_demo3d]
 FUNCTION(_copyArraysByIndices,"_copyArraysByIndices");// 0x00000000000031ae [.text_demo3d]
