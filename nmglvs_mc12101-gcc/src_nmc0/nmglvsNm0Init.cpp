@@ -27,15 +27,6 @@ SECTION(".data_imu4")	float y2[NMGL_SIZE];
 SECTION(".data_imu6")	int z_int[NMGL_SIZE];
 SECTION(".data_imu6")	v4nm32s lightsValues[NMGL_SIZE];
 
-/*SECTION(".data_shmem0")	HalRingBuffer mPolygonsRB;
-SECTION(".data_shmem0")	NMGLSynchroData mSynchroData;
-SECTION(".data_shared")	NMGLSynchro mSynchro(&mSynchroData);
-SECTION(".data_shared")	float mDataDdr[11 * BIG_NMGL_SIZE];
-SECTION(".data_shared")	Polygons mPolyArray[COUNT_POLYGONS_BUFFER];*/
-
-template<class T> T* myMallocT(int size) {
-	return (T*)halMalloc32(size * sizeof32(T));
-}
 
 template<class T> T* myMallocT() {
 	return (T*)halMalloc32(sizeof32(T));

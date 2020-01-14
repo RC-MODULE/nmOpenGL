@@ -1,15 +1,14 @@
 #ifndef __IMAGE_BUFFER_H__
 #define __IMAGE_BUFFER_H__
 
-
-
 class ImageBuffer{
-public:
+private:
 	int width;
 	int height;
 	int size;
+	int dummy;
+public:
 	void* data;
-	ImageBuffer* subImage;
 	int clearValue;
 
 	ImageBuffer() {
@@ -17,8 +16,6 @@ public:
 	}
 
 	void init(void* imageAddr, int widthImage, int heightImage) {
-		width = widthImage;
-		height = heightImage;
 		setSize(widthImage, heightImage);
 		data = imageAddr;
 	}
@@ -40,6 +37,40 @@ public:
 		height = heightImage;
 		size = width * height;
 	}
+};
+
+
+
+
+
+class DepthBuffer : public ImageBuffer {
+private:
+	bool maskEnabled;
+	int mode;
+	int dummy;
+
+	void update();
+
+public:
+	bool enabled;
+
+	DepthBuffer() {
+		enabled = NMGL_FALSE;
+		maskEnabled = NMGL_TRUE;
+		mode = NMGL_LESS;
+		clearValue = ZBUFF_MAX;
+	}
+
+	void setEnabledMask(bool flag) {
+		maskEnabled = flag;
+		update();
+	}
+
+	void setMode(int depthMode) {
+		mode = depthMode;
+		update();
+	}
+
 };
 
 #endif

@@ -10,21 +10,14 @@
 #include "hal.h"
 #include "hal_host.h"
 #include "math.h"
-#include "stdio.h"
-#include "stdlib.h"
 #include "nmpp.h"
 #include "demo3d_host.h"
 #include "demo3d_nm1.h"
 #include "ringbuffert.h"
-#include <thread>
 
 
 
 using namespace std;
-
-VshellImageData vshellImages;
-VshellImageConnector vshellImagesConnector;
-
 
 ImageConnector hostImageRB;
 
@@ -38,45 +31,6 @@ void*  readMem(const void* src, void* dst, unsigned int size32) {
 	int ok = halReadMemBlock(dst, (int)src, size32, 1);
 	return 0;
 }
-
-void* copy(const void* src, void* dst, unsigned int size32) {
-	int* src32 = (int*)src;
-	int* dst32 = (int*)dst;
-	for (int i = 0; i < size32; i++) {
-		dst32[i] = src32[i];
-	}
-	return 0;
-}
-
-
-void download() {
-	while (true) {
-		S_VS_MouseStatus mouseStatus;
-		VS_GetMouseStatus(&mouseStatus);
-		while (vshellImagesConnector.isFull()) {
-			halSleep(2);
-		}
-		int countImages = 1;
-#if defined(PROFILER0) || defined(PROFILER1)
-		if (mouseStatus.nKey == VS_MOUSE_LBUTTON) {
-#else
-		if (mouseStatus.nKey != VS_MOUSE_LBUTTON) {
-#endif
-			//while (hostImageRB.isEmpty());
-			//countImages = MIN(hostImageRB.popAvail(), vshellImagesConnector.pushAvail());
-			hostImageRB.pop(vshellImagesConnector.ptrHead(), countImages);
-			
-		}
-		else {
-			while (hostImageRB.isEmpty()) {
-				halSleep(2);
-			}
-			hostImageRB.setTail(hostImageRB.getTail() + countImages);
-		}
-		vshellImagesConnector.setHead(vshellImagesConnector.getHead() + countImages);
-	}
-}
-
 
 int nmglvsHostInit()
 {
@@ -119,10 +73,6 @@ int nmglvsHostInit()
 	nmppsFree(patterns);
 
 	hostImageRB.init(nmImageRB, writeMem, readMem);
-	vshellImagesConnector.init(&vshellImages);
-	
-	thread downloadThread(download);
-	downloadThread.detach();
 	
 	//nmc0, sync4
 	halSync(0, 0);

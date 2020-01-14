@@ -55,10 +55,10 @@ SECTION(".text_nmglvs") int nmglvsNm1Init(NMGL_Context_NM1& cntxt)
 	setHeap(11);
 	cntxt.patterns = myMallocT<Patterns>();
 	
+	msdInit();
 
 #ifdef __GNUC__
-	halInstrCacheEnable();
-	halDmaInitC();
+	halInstrCacheEnable();	
 #ifdef PROFILER1
 	nmprofiler_init();
 #endif // PROFILER1	
@@ -77,8 +77,9 @@ SECTION(".text_nmglvs") int nmglvsNm1Init(NMGL_Context_NM1& cntxt)
 	cntxt.colorBuffer.init(imagesData->ptrHead(), WIDTH_IMAGE, HEIGHT_IMAGE);
 	cntxt.depthBuffer.init(depthImage, WIDTH_IMAGE, HEIGHT_IMAGE);
 
-	cntxt.colorSegment.set(segImage, WIDTH_SEG, HEIGHT_SEG, msdAdd2D);
-	cntxt.depthSegment.set(segZBuff, WIDTH_SEG, HEIGHT_SEG, msdAdd2D);
+	cntxt.colorSegment.init(segImage, WIDTH_SEG, HEIGHT_SEG);
+	cntxt.depthSegment.init(segZBuff, WIDTH_SEG, HEIGHT_SEG);
+
 
 	halSleep(10);
 	if (cntxt.patterns == 0 || imagesData == 0 || depthImage == 0) {

@@ -124,7 +124,6 @@ SECTION(".text_shared") int main()
 		nmglEnableClientState(NMGL_NORMAL_ARRAY);
 
 		nmglClear(NMGL_COLOR_BUFFER_BIT | NMGL_DEPTH_BUFFER_BIT);
-		//nmglClear(NMGL_COLOR_BUFFER_BIT);
 		//nmglTranslatef(1, 0, 0);
 		//nmglVertexPointer(4, NMGL_FLOAT, 0, twoTriangles);
 		//nmglDrawArrays(NMGL_LINES, 0, 24);

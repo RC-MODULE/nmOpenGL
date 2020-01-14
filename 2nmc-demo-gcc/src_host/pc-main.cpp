@@ -12,11 +12,6 @@ using namespace std;
 
 int currentImage[WIDTH_IMAGE * HEIGHT_IMAGE];
 
-extern int synchro_nm;
-
-void fillPattern(nm8s* pDstSource, int width, int height);
-void create_tabl_dydx(nm8s* srcPatterns, int* dydx, int width, int height);
-
 
 int main()
 {
