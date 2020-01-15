@@ -10,9 +10,9 @@ SECTION(".data_demo3d") volatile bool msdDmaIsBusy = false;
 SECTION(".data_demo3d") volatile bool msdIsCriticalSection = false;
 
 #ifdef __GNUC__
-#define msdSingleCopy(src, dst, size32)  halDmaStartA(src, dst, size32);
+#define msdSingleCopy(src, dst, size32)  halDmaStartCA(src, dst, size32);
 #define msdMatrixCopy(src, dst, size, width, srcStride, dstStride) \
-		halDma2D_StartA(src, dst, size, width, srcStride, dstStride);
+		halDma2D_StartCA(src, dst, size, width, srcStride, dstStride);
 #else
 int empty() { return 0; }
 
@@ -58,7 +58,7 @@ SECTION(".text_demo3d") void cbUpdate() {
 
 SECTION(".text_demo3d") void msdInit() {
 #ifdef __GNUC__
-	halDmaInit();
+	halDmaInitC();
 #endif // __GNUC__
 	halDmaSetCallback((DmaCallback)cbUpdate);
 }
@@ -71,17 +71,17 @@ SECTION(".text_demo3d") unsigned int msdAdd(const void* src, void* dst, int size
 	current->size = size;
 	current->status = false;
 	current->type = MSD_DMA;
-	//вход в критическую секцию
-	msdIsCriticalSection = true;
-	while (msdDmaIsBusy);
-	msdRingBufferCopy.head++;
-	//если в конвеере больше нет копирований, то запускается первое копирование
-	if (msdRingBufferCopy.head - msdRingBufferCopy.tail == 1) {
-		msdSingleCopy(src, dst, size);
+
+	msdIsCriticalSection = true;	//вход в критическую секцию
+		while (msdDmaIsBusy);
 		msdDmaIsBusy = true;
-	}
-	//выход из критической секции
-	msdIsCriticalSection = false;
+		msdRingBufferCopy.head++;
+		//если в конвеере больше нет копирований, то запускается первое копирование
+		if (msdRingBufferCopy.head - msdRingBufferCopy.tail == 1) {
+			msdSingleCopy(src, dst, size);
+		}
+	msdIsCriticalSection = false;	//выход из критической секции
+
 	return msdRingBufferCopy.head - 1;
 }
 
@@ -96,16 +96,16 @@ SECTION(".text_demo3d") unsigned int msdAdd2D(const void* src, void* dst, unsign
 	current->width = width;
 	current->srcStride = srcStride32;
 	current->dstStride = dstStride32;
-	//вход в критическую секцию
-	msdIsCriticalSection = true;
-	while (msdDmaIsBusy);
-	msdRingBufferCopy.head++;	
-	if (msdRingBufferCopy.head - msdRingBufferCopy.tail == 1) {
-		msdMatrixCopy(src, dst, size, width, srcStride32, dstStride32);
+
+	msdIsCriticalSection = true;	//вход в критическую секцию
+		while (msdDmaIsBusy);
 		msdDmaIsBusy = true;
-	}
-	//выход из критической секции
-	msdIsCriticalSection = false;
+		msdRingBufferCopy.head++;	
+		if (msdRingBufferCopy.head - msdRingBufferCopy.tail == 1) {
+			msdMatrixCopy(src, dst, size, width, srcStride32, dstStride32);
+		}
+	msdIsCriticalSection = false;	//выход из критической секции
+
 	return msdRingBufferCopy.head - 1;
 }
 
