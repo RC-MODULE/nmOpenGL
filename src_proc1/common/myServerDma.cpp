@@ -7,7 +7,7 @@
 //структура данных с информацией о копированиях
 SECTION(".data_demo3d") HalRingBufferData<MSD_DmaCopy, 128> msdRingBufferCopy;
 SECTION(".data_demo3d") volatile bool msdDmaIsBusy = false;
-SECTION(".data_demo3d") volatile bool msdIsCriticalSection = false;
+SECTION(".data_demo3d") volatile bool msdFlagPause = false;
 
 #ifdef __GNUC__
 #define msdSingleCopy(src, dst, size32)  halDmaStartCA(src, dst, size32);
@@ -26,30 +26,26 @@ DmaCallback cb = empty;
 							size/width, width); cb()
 #endif
 
-
+inline void msdStartCopy(MSD_DmaCopy* dmaCopy) {
+	switch (dmaCopy->type)
+	{
+	case MSD_DMA:
+		msdSingleCopy(dmaCopy->src, dmaCopy->dst, dmaCopy->size);
+		break;
+	case MSD_DMA_2D:
+		msdMatrixCopy(dmaCopy->src, dmaCopy->dst,
+			dmaCopy->size, dmaCopy->width,
+			dmaCopy->srcStride, dmaCopy->dstStride);
+		break;
+	default:
+		break;
+	}
+}
 
 SECTION(".text_demo3d") void cbUpdate() {
 	msdRingBufferCopy.tail++;
-	//если update вызывается в критической секции, то конвеер копирований прерывается
-	if (msdIsCriticalSection && msdDmaIsBusy) {
-		msdDmaIsBusy = false;
-		return;
-	}
-	if (!msdRingBufferCopy.isEmpty()) {
-		MSD_DmaCopy* current = msdRingBufferCopy.ptrTail();
-		switch (current->type)
-		{
-		case MSD_DMA:
-			msdSingleCopy(current->src, current->dst, current->size);
-			break;
-		case MSD_DMA_2D:
-			msdMatrixCopy(current->src, current->dst,
-				current->size, current->width,
-				current->srcStride, current->dstStride);
-			break;
-		default:
-			break;
-		}
+	if (!msdFlagPause && !msdRingBufferCopy.isEmpty()) {
+		msdStartCopy(msdRingBufferCopy.ptrTail());
 	}
 	else {
 		msdDmaIsBusy = false;
@@ -57,6 +53,9 @@ SECTION(".text_demo3d") void cbUpdate() {
 }
 
 SECTION(".text_demo3d") void msdInit() {
+	msdRingBufferCopy.init();
+	msdDmaIsBusy = false;
+	msdFlagPause = false;
 #ifdef __GNUC__
 	halDmaInitC();
 #endif // __GNUC__
@@ -72,16 +71,12 @@ SECTION(".text_demo3d") unsigned int msdAdd(const void* src, void* dst, int size
 	current->status = false;
 	current->type = MSD_DMA;
 
-	msdIsCriticalSection = true;	//вход в критическую секцию
-		while (msdDmaIsBusy);
-		msdDmaIsBusy = true;
-		msdRingBufferCopy.head++;
-		//если в конвеере больше нет копирований, то запускается первое копирование
-		if (msdRingBufferCopy.head - msdRingBufferCopy.tail == 1) {
-			msdSingleCopy(src, dst, size);
-		}
-	msdIsCriticalSection = false;	//выход из критической секции
-
+	msdFlagPause = true;
+	while (msdDmaIsBusy);
+	msdFlagPause = false;
+	msdDmaIsBusy = true; 
+	msdRingBufferCopy.head++;
+	msdStartCopy(msdRingBufferCopy.ptrTail());
 	return msdRingBufferCopy.head - 1;
 }
 
@@ -97,15 +92,12 @@ SECTION(".text_demo3d") unsigned int msdAdd2D(const void* src, void* dst, unsign
 	current->srcStride = srcStride32;
 	current->dstStride = dstStride32;
 
-	msdIsCriticalSection = true;	//вход в критическую секцию
-		while (msdDmaIsBusy);
-		msdDmaIsBusy = true;
-		msdRingBufferCopy.head++;	
-		if (msdRingBufferCopy.head - msdRingBufferCopy.tail == 1) {
-			msdMatrixCopy(src, dst, size, width, srcStride32, dstStride32);
-		}
-	msdIsCriticalSection = false;	//выход из критической секции
-
+	msdFlagPause = true;	//вход в критическую секцию
+	while (msdDmaIsBusy);
+	msdFlagPause = false;
+	msdDmaIsBusy = true;
+	msdRingBufferCopy.head++;
+	msdStartCopy(msdRingBufferCopy.ptrTail());
 	return msdRingBufferCopy.head - 1;
 }
 
