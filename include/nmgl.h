@@ -48,4 +48,5 @@ void nmglMultMatrixf(const NMGLfloat * m);
 void nmglTexImage2D(NMGLenum target, NMGLint level, 
 					NMGLint internalformat, NMGLsizei width, NMGLsizei height, 
 					NMGLint border, NMGLenum format, NMGLenum type, const void *data );
+void nmglActiveTexture (NMGLenum texture);
 #endif

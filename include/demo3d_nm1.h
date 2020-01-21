@@ -8,6 +8,7 @@
 #include "imagebuffer.h"
 #include "imagesegment.h"
 #include "myserverdma.h"
+#include "nmgltex_nm1.h"
 
 
 class DepthBuffer : public ImageBuffer {
@@ -83,6 +84,8 @@ struct NMGL_Context_NM1 {
 	nm32s* heights;
 	nm32s* valuesZ;
 	nm32s* valuesC;
+	
+	NMGL_Context_NM1_Texture texState;
 
 };
 

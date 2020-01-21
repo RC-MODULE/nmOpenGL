@@ -180,6 +180,11 @@ SECTION(".text_nmglvs") int nmglvsNm1Step(NMGL_Context_NM1 &cntxt)
 		nmppsConvert_32s8s((nm32s*)cntxt.buffer0, dst, size);
 		break;
 	}
+	
+	case NMC1_SET_ACTIVE_TEXTURE: {
+		cntxt.texState.activeTexUnitIndex = currentCommand.params[0];
+		break;
+	}
 
 	default:
 		break;

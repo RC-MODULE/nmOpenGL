@@ -83,6 +83,7 @@ SECTION(".text_nmglvs") int nmglvsNm1Init(NMGL_Context_NM1& cntxt)
 	cntxt.colorBuffer->clearValue = 0;
 	cntxt.colorSegment.set(segImage, WIDTH_SEG, HEIGHT_SEG, msdAdd2D);
 	cntxt.depthSegment.set(segZBuff, WIDTH_SEG, HEIGHT_SEG, msdAdd2D);
+	cntxt.texState.init();
 
 	halSleep(10);
 	if (cntxt.patterns == 0 || imageArray == 0 ||

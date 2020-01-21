@@ -4,6 +4,7 @@
 #include "demo3d_common.h"
 #include "arraymanager.h"
 #include "nmgl.h"
+#include "nmgltex_nm0.h"
 
 #define BIG_NMGL_SIZE (128 * NMGL_SIZE)
 
@@ -103,6 +104,8 @@ struct NMGL_Context_NM0 {
 	float isEnabledLight[MAX_LIGHTS];
 	int isLighting;
 	float specularExp;
+	
+	NMGL_Context_NM0_Texture texState;
 
 	void init(NMGLSynchroData* syncroData, PolygonsArray* polygonsArray){
 		syncroData->init();
@@ -208,6 +211,9 @@ struct NMGL_Context_NM0 {
 		nmglDisableClientState(NMGL_VERTEX_ARRAY);
 		nmglDisableClientState(NMGL_COLOR_ARRAY);
 		nmglDisableClientState(NMGL_NORMAL_ARRAY);
+		
+		texState.init();
+		
 	}
 };
 
