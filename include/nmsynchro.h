@@ -38,6 +38,7 @@ struct CommandNm1{
 #define PRIORITY1_SIZE 128
 
 struct NMGLSynchroData {
+
 	HalRingBufferData<CommandNm1, PRIORITY0_SIZE> priority0;
 	HalRingBufferData<CommandNm1, PRIORITY1_SIZE> priority1;
 
@@ -51,12 +52,16 @@ class NMGLSynchro {
 private:
 	NMGLSynchroData* mSynchroData;
 	int dummy;
+	HalRingBufferConnector<CommandNm1, PRIORITY0_SIZE> connector0;
+	HalRingBufferConnector<CommandNm1, PRIORITY1_SIZE> connector1;
 public:
 	int time;
 	int counter;
 
 	void init(NMGLSynchroData* synchroData) {
 		mSynchroData = synchroData;
+		connector0.init(&synchroData->priority0);
+		connector1.init(&synchroData->priority1);
 	}
 
 	void writeInstr(int priority, 
@@ -69,8 +74,6 @@ public:
 		int param5 = 0) {
 		
 		CommandNm1* command;
-		HalRingBufferConnector<CommandNm1, PRIORITY0_SIZE> connector0(&mSynchroData->priority0);
-		HalRingBufferConnector<CommandNm1, PRIORITY1_SIZE> connector1(&mSynchroData->priority1);
 		switch (priority)
 		{
 		case 0:
@@ -102,6 +105,7 @@ public:
 			(*connector1.pHead)++;
 			break;
 		}
+
 	}
 
 	inline bool isEmpty() {
@@ -112,27 +116,21 @@ public:
 		switch (priority)
 		{
 		case 0: {
-			HalRingBufferConnector<CommandNm1, PRIORITY0_SIZE> connector0(&mSynchroData->priority0);
 			return connector0.isEmpty();
 		}
 		case 1: {
-			HalRingBufferConnector<CommandNm1, PRIORITY1_SIZE> connector1(&mSynchroData->priority1);
 			return connector1.isEmpty();
 		}
 		}
 	}
 
-	CommandNm1* readInstr() {
-		while (isEmpty()) {
-			halSleep(2);
-		}
+	void popInstr(CommandNm1 *command) {
+		while (isEmpty());
 		if (isEmpty(0)) {
-			HalRingBufferConnector<CommandNm1, PRIORITY1_SIZE> connector1(&mSynchroData->priority1);
-			return connector1.ptrTail();
+			connector1.pop(command, 1);
 		}
 		else {
-			HalRingBufferConnector<CommandNm1, PRIORITY0_SIZE> connector0(&mSynchroData->priority0);
-			return connector0.ptrTail();
+			connector0.pop(command, 1);
 		}
 	}
 	
@@ -140,11 +138,9 @@ public:
 		switch (priority)
 		{
 		case 0: {
-			HalRingBufferConnector<CommandNm1, PRIORITY0_SIZE> connector0(&mSynchroData->priority0);
 			return *connector0.pHead;
 		}
 		case 1: {
-			HalRingBufferConnector<CommandNm1, PRIORITY1_SIZE> connector1(&mSynchroData->priority1);
 			return *connector1.pHead;
 		}
 		}
@@ -154,11 +150,9 @@ public:
 		switch (priority)
 		{
 		case 0: {
-			HalRingBufferConnector<CommandNm1, PRIORITY0_SIZE> connector0(&mSynchroData->priority0);
 			return *connector0.pTail;
 		}
 		case 1: {
-			HalRingBufferConnector<CommandNm1, PRIORITY1_SIZE> connector1(&mSynchroData->priority1);
 			return *connector1.pTail;
 		}
 		}

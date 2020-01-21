@@ -108,8 +108,6 @@ struct NMGL_Context_NM0 {
 	NMGL_Context_NM0_Texture texState;
 
 	void init(NMGLSynchroData* syncroData, PolygonsArray* polygonsArray){
-		syncroData->init();
-		polygonsArray->init();
 		synchro.init(syncroData);
 		polygonsData = polygonsArray;
 

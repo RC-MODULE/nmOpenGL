@@ -1,49 +1,76 @@
 #ifndef __IMAGE_BUFFER_H__
 #define __IMAGE_BUFFER_H__
 
-#include "ringbuffer.h"
-
 class ImageBuffer{
 private:
 	int width;
 	int height;
-	HalRingBuffer ringbuffer;
+	int size;
 	int dummy;
 public:
+	void* data;
 	int clearValue;
-	
-	void set(void* imageArray, int widthImage, int heightImage, int count) {
-		width = widthImage;
-		height = heightImage;
-		halRingBufferInit(&ringbuffer, imageArray, width * height, count, 0, 0, 0);
+
+	ImageBuffer() {
+		clearValue = 0;
 	}
 
-	void* top() {
-		return halRingBufferHead(&ringbuffer);
+	void init(void* imageAddr, int widthImage, int heightImage) {
+		setSize(widthImage, heightImage);
+		data = imageAddr;
 	}
 
-	void next() {
-		while (halRingBufferIsFull(&ringbuffer) || halRingBufferIsBusy(&ringbuffer));
-		ringbuffer.head++;
-	}
-	
-	int getWidth(){
+	inline int getWidth() {
 		return width;
 	}
-	
-	int getHeight(){
+
+	inline int getHeight() {
 		return height;
 	}
-	
-	int getSize(){
-		return ringbuffer.size;
+
+	inline int getSize() {
+		return size;
 	}
 
-	HalRingBuffer* getHalRingBuffer() {
-		return &ringbuffer;
+	inline void setSize(int widthImage, int heightImage) {
+		width = widthImage;
+		height = heightImage;
+		size = width * height;
+	}
+};
+
+
+
+
+
+class DepthBuffer : public ImageBuffer {
+private:
+	bool maskEnabled;
+	int mode;
+	int dummy;
+
+	void update();
+
+public:
+	bool enabled;
+
+	DepthBuffer() {
+		enabled = NMGL_FALSE;
+		maskEnabled = NMGL_TRUE;
+		mode = NMGL_LESS;
+		clearValue = ZBUFF_MAX;
+	}
+
+	void setEnabledMask(bool flag) {
+		maskEnabled = flag;
+		update();
+	}
+
+	void setMode(int depthMode) {
+		mode = depthMode;
+		update();
 	}
 
 };
-
 
 #endif

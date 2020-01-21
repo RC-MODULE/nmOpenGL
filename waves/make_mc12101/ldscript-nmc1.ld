@@ -124,18 +124,14 @@ SECTIONS
   {
     *(.rpc_services);
   } > EMI2
-  /*.heap : ALIGN(0x8)
+  .heap : ALIGN(0x8)
   {
 	*(.heap);
-	. = ORIGIN(C1_IMU0) + LENGTH(C1_IMU0);
-    __HEAP_0_END = .;
-  } > C1_IMU0
+  } > EMI2
   .heap1 : ALIGN(0x8)
   {
     *(.heap1);
-	. = ORIGIN(C1_IMU1) + LENGTH(C1_IMU1);
-    __HEAP_1_END = .;
-  } > C1_IMU1*/
+  } > EMI2
   .heap2 : ALIGN(0x8)
   {
     *(.heap2);

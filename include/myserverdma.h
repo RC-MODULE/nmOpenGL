@@ -16,16 +16,13 @@ struct MSD_DmaCopy{
 	int dstStride;
 	int type;
 	volatile bool status;
-	msdCallback callback;
 };
 
-void msdAddImage(ImageBuffer* buffer, ImageSegment* segment, int startIndex, int step);
-void msdAdd(const void* src, void* dst, int size);
-void msdAdd2D(const void* src, void* dst, unsigned size, unsigned width, unsigned srcStride32, unsigned dstStride32);
-void msdStartCopy();
+void msdInit();
+unsigned int msdAdd(const void* src, void* dst, int size);
+unsigned int msdAdd2D(const void* src, void* dst, unsigned size, unsigned width, unsigned srcStride32, unsigned dstStride32);
 void msdWaitDma();
 bool msdGetStatusCopy(int index);
-void msdSimpleCopy(const void* src, void* dst, int size);
 
 
 #endif

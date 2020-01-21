@@ -1,33 +1,33 @@
 //------------------------------------------------------------------------
 //  Demostration for MAX 2017 
 //
-//  Author: Alexander Bolornikov
+// 
 //
 //  Copyright (c) 2017 RC Module Inc.
 //------------------------------------------------------------------------
 
 #include "VShell.h"
-#include "hal.h"
-#include "hal_host.h"
-#include "math.h"
-#include "stdio.h"
-#include "stdlib.h"
-#include "nmpp.h"
-#include "demo3d_host.h"
-#include "demo3d_nm1.h"
-#include "ringbuffer_host.h"
-#include <thread>
+#include "demo3d_common.h"
 
-extern HalRingBuffer imagesRB;
-extern int synchro_nm;
+
+extern ImageConnector hostImageRB;
 
 int nmglvsHostReadImage(int* dstImage)
 {
-	while (halRingBufferIsEmpty(&imagesRB)) {
-		halSleep(2);
+	S_VS_MouseStatus mouseStatus;
+	VS_GetMouseStatus(&mouseStatus);
+#if defined(PROFILER0) || defined(PROFILER1)
+	if (mouseStatus.nKey == VS_MOUSE_LBUTTON) {
+#else
+	if (mouseStatus.nKey != VS_MOUSE_LBUTTON) {
+#endif
+		hostImageRB.pop((ImageRGB8888*)dstImage, 1);
 	}
-	int* src = (int*)halRingBufferTail(&imagesRB);
-	nmppsCopy_32s(src, dstImage, imagesRB.size);
-	imagesRB.tail++;
+	else {
+		while (hostImageRB.isEmpty()) {
+			halSleep(2);
+		}
+		hostImageRB.incTail();
+	}
 	return 0;
 };

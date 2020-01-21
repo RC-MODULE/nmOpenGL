@@ -1,14 +1,10 @@
 #include "VShell.h"
 #include "hal.h"
 #include "hal_host.h"
-#include "math.h"
 #include "stdio.h"
-#include "stdlib.h"
 #include "nmpp.h"
 #include "demo3d_host.h"
 #include "demo3d_nm1.h"
-#include "ringbuffer_host.h"
-#include <thread>
 #include "hostprofiler.h"
 #include "nmglvs_host.h"
 
@@ -16,10 +12,6 @@ using namespace std;
 
 int currentImage[WIDTH_IMAGE * HEIGHT_IMAGE];
 
-extern int synchro_nm;
-
-void fillPattern(nm8s* pDstSource, int width, int height);
-void create_tabl_dydx(nm8s* srcPatterns, int* dydx, int width, int height);
 
 int main()
 {

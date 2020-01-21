@@ -4,140 +4,118 @@
 #include "myserverdma.h"
 
 
-SECTION(".data_demo3d") MSD_DmaCopy list[100];
+//структура данных с информацией о копированиях
+SECTION(".data_demo3d") HalRingBufferData<MSD_DmaCopy, 128> msdRingBufferCopy;
+SECTION(".data_demo3d") volatile bool msdDmaIsBusy = false;
+SECTION(".data_demo3d") volatile bool msdIsCriticalSection = false;
 
-SECTION(".data_demo3d") volatile bool isBusy = false;
-int countList = 0;
-int currentIndex;
-bool isSimpleCopy = false;
-
-
-#ifndef __GNUC__
+#ifdef __GNUC__
+#define msdSingleCopy(src, dst, size32)  halDmaStartA(src, dst, size32);
+#define msdMatrixCopy(src, dst, size, width, srcStride, dstStride) \
+		halDma2D_StartA(src, dst, size, width, srcStride, dstStride);
+#else
 int empty() { return 0; }
 
 DmaCallback cb = empty;
 #define halDmaSetCallback(func) cb = func;
 
-#define halDmaStartA(src, dst, size) nmppsCopy_32s((nm32s*)src,(nm32s*)dst,size); cb()
-#define halDma2D_StartA(src, dst, size, width, srcStride, dstStride) nmppmCopy_32s((nm32s*)src, srcStride, \
-																					(nm32s*)dst, dstStride, \
-																					size/width, width); cb()
+#define msdSingleCopy(src, dst, size) halCopyRISC(src,dst,size); cb()
+#define msdMatrixCopy(src, dst, size, width, srcStride, dstStride) \
+			 nmppmCopy_32s((nm32s*)src, srcStride, \
+							(nm32s*)dst, dstStride, \
+							size/width, width); cb()
 #endif
 
 
+
 SECTION(".text_demo3d") void cbUpdate() {
-	if (isSimpleCopy) {
-		isBusy = false;
-		isSimpleCopy = false;
+	msdRingBufferCopy.tail++;
+	//если update вызывается в критической секции, то конвеер копирований прерывается
+	if (msdIsCriticalSection && msdDmaIsBusy) {
+		msdDmaIsBusy = false;
+		return;
 	}
-	else {
-		if (list[currentIndex].callback) {
-			list[currentIndex].callback();
-		}
-		list[currentIndex].status = true;
-		currentIndex++;
-		if (currentIndex < countList) {
-			switch (list[currentIndex].type)
-			{
-			case MSD_DMA:
-				halDmaStartA(list[currentIndex].src, list[currentIndex].dst, list[currentIndex].size);
-				break;
-			case MSD_DMA_2D:
-				halDma2D_StartA(list[currentIndex].src, list[currentIndex].dst,
-					list[currentIndex].size, list[currentIndex].width,
-					list[currentIndex].srcStride, list[currentIndex].dstStride);
-				break;
-			default:
-				break;
-			}
-
-		}
-		else {
-			isBusy = false;
-			countList = 0;
-			return;
-		}
-	}
-}
-
-
-SECTION(".text_demo3d") void msdAddImage(ImageBuffer* buffer, ImageSegment* segment, int startIndex, int step) {
-	int* setPoint = (int*)buffer->top();
-	nmppsSet_32s((nm32s*)segment->data, buffer->clearValue, segment->size);
-	int size = buffer->getSize();
-	int listSize = startIndex;
-	while(size > 0) {
-		list[listSize].src = segment->data;
-		list[listSize].dst = setPoint;
-		list[listSize].size = MIN(size, segment->size);
-		list[listSize].type = MSD_DMA;
-		list[listSize].status = false;
-		size -= segment->size;
-		setPoint += segment->size;
-		listSize += step;
-		countList++;
-	}
-}
-
-SECTION(".text_demo3d") void msdAdd(const void* src, void* dst, int size) {
-	list[countList].src = src;
-	list[countList].dst = dst;
-	list[countList].size = size;
-	list[countList].status = false;
-	list[countList].type = MSD_DMA;
-	list[countList].callback = 0;
-	countList++;
-}
-
-SECTION(".text_demo3d") void msdAdd2D(const void* src, void* dst, unsigned size, unsigned width, unsigned srcStride32, unsigned dstStride32) {
-	list[countList].src = src;
-	list[countList].dst = dst;
-	list[countList].size = size;
-	list[countList].status = false;
-	list[countList].type = MSD_DMA_2D;
-	list[countList].width = width;
-	list[countList].srcStride = srcStride32;
-	list[countList].dstStride = dstStride32;
-	list[countList].callback = 0;
-	countList++;
-}
-
-SECTION(".text_demo3d") bool msdGetStatusCopy(int index) {
-	return list[index].status;
-}
-
-SECTION(".text_demo3d") void msdStartCopy() {
-	currentIndex = 0;
-	halDmaSetCallback((DmaCallback)cbUpdate);
-	if (countList) {
-		isBusy = true;
-		switch (list[currentIndex].type)
+	if (!msdRingBufferCopy.isEmpty()) {
+		MSD_DmaCopy* current = msdRingBufferCopy.ptrTail();
+		switch (current->type)
 		{
 		case MSD_DMA:
-			halDmaStartA(list[currentIndex].src, list[currentIndex].dst, list[currentIndex].size);
+			msdSingleCopy(current->src, current->dst, current->size);
 			break;
 		case MSD_DMA_2D:
-			halDma2D_StartA(list[currentIndex].src, list[currentIndex].dst,
-				list[currentIndex].size, list[currentIndex].width,
-				list[currentIndex].srcStride, list[currentIndex].dstStride);
+			msdMatrixCopy(current->src, current->dst,
+				current->size, current->width,
+				current->srcStride, current->dstStride);
 			break;
 		default:
 			break;
 		}
 	}
+	else {
+		msdDmaIsBusy = false;
+	}
 }
 
-SECTION(".text_demo3d") void msdSimpleCopy(const void* src, void* dst, int size) {
+SECTION(".text_demo3d") void msdInit() {
+#ifdef __GNUC__
+	halDmaInit();
+#endif // __GNUC__
 	halDmaSetCallback((DmaCallback)cbUpdate);
-	isSimpleCopy = true;
-	isBusy = true;
-	halDmaStartA(src, dst, size);
 }
 
+SECTION(".text_demo3d") unsigned int msdAdd(const void* src, void* dst, int size) {
+	while (msdRingBufferCopy.isFull());
+	MSD_DmaCopy* current = msdRingBufferCopy.ptrHead();
+	current->src = src;
+	current->dst = dst;
+	current->size = size;
+	current->status = false;
+	current->type = MSD_DMA;
+	//вход в критическую секцию
+	msdIsCriticalSection = true;
+	while (msdDmaIsBusy);
+	msdRingBufferCopy.head++;
+	//если в конвеере больше нет копирований, то запускается первое копирование
+	if (msdRingBufferCopy.head - msdRingBufferCopy.tail == 1) {
+		msdSingleCopy(src, dst, size);
+		msdDmaIsBusy = true;
+	}
+	//выход из критической секции
+	msdIsCriticalSection = false;
+	return msdRingBufferCopy.head - 1;
+}
+
+SECTION(".text_demo3d") unsigned int msdAdd2D(const void* src, void* dst, unsigned size, unsigned width, unsigned srcStride32, unsigned dstStride32) {
+	while (msdRingBufferCopy.isFull());
+	MSD_DmaCopy* current = msdRingBufferCopy.ptrHead();
+	current->src = src;
+	current->dst = dst;
+	current->size = size;
+	current->status = false;
+	current->type = MSD_DMA_2D;
+	current->width = width;
+	current->srcStride = srcStride32;
+	current->dstStride = dstStride32;
+	//вход в критическую секцию
+	msdIsCriticalSection = true;
+	while (msdDmaIsBusy);
+	msdRingBufferCopy.head++;	
+	if (msdRingBufferCopy.head - msdRingBufferCopy.tail == 1) {
+		msdMatrixCopy(src, dst, size, width, srcStride32, dstStride32);
+		msdDmaIsBusy = true;
+	}
+	//выход из критической секции
+	msdIsCriticalSection = false;
+	return msdRingBufferCopy.head - 1;
+}
+
+SECTION(".text_demo3d") bool msdGetStatusCopy(int index) {
+	return msdRingBufferCopy.tail > index;
+}
 
 SECTION(".text_demo3d") void msdWaitDma() {
 	volatile int a = 0;
-	while (isBusy) {
+	while (!msdRingBufferCopy.isEmpty()) {
 		a++;
 	}
 }

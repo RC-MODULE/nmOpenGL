@@ -12,7 +12,6 @@
 
 SECTION(".data_imu1")	int pool0[SIZE_BANK];
 SECTION(".data_imu3")	int pool1[SIZE_BANK];
-SECTION(".data_imu0")	DepthBuffer depthBuffer;
 
 SECTION(".data_imu2")	int segImage[WIDTH_SEG * HEIGHT_SEG];
 SECTION(".data_imu2")	int segZBuff[WIDTH_SEG * HEIGHT_SEG];
@@ -53,17 +52,13 @@ SECTION(".text_nmglvs") int nmglvsNm1Init(NMGL_Context_NM1& cntxt)
 	}
 	int ok=0;
 
-	setHeap(9);
-	cntxt.colorBuffer = myMallocT<ImageBuffer>();
-	cntxt.depthBuffer = &depthBuffer; // myMallocT<DepthBuffer>();
-
 	setHeap(11);
 	cntxt.patterns = myMallocT<Patterns>();
 	
+	msdInit();
 
 #ifdef __GNUC__
-	halInstrCacheEnable();
-	halDmaInit();
+	halInstrCacheEnable();	
 #ifdef PROFILER1
 	nmprofiler_init();
 #endif // PROFILER1	
@@ -72,22 +67,23 @@ SECTION(".text_nmglvs") int nmglvsNm1Init(NMGL_Context_NM1& cntxt)
 	NMGLSynchroData* synchroData = (NMGLSynchroData*)halSyncAddr((int*)cntxt.patterns, 0);
 	cntxt.synchro.init(synchroData);
 	cntxt.polygonsData = (PolygonsArray*)halSyncAddr(0, 0);
-	nmppsSet_32s((nm32s*)cntxt.polygonsData, 0, sizeof32(PolygonsArray));
 
-	int* imageArray = halMalloc32(COUNT_IMAGE_BUFFER * WIDTH_IMAGE * HEIGHT_IMAGE);
-	int* ZBuffImage = halMalloc32(WIDTH_IMAGE * HEIGHT_IMAGE);
-	setHeap(10);
-	cntxt.colorBuffer->set(imageArray, WIDTH_IMAGE, HEIGHT_IMAGE, COUNT_IMAGE_BUFFER);
-	cntxt.depthBuffer->set(ZBuffImage, WIDTH_IMAGE, HEIGHT_IMAGE, 1);
-	cntxt.depthBuffer->clearValue = ZBUFF_MAX;
-	cntxt.colorBuffer->clearValue = 0;
-	cntxt.colorSegment.set(segImage, WIDTH_SEG, HEIGHT_SEG, msdAdd2D);
-	cntxt.depthSegment.set(segZBuff, WIDTH_SEG, HEIGHT_SEG, msdAdd2D);
+	ImageData* imagesData = myMallocT<ImageData>();
+	cntxt.imagesData = imagesData;
+	cntxt.imagesData->init();
+
+	DepthImage32* depthImage = myMallocT<DepthImage32>();
+	
+	cntxt.colorBuffer.init(imagesData->ptrHead(), WIDTH_IMAGE, HEIGHT_IMAGE);
+	cntxt.depthBuffer.init(depthImage, WIDTH_IMAGE, HEIGHT_IMAGE);
+
+	cntxt.colorSegment.init(segImage, WIDTH_SEG, HEIGHT_SEG);
+	cntxt.depthSegment.init(segZBuff, WIDTH_SEG, HEIGHT_SEG);
+
 	cntxt.texState.init();
 
 	halSleep(10);
-	if (cntxt.patterns == 0 || imageArray == 0 ||
-		cntxt.colorBuffer == 0 || cntxt.depthBuffer == 0) {
+	if (cntxt.patterns == 0 || imagesData == 0 || depthImage == 0) {
 		halHostSync((int)0);	// send error to host
 		return -1;
 	}
@@ -109,7 +105,7 @@ SECTION(".text_nmglvs") int nmglvsNm1Init(NMGL_Context_NM1& cntxt)
 		cntxt.minusOne[j] = -1;
 	}
 	//sync3
-	halHostSync((int)cntxt.colorBuffer->getHalRingBuffer());
+	halHostSync((int)cntxt.imagesData);
 
 	cntxt.offsetTrX = offsetTrX;
 	cntxt.offsetTrY = offsetTrY;

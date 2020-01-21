@@ -61,7 +61,6 @@ void drawPattern(Line* line,
 		k = 2 * (double)ABS(deltaY) / ABS(deltaX);
 		err = 0;
 		int y = line->p0.y;
-		int xst;
 		for (int x = line->p0.x; x != line->p1.x; x += dx) {
 			if (err > 1) {
 				y += dy;
@@ -75,7 +74,6 @@ void drawPattern(Line* line,
 		k = 2 * (double)ABS(deltaX) / ABS(deltaY);
 		err = 0;
 		int x = line->p0.x;
-		int xst;
 		for (int y = line->p0.y; y != line->p1.y; y += dy) {
 			if (err > 1) {
 				x += dx;
@@ -156,7 +154,7 @@ void fillPattern(nm8s* pDstSource,int width, int height)
 	int color = 1;
 	int cnt = 0;
 	Line line;
-	Point point;
+	//Point point;
 	FillMode mode[2] = { RIGHT, LEFT };
 
 	/*for (int angle = 180; angle > 0; angle--) {

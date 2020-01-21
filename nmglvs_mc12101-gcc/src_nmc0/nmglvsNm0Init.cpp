@@ -27,16 +27,6 @@ SECTION(".data_imu4")	float y2[NMGL_SIZE];
 SECTION(".data_imu6")	int z_int[NMGL_SIZE];
 SECTION(".data_imu6")	v4nm32s lightsValues[NMGL_SIZE];
 
-/*SECTION(".data_shmem0")	HalRingBuffer mPolygonsRB;
-SECTION(".data_shmem0")	NMGLSynchroData mSynchroData;
-SECTION(".data_shared")	NMGLSynchro mSynchro(&mSynchroData);
-SECTION(".data_shared")	float mDataDdr[11 * BIG_NMGL_SIZE];
-SECTION(".data_shared")	Polygons mPolyArray[COUNT_POLYGONS_BUFFER];*/
-
-
-template<class T> T* myMallocT(int size) {
-	return (T*)halMalloc32(size * sizeof32(T));
-}
 
 template<class T> T* myMallocT() {
 	return (T*)halMalloc32(sizeof32(T));
@@ -53,8 +43,10 @@ int nmglvsNm0Init()
 	}
 	setHeap(8);
 	NMGLSynchroData* synchroData = myMallocT<NMGLSynchroData>();
+	synchroData->init();
 	setHeap(10);
 	PolygonsArray* polygonsArray = myMallocT<PolygonsArray>();
+	polygonsArray->init();
 	cntxt.init(synchroData, polygonsArray);
 
 	cntxt.trianInner.x0 = x0;
@@ -81,7 +73,7 @@ int nmglvsNm0Init()
 	cntxt.trianDdr.size = 0;
 
 #ifdef __GNUC__
-	halDmaInit();
+	halDmaInitC();
 	halInstrCacheEnable();
 #ifdef PROFILER0
 	nmprofiler_init();
@@ -93,7 +85,6 @@ int nmglvsNm0Init()
 	cntxt.buffer1 = nmglBuffer1;
 	cntxt.buffer2 = nmglBuffer2;
 	cntxt.buffer3 = nmglBuffer3;
-
 
 	cntxt.patterns = (Patterns*)halSyncAddr((int*)synchroData, 1);
 	halSyncAddr((int*)cntxt.polygonsData, 1);

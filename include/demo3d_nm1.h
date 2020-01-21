@@ -1,46 +1,13 @@
 #ifndef DEMO3D_NM1_H 
 #define DEMO3D_NM1_H 
 
-#include "nmpp.h"
+#include "nmtype.h"
 #include "nmgl.h"
 #include "demo3d_common.h"
 #include "ringbuffer.h"
 #include "imagebuffer.h"
-#include "imagesegment.h"
 #include "myserverdma.h"
 #include "nmgltex_nm1.h"
-
-
-class DepthBuffer : public ImageBuffer {
-private:
-	bool maskEnabled;
-	int mode;
-	//DepthTest currentTest;
-	int dummy;
-
-	void update();
-
-public:
-	bool enabled;
-
-	DepthBuffer() {
-		enabled = NMGL_FALSE;
-		maskEnabled = NMGL_TRUE;
-		mode = NMGL_LESS;
-		clearValue = ZBUFF_MAX;
-	}
-
-	void setEnabledMask(bool flag) {
-		maskEnabled = flag;
-		update();
-	}
-
-	void setMode(int depthMode) {
-		mode = depthMode;
-		update();
-	}
-
-};
 
 typedef void DepthCore(nm32s &buffZ, nm32s &trianSrcZ, nm32s &trianDstZ);
 
@@ -61,13 +28,13 @@ struct NMGL_Context_NM1 {
 	clock_t t0, t1;
 
 	NMGLSynchro synchro;
-	int dummy;
+	ImageData* imagesData;
 	PolygonsArray* polygonsData;
 
-	ImageBuffer* colorBuffer;
-	DepthBuffer* depthBuffer;
-	ImageSegment colorSegment;
-	ImageSegment depthSegment;
+	DepthBuffer depthBuffer;
+	ImageBuffer colorBuffer;
+	ImageBuffer colorSegment;
+	ImageBuffer depthSegment;
 
 	nm32s** zBuffPoints;
 	nm32s** imagePoints;

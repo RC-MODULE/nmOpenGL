@@ -10,55 +10,27 @@
 #include "hal.h"
 #include "hal_host.h"
 #include "math.h"
-#include "stdio.h"
-#include "stdlib.h"
 #include "nmpp.h"
 #include "demo3d_host.h"
 #include "demo3d_nm1.h"
-#include "ringbuffer_host.h"
-#include <thread>
+#include "ringbuffert.h"
 
 
 
 using namespace std;
 
-#define SIZE_BUFFER 2
-unsigned char srcImg[4 * SIZE_BUFFER * WIDTH_IMAGE * HEIGHT_IMAGE];
+ImageConnector hostImageRB;
 
 
-HalHostRingBuffer hostImageRB;
-HalRingBuffer imagesRB;
-
-
-void download() {
-	while (true) {
-		S_VS_MouseStatus mouseStatus;
-		VS_GetMouseStatus(&mouseStatus);
-		while (halRingBufferIsFull(&imagesRB)) {
-			halSleep(2);
-		}
-#if defined(PROFILER0) || defined(PROFILER1)
-		if (mouseStatus.nKey == VS_MOUSE_LBUTTON) {
-#else
-		if (mouseStatus.nKey != VS_MOUSE_LBUTTON) {
-#endif
-			/*while (halHostRingBufferIsEmpty(&hostImageRB));
-			halReadMemBlock(&hostImageRB.head, hostImageRB.remoteHeadAddr, 1, 1);
-			halReadMemBlock(&hostImageRB.tail, hostImageRB.remoteTailAddr, 1, 1);
-			int freeImages = hostImageRB.head - hostImageRB.tail;*/
-			halHostRingBufferPop(&hostImageRB, halRingBufferHead(&imagesRB), 1);
-		}
-		else {
-			while (halHostRingBufferIsEmpty(&hostImageRB)) {
-				halSleep(2);
-			}
-			hostImageRB.tail++;
-			halWriteMemBlock(&hostImageRB.tail, hostImageRB.remoteTailAddr, 1, hostImageRB.processor);
-		}
-		imagesRB.head++;
-	}
+void*  writeMem(const void* src, void* dst, unsigned int size32) {
+	int ok = halWriteMemBlock((void*)src, (int)dst, size32, 1);
+	return 0;
 }
 
+void*  readMem(const void* src, void* dst, unsigned int size32) {
+	int ok = halReadMemBlock(dst, (int)src, size32, 1);
+	return 0;
+}
 
 int nmglvsHostInit()
 {
@@ -97,15 +69,12 @@ int nmglvsHostInit()
 	ok = halWriteMemBlock(patterns, patternsNM, sizeof32(Patterns), 1);
 //----------------init-ringbuffer-------------
 	//nmc1, sync3
-	int nmImageRB = halSync(4, 1);
+	ImageData* nmImageRB = (ImageData*)halSync(4, 1);
 	nmppsFree(patterns);
-	halHostRingBufferInit(&hostImageRB, nmImageRB,1);
-	ok = halRingBufferInit(&imagesRB, srcImg, hostImageRB.size, SIZE_BUFFER, 0, 0, 0);
+
+	hostImageRB.init(nmImageRB, writeMem, readMem);
+	
 	//nmc0, sync4
-	
-	thread downloadThread(download);
-	downloadThread.detach();
-	
 	halSync(0, 0);
 
 	return 0;
