@@ -77,8 +77,8 @@ SECTION(".text_demo3d") unsigned int msdAdd(const void* src, void* dst, int size
 	msdRingBufferCopy.head++;
 	//если в конвеере больше нет копирований, то запускается первое копирование
 	if (msdRingBufferCopy.head - msdRingBufferCopy.tail == 1) {
-		msdSingleCopy(src, dst, size);
 		msdDmaIsBusy = true;
+		msdSingleCopy(src, dst, size);
 	}
 	//выход из критической секции
 	msdIsCriticalSection = false;
@@ -101,8 +101,8 @@ SECTION(".text_demo3d") unsigned int msdAdd2D(const void* src, void* dst, unsign
 	while (msdDmaIsBusy);
 	msdRingBufferCopy.head++;	
 	if (msdRingBufferCopy.head - msdRingBufferCopy.tail == 1) {
-		msdMatrixCopy(src, dst, size, width, srcStride32, dstStride32);
 		msdDmaIsBusy = true;
+		msdMatrixCopy(src, dst, size, width, srcStride32, dstStride32);
 	}
 	//выход из критической секции
 	msdIsCriticalSection = false;
