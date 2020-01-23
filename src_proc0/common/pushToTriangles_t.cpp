@@ -14,7 +14,7 @@
 
 
 SECTION(".text_demo3d")
-int pushToTriangles_t(const float *vertexX, const float *vertexY, const float *vertexZ, const v4nm32f* color, Triangles& triangles, int countVertex){
+void pushToTriangles_t(const float *vertexX, const float *vertexY, const float *vertexZ, const v4nm32f* color, Triangles& triangles, int countVertex){
 	int countPrim = countVertex / 3;
 	float* temp0 = cntxt.buffer0 + 3 * NMGL_SIZE;
 	float* temp1 = cntxt.buffer1 + 6 * NMGL_SIZE;
@@ -33,5 +33,5 @@ int pushToTriangles_t(const float *vertexX, const float *vertexY, const float *v
 	cnv32f_v3v4(vertexZ, cntxt.buffer3, 0, countVertex);
 	split_v4nm32f((v4nm32f*)cntxt.buffer3, 1, temp0, temp1, temp2, cntxt.buffer3 + 6 * NMGL_SIZE, countPrim);
 	meanToInt3(temp0, temp1, temp2, HEAD_Z, countPrim);
-	return countPrim;
+	triangles.size = countPrim;
 }
