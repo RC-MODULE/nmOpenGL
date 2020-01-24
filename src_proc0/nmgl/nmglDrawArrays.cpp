@@ -71,7 +71,6 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 
 	reverseMatrix3x3in4x4(cntxt.modelviewMatrixStack.top(), &cntxt.normalMatrix);
 
-	cntxt.trianDdr.size = 0;
 	while (!vertexAM.isEmpty()) {
 		//vertex
 		int localSize = vertexAM.pop(cntxt.buffer0) / cntxt.vertexArray.size;
@@ -116,10 +115,8 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			if (cntxt.normalizeEnabled) {
 				nmblas_scopy(4 * localSize, (float*)colorOrNormal, 1, cntxt.buffer2, 1);
 				dotV_v4nm32f(colorOrNormal, (v4nm32f*)cntxt.buffer2, (v2nm32f*)cntxt.buffer0, localSize);
-				pow_32f(cntxt.buffer0, cntxt.buffer1, 0.5, 2 * localSize, cntxt.buffer3);
-				nmblas_dcopy(localSize, (double*)cntxt.buffer1, 1, (double*)cntxt.buffer3, 2);
-				nmblas_dcopy(localSize, (double*)cntxt.buffer1, 1, (double*)(cntxt.buffer3 + 2), 2);
-				nmppsDiv_32f((float*)cntxt.buffer2, cntxt.buffer3, (float*)colorOrNormal, 4 * localSize);
+				fastInvSqrt(cntxt.buffer0, cntxt.buffer1, 2 * localSize);
+				dotMulV_v4nm32f((v2nm32f*)cntxt.buffer1, (v4nm32f*)cntxt.buffer2, colorOrNormal, localSize);
 			}
 		}
 

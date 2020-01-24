@@ -8,6 +8,7 @@ PROFILE_BEGIN(16);
 //FUNCTION(_nmppsDiv_32f,   "_nmppsDiv_32f   ");// 0x000000000000055a [.text_int]
 
 FUNCTION(__Z14nmglDrawArraysjii,"__Z14nmglDrawArraysjii");// 0x0000000020012fc8 [.text_nmgl]
+FUNCTION(_fastInvSqrt,"_fastInvSqrt");// 0x0000000020012fc8 [.text_nmgl]
 /* FUNCTION(__Z18nmglvsExit_mc12101v,"__Z18nmglvsExit_mc12101v");// 0x0000000020000206 [.text]
 FUNCTION(__Z13nmglvsNm0Initv,"__Z13nmglvsNm0Initv");// 0x0000000020000300 [.text]
 FUNCTION(__Z12nmglvsNm0Runv,"__Z12nmglvsNm0Runv");// 0x00000000200007d0 [.text]

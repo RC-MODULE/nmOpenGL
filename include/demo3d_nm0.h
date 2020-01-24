@@ -59,7 +59,6 @@ struct NMGL_Context_NM0 {
 	float* buffer3;
 
 	Triangles trianInner;
-	Triangles trianDdr;
 
 	mat4nm32f modelviewMatrix[16];
 	mat4nm32f projectionMatrix[2];
@@ -418,6 +417,31 @@ extern "C"{
 	 //! \{
 	void dotMulC_AddC_v4nm32f(v2nm32f* srcVec, v4nm32f* mulC, v4nm32f* addC, v4nm32f* dst, int nSize);
 	 //! \}
+
+	 /**
+	 *  \defgroup dotMulC_AddC dotMulC_AddC
+	 *  \brief Функция умножения массива 4-хмерных векторов 
+	 *  на массив продублированных констант
+	 *
+	 *  \param n_dot_VP [in] Входной массив констант
+	 *  \param mul [in] Указатель на массив векторов
+	 *  \param dst [out] Выходной массив векторов
+	 *  \param nSize [in] Число векторов
+	 *  \retval Return description
+	 *
+	 *  \par
+	 *  \xmlonly
+	 *      <testperf>
+	 *          <param> n_dot_VP </param> <values> imu0 </values>
+	 *          <param> mul </param> <values> imu0 </values>
+	 *          <param> dst </param> <values> imu0 imu1 </values>
+	 *          <param> nSize </param> <values> 128 512 1024 </values>
+	 *      </testperf>
+	 *  \endxmlonly
+	 */
+	 //! \{
+	void dotMulV_v4nm32f(v2nm32f* srcVec, v4nm32f* mulVec, v4nm32f* dst, int nSize);
+	//! \}
 	
 	/**
 	 *  \defgroup dotMulC_Add dotMulC_Add
@@ -445,6 +469,33 @@ extern "C"{
 	 //! \{
 	void dotMulC_Add_v4nm32f(v2nm32f* n_dot_VP, v4nm32f* mulC, v4nm32f* addVec, v4nm32f* dst, int nSize);
 	 //! \}
+
+	 /**
+	 *  \defgroup dotMulC_Add dotMulC_Add
+	 *  \brief Функция умножения постоянного 4-хмерного вектора на на массив констант с прибавлением массива других 4-хмерных векторов.
+	 *  Массив констант должен быть продублированным
+	 *
+	 *  \param n_dot_VP [in] Массив констант
+	 *  \param mulC [in] Указатель на умножающийся постоянный вектор
+	 *  \param addVec [in] Массив прибавляющихся векторов
+	 *  \param dst [out] Выходной массив
+	 *  \param nSize [in] Число элементов
+	 *  \retval Return description
+	 *
+	 *  \par
+	 *  \xmlonly
+	 *      <testperf>
+	 *          <param> n_dot_VP </param> <values> imu0 </values>
+	 *          <param> mulC </param> <values> imu0 </values>
+	 *          <param> addVec </param> <values> imu0 imu1 </values>
+	 *          <param> dst </param> <values> imu0 imu1 imu2 </values>
+	 *          <param> nSize </param> <values> 128 512 1024 </values>
+	 *      </testperf>
+	 *  \endxmlonly
+	 */
+	 //! \{
+	void dotMulC_Add_v4nm32f(v2nm32f* n_dot_VP, v4nm32f* mulC, v4nm32f* addVec, v4nm32f* dst, int nSize);
+	//! \}
 
 	/**
 	 *  \defgroup subCRev subCRev
@@ -717,6 +768,8 @@ extern "C"{
 	int readMask(nm1* mask, int* dstIndices, int* treated, int size, int maxSize);
 
 	int firstNonZeroIndx_32s(int* pSrcVec, int nSize);
+
+	void fastInvSqrt(float* srcVec, float* dstVec, int size);
 }
 void reverseMatrix3x3in4x4(mat4nm32f* src, mat4nm32f* dst);
 
@@ -755,5 +808,6 @@ void cullFaceSortTriangles(Triangles &triangles);
 //! \{
 void light(v4nm32f* vertex, v4nm32f* srcNormal_dstColor, int size);
 //! \}
+
 
 #endif

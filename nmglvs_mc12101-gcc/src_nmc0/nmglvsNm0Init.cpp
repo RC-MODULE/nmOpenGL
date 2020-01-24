@@ -60,18 +60,6 @@ int nmglvsNm0Init()
 	cntxt.trianInner.maxSize = NMGL_SIZE;
 	cntxt.trianInner.size = 0;
 
-	float* dataDdr = (float*)halMalloc32(11 * BIG_NMGL_SIZE);
-	cntxt.trianDdr.x0 = dataDdr;
-	cntxt.trianDdr.y0 = dataDdr + BIG_NMGL_SIZE;
-	cntxt.trianDdr.x1 = dataDdr + 2 * BIG_NMGL_SIZE;
-	cntxt.trianDdr.y1 = dataDdr + 3 * BIG_NMGL_SIZE;
-	cntxt.trianDdr.x2 = dataDdr + 4 * BIG_NMGL_SIZE;
-	cntxt.trianDdr.y2 = dataDdr + 5 * BIG_NMGL_SIZE;
-	cntxt.trianDdr.z = (int*)(dataDdr + 6 * BIG_NMGL_SIZE);
-	cntxt.trianDdr.colors = (v4nm32s*)(dataDdr + 7 * BIG_NMGL_SIZE);
-	cntxt.trianDdr.maxSize = BIG_NMGL_SIZE;
-	cntxt.trianDdr.size = 0;
-
 #ifdef __GNUC__
 	halDmaInitC();
 	halInstrCacheEnable();
@@ -90,7 +78,7 @@ int nmglvsNm0Init()
 	halSyncAddr((int*)cntxt.polygonsData, 1);
 
 	// Check memory allocation
-	if (cntxt.polygonsData == 0 || synchroData == 0 || dataDdr == 0) {
+	if (cntxt.polygonsData == 0 || synchroData == 0) {
 		halHostSync(0xDEADB00F);	// send error to host
 		return -1;
 	}

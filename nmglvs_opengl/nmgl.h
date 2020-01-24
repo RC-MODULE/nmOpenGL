@@ -53,6 +53,7 @@ extern "C" {
 #define nmglClearColor			glClearColor
 #define nmglClearDepthf			glClearDepthf
 #define nmglGetError			glGetError
+#define nmglGetFloatv			glGetFloatv
 #define nmglEnable				glEnable				
 #define nmglDisable				glDisable				
 #define nmglMatrixMode			glMatrixMode			
