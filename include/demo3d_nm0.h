@@ -765,7 +765,8 @@ extern "C"{
 	void remap_32u(nm32u* pSrcVec, nm32u* pDstVec, nm32s* pRemapTable, int nSize);
 	
 	void ternaryLt0_AddC_AddC_32f(nm32f* srcFlags, nm32f* srcVec, float valueLeft, float valueRight, float* dstVec, int size);
-	int readMask(nm1* mask, int* dstIndices, int* treated, int size, int maxSize);
+	int readMask(nm1* mask, int* dstIndices, int size);
+	int readMaskToLimitDst(nm1* mask, int* dstIndices, int* treated, int size, int maxSize);
 
 	int firstNonZeroIndx_32s(int* pSrcVec, int nSize);
 

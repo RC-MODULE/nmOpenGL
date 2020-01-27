@@ -34,7 +34,7 @@ void rasterizeT(const Triangles* triangles, const SegmentMask* masks){
 				int* treatedBitInMask = (int*)&cntxt.tmp.vec[0];
 				treatedBitInMask[0] = 0;
 
-				int resultSize = readMask(masks[iSeg].bits, indices, treatedBitInMask, count, NMGL_SIZE);
+				int resultSize = readMask(masks[iSeg].bits, indices, count);
 				if (resultSize) {
 					while (connector.isFull()) {
 						halSleep(2);
