@@ -3,8 +3,6 @@
 #include "nmgl_data0.h"
 #include "nmblas.h"
 
-SECTION(".data_imu6") int maskTmp[NMGL_SIZE / 32];
-
 SECTION(".text_demo3d")
 void setSegmentMask(NMGL_Context_NM0 &cntxt, Triangles &triangles, SegmentMask* masks) {
 	

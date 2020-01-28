@@ -18,13 +18,13 @@ SECTION(".data_imu3")	float nmglBuffer2[12 * NMGL_SIZE];
 SECTION(".data_imu4")	float nmglBuffer3[12 * NMGL_SIZE];
 
 
-SECTION(".data_imu6")	float x0[NMGL_SIZE];
-SECTION(".data_imu6")	float y0[NMGL_SIZE];
-SECTION(".data_imu5")	float x1[NMGL_SIZE];
-SECTION(".data_imu5")	float y1[NMGL_SIZE];
-SECTION(".data_imu4")	float x2[NMGL_SIZE];
-SECTION(".data_imu4")	float y2[NMGL_SIZE];
-SECTION(".data_imu6")	int z_int[NMGL_SIZE];
+SECTION(".data_imu1")	float x0[NMGL_SIZE];
+SECTION(".data_imu2")	float y0[NMGL_SIZE];
+SECTION(".data_imu3")	float x1[NMGL_SIZE];
+SECTION(".data_imu4")	float y1[NMGL_SIZE];
+SECTION(".data_imu5")	float x2[NMGL_SIZE];
+SECTION(".data_imu6")	float y2[NMGL_SIZE];
+SECTION(".data_imu7")	int z_int[NMGL_SIZE];
 SECTION(".data_imu6")	v4nm32s lightsValues[NMGL_SIZE];
 
 

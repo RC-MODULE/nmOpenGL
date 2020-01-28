@@ -7,7 +7,7 @@
 #include "arraymanager.h"
 #include "stdio.h"
 
-SECTION(".data_shared")	int masksBits[36 * BIG_NMGL_SIZE / 32];
+SECTION(".data_imu6")	int masksBits[36][NMGL_SIZE / 32];
 SECTION(".data_imu6")	SegmentMask masks[36];
 
 SECTION(".data_imu5")	float vertexX[3 * NMGL_SIZE];
@@ -70,6 +70,9 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 	}
 
 	reverseMatrix3x3in4x4(cntxt.modelviewMatrixStack.top(), &cntxt.normalMatrix);
+	for (int i = 0; i < 36; i++) {
+		masks[i].bits = masksBits[i];
+	}
 
 	while (!vertexAM.isEmpty()) {
 		//vertex
@@ -162,7 +165,6 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 				cullFaceSortTriangles(cntxt.trianInner);
 			}
 			for (int i = 0; i < 36; i++) {
-				masks[i].bits = &masksBits[i * BIG_NMGL_SIZE / 32];
 				masks[i].hasNotZeroBits = 0;
 			}
 			setSegmentMask(cntxt, cntxt.trianInner, masks);
