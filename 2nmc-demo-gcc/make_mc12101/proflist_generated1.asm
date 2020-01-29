@@ -63,7 +63,6 @@ FUNCTION(_copyPacket_32u, "_copyPacket_32u ");// 0x0000000000001100 [.text_demo3
 FUNCTION(_depthTest,      "_depthTest      ");// 0x000000000000119e [.text_demo3d]
 FUNCTION(_totalSum,       "_totalSum       ");// 0x00000000000011d0 [.text_demo3d]
 FUNCTION(_mAndVxN_32u,    "_mAndVxN_32u    ");// 0x00000000000011e2 [.text_demo3d]
-FUNCTION(_maskTriangle_32s,"_maskTriangle_32s");// 0x000000000000128c [.text_demo3d]
 FUNCTION(_mergePtrnsAddr2,"_mergePtrnsAddr2");// 0x000000000000132e [.text_demo3d]
 FUNCTION(_mergePtrnsAddr3,"_mergePtrnsAddr3");// 0x0000000000001420 [.text_demo3d]
 FUNCTION(_mMaskVxN_32s,   "_mMaskVxN_32s   ");// 0x0000000000001554 [.text_demo3d]
