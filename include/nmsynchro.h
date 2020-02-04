@@ -36,7 +36,7 @@ struct CommandNm1{
 };
 
 #define PRIORITY0_SIZE 16
-#define PRIORITY1_SIZE 128
+#define PRIORITY1_SIZE 256
 
 struct NMGLSynchroData {
 

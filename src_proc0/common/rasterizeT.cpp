@@ -29,7 +29,8 @@ void rasterizeT(const Triangles* triangles, const SegmentMask* masks){
 					cntxt.windowInfo.x0[segX],
 					cntxt.windowInfo.y0[segY],
 					cntxt.windowInfo.x1[segX] - cntxt.windowInfo.x0[segX],
-					cntxt.windowInfo.y1[segY] - cntxt.windowInfo.y0[segY]);
+					cntxt.windowInfo.y1[segY] - cntxt.windowInfo.y0[segY],
+					iSeg);
 
 				int* treatedBitInMask = (int*)&cntxt.tmp.vec[0];
 				treatedBitInMask[0] = 0;

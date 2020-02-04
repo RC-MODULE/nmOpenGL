@@ -9,28 +9,38 @@
 
 SECTION(".data_demo3d") unsigned int points[14];
 
-#define CHECK_STATUS(a) while (!msdGetStatusCopy(points[a]))
+SECTION(".data_demo3d") MyDmaTask task;
 
+#define CHECK_STATUS(a) while (!msdGetStatusCopy(points[a], 0))
+
+inline void ADD_COPY(const void* src, void* dst, int size, int i) {
+	task.src = src;
+	task.dst = dst;
+	task.size = size;
+	points[i] = msdAdd(task, 0);
+}
 
 SECTION(".text_demo3d") int getAddrPtrnsT(NMGL_Context_NM1* context, Patterns* patterns, Polygons* poly){
 	Polygons* polyTmp = (Polygons*)context->buffer0;
 	int size = poly->count;
 	nm32s* temp0 = nmppsAddr_32s(context->buffer0, sizeof32(Polygons));
 	nm32s* dydx = nmppsAddr_32s(temp0, NMGL_SIZE);
-	points[0] = msdAdd(poly->ptrnSizesOf32_01, polyTmp->ptrnSizesOf32_01, size);
-	points[1] = msdAdd(poly->pointInImage, polyTmp->pointInImage, size);
-	points[2] = msdAdd(poly->widths, polyTmp->widths, size);
-	points[3] = msdAdd(poly->offsetsX, polyTmp->offsetsX, size);
-	points[4] = msdAdd(poly->numbersPattrns01, polyTmp->numbersPattrns01, size);
-	points[5] = msdAdd(poly->numbersPattrns12, polyTmp->numbersPattrns12, size);
-	points[6] = msdAdd(poly->numbersPattrns02, polyTmp->numbersPattrns02, size);
-	points[7] = msdAdd(poly->color, polyTmp->color, 4 * size);
-	points[8] = msdAdd(poly->ptrnSizesOf32_12, polyTmp->ptrnSizesOf32_12, size);
-	points[9] = msdAdd(poly->ptrnSizesOf32_02, polyTmp->ptrnSizesOf32_02, size);
+	task.type = MSD_DMA;
+	task.callback = 0;
+	ADD_COPY(poly->ptrnSizesOf32_01, polyTmp->ptrnSizesOf32_01, size, 0);
+	ADD_COPY(poly->pointInImage, polyTmp->pointInImage, size, 1);
+	ADD_COPY(poly->widths, polyTmp->widths, size, 2);
+	ADD_COPY(poly->offsetsX, polyTmp->offsetsX, size, 3);
+	ADD_COPY(poly->numbersPattrns01, polyTmp->numbersPattrns01, size, 4);
+	ADD_COPY(poly->numbersPattrns12, polyTmp->numbersPattrns12, size, 5);
+	ADD_COPY(poly->numbersPattrns02, polyTmp->numbersPattrns02, size, 6);
+	ADD_COPY(poly->color, polyTmp->color, 4 * size, 7);
+	ADD_COPY(poly->ptrnSizesOf32_12, polyTmp->ptrnSizesOf32_12, size, 8);
+	ADD_COPY(poly->ptrnSizesOf32_02, polyTmp->ptrnSizesOf32_02, size, 9);
 
-	points[10] = msdAdd(poly->z, context->valuesZ, size);
-	points[11] = msdAdd(poly->offsetsY, context->offsetTrY, size);
-	points[12] = msdAdd(poly->heights, context->heights, size);
+	ADD_COPY(poly->z, context->valuesZ, size, 10);
+	ADD_COPY(poly->offsetsY, context->offsetTrY, size, 11);
+	ADD_COPY(poly->heights, context->heights, size, 12);
 
 	nm32s* temp1 = context->buffer1;
 	nm32s* temp2 = nmppsAddr_32s(context->buffer1, NMGL_SIZE);

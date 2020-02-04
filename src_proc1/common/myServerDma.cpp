@@ -3,111 +3,83 @@
 #include <nmpp.h>
 #include "myserverdma.h"
 
+int cbUpdate();
 
 //структура данных с информацией о копированиях
-SECTION(".data_demo3d") HalRingBufferData<MSD_DmaCopy, 128> msdRingBufferCopy;
-SECTION(".data_demo3d") volatile bool msdDmaIsBusy = false;
-SECTION(".data_demo3d") volatile bool msdFlagPause = false;
+SECTION(".data_demo3d") MyDmaServer<MSD_SIZE, MSD_NUM_CHANNELS> dmaServer(cbUpdate);
+SECTION(".data_demo3d") MyDmaClient<MSD_SIZE> dmaClient[MSD_NUM_CHANNELS];
 
-#ifdef __GNUC__
-#define msdSingleCopy(src, dst, size32)  halDmaStartCA(src, dst, size32);
-#define msdMatrixCopy(src, dst, size, width, srcStride, dstStride) \
-		halDma2D_StartCA(src, dst, size, width, srcStride, dstStride);
-#else
-int empty() { return 0; }
 
-DmaCallback cb = empty;
-#define halDmaSetCallback(func) cb = func;
-
-#define msdSingleCopy(src, dst, size) halCopyRISC(src,dst,size); cb()
-#define msdMatrixCopy(src, dst, size, width, srcStride, dstStride) \
-			 nmppmCopy_32s((nm32s*)src, srcStride, \
-							(nm32s*)dst, dstStride, \
-							size/width, width); cb()
-#endif
-
-inline void msdStartCopy(MSD_DmaCopy* dmaCopy) {
-	switch (dmaCopy->type)
-	{
-	case MSD_DMA:
-		msdSingleCopy(dmaCopy->src, dmaCopy->dst, dmaCopy->size);
-		break;
-	case MSD_DMA_2D:
-		msdMatrixCopy(dmaCopy->src, dmaCopy->dst,
-			dmaCopy->size, dmaCopy->width,
-			dmaCopy->srcStride, dmaCopy->dstStride);
-		break;
-	default:
-		break;
+SECTION(".text_demo3d") int cbUpdate() {
+	msdCallback callback = dmaServer.currentChannel->ptrTail()->callback;
+	if (callback != 0) {
+		callback();
 	}
-}
-
-SECTION(".text_demo3d") void cbUpdate() {
-	msdRingBufferCopy.tail++;
-	if (!msdFlagPause && !msdRingBufferCopy.isEmpty()) {
-		msdStartCopy(msdRingBufferCopy.ptrTail());
-	}
-	else {
-		msdDmaIsBusy = false;
-	}
+	dmaServer.currentChannel->incTail();
+	dmaServer.startNextTask();
+	return 0;
 }
 
 SECTION(".text_demo3d") void msdInit() {
-	msdRingBufferCopy.init();
-	msdDmaIsBusy = false;
-	msdFlagPause = false;
-#ifdef __GNUC__
-	halDmaInitC();
-#endif // __GNUC__
-	halDmaSetCallback((DmaCallback)cbUpdate);
+	for (int i = 0; i < MSD_NUM_CHANNELS; i++) {
+		dmaClient[i].bind(dmaServer.getChannelBuffer(i));
+		dmaClient[i].memcopyPush = (tmemcopy32)nmppsCopy_32s;
+	}
 }
 
-SECTION(".text_demo3d") unsigned int msdAdd(const void* src, void* dst, int size) {
-	while (msdRingBufferCopy.isFull());
-	MSD_DmaCopy* current = msdRingBufferCopy.ptrHead();
+SECTION(".text_demo3d") unsigned int msdAdd(const void* src, void* dst, int size, int priority) {
+	unsigned int id = dmaClient[priority].getHead();
+	while (dmaClient[priority].isFull());
+	MyDmaTask* current = dmaClient[priority].ptrHead();
 	current->src = src;
 	current->dst = dst;
 	current->size = size;
-	current->status = false;
 	current->type = MSD_DMA;
-
-	msdFlagPause = true;
-	while (msdDmaIsBusy);
-	msdFlagPause = false;
-	msdDmaIsBusy = true; 
-	msdRingBufferCopy.head++;
-	msdStartCopy(msdRingBufferCopy.ptrTail());
-	return msdRingBufferCopy.head - 1;
+	current->callback = 0;
+	dmaClient[priority].incHead();
+	dmaServer.startJob();
+	return id;
 }
 
-SECTION(".text_demo3d") unsigned int msdAdd2D(const void* src, void* dst, unsigned size, unsigned width, unsigned srcStride32, unsigned dstStride32) {
-	while (msdRingBufferCopy.isFull());
-	MSD_DmaCopy* current = msdRingBufferCopy.ptrHead();
+SECTION(".text_demo3d") unsigned int msdAdd2D(const void* src, void* dst, unsigned size, unsigned width, unsigned srcStride32, unsigned dstStride32, int priority) {
+	unsigned int id = dmaClient[priority].getHead();
+	while (dmaClient[priority].isFull());
+	MyDmaTask* current = dmaClient[priority].ptrHead();
 	current->src = src;
 	current->dst = dst;
 	current->size = size;
-	current->status = false;
 	current->type = MSD_DMA_2D;
 	current->width = width;
 	current->srcStride = srcStride32;
 	current->dstStride = dstStride32;
-
-	msdFlagPause = true;	//вход в критическую секцию
-	while (msdDmaIsBusy);
-	msdFlagPause = false;
-	msdDmaIsBusy = true;
-	msdRingBufferCopy.head++;
-	msdStartCopy(msdRingBufferCopy.ptrTail());
-	return msdRingBufferCopy.head - 1;
+	current->callback = 0;
+	dmaClient[priority].incHead();
+	dmaServer.startJob();
+	return id;
 }
 
-SECTION(".text_demo3d") bool msdGetStatusCopy(int index) {
-	return msdRingBufferCopy.tail > index;
+SECTION(".text_demo3d") unsigned int msdAdd(MyDmaTask &task, int priority) {
+	unsigned int id = dmaClient[priority].getHead();
+	while (dmaClient[priority].isFull());
+	dmaClient[priority].add(task);
+	dmaServer.startJob();
+	return id;
+}
+
+SECTION(".text_demo3d") bool msdGetStatusCopy(int index, int priority) {
+	return dmaClient[priority].getTail() > index;
 }
 
 SECTION(".text_demo3d") void msdWaitDma() {
 	volatile int a = 0;
-	while (!msdRingBufferCopy.isEmpty()) {
+	while (!dmaServer.isJobCompleted()) {
+		a++;
+	}
+}
+
+SECTION(".text_demo3d") void msdWaitDma(int channel) {
+	volatile int a = 0;
+	while (!dmaServer.isChannelCompleted(channel)) {
 		a++;
 	}
 }
