@@ -75,12 +75,12 @@ SECTION(".text_demo3d") int getAddrPtrnsT(NMGL_Context_NM1* context, Patterns* p
 	nmppsAndC_32u((nm32u*)polyTmp->pointInImage, 1, (nm32u*)temp1, size);
 	nmppsSub_32s(polyTmp->pointInImage, temp1, polyTmp->pointInImage, size);
 #ifdef __GNUC__	
-	nmppsAddC_32s(polyTmp->pointInImage, (int)context->colorSegment.data, (nm32s*)context->imagePoints, size);
-	nmppsAddC_32s(polyTmp->pointInImage, (int)context->depthSegment.data, (nm32s*)context->zBuffPoints, size);
+	nmppsAddC_32s(polyTmp->pointInImage, (int)context->smallColorBuff.data, (nm32s*)context->imagePoints, size);
+	nmppsAddC_32s(polyTmp->pointInImage, (int)context->smallDepthBuff.data, (nm32s*)context->zBuffPoints, size);
 #else
 	for (int i = 0; i < size; i++) { 
-		context->imagePoints[i] = (int*)context->colorSegment.data + polyTmp->pointInImage[i];
-		context->zBuffPoints[i] = (int*)context->depthSegment.data + polyTmp->pointInImage[i];
+		context->imagePoints[i] = (int*)context->smallColorBuff.data + polyTmp->pointInImage[i];
+		context->zBuffPoints[i] = (int*)context->smallDepthBuff.data + polyTmp->pointInImage[i];
 	}
 #endif
 	CHECK_STATUS(2);

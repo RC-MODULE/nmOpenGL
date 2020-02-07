@@ -110,16 +110,16 @@ SECTION(".text_nmglvs") int nmglvsNm1Step(NMGL_Context_NM1 &cntxt)
 		int numOfSeg = currentCommand.params[4];
 		if (cntxt.depthBuffer.enabled == NMGL_TRUE) {
 			nm32s* src = nmppsAddr_32s((int*)cntxt.depthBuffer.data, y0 * cntxt.depthBuffer.getWidth() + x0);
-			nm32s* dst = (nm32s*)cntxt.depthSegment.data;
+			nm32s* dst = (nm32s*)cntxt.smallDepthBuff.data;
 			while (copyImageCounterDepth <= numOfSeg);
 			msdAdd2D(src, dst, width * height, width,
-				cntxt.depthBuffer.getWidth(), cntxt.depthSegment.getWidth(), 1);
+				cntxt.depthBuffer.getWidth(), cntxt.smallDepthBuff.getWidth(), 1);
 		}
 		nm32s* src = nmppsAddr_32s((int*)cntxt.colorBuffer.data, y0 * cntxt.colorBuffer.getWidth() + x0);
-		nm32s* dst = (nm32s*)cntxt.colorSegment.data;
+		nm32s* dst = (nm32s*)cntxt.smallColorBuff.data;
 		while (copyImageCounterColor <= numOfSeg);
 		msdAdd2D(src, dst, width * height, width,
-			cntxt.colorBuffer.getWidth(), cntxt.colorSegment.getWidth(), 1);
+			cntxt.colorBuffer.getWidth(), cntxt.smallColorBuff.getWidth(), 1);
 		break;
 	}
 
@@ -129,15 +129,15 @@ SECTION(".text_nmglvs") int nmglvsNm1Step(NMGL_Context_NM1 &cntxt)
 		int width = currentCommand.params[2];
 		int height = currentCommand.params[3];
 		if (cntxt.depthBuffer.enabled == NMGL_TRUE) {
-			nm32s* src = (nm32s*)cntxt.depthSegment.data;
+			nm32s* src = (nm32s*)cntxt.smallDepthBuff.data;
 			nm32s* dst = nmppsAddr_32s((int*)cntxt.depthBuffer.data, y0 * cntxt.depthBuffer.getWidth() + x0);
 			msdAdd2D(src, dst, width * height, width, 
-				cntxt.depthSegment.getWidth(), cntxt.depthBuffer.getWidth(), 1);
+				cntxt.smallDepthBuff.getWidth(), cntxt.depthBuffer.getWidth(), 1);
 		}
-		nm32s* src = (nm32s*)cntxt.colorSegment.data;
+		nm32s* src = (nm32s*)cntxt.smallColorBuff.data;
 		nm32s* dst = nmppsAddr_32s((int*)cntxt.colorBuffer.data, y0 * cntxt.colorBuffer.getWidth() + x0);
 		msdAdd2D(src, dst, width * height, width,
-			cntxt.colorSegment.getWidth(), cntxt.colorBuffer.getWidth(), 1);
+			cntxt.smallColorBuff.getWidth(), cntxt.colorBuffer.getWidth(), 1);
 		break;
 	}
 
@@ -157,12 +157,12 @@ SECTION(".text_nmglvs") int nmglvsNm1Step(NMGL_Context_NM1 &cntxt)
 		temp |= (currentCommand.params[0] & 0xFF) << 16;
 		temp |= (currentCommand.params[3] & 0xFF) << 24;
 		cntxt.colorBuffer.clearValue = temp;
-		cntxt.colorSegment.clearValue = temp;
+		cntxt.smallColorBuff.clearValue = temp;
 		break;
 	}
 	case NMC1_SET_DEPTH:
 		cntxt.depthBuffer.clearValue = currentCommand.params[0];
-		cntxt.depthSegment.clearValue = currentCommand.params[0];
+		cntxt.smallDepthBuff.clearValue = currentCommand.params[0];
 		break;
 
 	case NMC1_DEPTH_MASK: {

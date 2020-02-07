@@ -61,13 +61,12 @@ SECTION(".text_nmglvs") int nmglvsNm1Init(NMGL_Context_NM1& cntxt)
 		cntxt.synchro.init(synchroData);
 		cntxt.polygonsData = (PolygonsArray*)halSyncAddr(0, 0);
 
-		ImageData* imagesData = myMallocT<ImageData>();
-		cntxt.imagesData = imagesData;
+		cntxt.imagesData = myMallocT<ImageData>();
 		cntxt.imagesData->init();
 
 		DepthImage32* depthImage = myMallocT<DepthImage32>();
 
-		cntxt.colorBuffer.init(imagesData->ptrHead(), WIDTH_IMAGE, HEIGHT_IMAGE);
+		cntxt.colorBuffer.init(cntxt.imagesData->ptrHead(), WIDTH_IMAGE, HEIGHT_IMAGE);
 		cntxt.depthBuffer.init(depthImage, WIDTH_IMAGE, HEIGHT_IMAGE);
 	}
 	catch (int &e){
