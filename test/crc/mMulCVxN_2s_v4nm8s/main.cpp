@@ -2,6 +2,7 @@
 #include "stdio.h"
 #include "minrep.h"
 #include "time.h"
+#include "demo3d_common.h"
 
 ///////////////////////////////////////////////////////////////////////////////////////
 nm64s *L0;
@@ -18,19 +19,16 @@ extern "C" long tmp;
 
 #pragma data_section ".data_imu0"
 
-#pragma data_section ".data_imu1"
-	int src[8192/4];
+SECTION(".data_imu1") int src[8192/4];
 		
-#pragma data_section ".data_imu2"
-	nm64s aline;
-	int valuesC[32];
-	int offsets[32];
-	int widths[32];
-	int heights[32];
-	int* ppSrc[32];
+SECTION(".data_imu2") nm64s aline;
+SECTION(".data_imu2") int valuesC[32];
+SECTION(".data_imu2") int offsets[32];
+SECTION(".data_imu2") int widths[32];
+SECTION(".data_imu2") int heights[32];
+SECTION(".data_imu2") int* ppSrc[32];
 	
-#pragma data_section ".data_imu3"
-	int dst[4*4092 + 2];
+SECTION(".data_imu3") int dst[4*4092 + 2];
 
 #define SIZE_ONE 32*32
 #define MAX_WIDTH 34

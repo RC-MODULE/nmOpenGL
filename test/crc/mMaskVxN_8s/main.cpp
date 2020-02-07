@@ -1,6 +1,7 @@
 #include "nmpp.h"
 #include "time.h"
 #include <stdio.h>
+#include "demo3d_common.h"
 
 #define		TRIANGLE_WIDTH 		32
 #define		TRIANGLE_HEIGHT 	32
@@ -15,15 +16,12 @@
 #define		MASKS_SIZE			TRIANGLES_SIZE
 
 
-#pragma data_section ".data_imu1"
-	nm32s image[IMAGE_SIZE+128];
-#pragma data_section ".data_imu2"
-	nm32s triangles[TRIANGLES_CNT*TRIANGLE_WIDTH*TRIANGLE_HEIGHT/2];
-	nm32s trianglesHeights[TRIANGLES_CNT];
-	nm32s trianglesWidths[TRIANGLES_CNT];
-#pragma data_section ".data_imu3"
-	nm32s masks[TRIANGLES_CNT*TRIANGLE_WIDTH*TRIANGLE_HEIGHT/2];
-	nm8s* roi[TRIANGLES_CNT];
+SECTION(".data_imu1") nm32s image[IMAGE_SIZE+128];
+SECTION(".data_imu2") nm32s triangles[TRIANGLES_CNT*TRIANGLE_WIDTH*TRIANGLE_HEIGHT/2];
+SECTION(".data_imu2") nm32s trianglesHeights[TRIANGLES_CNT];
+SECTION(".data_imu2") nm32s trianglesWidths[TRIANGLES_CNT];
+SECTION(".data_imu3") nm32s masks[TRIANGLES_CNT*TRIANGLE_WIDTH*TRIANGLE_HEIGHT/2];
+SECTION(".data_imu3") nm8s* roi[TRIANGLES_CNT];
 
 	extern "C" void mMaskVxN_8s(nm8s* pTriangles, nm8s* pMask, nm8s** pROI, int imageStride, int* pTrianglesHeight, int* pTrianglesWidth, int count);
 	

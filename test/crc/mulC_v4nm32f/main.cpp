@@ -2,6 +2,7 @@
 #include "stdio.h"
 #include "minrep.h"
 #include "time.h"
+#include "demo3d_common.h"
 
 ///////////////////////////////////////////////////////////////////////////////////////
 nm64s *L0;
@@ -15,15 +16,11 @@ const int SizeL1=30*KB;
 const int SizeG0=30*KB;
 const int SizeG1=30*KB;
 
-#define NMGL_SIZE 16
+#define SIZE 16
 
-#pragma data_section ".data_imu0"
-	v4nm32f srcV[NMGL_SIZE];
-#pragma data_section ".data_imu1"
-	v4nm32f srcC = {0,100,500,1000};		
-#pragma data_section ".data_imu2"
-	v4nm32f dst[NMGL_SIZE];
-#pragma data_section ".data_imu3"
+SECTION(".data_imu0") v4nm32f srcV[SIZE];
+SECTION(".data_imu1") v4nm32f srcC = {0,100,500,1000};		
+SECTION(".data_imu2") v4nm32f dst[SIZE];
 
 extern "C" void mulC_v4nm32f(v4nm32f* pSrcC, v4nm32f* pSrcV, v4nm32f* pDst, int size);
 int main()
@@ -32,7 +29,7 @@ int main()
 	int count=32;
 
 	clock_t t0,t1;
-	nmppsRand_32f((float*)srcV, 4*NMGL_SIZE,1,1000);
+	nmppsRand_32f((float*)srcV, 4*SIZE,1,1000);
 
 	unsigned int crc = 0;
 	for(int j=0;j<4;j++){

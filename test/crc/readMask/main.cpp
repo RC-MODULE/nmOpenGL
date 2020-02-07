@@ -1,17 +1,15 @@
 #include "nmpp.h"
 #include "time.h"
 #include <stdio.h>
+#include "demo3d_common.h"
 
 #define		MAX_SIZE 		128
 #define		LIMIT 			33
 
-#pragma data_section ".shared0"
 
-#pragma data_section ".data_imu1"
-#pragma data_section ".data_imu2"
-	nm32s mask[MAX_SIZE/32+2];
-#pragma data_section ".data_imu3"
-	int dstVec[MAX_SIZE+2];
+
+SECTION(".data_imu2") nm32s mask[MAX_SIZE/32+2];
+SECTION(".data_imu3") int dstVec[MAX_SIZE+2];
 	
 extern "C" int readMask(nm1* mask, int* dstIndices, int size);
 

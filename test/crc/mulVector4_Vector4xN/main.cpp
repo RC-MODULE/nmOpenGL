@@ -2,17 +2,14 @@
 #include "stdio.h"
 #include "minrep.h"
 #include "time.h"
+#include "demo3d_common.h"
 
-#pragma data_section ".data_imu0"
 
-#pragma data_section ".data_imu1"
-	float Vec4C[4]={0.0f,1.0f,2.0f,3.0f};
+SECTION(".data_imu1") float Vec4C[4]={0.0f,1.0f,2.0f,3.0f};
 		
-#pragma data_section ".data_imu2"
-	float src[4*4096];
+SECTION(".data_imu2") float src[4*4096];
 	
-#pragma data_section ".data_imu3"
-	float dst[4096];
+SECTION(".data_imu3") float dst[4096];
 
 #define SIZE_ONE 11*32
 

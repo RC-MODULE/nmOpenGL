@@ -32,7 +32,7 @@ int main()
 
 	clock_t t0,t1;
 	unsigned crc=0;
-	//nmppsRand_32f((nm32f*)srcV, 4*NMGL_SIZE,-1000,1000);
+	//nmppsRand_32f((nm32f*)srcV, 4*SIZE,-1000,1000);
 	for(int i = 0; i < SIZE; i++){
 		src1[i] = i;
 		src2[i] = i;

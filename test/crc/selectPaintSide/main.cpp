@@ -2,16 +2,12 @@
 #include "stdio.h"
 #include "minrep.h"
 #include "time.h"
+#include "demo3d_common.h"
 
-#pragma data_section ".data_imu0"
-
-#pragma data_section ".data_imu1"
 		
-#pragma data_section ".data_shmem0"
-	int src[4096];
+SECTION(".data_shmem0") int src[4096];
 	
-#pragma data_section ".data_imu3"
-	int dst[4096+2];
+SECTION(".data_imu3") int dst[4096+2];
 
 #define SIZE_ONE 11*32
 

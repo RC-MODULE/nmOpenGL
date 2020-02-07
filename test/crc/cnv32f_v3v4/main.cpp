@@ -1,24 +1,25 @@
 #include "nmpp.h"
 #include "time.h"
 #include <stdio.h>
+#include "demo3d_common.h"
 
-#define NMGL_SIZE 1024
+#define SIZE 1024
 #define MAX_STEP 4
 
 #pragma data_section ".data_imu1"
-	float srcVec[3*MAX_STEP*NMGL_SIZE];
+	float srcVec[3*MAX_STEP*SIZE];
 #pragma data_section ".data_imu2"
-	float dstVec[4*NMGL_SIZE+2];
+	float dstVec[4*SIZE+2];
 	
 	
 extern "C" void cnv32f_v3v4(nm32f* srcVec, nm32f* dstVec, float value4, int countVec);
 
 int main()
 {
-	for(int i=0;i<3*MAX_STEP*NMGL_SIZE;i++){
+	for(int i=0;i<3*MAX_STEP*SIZE;i++){
 		srcVec[i] = i;
 	}
-	for(int i=0;i<4 * NMGL_SIZE+2;i++){
+	for(int i=0;i<4 * SIZE+2;i++){
 		dstVec[i] = 0;
 	}
 	for(int i=0;i<8;i++){
@@ -27,7 +28,7 @@ int main()
 	}
 	clock_t t0,t1;
 	unsigned crc =0;
-	for(int size=2;size<= NMGL_SIZE;size+=2){
+	for(int size=2;size<= SIZE;size+=2){
 		t0=clock();
 		cnv32f_v3v4(srcVec, dstVec, 1, size);
 		t1=clock();

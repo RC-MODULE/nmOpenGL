@@ -2,6 +2,7 @@
 #include "stdio.h"
 #include "minrep.h"
 #include "time.h"
+#include "demo3d_common.h"
 
 ///////////////////////////////////////////////////////////////////////////////////////
 nm64s *L0;
@@ -17,13 +18,9 @@ const int SizeG1=30*KB;
 
 #define SIZE 1024
 
-#pragma data_section ".data_imu0"
-	v2nm32f src1[SIZE];
-#pragma data_section ".data_imu1"		
-	v4nm32f src2[SIZE];
-#pragma data_section ".data_imu2"
-	v4nm32f dst[SIZE + 1];
-#pragma data_section ".data_imu3"
+SECTION(".data_imu0") v2nm32f src1[SIZE];
+SECTION(".data_imu1") v4nm32f src2[SIZE];
+SECTION(".data_imu2") v4nm32f dst[SIZE + 1];
 
 extern "C" void dotMulV_v4nm32f(v2nm32f* src1, v4nm32f* src2, v4nm32f* dstValues, int size);
 
