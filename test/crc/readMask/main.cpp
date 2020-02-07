@@ -13,7 +13,7 @@
 #pragma data_section ".data_imu3"
 	int dstVec[MAX_SIZE+2];
 	
-extern "C" int readMask(nm1* mask, int* dstIndices, int* treadedBits, int size, int maxSize);
+extern "C" int readMask(nm1* mask, int* dstIndices, int size);
 
 int main()
 {
@@ -24,7 +24,7 @@ int main()
 		dstVec[i] = 0;
 	}
 	for(int i=0;i<MAX_SIZE/32+2;i++){
-		mask[i] = 0xFFFFFFFF;
+		mask[i] = 0xFFFF5554;
 	}
 	int result = 0;
 	//for(int size=0;size<= MAX_SIZE;size++){
@@ -33,22 +33,18 @@ int main()
 		printf("size=0x%x\n\n", size);
 	
 		nm1* maskTmp = (nm1*)mask;
-		int treated = 0;
-		while (treated < size) {
-			t0 = clock();
-			result = readMask(maskTmp, dstVec, &treated, size, LIMIT);
-			t1 = clock();
-			time = MAX(t1 - t0, time);
+		t0 = clock();
+		result = readMask(maskTmp, dstVec, size);
+		t1 = clock();
+		time = MAX(t1 - t0, time);
 	
-			printf("result=%d\n", result);
-			printf("treated=%d\n", treated);
-			for(int i=0; i < result; i++){
-				printf("dst[%d]=%d\n", i, dstVec[i]);
-			}
-			printf(".\n");
-			
-			nmppsCrcAcc_32s(dstVec, result + 2, &crc);
+		printf("result=%d\n", result);
+		for(int i=0; i < result; i++){
+			printf("dst[%d]=%d\n", i, dstVec[i]);
 		}
+		printf(".\n");
+		
+		nmppsCrcAcc_32s(dstVec, result + 2, &crc);
 	//}
 	printf("crc=0x%x\n", crc);
 	return time;

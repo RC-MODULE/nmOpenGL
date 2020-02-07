@@ -27,12 +27,8 @@ void light(v4nm32f* vertex, v4nm32f* srcNormalDstColor, int countVertex) {
 		subCRev_v4nm32f(vertex, (v4nm32f*)&cntxt.lightPosition[0], (v4nm32f*)cntxt.buffer0, countVertex);
 	}
 	dotV_gt0_v4nm32f((v4nm32f*)cntxt.buffer0, (v4nm32f*)cntxt.buffer0, (v2nm32f*)cntxt.buffer1, countVertex);
-	pow_32f(cntxt.buffer1,  cntxt.buffer2, 0.5, 2 * countVertex,  cntxt.buffer1);
-	//nmppmCopy_32fc((double*)cntxt.buffer2, 1, (double*)cntxt.buffer3, 2, countVertex, 1);
-	//nmppmCopy_32fc((double*)cntxt.buffer2, 1, (double*)(cntxt.buffer3 + 2), 2, countVertex, 1);		//v4nm32f(|h|,|h|,|h|,|h|)
-	nmblas_dcopy(countVertex, (double*)cntxt.buffer2, 1, (double*)cntxt.buffer3, 2);
-	nmblas_dcopy(countVertex, (double*)cntxt.buffer2, 1, (double*)(cntxt.buffer3 + 2), 2);
-	nmppsDiv_32f(cntxt.buffer0, cntxt.buffer3, (float*)subVP, 4 * countVertex);
+	fastInvSqrt(cntxt.buffer1, cntxt.buffer2, 2 * countVertex);
+	dotMulV_v4nm32f((v2nm32f*)cntxt.buffer2, (v4nm32f*)cntxt.buffer0, subVP, countVertex);
 
 	dotV_gt0_v4nm32f(srcNormalDstColor, subVP, n_dot_vp, countVertex);
 	// VP - cntxt.buffer1(12*size)
@@ -45,12 +41,9 @@ void light(v4nm32f* vertex, v4nm32f* srcNormalDstColor, int countVertex) {
 	// h - cntxt.buffer2 (12*size)
 
 	dotV_gt0_v4nm32f((v4nm32f*)h, (v4nm32f*)h, (v2nm32f*)cntxt.buffer3, countVertex);			// h*h
-	pow_32f(cntxt.buffer3, cntxt.buffer1, 0.5f, 2 * countVertex, cntxt.buffer3);					//sqrt(h*h)
-	//nmppmCopy_32fc((double*)cntxt.buffer1, 1, (double*)cntxt.buffer3, 2, countVertex, 1);
-	//nmppmCopy_32fc((double*)cntxt.buffer1, 1, (double*)(cntxt.buffer3 + 2), 2, countVertex, 1);		//v4nm32f(|h|,|h|,|h|,|h|)
-	nmblas_dcopy(countVertex, (double*)cntxt.buffer1, 1, (double*)cntxt.buffer3, 2);
-	nmblas_dcopy(countVertex, (double*)cntxt.buffer1, 1, (double*)(cntxt.buffer3 + 2), 2);
-	nmppsDiv_32f((float*)h, cntxt.buffer3, (float*)cntxt.buffer1, 4 * countVertex);
+	fastInvSqrt(cntxt.buffer3, (cntxt.buffer0 + 6 * NMGL_SIZE), 2 * countVertex);
+	dotMulV_v4nm32f((v2nm32f*)(cntxt.buffer0 + 6 * NMGL_SIZE), h, (v4nm32f*)cntxt.buffer1, countVertex);
+
 	dotV_gt0_v4nm32f((v4nm32f*)srcNormalDstColor, (v4nm32f*)cntxt.buffer1, n_dot_direct_h, countVertex);
 	// h - free
 	// n*^h -cntxt.buffer3 (6*size)

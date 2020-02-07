@@ -9,16 +9,17 @@ SECTION(".text_demo3d") void drawTriangles(NMGL_Context_NM1* context) {
 	PolygonsConnector connector(context->polygonsData);
 	Polygons* poly = connector.ptrTail();
 	getAddrPtrnsT(context, context->patterns, poly);
-
-	msdWaitDma();
-	int countTrangles = poly->count;
-	(*connector.pTail)++;
-
 	nm32s* mulZ = context->buffer0;
 	nm32s* mulC = context->buffer0;
 	nm32s* zMaskBuffer = context->buffer1;
 	
 	int point = 0;
+
+	msdWaitDma(1);
+	msdWaitDma(0);
+	int countTrangles = poly->count;
+	(*connector.pTail)++;
+
 	while (countTrangles > 0) {
 		int localSize = MIN(countTrangles, SMALL_SIZE);
 		int point_x3 = point * 3;

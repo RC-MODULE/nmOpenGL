@@ -15,6 +15,19 @@
 
 extern int exitNM1;
 SECTION(".data_imu0") CommandNm1 currentCommand;
+SECTION(".data_imu0") volatile int copyImageCounterColor;
+SECTION(".data_imu0") volatile int copyImageCounterDepth;
+SECTION(".data_shmem1") nm32s colorClearBuff[WIDTH_SEG * HEIGHT_SEG];
+SECTION(".data_shmem1") nm32s depthClearBuff[WIDTH_SEG * HEIGHT_SEG];
+
+SECTION(".text_demo3d") int copyCounterColor() {
+	return copyImageCounterColor++;
+	//halLed(copyImageCounterColor);
+}
+
+SECTION(".text_demo3d") int copyCounterDepth() {
+	return copyImageCounterDepth++;
+}
 
 SECTION(".text_nmglvs") int nmglvsNm1Step(NMGL_Context_NM1 &cntxt)
 {	
@@ -23,62 +36,90 @@ SECTION(".text_nmglvs") int nmglvsNm1Step(NMGL_Context_NM1 &cntxt)
 
 	switch (currentCommand.instr_nmc1) {
 
-	case NMC1_CLEAR:
+	case NMC1_CLEAR: {
 		int imageSize, bufferSize;
-
+		MyDmaTask taskColor;
+		MyDmaTask taskDepth;
+		bufferSize = WIDTH_SEG * HEIGHT_SEG;
+		taskColor.src = colorClearBuff;
+		taskDepth.src = depthClearBuff;
+		taskColor.size = WIDTH_SEG * HEIGHT_SEG;
+		taskDepth.size = WIDTH_SEG * HEIGHT_SEG;
+		taskColor.type = MSD_DMA_2D;
+		taskDepth.type = MSD_DMA_2D;
+		taskColor.width = WIDTH_SEG;
+		taskDepth.width = WIDTH_SEG;
+		taskColor.srcStride = WIDTH_SEG;
+		taskDepth.srcStride = WIDTH_SEG;
+		taskColor.dstStride = WIDTH_IMAGE;
+		taskDepth.dstStride = WIDTH_IMAGE;
+		taskColor.callback = copyCounterColor;
+		taskDepth.callback = copyCounterDepth;
+		copyImageCounterColor = 0;
+		copyImageCounterDepth = 0;
 		switch (currentCommand.params[0])
 		{
 		case NMGL_COLOR_BUFFER_BIT:
 			imageSize = cntxt.colorBuffer.getSize();
-			bufferSize = cntxt.colorSegment.getSize();
-			nmppsSet_32s((nm32s*)cntxt.colorSegment.data, cntxt.colorBuffer.clearValue, bufferSize);
-			for (int i = 0; i < imageSize; i += bufferSize) {
-				msdAdd(cntxt.colorSegment.data, (nm32s*)cntxt.colorBuffer.data + i, bufferSize);
+			nmppsSet_32s((nm32s*)colorClearBuff, cntxt.colorBuffer.clearValue, bufferSize);
+			for (int y = 0; y < HEIGHT_IMAGE; y += HEIGHT_SEG) {
+				for (int x = 0; x < WIDTH_IMAGE; x += WIDTH_SEG) {
+					taskColor.dst = (nm32s*)cntxt.colorBuffer.data + y * WIDTH_IMAGE + x;
+					msdAdd(taskColor);
+				}				
 			}
 			break;
 		case NMGL_DEPTH_BUFFER_BIT:
 			imageSize = cntxt.depthBuffer.getSize();
-			bufferSize = cntxt.depthSegment.getSize();
-			nmppsSet_32s((nm32s*)cntxt.depthSegment.data, cntxt.depthBuffer.clearValue, bufferSize);
-			for (int i = 0; i < imageSize; i += bufferSize) {
-				msdAdd(cntxt.depthSegment.data, (nm32s*)cntxt.depthBuffer.data + i, bufferSize);
+			nmppsSet_32s((nm32s*)depthClearBuff, cntxt.depthBuffer.clearValue, bufferSize);
+			for (int y = 0; y < HEIGHT_IMAGE; y += HEIGHT_SEG) {
+				for (int x = 0; x < WIDTH_IMAGE; x += WIDTH_SEG) {
+					taskDepth.dst = (nm32s*)cntxt.depthBuffer.data + y * WIDTH_IMAGE + x;
+					msdAdd(taskDepth);
+				}
 			}
 			break;
 		case NMGL_COLOR_BUFFER_BIT | NMGL_DEPTH_BUFFER_BIT:
 			imageSize = cntxt.colorBuffer.getSize();
-			bufferSize = cntxt.colorSegment.getSize();
-			nmppsSet_32s((nm32s*)cntxt.colorSegment.data, cntxt.colorBuffer.clearValue, bufferSize);
-			for (int i = 0; i < imageSize; i += bufferSize) {
-				msdAdd(cntxt.colorSegment.data, (nm32s*)cntxt.colorBuffer.data + i, bufferSize);
-			}
+			nmppsSet_32s((nm32s*)colorClearBuff, cntxt.colorBuffer.clearValue, bufferSize);
+
 			imageSize = cntxt.depthBuffer.getSize();
-			bufferSize = cntxt.depthSegment.getSize();
-			nmppsSet_32s((nm32s*)cntxt.depthSegment.data, cntxt.depthBuffer.clearValue, bufferSize);
-			for (int i = 0; i < imageSize; i += bufferSize) {
-				msdAdd(cntxt.depthSegment.data, (nm32s*)cntxt.depthBuffer.data + i, bufferSize);
+			nmppsSet_32s((nm32s*)depthClearBuff, cntxt.depthBuffer.clearValue, bufferSize);
+
+			for (int y = 0; y < HEIGHT_IMAGE; y += HEIGHT_SEG) {
+				for (int x = 0; x < WIDTH_IMAGE; x += WIDTH_SEG) {
+					taskColor.dst = (nm32s*)cntxt.colorBuffer.data + y * WIDTH_IMAGE + x;
+					msdAdd(taskColor);
+
+					taskDepth.dst = (nm32s*)cntxt.depthBuffer.data + y * WIDTH_IMAGE + x;
+					msdAdd(taskDepth);
+				}
 			}
 			break;
 		default:
 			break;
-		}		
+		}
 		break;
-
+	}
 	case NMC1_COPY_SEG_FROM_IMAGE:
 	{		
 		int x0 = currentCommand.params[0];
 		int y0 = currentCommand.params[1];
 		int width = currentCommand.params[2];
 		int height = currentCommand.params[3];
+		int numOfSeg = currentCommand.params[4];
 		if (cntxt.depthBuffer.enabled == NMGL_TRUE) {
 			nm32s* src = nmppsAddr_32s((int*)cntxt.depthBuffer.data, y0 * cntxt.depthBuffer.getWidth() + x0);
-			nm32s* dst = (nm32s*)cntxt.depthSegment.data;
-			msdAdd2D(src, dst, width * height, width, 
-				cntxt.depthBuffer.getWidth(), cntxt.depthSegment.getWidth());
+			nm32s* dst = (nm32s*)cntxt.smallDepthBuff.data;
+			while (copyImageCounterDepth <= numOfSeg);
+			msdAdd2D(src, dst, width * height, width,
+				cntxt.depthBuffer.getWidth(), cntxt.smallDepthBuff.getWidth(), 1);
 		}
 		nm32s* src = nmppsAddr_32s((int*)cntxt.colorBuffer.data, y0 * cntxt.colorBuffer.getWidth() + x0);
-		nm32s* dst = (nm32s*)cntxt.colorSegment.data;
-		msdAdd2D(src, dst, width * height, width, 
-			cntxt.colorBuffer.getWidth(), cntxt.colorSegment.getWidth());
+		nm32s* dst = (nm32s*)cntxt.smallColorBuff.data;
+		while (copyImageCounterColor <= numOfSeg);
+		msdAdd2D(src, dst, width * height, width,
+			cntxt.colorBuffer.getWidth(), cntxt.smallColorBuff.getWidth(), 1);
 		break;
 	}
 
@@ -88,15 +129,15 @@ SECTION(".text_nmglvs") int nmglvsNm1Step(NMGL_Context_NM1 &cntxt)
 		int width = currentCommand.params[2];
 		int height = currentCommand.params[3];
 		if (cntxt.depthBuffer.enabled == NMGL_TRUE) {
-			nm32s* src = (nm32s*)cntxt.depthSegment.data;
+			nm32s* src = (nm32s*)cntxt.smallDepthBuff.data;
 			nm32s* dst = nmppsAddr_32s((int*)cntxt.depthBuffer.data, y0 * cntxt.depthBuffer.getWidth() + x0);
 			msdAdd2D(src, dst, width * height, width, 
-				cntxt.depthSegment.getWidth(), cntxt.depthBuffer.getWidth());
+				cntxt.smallDepthBuff.getWidth(), cntxt.depthBuffer.getWidth(), 1);
 		}
-		nm32s* src = (nm32s*)cntxt.colorSegment.data;
+		nm32s* src = (nm32s*)cntxt.smallColorBuff.data;
 		nm32s* dst = nmppsAddr_32s((int*)cntxt.colorBuffer.data, y0 * cntxt.colorBuffer.getWidth() + x0);
 		msdAdd2D(src, dst, width * height, width,
-			cntxt.colorSegment.getWidth(), cntxt.colorBuffer.getWidth());
+			cntxt.smallColorBuff.getWidth(), cntxt.colorBuffer.getWidth(), 1);
 		break;
 	}
 
@@ -116,10 +157,12 @@ SECTION(".text_nmglvs") int nmglvsNm1Step(NMGL_Context_NM1 &cntxt)
 		temp |= (currentCommand.params[0] & 0xFF) << 16;
 		temp |= (currentCommand.params[3] & 0xFF) << 24;
 		cntxt.colorBuffer.clearValue = temp;
+		cntxt.smallColorBuff.clearValue = temp;
 		break;
 	}
 	case NMC1_SET_DEPTH:
 		cntxt.depthBuffer.clearValue = currentCommand.params[0];
+		cntxt.smallDepthBuff.clearValue = currentCommand.params[0];
 		break;
 
 	case NMC1_DEPTH_MASK: {

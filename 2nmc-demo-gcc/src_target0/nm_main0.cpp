@@ -167,10 +167,10 @@ SECTION(".text_shared") int main()
 		//nmglFinish();
 		nmglvsSwapBuffer();
 	}
-	halFree(vertices_DDR);
-	halFree(vertices_DDR2);
-	halFree(normal_DDR);
-	halFree(normal_DDR2);
+	//halFree(vertices_DDR);
+	//halFree(vertices_DDR2);
+	//halFree(normal_DDR);
+	//halFree(normal_DDR2);
 	nmglvsExit_mc12101();
 	return 0x600D600D;
 } 

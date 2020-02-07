@@ -7,7 +7,7 @@
 #include "arraymanager.h"
 #include "stdio.h"
 
-SECTION(".data_shared")	int masksBits[36 * BIG_NMGL_SIZE / 32];
+SECTION(".data_imu6")	int masksBits[36][NMGL_SIZE / 32];
 SECTION(".data_imu6")	SegmentMask masks[36];
 
 SECTION(".data_imu5")	float vertexX[3 * NMGL_SIZE];
@@ -70,12 +70,10 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 	}
 
 	reverseMatrix3x3in4x4(cntxt.modelviewMatrixStack.top(), &cntxt.normalMatrix);
-
 	for (int i = 0; i < 36; i++) {
-		masks[i].bits = &masksBits[i * BIG_NMGL_SIZE / 32];
-	}	
+		masks[i].bits = masksBits[i];
+	}
 
-	cntxt.trianDdr.size = 0;
 	while (!vertexAM.isEmpty()) {
 		//vertex
 		int localSize = vertexAM.pop(cntxt.buffer0) / cntxt.vertexArray.size;
@@ -116,17 +114,14 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			else {
 				normalAM.pop(cntxt.buffer1);
 			}
-			//MullMatrix_f(cntxt.buffer1, localSize, 4, &cntxt.normalMatrix, 4, 4, colorOrNormal, 4, 4, 0);
 			mul_v4nm32f_mat4nm32f((v4nm32f*)cntxt.buffer1, &cntxt.normalMatrix, colorOrNormal, localSize);
 			if (cntxt.normalizeEnabled) {
 				nmblas_scopy(4 * localSize, (float*)colorOrNormal, 1, cntxt.buffer2, 1);
 				dotV_v4nm32f(colorOrNormal, (v4nm32f*)cntxt.buffer2, (v2nm32f*)cntxt.buffer0, localSize);
-				pow_32f(cntxt.buffer0, cntxt.buffer1, 0.5, 2 * localSize, cntxt.buffer3);
-				nmblas_dcopy(localSize, (double*)cntxt.buffer1, 1, (double*)cntxt.buffer3, 2);
-				nmblas_dcopy(localSize, (double*)cntxt.buffer1, 1, (double*)(cntxt.buffer3 + 2), 2);
-				nmppsDiv_32f((float*)cntxt.buffer2, cntxt.buffer3, (float*)colorOrNormal, 4 * localSize);
+				fastInvSqrt(cntxt.buffer0, cntxt.buffer1, 2 * localSize);
+				dotMulV_v4nm32f((v2nm32f*)cntxt.buffer1, (v4nm32f*)cntxt.buffer2, colorOrNormal, localSize);
 			}
-		}		
+		}
 
 
 		//vertex in vertexResult
@@ -148,7 +143,7 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 		
 		//------------clipping-------------------
 
-		//------------perspective-division-----------------
+		//------------perspective-division-----------------		static unsigned time = 0;
 		nmppsDiv_32f(cntxt.buffer0, cntxt.buffer3, cntxt.buffer1 + localSize, localSize);
 		nmppsDiv_32f(cntxt.buffer1, cntxt.buffer3, cntxt.buffer2 + localSize, localSize);
 		nmppsDiv_32f(cntxt.buffer2, cntxt.buffer3, cntxt.buffer0 + localSize, localSize);
@@ -160,21 +155,21 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 		nmppsConvert_32f32s_rounding(vertexX, (int*)cntxt.buffer0, 0, localSize);
 		nmppsConvert_32s32f((int*)cntxt.buffer0, vertexX, localSize);
 		nmppsConvert_32f32s_rounding(vertexY, (int*)cntxt.buffer0, 0, localSize);
-		nmppsConvert_32s32f((int*)cntxt.buffer0, vertexY, localSize);		
+		nmppsConvert_32s32f((int*)cntxt.buffer0, vertexY, localSize);
 
 		//---------------rasterize------------------------------------
 		switch (mode) {
 		case NMGL_TRIANGLES:
-			int localNPrim = pushToTriangles_t(vertexX, vertexY, vertexZ, colorOrNormal, cntxt.trianInner, localSize);
+			pushToTriangles_t(vertexX, vertexY, vertexZ, colorOrNormal, cntxt.trianInner, localSize);
 			if (cntxt.isCullFace) {
-				localNPrim = cullFaceSortTriangles(&cntxt.trianInner, localNPrim);
+				cullFaceSortTriangles(cntxt.trianInner);
 			}
-			copyTriangles(cntxt.trianInner, 0, cntxt.trianDdr, cntxt.trianDdr.size, localNPrim);
-			cntxt.trianDdr.size += localNPrim;
+			for (int i = 0; i < 36; i++) {
+				masks[i].hasNotZeroBits = 0;
+			}
+			setSegmentMask(cntxt, cntxt.trianInner, masks);
+			rasterizeT(&cntxt.trianInner, masks);
 			break;
 		}
 	}
-	setSegmentMask(cntxt, masks);
-	
-	rasterizeT(&cntxt.trianDdr, masks, cntxt.trianDdr.size);
 }
