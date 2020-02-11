@@ -39,11 +39,11 @@ begin ".text_demo3d"
 <NextDot32>
 	fpu 0 rep 32 vreg0 = [ar0++gr0];
 	fpu 0 rep 32 vreg1 = [ar1++gr1];
-	fpu 0 .float vreg7 = vreg0*vreg1;
+	fpu 0 .float vreg7 = vreg0 * vreg1;
 	fpu 1 vreg2 = fpu 0 vreg7;
 	fpu 1 rep 32 vreg0 = [ar2++gr2];
 	fpu 1 rep 32 vreg1 = [ar3++gr3];
-	fpu 1 .float vreg7 = vreg0*vreg1 + vreg2;
+	fpu 1 .float vreg7 = vreg0 * vreg1 + vreg2;
 	fpu 2 vreg7 = fpu 1 vreg7;
 	fpu 2 vreg6 = fpu 1 vreg7;	
 	fpu 2 .matrix vreg3 = (vreg6,vreg7) * vreg4;

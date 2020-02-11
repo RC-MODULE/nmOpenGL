@@ -32,10 +32,13 @@ void nmglLightfv(NMGLenum color, NMGLenum pname, const NMGLfloat *params) {
 		cntxt.lightSpecular[color].vec[3] = params[3];
 		break;
 	case NMGL_POSITION:
-		cntxt.lightPosition[color].vec[0] = params[0];
-		cntxt.lightPosition[color].vec[1] = params[1];
-		cntxt.lightPosition[color].vec[2] = params[2];
-		cntxt.lightPosition[color].vec[3] = params[3];
+		cntxt.tmp.vec[0] = params[0];
+		cntxt.tmp.vec[1] = params[1];
+		cntxt.tmp.vec[2] = params[2];
+		cntxt.tmp.vec[3] = params[3];
+		mul_mat4nm32f_v4nm32f(cntxt.modelviewMatrixStack.top(), 
+			&cntxt.tmp, 
+			&cntxt.lightPosition[color], 1);
 		break;
 	case NMGL_SPOT_DIRECTION:
 		cntxt.lightSpotDirection[color].vec[0] = params[0];

@@ -9,6 +9,14 @@
 SECTION(".data_imu7")   int indices[NMGL_SIZE];
 SECTION(".data_imu7")   int maskBitsTemp[BIG_NMGL_SIZE / 32];
 
+SECTION(".text_demo3d") int waitPolygons(PolygonsConnector &connector) {
+	int a = 0;
+	while (connector.isFull()) {
+		a++;
+	}
+	return a;
+}
+
 SECTION(".text_demo3d")
 void rasterizeT(const Triangles* triangles, const SegmentMask* masks){
 	int count = triangles->size;
@@ -37,9 +45,7 @@ void rasterizeT(const Triangles* triangles, const SegmentMask* masks){
 
 				int resultSize = readMask(masks[iSeg].bits, indices, count);
 				if (resultSize) {
-					while (connector.isFull()) {
-						halSleep(2);
-					}
+					waitPolygons(connector);
 					Polygons* poly = connector.ptrHead();
 					localTrian.z = (int*)poly->z;
 					localTrian.colors = (v4nm32s*)poly->color;

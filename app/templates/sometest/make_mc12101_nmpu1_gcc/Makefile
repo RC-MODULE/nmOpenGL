@@ -54,7 +54,7 @@ PROJECT          = main1
 OUT_DIR          = .
 TARGET           = $(OUT_DIR)/$(PROJECT).abs
 INC_DIRS         = -I"$(NMPP)/include" -I$(HAL)/include -I$(ROOT)/include
-SRC_DIRS 		 = $(ROOT)/src_proc1/nm
+SRC_DIRS	 = ../../../../src_proc1/nm ..
 LIB_DIRS         = -L "$(NMC_GCC_TOOLPATH)/nmc4-ide/lib" -L"$(NMPP)/lib" -L"$(HAL)/lib"
 TMP_DIR          = Release
 #-------------- RELEASE/ALL config -------------------
@@ -94,6 +94,8 @@ all:  $(TARGET)
 #	$(MAKE) -j4 DEBUG=y
 #	$(MAKE) -j4
 
+run: $(TARGET)
+	mc12101run $(TARGET) -p
 	
 $(TMP_DIR):
 	-mkdir "$(@)"

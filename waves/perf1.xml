@@ -1,0 +1,52 @@
+<?xml version='1.0' ?>
+<?xml-stylesheet type='text/xsl' href='profile.xsl'?>
+<profiling version="1.0">
+  <prof summary="0           "	calls="0           "	average="0           "	addr="27000468"	name="__ZN11DepthBuffer6updateEv"/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="270005F4"	name="_print_32x"/>
+  <prof summary="53645       "	calls="396         "	average="135         "	addr="00000200"	name="__Z16copyCounterColorv"/>
+  <prof summary="53231       "	calls="396         "	average="134         "	addr="00000212"	name="__Z16copyCounterDepthv"/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="00000224"	name="__Z9drawLinesP16NMGL_Context_NM1"/>
+  <prof summary="1556500443  "	calls="8571        "	average="181600      "	addr="00000606"	name="__Z13drawTrianglesP16NMGL_Context_NM1"/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="000009C6"	name="__Z13getAddrPtrnsLP16NMGL_Context_NM1P8PatternsP8Polygons"/>
+  <prof summary="424544489   "	calls="8575        "	average="49509       "	addr="000009CE"	name="__Z13getAddrPtrnsTP16NMGL_Context_NM1P8PatternsP8Polygons"/>
+  <prof summary="105966496   "	calls="146640      "	average="722         "	addr="00000E24"	name="__Z8cbUpdatev"/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="00000F6A"	name="__Z7msdInitv"/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="0000106A"	name="__Z6msdAddPKvPvii"/>
+  <prof summary="78339340    "	calls="34374       "	average="2279        "	addr="0000124C"	name="__Z8msdAdd2DPKvPvjjjji"/>
+  <prof summary="156127650   "	calls="112397      "	average="1389        "	addr="00001448"	name="__Z6msdAddR9MyDmaTaski"/>
+  <prof summary="26783412    "	calls="91405       "	average="293         "	addr="00001738"	name="__Z16msdGetStatusCopyii"/>
+  <prof summary="194875      "	calls="10          "	average="19487       "	addr="0000175C"	name="__Z10msdWaitDmav"/>
+  <prof summary="47412362    "	calls="17182       "	average="2759        "	addr="0000182C"	name="__Z10msdWaitDmai"/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="000018DC"	name="__Z14selectPatternsPiS_S_S_S_PS_iS_"/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="00001958"	name="_absIfNegElse0"/>
+  <prof summary="275733857   "	calls="86553       "	average="3185        "	addr="000019F6"	name="_copyPacket_32u"/>
+  <prof summary="169311032   "	calls="86567       "	average="1955        "	addr="00001A94"	name="_depthTest"/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="00001AC6"	name="_totalSum"/>
+  <prof summary="55582013    "	calls="86600       "	average="641         "	addr="00001AD8"	name="_mAndVxN_32u"/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="00001B82"	name="_matrixSetC_32s"/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="00001BA4"	name="_mergePtrnsAddr2"/>
+  <prof summary="10454820    "	calls="17214       "	average="607         "	addr="00001C96"	name="_mergePtrnsAddr3"/>
+  <prof summary="110033716   "	calls="86666       "	average="1269        "	addr="00001DCA"	name="_mMaskVxN_32s"/>
+  <prof summary="126729964   "	calls="86682       "	average="1462        "	addr="00002218"	name="_mMulCVxN_2s_v4nm8sExt"/>
+  <prof summary="126619291   "	calls="86699       "	average="1460        "	addr="00002230"	name="_mMulCVxN_2s32sExt"/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="00002690"	name="_selectColorChannel"/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="000027D2"	name="_selectPaintSide"/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="2701062C"	name="__Z13nmglvsNm1InitR16NMGL_Context_NM1"/>
+  <prof summary="7720182     "	calls="25896       "	average="298         "	addr="27010B12"	name="__Z12nmglvsNm1RunR16NMGL_Context_NM1"/>
+  <prof summary="2348655340  "	calls="25898       "	average="90688       "	addr="27010B24"	name="__Z13nmglvsNm1StepR16NMGL_Context_NM1"/>
+  <prof summary="6428670     "	calls="17240       "	average="372         "	addr="00004448"	name="_nmppsAddC_32s"/>
+  <prof summary="10575299    "	calls="25866       "	average="408         "	addr="0000446A"	name="_nmppsAdd_32s"/>
+  <prof summary="8199071     "	calls="25872       "	average="316         "	addr="00004484"	name="_nmppsMulC_AddC32s"/>
+  <prof summary="19009301    "	calls="86852       "	average="218         "	addr="000044AC"	name="_nmppsMulC_AddV_AddC_32s"/>
+  <prof summary="6001122     "	calls="17254       "	average="347         "	addr="000044DA"	name="_nmppsSub_32s"/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="000044F4"	name="_nmppsAnd_32u"/>
+  <prof summary="5691833     "	calls="17262       "	average="329         "	addr="0000450A"	name="_nmppsAndC_32u"/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="00004522"	name="_nmppsOr_32u"/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="00004538"	name="_nmppsAnd4V_64u"/>
+  <prof summary="228105      "	calls="22          "	average="10368       "	addr="00004554"	name="_nmppsSet_32s"/>
+  <prof summary="5798455     "	calls="8638        "	average="671         "	addr="00004568"	name="_nmppsConvert_32s8s"/>
+  <prof summary="37678836    "	calls="147655      "	average="255         "	addr="00004598"	name="_nmppsCopy_32s"/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="000045A8"	name="_nmppsRemap_32u"/>
+  <prof summary="31123060    "	calls="34568       "	average="900         "	addr="000045CC"	name="mtr_CpyCore_nm64"/>
+  <prof summary="52855290    "	calls="34576       "	average="1528        "	addr="000045F4"	name="_nmppmCopy_32u"/>
+</profiling>

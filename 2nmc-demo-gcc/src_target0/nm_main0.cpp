@@ -119,6 +119,13 @@ SECTION(".text_shared") int main()
 	float angle = 0;
 	NMGLenum error;
 	unsigned time;
+
+	/*nmglEnable(NMGL_LIGHT1);
+	float lightVector2[4] = { 0, 0.707, 0.707, 0 };
+	nmglLightfv(NMGL_LIGHT1, NMGL_POSITION, lightVector);
+	float lightDiffuse2[4] = { 1, 1, 0, 1 };
+	nmglLightfv(NMGL_LIGHT1, NMGL_DIFFUSE, lightDiffuse);*/
+
 	while(nmglvsNm0Run()){
 		nmglEnableClientState(NMGL_VERTEX_ARRAY);
 		nmglEnableClientState(NMGL_NORMAL_ARRAY);

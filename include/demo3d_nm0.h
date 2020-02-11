@@ -100,7 +100,7 @@ struct NMGL_Context_NM0 {
 	float lightConstAtt[MAX_LIGHTS];
 	float lightLinAtt[MAX_LIGHTS];
 	float lightQuadAtt[MAX_LIGHTS];
-	float isEnabledLight[MAX_LIGHTS];
+	bool isEnabledLight[MAX_LIGHTS];
 	int isLighting;
 	float specularExp;
 	
@@ -166,7 +166,7 @@ struct NMGL_Context_NM0 {
 			lightPosition[i].vec[0] = 0;
 			lightPosition[i].vec[1] = 0;
 			lightPosition[i].vec[2] = 1;
-			lightPosition[i].vec[2] = 0;
+			lightPosition[i].vec[3] = 0;
 
 			lightSpotDirection[i].vec[0] = 0;
 			lightSpotDirection[i].vec[1] = 0;
@@ -178,7 +178,7 @@ struct NMGL_Context_NM0 {
 			lightConstAtt[i] = 1;
 			lightLinAtt[i] = 0;
 			lightQuadAtt[i] = 0;
-			isEnabledLight[i] = 0;
+			isEnabledLight[i] = false;
 		}
 
 		lightAmbient[MAX_LIGHTS].vec[0] = 0.2;
@@ -785,6 +785,16 @@ extern "C"{
 	void doubleAdd_32f(float* src1, float* src2, float* srcAdd1, float* srcAdd2, float* dst1, float* dst2, int size);
 	void tripleMulC_32f(float* src1, float* src2, float* src3, float C, float* dst1, float* dst2, float* dst3, int size);
 	void doubleAbsIfNegElse0_32f(float* src1, float* src2, float* dst1, float* dst2, int size);
+
+	//функция вычисляет основную часть освещения по формуле
+	// res = a + nvp * d + f(nvp) * nh * s, где
+	// a - ambient
+	// nvp - n_dot_vp
+	// d - diffuse
+	// nh - n_dot_h_in_srm
+	// s - specular
+	// f(x) = 1, if (x!=0), else 0
+	void baseLighti(v4nm32f* ambient, v2nm32f* n_dot_vp, v4nm32f* diffuse, v2nm32f* n_dot_h_in_srm, v4nm32f* specular, v4nm32f* dst, int count);
 }
 void reverseMatrix3x3in4x4(mat4nm32f* src, mat4nm32f* dst);
 
