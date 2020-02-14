@@ -94,6 +94,9 @@ all:  $(TARGET)
 	
 #	$(MAKE) -j4 DEBUG=y
 #	$(MAKE) -j4
+
+run: $(TARGET)
+	mc12101run $(TARGET) -p
 	
 $(TMP_DIR):
 	-mkdir "$(@)"
