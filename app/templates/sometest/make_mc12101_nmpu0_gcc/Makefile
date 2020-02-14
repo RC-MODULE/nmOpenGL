@@ -49,7 +49,7 @@
 include $(ROOT)/global.mk
 include 		 nmc4vars_win.mk
 #-------------- target & input dirs -------------------
-PROJECT          = main1
+PROJECT          = main0
 OUT_DIR          = .
 TARGET           = $(OUT_DIR)/$(PROJECT).abs
 INC_DIRS         = -I"$(NMPP)/include" -I$(HAL)/include -I$(ROOT)/include
