@@ -17,7 +17,7 @@ endif
 
 
 INC_DIRS = -I"$(NMPP)/include" -I"$(MC12101)/include" -I"$(NEURO)/include" -I"$(HAL)/include" -I../../../../include
-SRC_DIRS = ../../../../src_proc0/nm
+SRC_DIRS = ../../../../src_proc0/nm ..
 LIB_DIRS = -L"$(NMPP)/lib"     -L"$(MC12101)/lib" -L$(HAL)/lib -L"$(NEURO)/lib"
 LIBS     = mc12101lib_nm.lib libc4f.lib libc4.lib nmpp-nmc4f.lib hal-mc12101.lib
 TARGET   = main.abs
