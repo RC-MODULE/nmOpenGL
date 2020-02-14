@@ -61,6 +61,7 @@ TMP_DIR          = Release
 CC 				 = nmc-g++
 AS               = nmc-gcc 				 
 AS_FLAGS    	 = -c -mmas -x assembler -Wa,-split_sir -mnmc4-fixed
+CC_FLAGS		 = -std=c++11
 LIBS             = -lnmpp-nmc4 -lhal-mc12101
 LINKER_FLAGS     =   -Xlinker -Map=.main1.map $(LIB_DIRS) "-Wl,-cmc12101brd-nmpu1.cfg"  -Wl,--whole-archive -lmc12101 -Wl,--no-whole-archive -o$(TARGET)
 #=================== SOURCE & OBJECTS COLLECTION ===========================
