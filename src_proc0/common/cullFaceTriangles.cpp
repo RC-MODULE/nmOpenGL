@@ -4,13 +4,13 @@
 #include "nmgl_data0.h"
 #include <nmpp.h>
 
-#define COPY_TRIANGLE_IN_PLACE(iSrc, iDst) triangles->x2[iDst] = triangles->x2[iSrc];	\
-triangles->y2[iDst] = triangles->y2[iSrc];												\
-triangles->x1[iDst] = triangles->x1[iSrc];												\
-triangles->y1[iDst] = triangles->y1[iSrc];												\
-triangles->x0[iDst] = triangles->x0[iSrc];												\
-triangles->y0[iDst] = triangles->y0[iSrc];												\
-triangles->z[iDst] = triangles->z[iSrc];												\
+#define COPY_TRIANGLE_IN_PLACE(iSrc, iDst) triangles.x2[iDst] = triangles.x2[iSrc];	\
+triangles.y2[iDst] = triangles.y2[iSrc];												\
+triangles.x1[iDst] = triangles.x1[iSrc];												\
+triangles.y1[iDst] = triangles.y1[iSrc];												\
+triangles.x0[iDst] = triangles.x0[iSrc];												\
+triangles.y0[iDst] = triangles.y0[iSrc];												\
+triangles.z[iDst] = triangles.z[iSrc];												\
 colorVec[4 * (iDst) + 0] = colorVec[4 * (iSrc) + 0];						\
 colorVec[4 * (iDst) + 1] = colorVec[4 * (iSrc) + 1];						\
 colorVec[4 * (iDst) + 2] = colorVec[4 * (iSrc) + 2];						\
@@ -20,15 +20,16 @@ SECTION(".data_imu7") int evenMaskVec[NMGL_SIZE / 32];
 SECTION(".data_imu7") int oddMaskVec[NMGL_SIZE / 32];
 
 SECTION(".text_demo3d")
-int cullFaceSortTriangles(Triangles* triangles, int count){
-	int* colorVec = (int*)triangles->colors;
+void cullFaceSortTriangles(Triangles &triangles){
+	int count = triangles.size;
+	int* colorVec = (int*)triangles.colors;
 	float* walkDirection = cntxt.buffer2 + 6 * NMGL_SIZE;
 	float* temp0 = cntxt.buffer0 + 6 * NMGL_SIZE;
 	float* temp1 = cntxt.buffer3;
-	nmppsMul_Mul_Sub_32f(triangles->x0, triangles->y1, triangles->x1, triangles->y0, walkDirection, count);
-	nmppsMul_Mul_Sub_32f(triangles->x1, triangles->y2, triangles->x2, triangles->y1, temp1, count);
+	nmppsMul_Mul_Sub_32f(triangles.x0, triangles.y1, triangles.x1, triangles.y0, walkDirection, count);
+	nmppsMul_Mul_Sub_32f(triangles.x1, triangles.y2, triangles.x2, triangles.y1, temp1, count);
 	nmppsAdd_32f(walkDirection, temp1, temp0, count);
-	nmppsMul_Mul_Sub_32f(triangles->x2, triangles->y0, triangles->x0, triangles->y2, temp1, count);
+	nmppsMul_Mul_Sub_32f(triangles.x2, triangles.y0, triangles.x0, triangles.y2, temp1, count);
 	nmppsAdd_32f(temp0, temp1, walkDirection, count);
 
 	if (cntxt.frontFaceOrientation == NMGL_CW) {
@@ -72,5 +73,5 @@ int cullFaceSortTriangles(Triangles* triangles, int count){
 		COPY_TRIANGLE_IN_PLACE(resultCounter - 1, resultCounter);
 		resultCounter++;
 	}
-	return resultCounter;
+	triangles.size = resultCounter;
 }

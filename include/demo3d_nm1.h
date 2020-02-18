@@ -33,8 +33,8 @@ struct NMGL_Context_NM1 {
 
 	DepthBuffer depthBuffer;
 	ImageBuffer colorBuffer;
-	ImageBuffer colorSegment;
-	ImageBuffer depthSegment;
+	ImageBuffer smallColorBuff;
+	ImageBuffer smallDepthBuff;
 
 	nm32s** zBuffPoints;
 	nm32s** imagePoints;

@@ -2,17 +2,14 @@
 #include "minrep.h"
 #include "time.h"
 #include "stdio.h"
+#include "demo3d_common.h"
 
-#define NMGL_SIZE 1024
+#define SIZE 1024
 ///////////////////////////////////////////////////////////////////////////////////////
-#pragma data_section ".data_imu0"
-nm32s *ppSrcCA[NMGL_SIZE];
-#pragma data_section ".data_imu1"
-nm32s *ppSrcCB[NMGL_SIZE];
-#pragma data_section ".data_imu2"
-nm32s *ppSrcBA[NMGL_SIZE];
-#pragma data_section ".data_imu3"
-nm32s *ppDst[3*NMGL_SIZE+2];
+SECTION("demo_imu0") nm32s *ppSrcCA[SIZE];
+SECTION("demo_imu1") nm32s *ppSrcCB[SIZE];
+SECTION("demo_imu2") nm32s *ppSrcBA[SIZE];
+SECTION("demo_imu3") nm32s *ppDst[3*SIZE+2];
 
 extern "C" void mergePtrnsAddr(nm32s** ppSrcCA, nm32s** ppSrcCB, nm32s** ppSrcBA, int step, nm32s** ppDst, int count);
 
@@ -20,17 +17,17 @@ int main()
 {
 	clock_t t0,t1;
 	unsigned int crc = 0;
-	int	MaxLongSize=NMGL_SIZE;
+	int	MaxLongSize=SIZE;
 
-	nmppsRandUniform_32u((nm32u*)ppSrcCA,NMGL_SIZE);
-	nmppsRandUniform_32u((nm32u*)ppSrcCB,NMGL_SIZE);
-	nmppsRandUniform_32u((nm32u*)ppSrcBA,NMGL_SIZE);
-	nmppsSet_32s((nm32s*)ppDst,(int)0xCCCCCCCC,3*NMGL_SIZE+2);
-	//nmppsSet_32s((nm32s*)ppSrcCA,(int)1, NMGL_SIZE);
-	//nmppsSet_32s((nm32s*)ppSrcCB,(int)2, NMGL_SIZE);
-	//nmppsSet_32s((nm32s*)ppSrcBA,(int)3, NMGL_SIZE);
+	nmppsRandUniform_32u((nm32u*)ppSrcCA,SIZE);
+	nmppsRandUniform_32u((nm32u*)ppSrcCB,SIZE);
+	nmppsRandUniform_32u((nm32u*)ppSrcBA,SIZE);
+	nmppsSet_32s((nm32s*)ppDst,(int)0xCCCCCCCC,3*SIZE+2);
+	//nmppsSet_32s((nm32s*)ppSrcCA,(int)1, SIZE);
+	//nmppsSet_32s((nm32s*)ppSrcCB,(int)2, SIZE);
+	//nmppsSet_32s((nm32s*)ppSrcBA,(int)3, SIZE);
 	//int LongSize=64*128;
-	for(int LongSize=2;LongSize<=NMGL_SIZE;LongSize+=2)
+	for(int LongSize=2;LongSize<=SIZE;LongSize+=2)
 	{
 		t0=clock();
 		mergePtrnsAddr(ppSrcCA, ppSrcCB, ppSrcBA, 32, ppDst, LongSize);

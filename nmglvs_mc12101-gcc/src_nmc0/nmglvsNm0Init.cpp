@@ -18,36 +18,57 @@ SECTION(".data_imu3")	float nmglBuffer2[12 * NMGL_SIZE];
 SECTION(".data_imu4")	float nmglBuffer3[12 * NMGL_SIZE];
 
 
-SECTION(".data_imu6")	float x0[NMGL_SIZE];
-SECTION(".data_imu6")	float y0[NMGL_SIZE];
-SECTION(".data_imu5")	float x1[NMGL_SIZE];
-SECTION(".data_imu5")	float y1[NMGL_SIZE];
-SECTION(".data_imu4")	float x2[NMGL_SIZE];
-SECTION(".data_imu4")	float y2[NMGL_SIZE];
-SECTION(".data_imu6")	int z_int[NMGL_SIZE];
+SECTION(".data_imu1")	float x0[NMGL_SIZE];
+SECTION(".data_imu2")	float y0[NMGL_SIZE];
+SECTION(".data_imu3")	float x1[NMGL_SIZE];
+SECTION(".data_imu4")	float y1[NMGL_SIZE];
+SECTION(".data_imu5")	float x2[NMGL_SIZE];
+SECTION(".data_imu6")	float y2[NMGL_SIZE];
+SECTION(".data_imu7")	int z_int[NMGL_SIZE];
 SECTION(".data_imu6")	v4nm32s lightsValues[NMGL_SIZE];
 
 
-template<class T> T* myMallocT() {
-	return (T*)halMalloc32(sizeof32(T));
+template<class T> inline T* myMallocT() {
+	T* result = (T*)halMalloc32(sizeof32(T));
+	if (result == 0) throw -2;
+	return result;
 }
 
-#pragma code_section ".text_demo3d"
-int nmglvsNm0Init()
+template<class T> inline T* myMallocT(int count) {
+	T* result = (T*)halMalloc32(count * sizeof32(T));
+	if (result == 0) throw -2;
+	return result;
+}
+
+SECTION(".text_nmglvs") int nmglvsNm0Init()
 {
 	halSleep(100);
 	halSetProcessorNo(0);
-	int fromHost = halHostSync(0xC0DE0000);		// send handshake to host
-	if (fromHost != 0xC0DE0086) {					// get  handshake from host
-		return -1;
+
+	try {
+		int fromHost = halHostSync(0xC0DE0000);		// send handshake to host
+		if (fromHost != 0xC0DE0086) {					// get  handshake from host
+			throw -1;
+		}
+
+		setHeap(8);
+		NMGLSynchroData* synchroData = myMallocT<NMGLSynchroData>();
+		synchroData->init();
+		setHeap(10);
+		PolygonsArray* polygonsArray = myMallocT<PolygonsArray>();
+		polygonsArray->init();
+		cntxt.init(synchroData, polygonsArray);
+
+		cntxt.patterns = (Patterns*)halSyncAddr((int*)synchroData, 1);
+		halSyncAddr((int*)cntxt.polygonsData, 1);
 	}
-	setHeap(8);
-	NMGLSynchroData* synchroData = myMallocT<NMGLSynchroData>();
-	synchroData->init();
-	setHeap(10);
-	PolygonsArray* polygonsArray = myMallocT<PolygonsArray>();
-	polygonsArray->init();
-	cntxt.init(synchroData, polygonsArray);
+	catch (int& e) {
+		if (e == -2) {
+			halHostSync(0xDEADB00F);
+		}
+		return e;
+	}
+	halHostSync(0x600DB00F);	// send ok to host
 
 	cntxt.trianInner.x0 = x0;
 	cntxt.trianInner.y0 = y0;
@@ -60,17 +81,12 @@ int nmglvsNm0Init()
 	cntxt.trianInner.maxSize = NMGL_SIZE;
 	cntxt.trianInner.size = 0;
 
-	float* dataDdr = (float*)halMalloc32(11 * BIG_NMGL_SIZE);
-	cntxt.trianDdr.x0 = dataDdr;
-	cntxt.trianDdr.y0 = dataDdr + BIG_NMGL_SIZE;
-	cntxt.trianDdr.x1 = dataDdr + 2 * BIG_NMGL_SIZE;
-	cntxt.trianDdr.y1 = dataDdr + 3 * BIG_NMGL_SIZE;
-	cntxt.trianDdr.x2 = dataDdr + 4 * BIG_NMGL_SIZE;
-	cntxt.trianDdr.y2 = dataDdr + 5 * BIG_NMGL_SIZE;
-	cntxt.trianDdr.z = (int*)(dataDdr + 6 * BIG_NMGL_SIZE);
-	cntxt.trianDdr.colors = (v4nm32s*)(dataDdr + 7 * BIG_NMGL_SIZE);
-	cntxt.trianDdr.maxSize = BIG_NMGL_SIZE;
-	cntxt.trianDdr.size = 0;
+
+	cntxt.buffer0 = nmglBuffer0;
+	cntxt.buffer1 = nmglBuffer1;
+	cntxt.buffer2 = nmglBuffer2;
+	cntxt.buffer3 = nmglBuffer3;
+
 
 #ifdef __GNUC__
 	halDmaInitC();
@@ -80,28 +96,10 @@ int nmglvsNm0Init()
 #endif // PROFILER0	
 #endif // __GNUC__
 
-
-	cntxt.buffer0 = nmglBuffer0;
-	cntxt.buffer1 = nmglBuffer1;
-	cntxt.buffer2 = nmglBuffer2;
-	cntxt.buffer3 = nmglBuffer3;
-
-	cntxt.patterns = (Patterns*)halSyncAddr((int*)synchroData, 1);
-	halSyncAddr((int*)cntxt.polygonsData, 1);
-
-	// Check memory allocation
-	if (cntxt.polygonsData == 0 || synchroData == 0 || dataDdr == 0) {
-		halHostSync(0xDEADB00F);	// send error to host
-		return -1;
-	}
-	else {
-		halHostSync(0x600DB00F);	// send ok to host
-	}
-
 	//sync4
 	halHostSync((int)0x600d600d);
 
 	nmglViewport(0, 0, WIDTH_IMAGE, HEIGHT_IMAGE);
-
+	return 0;
 } 
 

@@ -4,6 +4,8 @@
 #include "demo3d_common.h"
 #include "demo3d_nm1.h"
 
+#define NUM_NM_CORES 2
+
 #define PROGRAM "main0.abs"
 #define PROGRAM1 "main1.abs"
 

@@ -1,27 +1,23 @@
 #include "nmpp.h"
 #include "time.h"
 #include <stdio.h>
+#include "demo3d_common.h"
 
-#define NMGL_SIZE 1024
+#define SIZE 1024
 #define MAX_STEP 4
 
-#pragma data_section ".data_imu1"
-	v4nm32f srcVec4[MAX_STEP*NMGL_SIZE];
-#pragma data_section ".data_imu2"
-	float dstX[NMGL_SIZE+2];
-#pragma data_section ".data_imu3"
-	float dstY[NMGL_SIZE+2];
-#pragma data_section ".data_imu4"
-	float dstZ[NMGL_SIZE+2];
-#pragma data_section ".data_imu5"
-	float dstW[NMGL_SIZE+2];
+SECTION(".data_imu1") v4nm32f srcVec4[MAX_STEP*SIZE];
+SECTION(".data_imu2") float dstX[SIZE+2];
+SECTION(".data_imu3") float dstY[SIZE+2];
+SECTION(".data_imu4") float dstZ[SIZE+2];
+SECTION(".data_imu5") float dstW[SIZE+2];
 	
 	
 extern "C" void split_v4nm32f(v4nm32f* srcVec4, int step, float* dstX, float* dstY, float* dstZ, float* dstW, int countVec);
 
 int main()
 {
-	for(int i=0;i<MAX_STEP*NMGL_SIZE/2;i++){
+	for(int i=0;i<MAX_STEP*SIZE/2;i++){
 		srcVec4[i].vec[0] = 0;
 		srcVec4[i].vec[1] = 1;
 		srcVec4[i].vec[2] = 2;
@@ -35,7 +31,7 @@ int main()
 		srcVec4[2*i+1].vec[2] = 6;
 		srcVec4[2*i+1].vec[3] = 8;*/
 	}
-	for(int i=0;i<NMGL_SIZE + 2;i++){
+	for(int i=0;i<SIZE + 2;i++){
 		dstX[i] = 0;
 		dstY[i] = 0;
 		dstZ[i] = 0;
@@ -49,7 +45,7 @@ int main()
 	}
 	clock_t t0,t1;
 	unsigned crc =0;
-	for(int size=2;size<= NMGL_SIZE;size+=2){
+	for(int size=2;size<= SIZE;size+=2){
 		t0=clock();
 		split_v4nm32f(srcVec4, 1, dstX, dstY, dstZ, dstW, size);
 		t1=clock();

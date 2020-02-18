@@ -2,6 +2,7 @@
 #include "stdio.h"
 #include "minrep.h"
 #include "time.h"
+#include "demo3d_common.h"
 
 ///////////////////////////////////////////////////////////////////////////////////////
 nm64s *L0;
@@ -15,17 +16,13 @@ const int SizeL1=30*KB;
 const int SizeG0=30*KB;
 const int SizeG1=30*KB;
 
-#define NMGL_SIZE 1024
+#define SIZE 1024
 
-#pragma data_section ".data_imu0"
-	v4nm64f srcV_64f[NMGL_SIZE];
-#pragma data_section ".data_imu1"		
-	v4nm64f srcC_64f = { 0,100,500,1000 };
-#pragma data_section ".data_imu2"
-	v4nm32f srcC = {0,100,500,1000};
-	v4nm32f srcV[NMGL_SIZE];
-	double dst[NMGL_SIZE];
-#pragma data_section ".data_imu3"
+SECTION(".data_imu0") v4nm64f srcV_64f[SIZE];
+SECTION(".data_imu1") v4nm64f srcC_64f = { 0,100,500,1000 };
+SECTION(".data_imu2") v4nm32f srcC = {0,100,500,1000};
+SECTION(".data_imu2") v4nm32f srcV[SIZE];
+SECTION(".data_imu2") double dst[SIZE];
 
 extern "C" void dotC_gt0_64f(v4nm64f* normal, v4nm64f* C, double* dstValues, int size);
 
@@ -36,15 +33,15 @@ int main()
 
 	clock_t t0,t1;
 	unsigned crc = 0;
-	//nmppsRandUniform_64f((double*)srcV_64f, 4*NMGL_SIZE,-1000,1000);
-	for(int i=0;i<NMGL_SIZE;i++){
+	//nmppsRandUniform_64f((double*)srcV_64f, 4*SIZE,-1000,1000);
+	for(int i=0;i<SIZE;i++){
 		srcV_64f[i].vec[0] = 4*i+0-1000;
 		srcV_64f[i].vec[1] = 4*i+1-1000;
 		srcV_64f[i].vec[2] = 4*i+2-1000;
 		srcV_64f[i].vec[3] = 4*i+3-1000;
 	}
 
-	for(int localSize=0;localSize<=NMGL_SIZE;localSize++){
+	for(int localSize=0;localSize<=SIZE;localSize++){
 		t0 = clock();
 		dotC_gt0_64f(srcV_64f, &srcC_64f, dst, localSize);
 		t1 = clock();

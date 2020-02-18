@@ -16,18 +16,13 @@ const int SizeL1=30*KB;
 const int SizeG0=30*KB;
 const int SizeG1=30*KB;
 
-#define NMGL_SIZE 16384/8
+#define SIZE 16384/8
 
-#pragma data_section ".data_imu0"
-	float src1[NMGL_SIZE];
-#pragma data_section ".data_imu1"
-	float src2[NMGL_SIZE];		
-#pragma data_section ".data_imu2"
-	float src3[NMGL_SIZE];	
-#pragma data_section ".data_imu3"
-	float src4[NMGL_SIZE];
-#pragma data_section ".data_imu3"
-	v4nm32f dst[NMGL_SIZE];
+SECTION(".data_imu0") float src1[SIZE];
+SECTION(".data_imu1") float src2[SIZE];		
+SECTION(".data_imu2") float src3[SIZE];	
+SECTION(".data_imu3") float src4[SIZE];
+SECTION(".data_imu4") v4nm32f dst[SIZE];
 
 #define SIZE_ONE 32*32
 extern "C" void merge_v4nm32f(float* src1, float* src2, float* src3, float* src4, v4nm32f* dst, int count);
@@ -39,7 +34,7 @@ int main()
 	clock_t t0,t1;
 
 	unsigned int crc = 0;
-	for(int i=0;i<NMGL_SIZE;i++){
+	for(int i=0;i<SIZE;i++){
 		src1[i] = i;
 		src2[i] = 2*i;
 		src3[i] = 3*i;
@@ -50,7 +45,7 @@ int main()
 		dst[i].vec[3] = 0;
 	}
 
-	merge_v4nm32f(src1, src2, src3, src4, dst, NMGL_SIZE);
+	merge_v4nm32f(src1, src2, src3, src4, dst, SIZE);
 	for (int i = 0; i < 16; i++) {
 		for (int j = 0; j < 4; j++) {
 			
