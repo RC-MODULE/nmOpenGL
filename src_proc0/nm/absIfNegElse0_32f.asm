@@ -4,7 +4,7 @@ global _absIfNegElse0_32f:label;
 //void _absIfNegElse0_32f(float* src, float* dst, int size);
 
 data ".data_demo3d"
-	zero_zero: word[2]; 
+	zero_zero: word[2] = (float(0), float(0)); 
 end ".data_demo3d";
 
 

@@ -2,6 +2,7 @@
 #include "stdio.h"
 #include "minrep.h"
 #include "time.h"
+#include "demo3d_common.h"
 
 ///////////////////////////////////////////////////////////////////////////////////////
 nm64s *L0;
@@ -15,15 +16,11 @@ const int SizeL1=30*KB;
 const int SizeG0=30*KB;
 const int SizeG1=30*KB;
 
-#define NMGL_SIZE 1024
+#define SIZE 1024
 
-#pragma data_section ".data_imu0"
-	v4nm32f src1[NMGL_SIZE];
-#pragma data_section ".data_imu1"		
-	v4nm32f src2[NMGL_SIZE];
-#pragma data_section ".data_imu2"
-	nm32f dst[2 * NMGL_SIZE];
-#pragma data_section ".data_imu3"
+SECTION(".data_imu0") v4nm32f src1[SIZE];
+SECTION(".data_imu1") v4nm32f src2[SIZE];
+SECTION(".data_imu2") nm32f dst[2 * SIZE];
 
 extern "C" void dotV_gt0_32f(v4nm32f* src1, v4nm32f* src2, nm32f* dstValues, int size);
 
@@ -34,8 +31,8 @@ int main()
 
 	clock_t t0,t1;
 	unsigned crc=0;
-	//nmppsRand_32f((nm32f*)srcV, 4*NMGL_SIZE,-1000,1000);
-	for(int i=0;i<NMGL_SIZE;i++){
+	//nmppsRand_32f((nm32f*)srcV, 4*SIZE,-1000,1000);
+	for(int i=0;i<SIZE;i++){
 		src1[i].vec[0] = 4*i+0 - 1000;
 		src1[i].vec[1] = 4*i+1 - 1000;
 		src1[i].vec[2] = 4*i+2 - 1000;
@@ -55,7 +52,7 @@ int main()
 		printf("%f, %f, %f, %f\n", src2[i].vec[0], src2[i].vec[1], src2[i].vec[2], src2[i].vec[3]);
 	}
 	printf("\n");
-	for(int localSize=0;localSize<=NMGL_SIZE;localSize++){
+	for(int localSize=0;localSize<=SIZE;localSize++){
 		t0 = clock();
 		dotV_gt0_32f(src1, src2, dst, localSize);
 		t1 = clock();

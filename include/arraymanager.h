@@ -2,10 +2,12 @@
 #define __ADDR_MANAGER_H__
 
 #include "hal.h"
+#include "nmblas.h"
 
 template <typename T>
 void addrManagerDefaultCopy(const void* src, void* dst, size_t size) {
-	halCopyRISC(src, dst, sizeof32(size));
+	//halCopyRISC(src, dst, sizeof32(size));
+	nmblas_scopy(sizeof32(size), (float*)src, 1, (float*)dst, 1);
 }
 
 template <typename T>

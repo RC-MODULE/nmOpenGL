@@ -16,13 +16,13 @@ const int SizeL1=30*KB;
 const int SizeG0=30*KB;
 const int SizeG1=30*KB;
 
-#define NMGL_SIZE 1024
+#define SIZE 1024
 
 #pragma data_section ".data_imu0"
-	nm32f srcV[NMGL_SIZE];
+	nm32f srcV[SIZE];
 #pragma data_section ".data_imu1"	
 #pragma data_section ".data_imu2"
-	nm32f dst[NMGL_SIZE+2];
+	nm32f dst[SIZE+2];
 #pragma data_section ".data_imu3"
 
 
@@ -33,20 +33,20 @@ int main()
 
 	clock_t t0,t1;
 	unsigned crc=0;
-	//nmppsRand_32f((nm32f*)srcV, 4*NMGL_SIZE,-1000,1000);
-	for(int i=0;i<NMGL_SIZE;i++){
+	//nmppsRand_32f((nm32f*)srcV, 4*SIZE,-1000,1000);
+	for(int i=0;i<SIZE;i++){
 		srcV[i] = i;
 	}
-	for(int i=0;i<NMGL_SIZE+2;i++){
+	for(int i=0;i<SIZE+2;i++){
 		dst[i] = 0;
 	}
 	
 	for (int i = 0; i < 16; i++) {
 		printf("%f\n", srcV[i]);
 	}
-	printf("\n");
+	printf(".\n");
 
-	for(int localSize=0;localSize<=NMGL_SIZE;localSize+=2){
+	for(int localSize=0;localSize<=SIZE;localSize+=2){
 		t0 = clock();
 		clamp_32f(srcV, 4, 12, dst, localSize);
 		t1 = clock();

@@ -72,6 +72,10 @@ SECTION(".data_DDR") float    result_ddr[FRAME_SIZE];
 SECTION(".data_DDR") float    result_ddr_color[12 * COUNT_TRIANGLES];
 SECTION(".data_DDR") float    result_ddr_normal[12 * COUNT_TRIANGLES];
 
+#ifdef __OPEN_GL__
+Vector3f normal3[COUNT_TRIANGLES];
+#endif
+
 extern "C" {
 	void SumReImParts(const nm32fcr* complex_nums, nm32f* sum_re_im, int size);
 }
@@ -251,7 +255,11 @@ int main()
 	nmglEnableClientState(NMGL_COLOR_ARRAY);
 	nmglEnableClientState(NMGL_NORMAL_ARRAY);
 	nmglVertexPointer(4, NMGL_FLOAT, 0, triangles);
+#ifndef __OPEN_GL__
 	nmglNormalPointerNM(NMGL_FLOAT, 0, result_ddr_normal);
+#else
+	nmglNormalPointer(NMGL_FLOAT, 0, normal3);
+#endif
 	nmglColorPointer(4, NMGL_FLOAT, 0, result_ddr_color);
 
 
@@ -314,19 +322,25 @@ int main()
 
 		t0 = clock();
 		computeNormal(triangles, result_ddr_normal, COUNT_TRIANGLES);
+#ifdef __OPEN_GL__
+		for (int i = 0; i < COUNT_TRIANGLES; i++) {
+			normal3[i].x = result_ddr_normal[4 * i + 0];
+			normal3[i].y = result_ddr_normal[4 * i + 1];
+			normal3[i].z = result_ddr_normal[4 * i + 2];
+		}
+#endif
 		t1 = clock();
 		timeClock = t1 - t0;
 		printf("computeNormal=%d\n", timeClock);
+		int error = nmglGetError();
 
 		t0 = clock();
-		//nmglDrawArrays(NMGL_TRIANGLES, 0, 8 * 3 * 2 * (COL_SIZE - 1));
 		nmglDrawArrays(NMGL_TRIANGLES, 0, COUNT_TRIANGLES*3);
 		t1 = clock();
 		timeClock = t1 - t0;
 		printf("nmglDrawArrays=%d\n", timeClock);
 		
 
-		//error = nmglGetError();
 		nmglvsSwapBuffer();
 		
 

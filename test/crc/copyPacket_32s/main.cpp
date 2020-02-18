@@ -2,6 +2,7 @@
 #include "stdio.h"
 #include "minrep.h"
 #include "time.h"
+#include "demo3d_common.h"
 
 ///////////////////////////////////////////////////////////////////////////////////////
 nm64s *L0;
@@ -16,18 +17,14 @@ const int SizeG0=30*KB;
 const int SizeG1=30*KB;
 extern "C" long tmp;
 
-#pragma data_section ".data_imu0"
 
-#pragma data_section ".data_imu1"
-	int src[16384];
+SECTION(".data_imu1")	int src[16384];
 		
-#pragma data_section ".data_imu2"
-	int* ppSrc[32];
-	int* ppDst[32];
-	int sizes[32];
+SECTION(".data_imu2") int* ppSrc[32];
+SECTION(".data_imu2") int* ppDst[32];
+SECTION(".data_imu2") int sizes[32];
 	
-#pragma data_section ".data_imu3"
-	int dst[16384];
+SECTION(".data_imu3")	int dst[16384];
 
 #define SIZE_ONE 32*32
 

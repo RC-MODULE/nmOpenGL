@@ -60,7 +60,6 @@ struct NMGL_Context_NM0 {
 	float* buffer3;
 
 	Triangles trianInner;
-	Triangles trianDdr;
 
 	mat4nm32f modelviewMatrix[16];
 	mat4nm32f projectionMatrix[2];
@@ -424,6 +423,31 @@ extern "C"{
 	 //! \{
 	void dotMulC_AddC_v4nm32f(v2nm32f* srcVec, v4nm32f* mulC, v4nm32f* addC, v4nm32f* dst, int nSize);
 	 //! \}
+
+	 /**
+	 *  \defgroup dotMulC_AddC dotMulC_AddC
+	 *  \brief Функция умножения массива 4-хмерных векторов 
+	 *  на массив продублированных констант
+	 *
+	 *  \param n_dot_VP [in] Входной массив констант
+	 *  \param mul [in] Указатель на массив векторов
+	 *  \param dst [out] Выходной массив векторов
+	 *  \param nSize [in] Число векторов
+	 *  \retval Return description
+	 *
+	 *  \par
+	 *  \xmlonly
+	 *      <testperf>
+	 *          <param> n_dot_VP </param> <values> imu0 </values>
+	 *          <param> mul </param> <values> imu0 </values>
+	 *          <param> dst </param> <values> imu0 imu1 </values>
+	 *          <param> nSize </param> <values> 128 512 1024 </values>
+	 *      </testperf>
+	 *  \endxmlonly
+	 */
+	 //! \{
+	void dotMulV_v4nm32f(v2nm32f* srcVec, v4nm32f* mulVec, v4nm32f* dst, int nSize);
+	//! \}
 	
 	/**
 	 *  \defgroup dotMulC_Add dotMulC_Add
@@ -451,6 +475,33 @@ extern "C"{
 	 //! \{
 	void dotMulC_Add_v4nm32f(v2nm32f* n_dot_VP, v4nm32f* mulC, v4nm32f* addVec, v4nm32f* dst, int nSize);
 	 //! \}
+
+	 /**
+	 *  \defgroup dotMulC_Add dotMulC_Add
+	 *  \brief Функция умножения постоянного 4-хмерного вектора на на массив констант с прибавлением массива других 4-хмерных векторов.
+	 *  Массив констант должен быть продублированным
+	 *
+	 *  \param n_dot_VP [in] Массив констант
+	 *  \param mulC [in] Указатель на умножающийся постоянный вектор
+	 *  \param addVec [in] Массив прибавляющихся векторов
+	 *  \param dst [out] Выходной массив
+	 *  \param nSize [in] Число элементов
+	 *  \retval Return description
+	 *
+	 *  \par
+	 *  \xmlonly
+	 *      <testperf>
+	 *          <param> n_dot_VP </param> <values> imu0 </values>
+	 *          <param> mulC </param> <values> imu0 </values>
+	 *          <param> addVec </param> <values> imu0 imu1 </values>
+	 *          <param> dst </param> <values> imu0 imu1 imu2 </values>
+	 *          <param> nSize </param> <values> 128 512 1024 </values>
+	 *      </testperf>
+	 *  \endxmlonly
+	 */
+	 //! \{
+	void dotMulC_Add_v4nm32f(v2nm32f* n_dot_VP, v4nm32f* mulC, v4nm32f* addVec, v4nm32f* dst, int nSize);
+	//! \}
 
 	/**
 	 *  \defgroup subCRev subCRev
@@ -720,25 +771,35 @@ extern "C"{
 	void remap_32u(nm32u* pSrcVec, nm32u* pDstVec, nm32s* pRemapTable, int nSize);
 	
 	void ternaryLt0_AddC_AddC_32f(nm32f* srcFlags, nm32f* srcVec, float valueLeft, float valueRight, float* dstVec, int size);
-	int readMask(nm1* mask, int* dstIndices, int* treated, int size, int maxSize);
+	int readMask(nm1* mask, int* dstIndices, int size);
+	int readMaskToLimitDst(nm1* mask, int* dstIndices, int* treated, int size, int maxSize);
 
 	int firstNonZeroIndx_32s(int* pSrcVec, int nSize);
+
+	void fastInvSqrt(float* srcVec, float* dstVec, int size);
+
+	void doubleSubC_32f(float* src1, float* src2, float C1, float C2, float* dst1, float* dst2, int size);
+	void doubleMulC_32f(float* src1, float* src2, float C1, float C2, float* dst1, float* dst2, int size);
+	void doubleClamp_32f(float* src1, float* src2, float min, float max, float* dst1, float* dst2, int size);
+	void doubleSub_32f(float* src1, float* src2, float* srcSub1, float* srcSub2, float* dst1, float* dst2, int size);
+	void doubleAdd_32f(float* src1, float* src2, float* srcAdd1, float* srcAdd2, float* dst1, float* dst2, int size);
+	void tripleMulC_32f(float* src1, float* src2, float* src3, float C, float* dst1, float* dst2, float* dst3, int size);
+	void doubleAbsIfNegElse0_32f(float* src1, float* src2, float* dst1, float* dst2, int size);
 }
 void reverseMatrix3x3in4x4(mat4nm32f* src, mat4nm32f* dst);
 
 //void addInstrNMC1(HalRingBuffer* commandsRB, int instr, int param0 = 0, int param1 = 0, int param2 = 0, int param3 = 0, int param4 = 0, int param5 = 0);
 
-void setSegmentMask(NMGL_Context_NM0 &cntxt, SegmentMask* masks);
-int pushToTriangles_t(const float *vertexX, const float *vertexY, const float *vertexZ, const v4nm32f* color, Triangles& triangles, int countVertex);
-void rasterizeT(const Triangles* triangles, const SegmentMask* masks, int count);
-void rasterizeL(Lines* lines, int count);
+void setSegmentMask(NMGL_Context_NM0 &cntxt, Triangles &triangles, SegmentMask* masks);
+void pushToTriangles_t(const float *vertexX, const float *vertexY, const float *vertexZ, const v4nm32f* color, Triangles& triangles, int countVertex);
+void rasterizeT(const Triangles* triangles, const SegmentMask* masks);
 
 void fillPolygonsT(Polygons* poly, Triangles* triangles, int count, int segX, int segY);
 void fillPolygonsL(Polygons* poly, Lines* lines, int count, int segX, int segY);
 
 void pow_32f(nm32f* srcVec, nm32f* dstVec, float powC, int size, nm32f* pTmp1);
 
-int cullFaceSortTriangles(Triangles* triangles, int count);
+void cullFaceSortTriangles(Triangles &triangles);
 
 /**
  *  \defgroup color Light
@@ -762,5 +823,6 @@ int cullFaceSortTriangles(Triangles* triangles, int count);
 //! \{
 void light(v4nm32f* vertex, v4nm32f* srcNormal_dstColor, int size);
 //! \}
+
 
 #endif

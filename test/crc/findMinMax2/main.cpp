@@ -1,17 +1,14 @@
 #include "nmpp.h"
 #include "time.h"
 #include <stdio.h>
+#include "demo3d_common.h"
 
-#define NMGL_SIZE 1024
+#define SIZE 1024
 
-#pragma data_section ".data_imu1"
-	float src1[NMGL_SIZE+2];
-#pragma data_section ".data_imu2"
-	float src2[NMGL_SIZE+2];
-#pragma data_section ".data_imu5"
-	float min[NMGL_SIZE+2];
-#pragma data_section ".data_imu6"
-	float max[NMGL_SIZE+2];
+SECTION(".data_imu1") float src1[SIZE+2];
+SECTION(".data_imu2") float src2[SIZE+2];
+SECTION(".data_imu5") float min[SIZE+2];
+SECTION(".data_imu6") float max[SIZE+2];
 	
 	
 extern "C" void findMinMax2(float* src1, float* src2, float* dstMin, float* dstMax, int size);
@@ -21,17 +18,17 @@ int main()
 	
 	clock_t t0,t1;
 	unsigned crc =0;
-	for(int i=0; i < NMGL_SIZE; i++){
+	for(int i=0; i < SIZE; i++){
 		src1[i] = i;
-		src2[i] = NMGL_SIZE - i;
+		src2[i] = SIZE - i;
 	}
-	//nmppsRand_32f(src1, NMGL_SIZE, 1,1000);
-	//nmppsRand_32f(src2, NMGL_SIZE, 1,1000);
-	for (int i = 0; i < NMGL_SIZE + 2; i++) {
+	//nmppsRand_32f(src1, SIZE, 1,1000);
+	//nmppsRand_32f(src2, SIZE, 1,1000);
+	for (int i = 0; i < SIZE + 2; i++) {
 		min[i] = 0;
 		max[i] = 0;
 	}
-	for(int size=2;size<= NMGL_SIZE;size+=2){
+	for(int size=2;size<= SIZE;size+=2){
 		t0=clock();
 		findMinMax2(src1, src2, min, max, size);
 		t1=clock();
