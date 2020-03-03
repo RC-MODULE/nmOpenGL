@@ -1,4 +1,5 @@
 //void mMulCVxN_2s32sExt(nm2s** ppSrcTreangle_2s, int* offsets, int* widths, int* heights, nm32s* pDstTreangle_32s, int* valueC,  int count){
+
 data ".data_demo3d"
 	matr1: long [8]=(0hl, 0hl, 0hl,
 					  11hl,
@@ -126,7 +127,7 @@ begin ".text_demo3d"
 	[matr1+9] = gr5;
 	
 	ar0 = [gr0] with gr0++;
-	gr1 = [gr4]	with gr4++;
+	gr1 = [gr4]	with gr4++;	//offsetX
 	
 	//computing addr first matrix and sb
 	push ar4, gr4	with gr1++;
@@ -140,10 +141,10 @@ begin ".text_demo3d"
 	sb = [ar5++gr5];
 	rep 4 wfifo = [ar4++], ftw,wtw;
 	
-	gr4 = [ar3++];
+	gr4 = [ar3++];		//height
 	ar4 = repNHeightStart	with gr4 <<= 5;
 	delayed goto ar4+gr4;
-		gr4 = [ar2++];
+		gr4 = [ar2++];		//width
 		gr6 = gr4		with gr4>>=1;
 		nul;
 <repNHeightStart>

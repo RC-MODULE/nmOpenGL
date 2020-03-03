@@ -1,5 +1,6 @@
 #ifndef __MY_SERVER_DMA_H__
 #define __MY_SERVER_DMA_H__ 
+#include "time.h"
 
 
 #define MSD_DMA 1
@@ -18,10 +19,14 @@ struct MyDmaTask {
 	int dstStride;
 	int type;
 	msdCallback callback;
+	clock_t t0, t1;
+	int priority;
+	int dummy;
 };
 
 #ifdef __NM__
 inline void msdStartCopy(MyDmaTask* dmaCopy) {
+	dmaCopy->t0 = clock();
 	switch (dmaCopy->type)
 	{
 	case MSD_DMA:
@@ -38,6 +43,7 @@ inline void msdStartCopy(MyDmaTask* dmaCopy) {
 }
 #else
 inline void msdStartCopy(MyDmaTask* dmaCopy) {
+	dmaCopy->t0 = clock();
 	switch (dmaCopy->type)
 	{
 	case MSD_DMA:
@@ -62,15 +68,20 @@ template <int BUFFER_SIZE, int NUM_CHANNELS> class MyDmaServer {
 	msdCallback originCallback;												// адрес преустановленного обработчика DMA   
 public:
 	bool	isWorking;														// флаг сервер находится в режиме исполнения DMA задач
+	int time[NUM_CHANNELS];
+	int size[NUM_CHANNELS];
 	HalRingBufferConnector<MyDmaTask, BUFFER_SIZE>  channel[NUM_CHANNELS];		// DMA каналы 
 	HalRingBufferConnector<MyDmaTask, BUFFER_SIZE>* currentChannel;			// текущий ДМА канал
 	MyDmaTask* currentTask;													// Указатель на текущую задчу. По нему в callback функции можно , например, выставить статус завершенной
 																			// Иниализация кольцевых буферов DMA задач
 																			// Иниализация DMA , сохранение обработчика ПДП
 	MyDmaServer(msdCallback dmaCallback) {
+
 		isWorking = false;
 		for (int ch = 0; ch < NUM_CHANNELS; ch++) {
 			channel[ch].create();											// выделяем кольцевой буфер задач
+			time[ch] = 0;
+			size[ch] = 0;
 		}
 		halDmaInit();														// инициализация ПДП (halDmaInit halDmaInitC halDmaInitA halDmaInitM ... )
 																			//originCallback=halDmaGetCallback();									// сохраняем текущий обработчик ПДП
@@ -142,6 +153,7 @@ unsigned int msdAdd(const void* src, void* dst, int size, int priority = MSD_NUM
 unsigned int msdAdd2D(const void* src, void* dst, unsigned size, unsigned width, unsigned srcStride32, unsigned dstStride32, int priority = MSD_NUM_CHANNELS - 1);
 void msdWaitDma();
 void msdWaitDma(int channel);
+void msdWaitIndexCopy(int index, int priority = MSD_NUM_CHANNELS - 1);
 bool msdGetStatusCopy(int index, int priority = MSD_NUM_CHANNELS - 1);
 
 unsigned int msdAdd(MyDmaTask &task, int priority = MSD_NUM_CHANNELS - 1);

@@ -47,6 +47,7 @@ void rasterizeT(const Triangles* triangles, const SegmentMask* masks){
 				if (resultSize) {
 					waitPolygons(connector);
 					Polygons* poly = connector.ptrHead();
+					poly->count = 0;
 					localTrian.z = (int*)poly->z;
 					localTrian.colors = (v4nm32s*)poly->color;
 					copyArraysByIndices((void**)triangles, indices, (void**)&localTrian, 7, resultSize);

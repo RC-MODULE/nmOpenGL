@@ -55,7 +55,7 @@ FUNCTION(__Z7msdInitv,    "__Z7msdInitv    ");// 0x0000000000000efc [.text_demo3
 FUNCTION(__Z6msdAddPKvPvii,"__Z6msdAddPKvPvii");// 0x0000000000000fde [.text_demo3d]
 FUNCTION(__Z8msdAdd2DPKvPvjjjji,"__Z8msdAdd2DPKvPvjjjji");// 0x00000000000011c4 [.text_demo3d]
 FUNCTION(__Z6msdAddR9MyDmaTaski,"__Z6msdAddR9MyDmaTaski");// 0x00000000000013c4 [.text_demo3d]
-FUNCTION(__Z16msdGetStatusCopyii,"__Z16msdGetStatusCopyii");// 0x00000000000016b6 [.text_demo3d]
+FUNCTION(__Z16msdWaitIndexCopyii,"__Z16msdWaitIndexCopyii");// 0x00000000000016b6 [.text_demo3d]
 FUNCTION(__Z10msdWaitDmav,"__Z10msdWaitDmav");// 0x00000000000016da [.text_demo3d]
 FUNCTION(__Z14selectPatternsPiS_S_S_S_PS_iS_,"__Z14selectPatternsPiS_S_S_S_PS_iS_");// 0x00000000000017b0 [.text_demo3d]
 FUNCTION(_absIfNegElse0,  "_absIfNegElse0  ");// 0x000000000000182c [.text_demo3d]

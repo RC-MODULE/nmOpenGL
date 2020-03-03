@@ -12,11 +12,13 @@
 
 extern ImageConnector hostImageRB;
 
+//#define FAST
+
 int nmglvsHostReadImage(int* dstImage)
 {
 	S_VS_MouseStatus mouseStatus;
 	VS_GetMouseStatus(&mouseStatus);
-#if defined(PROFILER0) || defined(PROFILER1)
+#if defined(PROFILER0) || defined(PROFILER1) || defined (FAST)
 	if (mouseStatus.nKey == VS_MOUSE_LBUTTON) {
 #else
 	if (mouseStatus.nKey != VS_MOUSE_LBUTTON) {

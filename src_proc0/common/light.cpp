@@ -12,6 +12,7 @@
 //^ - единичный вектор
 
 SECTION(".data_imu3") v4nm32f resultColor[3 * NMGL_SIZE];
+SECTION(".data_imu3") float tabl[10] = {0, 1, 2, 4, 8, 16, 32, 64, 128, 256};
 
 extern "C" void maskEq0(v4nm32f* srcVec, v2nm32f* srcMask, v4nm32f* dstVec, int size);
 
@@ -25,8 +26,7 @@ SECTION(".text_demo3d")
 void light(v4nm32f* vertex, v4nm32f* srcNormalDstColor, int countVertex) {
 	v2nm32f* n_dot_vp = (v2nm32f*)(cntxt.buffer0 + 6 * NMGL_SIZE);
 	v2nm32f* n_dot_h_in_srm = (v2nm32f*)(cntxt.buffer1 + 6 * NMGL_SIZE);
-	v2nm32f* length_vp = (v2nm32f*)(cntxt.buffer2 + 6 * NMGL_SIZE);
-	v2nm32f* sqr_length_vp = (v2nm32f*)(cntxt.buffer3 + 6 * NMGL_SIZE);
+	//float* attenuation = (float*)(cntxt.buffer2 + 6 * NMGL_SIZE);
 
 	cntxt.tmp.vec[0] = cntxt.tmp.vec[1] = cntxt.tmp.vec[2] = cntxt.tmp.vec[3] = 0;
 	set_v4nm32f(resultColor, &cntxt.tmp, 3 * NMGL_SIZE);
@@ -47,9 +47,9 @@ void light(v4nm32f* vertex, v4nm32f* srcNormalDstColor, int countVertex) {
 			(v2nm32f*)cntxt.buffer0, (v2nm32f*)cntxt.buffer3);
 		//cntxt.buffer2 = unit VP
 		dotV_gt0_v4nm32f(srcNormalDstColor, (v4nm32f*)cntxt.buffer2, (v2nm32f*)n_dot_vp, countVertex);
-		//dotV_gt0_v4nm32f((v4nm32f*)cntxt.buffer2, (v4nm32f*)cntxt.buffer2, (v2nm32f*)sqr_length_vp, countVertex);
-		//pow_32f((float*)sqr_length_vp, (float*)length_vp, 0.5, 2 * countVertex, cntxt.buffer2);
 
+		dotV_gt0_v4nm32f((v4nm32f*)cntxt.buffer2, (v4nm32f*)cntxt.buffer2, (v2nm32f*)cntxt.buffer0, countVertex);
+		pow_32f((float*)cntxt.buffer0, (float*)cntxt.buffer1, 0.5, 2 * countVertex, cntxt.buffer2);
 
 		cntxt.tmp.vec[0] = cntxt.tmp.vec[1] = cntxt.tmp.vec[3] = 0;
 		cntxt.tmp.vec[2] = 1;
@@ -72,8 +72,8 @@ void light(v4nm32f* vertex, v4nm32f* srcNormalDstColor, int countVertex) {
 
 		nmppsAdd_32f(cntxt.buffer2, (float*)resultColor, (float*)resultColor, 4 * countVertex);
 	}
+
 	addC_v4nm32f((v4nm32f*)resultColor, &cntxt.ambientMul[MAX_LIGHTS],
 		(v4nm32f*)srcNormalDstColor, countVertex);
-
 	
 }

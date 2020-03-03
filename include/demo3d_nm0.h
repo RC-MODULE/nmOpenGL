@@ -795,6 +795,9 @@ extern "C"{
 	// s - specular
 	// f(x) = 1, if (x!=0), else 0
 	void baseLighti(v4nm32f* ambient, v2nm32f* n_dot_vp, v4nm32f* diffuse, v2nm32f* n_dot_h_in_srm, v4nm32f* specular, v4nm32f* dst, int count);
+
+
+	void attenuation(float* srcLin, float* srcSqr, float k0, float k1, float k2, float* dst, int size);
 }
 void reverseMatrix3x3in4x4(mat4nm32f* src, mat4nm32f* dst);
 

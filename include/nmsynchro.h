@@ -7,6 +7,7 @@
 #include "ringbuffert.h"
 #include "stdio.h"
 
+#define NMC1_EMPTY 0x00000000
 #define NMC1_DRAW_TRIANGLES 0xF0000000
 #define NMC1_DRAW_TRIANGLES_TEST 0xF0F00000
 #define NMC1_DRAW_LINES 0xF0010000
@@ -54,9 +55,10 @@ class NMGLSynchro {
 private:
 	NMGLSynchroData* mSynchroData;
 	int dummy;
+public:
 	HalRingBufferConnector<CommandNm1, PRIORITY0_SIZE> connector0;
 	HalRingBufferConnector<CommandNm1, PRIORITY1_SIZE> connector1;
-public:
+
 	int time;
 	int counter;
 

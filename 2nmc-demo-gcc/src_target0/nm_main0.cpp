@@ -109,7 +109,7 @@ SECTION(".text_shared") int main()
 
 	nmglEnable(NMGL_LIGHTING);
 	nmglEnable(NMGL_LIGHT0);
-	float lightVector[4] = { 0, -0.707, 0.707, 0 };
+	float lightVector[4] = { -1, 0.5, 1, 0 };
 	nmglLightfv(NMGL_LIGHT0, NMGL_POSITION, lightVector);
 	float lightDiffuse[4] = { 1, 1, 1, 1 }; 
 	nmglLightfv(NMGL_LIGHT0, NMGL_DIFFUSE, lightDiffuse);
@@ -121,10 +121,10 @@ SECTION(".text_shared") int main()
 	unsigned time;
 
 	/*nmglEnable(NMGL_LIGHT1);
-	float lightVector2[4] = { 0, 0.707, 0.707, 0 };
-	nmglLightfv(NMGL_LIGHT1, NMGL_POSITION, lightVector);
-	float lightDiffuse2[4] = { 1, 1, 0, 1 };
-	nmglLightfv(NMGL_LIGHT1, NMGL_DIFFUSE, lightDiffuse);*/
+	float lightVector2[4] = { 1, 0, 1, 0 };
+	nmglLightfv(NMGL_LIGHT1, NMGL_POSITION, lightVector2);
+	float lightDiffuse2[4] = { 0.8, 0, 0, 1 };
+	nmglLightfv(NMGL_LIGHT1, NMGL_DIFFUSE, lightDiffuse2);*/
 
 	while(nmglvsNm0Run()){
 		nmglEnableClientState(NMGL_VERTEX_ARRAY);
@@ -139,7 +139,8 @@ SECTION(".text_shared") int main()
 		nmglNormalPointer(NMGL_FLOAT, 0, normal_DDR);
 		nmglLoadIdentity();
 		nmglRotatef(angle, 0.707f, 0.707f, 0);
-		materialDiffuse[0] = 1;
+		materialDiffuse[0] = 0.5;
+		materialDiffuse[1] = 1;
 		materialDiffuse[2] = 0;
 		nmglMaterialfv(NMGL_FRONT_AND_BACK, NMGL_DIFFUSE, materialDiffuse);
 		materialSpec[0] = 0.6;
