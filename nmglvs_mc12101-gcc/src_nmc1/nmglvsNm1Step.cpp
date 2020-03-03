@@ -17,15 +17,12 @@ extern int exitNM1;
 SECTION(".data_imu0") CommandNm1 currentCommand;
 SECTION(".data_imu0") volatile int copyImageCounterColor;
 SECTION(".data_imu0") volatile int copyImageCounterDepth;
-SECTION(".data_imu0") clock_t t0core, t1core;
-SECTION(".data_imu0") int timeCore = 0;
 SECTION(".data_shmem1") nm32s colorClearBuff[WIDTH_SEG * HEIGHT_SEG];
 SECTION(".data_shmem1") nm32s depthClearBuff[WIDTH_SEG * HEIGHT_SEG];
 
-
-
 SECTION(".text_demo3d") int copyCounterColor() {
 	return copyImageCounterColor++;
+	//halLed(copyImageCounterColor);
 }
 
 SECTION(".text_demo3d") int copyCounterDepth() {
@@ -34,23 +31,7 @@ SECTION(".text_demo3d") int copyCounterDepth() {
 
 SECTION(".text_nmglvs") int nmglvsNm1Step(NMGL_Context_NM1 &cntxt)
 {	
-	t0core = clock();
 
-	/*int tail = cntxt.synchro.getTail(1);
-	int head = cntxt.synchro.getHead(1);
-	for (int i = tail; i < head; i++) {
-		CommandNm1* src1 = cntxt.synchro.connector1.ptrItem(i);
-		for (int j = i+3; j < head; j++) {
-			CommandNm1* src2 = cntxt.synchro.connector1.ptrItem(j);
-			if (src1->instr_nmc1 == NMC1_COPY_SEG_FROM_IMAGE &&
-				src2->instr_nmc1 == NMC1_COPY_SEG_FROM_IMAGE) {
-				if (src1->params[4] == src2->params[4]) {
-					src2->instr_nmc1 = NMC1_EMPTY;
-					cntxt.synchro.connector1.ptrItem(i + 2)->instr_nmc1 = NMC1_EMPTY;
-				}
-			}
-		}
-	}*/
 	cntxt.synchro.popInstr(&currentCommand);
 
 	switch (currentCommand.instr_nmc1) {
@@ -201,13 +182,11 @@ SECTION(".text_nmglvs") int nmglvsNm1Step(NMGL_Context_NM1 &cntxt)
 		cntxt.t1 = clock();
 		cntxt.synchro.counter++;
 		cntxt.synchro.time = cntxt.t1 - cntxt.t0;
-		printf("time common=%d\n\n", cntxt.synchro.time);
 		cntxt.imagesData->head++;
 		cntxt.colorBuffer.data = cntxt.imagesData->ptrHead();
 		while (cntxt.imagesData->isFull());
 		cntxt.t0 = clock();
-		t0core = clock();
-		timeCore = 0;
+
 		break;
 	}
 	case NMC1_EXIT:
@@ -282,8 +261,6 @@ SECTION(".text_nmglvs") int nmglvsNm1Step(NMGL_Context_NM1 &cntxt)
 	default:
 		break;
 	}
-	t1core = clock();
-	timeCore += t1core - t0core;
 	//printf("synchro: head-tail=%d\n", cntxt.synchro->commandsRB.head - cntxt.synchro->commandsRB.tail);
 	//printf("poly: head-tail=%d\n", cntxt.polygonsRB->head - cntxt.polygonsRB->tail);
 	//printf("image: head-tail=%d\n\n", cntxt.colorBuffer->ringbuffer.head - cntxt.colorBuffer->ringbuffer.tail);

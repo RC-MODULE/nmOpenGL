@@ -54,9 +54,9 @@ void fillPolygonsT(Polygons* poly, Triangles* triangles, int count, int segX, in
 	nmppsSub_32f(triangles->y1, triangles->y0, dy01, count);
 
 	tripleMulC_32f(dy12, dy02, dy01, WIDTH_PTRN / 16, temp0, temp1, temp2, count);
-	nmppsConvert_32f32s_rounding(temp0, poly->ptrnSizesOf32_12 + poly->count, 0, count);
-	nmppsConvert_32f32s_rounding(temp1, poly->ptrnSizesOf32_02 + poly->count, 0, count);
-	nmppsConvert_32f32s_rounding(temp2, poly->ptrnSizesOf32_01 + poly->count, 0, count);
+	nmppsConvert_32f32s_rounding(temp0, poly->ptrnSizesOf32_12, 0, count);
+	nmppsConvert_32f32s_rounding(temp1, poly->ptrnSizesOf32_02, 0, count);
+	nmppsConvert_32f32s_rounding(temp2, poly->ptrnSizesOf32_01, 0, count);
 
 	doubleSub_32f(triangles->x2, triangles->x1, triangles->x0, triangles->x0, dx02, dx01, count);
 	nmppsSub_32f(triangles->x2, triangles->x1, dx12, count);
@@ -82,16 +82,16 @@ void fillPolygonsT(Polygons* poly, Triangles* triangles, int count, int segX, in
 	nmppsAdd_32f(temp2, temp3 + NMGL_SIZE, temp1, count);
 	nmppsAdd_32f(temp3, temp2 + NMGL_SIZE, temp1 + NMGL_SIZE, count);
 	ternaryLt0_AddC_AddC_32f(crossProducts, temp0, NPATTERNS/2, 0, temp3, count);
-	nmppsConvert_32f32s_rounding(temp3, poly->numbersPattrns01 + poly->count, 0, count);
+	nmppsConvert_32f32s_rounding(temp3, poly->numbersPattrns01, 0, count);
 	ternaryLt0_AddC_AddC_32f(crossProducts, temp1, NPATTERNS / 2, 0, temp3, count);
-	nmppsConvert_32f32s_rounding(temp3, poly->numbersPattrns12 + poly->count, 0, count);
+	nmppsConvert_32f32s_rounding(temp3, poly->numbersPattrns12, 0, count);
 	ternaryLt0_AddC_AddC_32f(crossProducts, temp1 + NMGL_SIZE, 0, NPATTERNS / 2, temp3, count);
-	nmppsConvert_32f32s_rounding(temp3, poly->numbersPattrns02 + poly->count, 0, count);
+	nmppsConvert_32f32s_rounding(temp3, poly->numbersPattrns02, 0, count);
 
 	doubleSubC_32f(triangles->y0, minX, cntxt.windowInfo.y0_f[segY], cntxt.windowInfo.x0_f[segX], temp0, temp1, count);
 	doubleAbsIfNegElse0_32f(temp0, temp1, temp2, temp3, count);
-	nmppsConvert_32f32s_rounding(temp2, poly->offsetsY + poly->count, 0, count);
-	nmppsConvert_32f32s_rounding(temp3, poly->offsetsX + poly->count, 0, count);
+	nmppsConvert_32f32s_rounding(temp2, poly->offsetsY, 0, count);
+	nmppsConvert_32f32s_rounding(temp3, poly->offsetsX, 0, count);
 
 	doubleClamp_32f(minX, maxX,
 		cntxt.windowInfo.x0_f[segX], cntxt.windowInfo.x1_f[segX],
@@ -100,13 +100,13 @@ void fillPolygonsT(Polygons* poly, Triangles* triangles, int count, int segX, in
 		cntxt.windowInfo.y0_f[segY], cntxt.windowInfo.y1_f[segY],
 		minY, temp1, count);
 	doubleSub_32f(temp0, temp1, minX, minY, temp2, temp3, count);
-	nmppsConvert_32f32s_rounding(temp2, poly->widths + poly->count, 0, count);
-	nmppsConvert_32f32s_rounding(temp3, poly->heights + poly->count, 0, count);
+	nmppsConvert_32f32s_rounding(temp2, poly->widths, 0, count);
+	nmppsConvert_32f32s_rounding(temp3, poly->heights, 0, count);
 
 	doubleSubC_32f(minX, minY, cntxt.windowInfo.x0_f[segX], cntxt.windowInfo.y0_f[segY], temp0, temp1, count);
 
 	nmppsMulC_AddV_32f(temp1, temp0, temp2, segWidth, count);
-	nmppsConvert_32f32s_rounding(temp2, poly->pointInImage + poly->count, 0, count);
+	nmppsConvert_32f32s_rounding(temp2, poly->pointInImage, 0, count);
 
-	poly->count += count;
+	poly->count = count;
 }

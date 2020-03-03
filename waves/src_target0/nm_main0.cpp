@@ -332,14 +332,14 @@ int main()
 #endif
 		t1 = clock();
 		timeClock = t1 - t0;
-		//printf("computeNormal=%d\n", timeClock);
+		printf("computeNormal=%d\n", timeClock);
 		int error = nmglGetError();
 
 		t0 = clock();
 		nmglDrawArrays(NMGL_TRIANGLES, 0, COUNT_TRIANGLES*3);
 		t1 = clock();
 		timeClock = t1 - t0;
-		//printf("nmglDrawArrays=%d, count=%d\n", timeClock, COUNT_TRIANGLES);
+		printf("nmglDrawArrays=%d\n", timeClock);
 		
 
 		nmglvsSwapBuffer();

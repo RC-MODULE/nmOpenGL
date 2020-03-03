@@ -43,12 +43,7 @@ typedef v4nm8s rgb8888;
 
 #define ZBUFF_MAX 0x7FFFFFFF
 
-//Внимание! При изменении этого параметра следует так же залезть в функцию _mMulCVxN_2s32s
-//и изменить параметр на аналогичный
-#define LOG_2_MAX_SIDE_POLYGON 5
-
-//MAX_SIDE_POLYGON = 32
-#define MAX_SIDE_POLYGON (1 << LOG_2_MAX_SIDE_POLYGON)
+#define MAX_SIDE_POLYGON 32
 #define HEIGHT_PTRN   MAX_SIDE_POLYGON
 #define WIDTH_PTRN    MAX_SIDE_POLYGON
 #define SMALL_SIZE 	  16
@@ -57,18 +52,9 @@ typedef v4nm8s rgb8888;
 #define AMOUNT_ANGLES (2*WIDTH_PTRN + 2*HEIGHT_PTRN)
 #define NPATTERNS 	  AMOUNT_ANGLES * OFFSETS * 2
 
-typedef int Pattern[WIDTH_PTRN * HEIGHT_PTRN / 16];
-
 struct Patterns {
-	Pattern ptrns[NPATTERNS];
+	int ptrns[NPATTERNS * WIDTH_PTRN * HEIGHT_PTRN / 16];
 	int table_dydx[(2 * WIDTH_PTRN) * (HEIGHT_PTRN + 2)];
-};
-
-struct Rectangle {
-	int x0;
-	int y0;
-	int width;
-	int height;
 };
 
 /**
@@ -92,16 +78,10 @@ struct Polygons {
 	int z[NMGL_SIZE];
 	int offsetsY[NMGL_SIZE];
 	int heights[NMGL_SIZE];
-
-	//Rectangle windowPtrns[NMGL_SIZE];
 	
 
 	int count;
 	int dummy[15];
-
-	Polygons() {
-		count = 0;
-	}
 };
 
 typedef HalRingBufferData<Polygons, COUNT_POLYGONS_BUFFER> PolygonsArray;
