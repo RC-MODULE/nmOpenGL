@@ -28,6 +28,7 @@ void nmglMatrixMode(NMGLenum mode);
 void nmglPushMatrix();
 void nmglPopMatrix();
 void nmglLoadIdentity();
+void nmglFlush();
 void nmglViewport(NMGLint x, NMGLint y, NMGLsizei width, NMGLsizei height);
 void nmglClear(NMGLbitfield mask);
 void nmglLightf(NMGLenum color, NMGLenum pname, NMGLfloat param);

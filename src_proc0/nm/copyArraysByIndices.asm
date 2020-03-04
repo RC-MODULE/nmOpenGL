@@ -15,10 +15,10 @@ begin ".text_demo3d"
 	gr6 = [--ar5];
 	gr2 = [--ar5];
 	gr5 = [--ar5];	
+	ar0 = gr0;
 	ar6 = gr6;
 <NextIndex>
-	gr1 = [ar2++];
-	ar0 = gr0		with gr7 = gr2;
+	gr1 = [ar2++]	with gr7 = gr2;
 <NextArray>
 	ar1 = [ar0++];
 	ar4 = [ar6++]	with gr7--;
@@ -27,9 +27,9 @@ begin ".text_demo3d"
 		[ar4 += gr4] = ar5;
 	
 	with gr5--;
-	if > delayed goto NextIndex;
+	if > delayed goto NextIndex	with gr4++;
 		ar6 = gr6;
-		with gr4++;
+		ar0 = gr0;
 	
 	pop ar6, gr6;
 	pop ar5, gr5;

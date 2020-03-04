@@ -798,14 +798,12 @@ extern "C"{
 }
 void reverseMatrix3x3in4x4(mat4nm32f* src, mat4nm32f* dst);
 
-//void addInstrNMC1(HalRingBuffer* commandsRB, int instr, int param0 = 0, int param1 = 0, int param2 = 0, int param3 = 0, int param4 = 0, int param5 = 0);
-
 void setSegmentMask(NMGL_Context_NM0 &cntxt, Triangles &triangles, SegmentMask* masks);
 void pushToTriangles_t(const float *vertexX, const float *vertexY, const float *vertexZ, const v4nm32f* color, Triangles& triangles, int countVertex);
 void rasterizeT(const Triangles* triangles, const SegmentMask* masks);
 
-void fillPolygonsT(Polygons* poly, Triangles* triangles, int count, int segX, int segY);
-void fillPolygonsL(Polygons* poly, Lines* lines, int count, int segX, int segY);
+void updatePolygonsT(Polygons* poly, Triangles* triangles, int count, int segX, int segY);
+void updatePolygonsL(Polygons* poly, Lines* lines, int count, int segX, int segY);
 
 void pow_32f(nm32f* srcVec, nm32f* dstVec, float powC, int size, nm32f* pTmp1);
 
