@@ -3,12 +3,15 @@
 #include "nmgl.h"
 #include "nmglvs_nmc1.h"
 
+#include "link.h"
+
 
 SECTION(".data_imu0")	NMGL_Context_NM1 nmglContextNM1;
 
 int main()
 { 
 	nmglvsNm1Init(nmglContextNM1);
+
 	while (nmglvsNm1Run(nmglContextNM1)) {
 		nmglvsNm1Step(nmglContextNM1);
 	}

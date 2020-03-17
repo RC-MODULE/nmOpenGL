@@ -77,7 +77,7 @@ void createArrayVec4(
 	if(pol_num%2){
 		//case if amm of poligones is odd to prevent rubbish at the end of double word of nm_6407
 		for (int i = 0; i < 9; i++) {
-			verticesVec4[9 * pol_num + i] = 0;
+			verticesVec4[12 * pol_num + i] = 0;
 			normalVec4[9 * pol_num + i] = 0;
 		}
 		pol_num++;

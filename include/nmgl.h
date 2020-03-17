@@ -7,6 +7,18 @@
 
 #include "demo3d_common.h"
 
+void nmglBegin(NMGLenum mode);
+void nmglEnd();
+void nmglVertex2f(NMGLfloat x, NMGLfloat y);
+void nmglVertex2fv(const NMGLfloat *v);
+void nmglVertex3f(NMGLfloat x, NMGLfloat y, NMGLfloat z);
+void nmglVertex3fv(const NMGLfloat *v);
+void nmglNormal3f(NMGLfloat x, NMGLfloat y, NMGLfloat z);
+void nmglNormal3fv(const NMGLfloat *v);
+void nmglColor4f(NMGLfloat red, NMGLfloat green, NMGLfloat blue, NMGLfloat alpha);
+void nmglColor4ub(NMGLubyte red, NMGLubyte green, NMGLubyte blue, NMGLubyte alpha);
+void nmglColor4fv(NMGLfloat *v);
+void nmglColor4ub(NMGLubyte *v);
 void nmglCullFace(NMGLenum mode);
 void nmglRotatef(NMGLfloat angle, NMGLfloat x, NMGLfloat y, NMGLfloat z);
 void nmglScalef(NMGLfloat x, NMGLfloat y, NMGLfloat z);

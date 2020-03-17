@@ -7,7 +7,6 @@
 #include "nmprofiler.h"
 
 SECTION(".data_imu7")   int indices[NMGL_SIZE];
-SECTION(".data_shared") Polygons polygons[36];
 SECTION(".data_imu7")   Triangles localTrian2;
 SECTION(".data_imu7")   Triangles localTrian;
 

@@ -75,7 +75,7 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 	for (int i = 0; i < 36; i++) {
 		masks[i].bits = masksBits[i];
 	}
-
+	
 	while (!vertexAM.isEmpty()) {
 		//vertex
 		int localSize = vertexAM.pop(cntxt.buffer0) / cntxt.vertexArray.size;

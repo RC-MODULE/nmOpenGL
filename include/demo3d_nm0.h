@@ -31,6 +31,30 @@ struct Triangles{
 };
 void copyTriangles(const Triangles &src, int offsetSrc, Triangles &dst, int offsetDst, int size);
 
+class NmglBeginEndInfo{
+public:
+	v4nm32f* vertex;
+	v4nm32f* normal;
+	v4nm32f* color;
+	int vertexCounter;
+	int normalCounter;
+	int colorCounter;
+
+	NMGLenum mode;
+	bool inBeginEnd;
+
+	int dummy;
+	int maxSize;
+
+	NmglBeginEndInfo(){
+		vertexCounter = 0;
+		normalCounter = 0;
+		colorCounter = 0;
+		inBeginEnd = false;
+	}
+
+};
+
 struct MatrixStack {
 	mat4nm32f* base;
 	int current;
@@ -60,6 +84,7 @@ struct NMGL_Context_NM0 {
 	float* buffer3;
 
 	Triangles trianInner;
+	NmglBeginEndInfo beginEndInfo;
 
 	mat4nm32f modelviewMatrix[16];
 	mat4nm32f projectionMatrix[2];
@@ -801,7 +826,6 @@ void reverseMatrix3x3in4x4(mat4nm32f* src, mat4nm32f* dst);
 void setSegmentMask(NMGL_Context_NM0 &cntxt, Triangles &triangles, SegmentMask* masks);
 void pushToTriangles_t(const float *vertexX, const float *vertexY, const float *vertexZ, const v4nm32f* color, Triangles& triangles, int countVertex);
 void rasterizeT(const Triangles* triangles, const SegmentMask* masks);
-
 void updatePolygonsT(Polygons* poly, Triangles* triangles, int count, int segX, int segY);
 void updatePolygonsL(Polygons* poly, Lines* lines, int count, int segX, int segY);
 
