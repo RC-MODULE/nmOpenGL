@@ -67,7 +67,6 @@ FUNCTION(_copyPacket_32u, "_copyPacket_32u ");// 0x00000000000019f6 [.text_demo3
 FUNCTION(_depthTest,      "_depthTest      ");// 0x0000000000001a94 [.text_demo3d]
 FUNCTION(_totalSum,       "_totalSum       ");// 0x0000000000001ac6 [.text_demo3d]
 FUNCTION(_mAndVxN_32u,    "_mAndVxN_32u    ");// 0x0000000000001ad8 [.text_demo3d]
-FUNCTION(_matrixSetC_32s, "_matrixSetC_32s ");// 0x0000000000001b82 [.text_demo3d]
 FUNCTION(_mergePtrnsAddr2,"_mergePtrnsAddr2");// 0x0000000000001ba4 [.text_demo3d]
 FUNCTION(_mergePtrnsAddr3,"_mergePtrnsAddr3");// 0x0000000000001c96 [.text_demo3d]
 FUNCTION(_mMaskVxN_32s,   "_mMaskVxN_32s   ");// 0x0000000000001dca [.text_demo3d]

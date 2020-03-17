@@ -4,6 +4,7 @@
 #include "stdio.h"
 #include "nmpp.h"
 #include "nmgl.h"
+#include "link.h"
 #include "nmglvs_nmc0.h"
 	
 #pragma data_section ".data_shared"
@@ -40,7 +41,6 @@ SECTION(".data_shared") float twoTriangles[24 * 4] = {
 	110, 90, 0, 1,
 	125, 95, 0, 1,
 };
-
 
 SECTION(".text_shared") int main()
 {
@@ -119,6 +119,13 @@ SECTION(".text_shared") int main()
 	float angle = 0;
 	NMGLenum error;
 	unsigned time;
+
+	/*nmglEnable(NMGL_LIGHT1);
+	float lightVector2[4] = { 0, 0.707, 0.707, 0 };
+	nmglLightfv(NMGL_LIGHT1, NMGL_POSITION, lightVector);
+	float lightDiffuse2[4] = { 1, 1, 0, 1 };
+	nmglLightfv(NMGL_LIGHT1, NMGL_DIFFUSE, lightDiffuse);*/
+
 	while(nmglvsNm0Run()){
 		nmglEnableClientState(NMGL_VERTEX_ARRAY);
 		nmglEnableClientState(NMGL_NORMAL_ARRAY);
@@ -127,6 +134,7 @@ SECTION(".text_shared") int main()
 		//nmglTranslatef(1, 0, 0);
 		//nmglVertexPointer(4, NMGL_FLOAT, 0, twoTriangles);
 		//nmglDrawArrays(NMGL_LINES, 0, 24);
+		
 
 		nmglVertexPointer(4, NMGL_FLOAT, 0, vertices_DDR);
 		nmglNormalPointer(NMGL_FLOAT, 0, normal_DDR);
@@ -154,6 +162,7 @@ SECTION(".text_shared") int main()
 		nmglMaterialfv(NMGL_FRONT_AND_BACK, NMGL_SPECULAR, materialSpec);
 		nmglRotatef(angle, 0.707, 0.707, 0);
 		nmglTranslatef(150, 150, 0);
+
 		nmglDrawArrays(NMGL_TRIANGLES, 0, 3 * amountPolygons2);
 #ifdef __OPEN_GL__
 		angle += 0.03;
@@ -162,7 +171,7 @@ SECTION(".text_shared") int main()
 #endif // __OPEN_GL__
 
 		nmglDisableClientState(NMGL_VERTEX_ARRAY);
-		nmglDisableClientState(NMGL_NORMAL_ARRAY);
+		//nmglDisableClientState(NMGL_NORMAL_ARRAY);
 
 		//nmglFinish();
 		nmglvsSwapBuffer();

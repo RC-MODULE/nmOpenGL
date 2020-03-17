@@ -82,6 +82,10 @@ struct Polygons {
 
 	int count;
 	int dummy[15];
+
+	Polygons() : count(0) {
+		
+	}
 };
 
 typedef HalRingBufferData<Polygons, COUNT_POLYGONS_BUFFER> PolygonsArray;

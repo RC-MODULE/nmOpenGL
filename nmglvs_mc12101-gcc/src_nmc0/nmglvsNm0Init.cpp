@@ -61,6 +61,15 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 
 		cntxt.patterns = (Patterns*)halSyncAddr((int*)synchroData, 1);
 		halSyncAddr((int*)cntxt.polygonsData, 1);
+
+		cntxt.beginEndInfo.vertex = myMallocT<v4nm32f>(BIG_NMGL_SIZE);
+		cntxt.beginEndInfo.normal = myMallocT<v4nm32f>(BIG_NMGL_SIZE);
+		cntxt.beginEndInfo.color = myMallocT<v4nm32f>(BIG_NMGL_SIZE);
+		cntxt.beginEndInfo.maxSize = BIG_NMGL_SIZE;
+		/*printf("vertex=0x%x, normal=0x%x, color=0x%x\n", 
+			cntxt.beginEndInfo.vertex,
+			cntxt.beginEndInfo.normal,
+			cntxt.beginEndInfo.color);*/
 	}
 	catch (int& e) {
 		if (e == -2) {

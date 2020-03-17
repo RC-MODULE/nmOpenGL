@@ -9,7 +9,7 @@ SECTION(".data_imu7") int viewportValues[4];
 SECTION(".data_imu7") float viewportValues_f[4];
 
 SECTION(".text_nmgl")
-void nmglViewport(int x, int y, int width, int height) {
+void nmglViewport(NMGLint x, NMGLint y, NMGLsizei width, NMGLsizei height) {
 	viewportValues[0] = width / 2;
 	viewportValues[1] = x + width / 2;
 	viewportValues[2] = -height / 2;

@@ -28,6 +28,7 @@ begin ".text_demo3d"
 <NextRep32>
 	fpu 0 rep 32 vreg0 = [ar0++];
 	fpu 0 .float vreg0 + vreg0, set mask if =0;
+	fp0_lmask = fp0_lmask;
 	if > delayed goto NextRep32	with gr5--;
 		fpu 0 .float vreg0 = mask ? vreg4 : vreg0;
 		fpu 0 rep 32 [ar6++] = vreg0;
@@ -40,6 +41,7 @@ begin ".text_demo3d"
 	fpu 0 rep vlen vreg4 = [ar5];
 	fpu 0 rep vlen vreg0 = [ar0++];
 	fpu 0 .float vreg0 + vreg0, set mask if =0;
+	fp0_lmask = fp0_lmask;
 	fpu 0 .float vreg0 = mask ? vreg4 : vreg0;
 	fpu 0 rep vlen [ar6++] = vreg0;
 <EndProgram>
