@@ -47,7 +47,7 @@ void nmglColor4fv(NMGLfloat *v)
 }
 
 SECTION(".text_nmgl")
-void nmglColor4ub(NMGLubyte *v)
+void nmglColor4ubv(NMGLubyte *v)
 {
 	CHECK_SIZE();
 	int i = cntxt.beginEndInfo.colorCounter;
