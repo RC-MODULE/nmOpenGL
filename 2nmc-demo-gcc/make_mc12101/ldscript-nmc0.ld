@@ -9,8 +9,9 @@ MEMORY
   C0_IMU6 : ORIGIN = 0x000C0000, LENGTH = 0x00020000
   C0_IMU7 : ORIGIN = 0x000E0000, LENGTH = 0x00020000
   SHMEM0 : ORIGIN = 0x002A0000, LENGTH = 0x00020000
-  EMI : ORIGIN = 0x80000000, LENGTH = 0x1BFFFFC0
-  SYNCRO : ORIGIN = 0x9BFFFFC0, LENGTH = 0x00000040
+  EMI0 : ORIGIN = 0x80000000, LENGTH = 0x8000000
+  EMI2 : ORIGIN = 0x90000000, LENGTH = 0x8000000
+  SYNCRO : ORIGIN = 0x9FFFFFC0, LENGTH = 0x00000040
 }
 
 SECTIONS
@@ -18,7 +19,7 @@ SECTIONS
   .text : ALIGN(0x8)
   {
     *(.text);
-  } > EMI
+  } > EMI0
   .text_int : ALIGN(0x8)
   {
     *(.text_int);
@@ -26,7 +27,7 @@ SECTIONS
   .text_nmgl : ALIGN(0x8)
   {
     *(.text_nmgl);
-  } > EMI
+  } > EMI0
   .text_nmplv : ALIGN(0x8)
   {
     *(.text_nmplv);
@@ -38,7 +39,7 @@ SECTIONS
   .text_hal : ALIGN(0x8)
   {
     *(.text_hal);
-  } > EMI
+  } > EMI0
   .text_hal_libc : ALIGN(0x8)
   {
     *(.text_hal_libc);
@@ -46,7 +47,7 @@ SECTIONS
   .text_nmprofiler : ALIGN(0x8)
   {
     *(.text_nmprofiler);
-  } > EMI
+  } > EMI0
   .init : ALIGN(0x8)
   {
     *(.init);
@@ -99,18 +100,26 @@ SECTIONS
   {
     *(.data_shmem0);
   } > SHMEM0
-  .data_shared : ALIGN(0x8)
+  .data_shared0 : ALIGN(0x8)
   {
-    *(.data_shared);
-  } > EMI
-  .data_shared.bss : ALIGN(0x8)
+    *(.data_shared0);
+  } > EMI0
+  .data_shared0.bss : ALIGN(0x8)
   {
-    *(.data_shared.bss);
-  } > EMI
+    *(.data_shared0.bss);
+  } > EMI0
+  .data_shared2 : ALIGN(0x8)
+  {
+    *(.data_shared2);
+  } > EMI2
+  .data_shared2.bss : ALIGN(0x8)
+  {
+    *(.data_shared2.bss);
+  } > EMI2
   .data_DDR : ALIGN(0x8)
   {
     *(.data_DDR);
-  } > EMI
+  } > EMI0
   .data : ALIGN(0x8)
   {
     *(.data);
@@ -130,11 +139,11 @@ SECTIONS
   .rpc_services.bss : ALIGN(0x8)
   {
     *(.rpc_services.bss);
-  } > EMI
+  } > EMI0
   .rpc_services : ALIGN(0x8)
   {
     *(.rpc_services);
-  } > EMI
+  } > EMI0
   
   .heap : ALIGN(0x8)
   {
@@ -193,9 +202,15 @@ SECTIONS
   .heap10 : ALIGN(0x8)
   {
     *(.heap10);
-	. = ORIGIN(EMI) + LENGTH(EMI);
+	. = ORIGIN(EMI0) + LENGTH(EMI0);
     __HEAP_10_END = .;
-  } > EMI
+  } > EMI0
+  .heap12 : ALIGN(0x8)
+  {
+    *(.heap12);
+	. = ORIGIN(EMI2) + LENGTH(EMI2);
+    __HEAP_12_END = .;
+  } > EMI2
   
   
 }

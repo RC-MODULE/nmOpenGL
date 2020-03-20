@@ -5,9 +5,9 @@ MEMORY
   C1_IMU2 : ORIGIN = 0x00040000, LENGTH = 0x00020000
   C1_IMU3 : ORIGIN = 0x00060000, LENGTH = 0x00020000
   SHMEM1 : ORIGIN = 0x002C0000, LENGTH = 0x00040000
-  SYNCRO : ORIGIN = 0x9BFFFFC0, LENGTH = 0x00000040
-  EMI2 : ORIGIN = 0x9C000000, LENGTH = 0x02000000
-  EMI3 : ORIGIN = 0x9E000000, LENGTH = 0x02000000
+  EMI1 : ORIGIN = 0x88000000, LENGTH = 0x8000000
+  EMI3 : ORIGIN = 0x98000000, LENGTH = 0x7FFFFC0
+  SYNCRO : ORIGIN = 0x9FFFFFC0, LENGTH = 0x00000040
 }
 
 SECTIONS
@@ -15,11 +15,11 @@ SECTIONS
   .text : ALIGN(0x8)
   {
     *(.text);
-  } > EMI2
+  } > EMI1
   .text_hal_libc : ALIGN(0x8)
   {
     *(.text_hal_libc);
-  } > EMI2
+  } > EMI1
   .text_demo3d : ALIGN(0x8)
   {
     *(.text_demo3d);
@@ -27,19 +27,19 @@ SECTIONS
   .text_nmglvs : ALIGN(0x8)
   {
     *(text_nmglvs);
-  } > EMI2
+  } > EMI1
   .text_hal : ALIGN(0x8)
   {
     *(.text_hal);
-  } > EMI2
+  } > EMI1
   .text_demo3dExt : ALIGN(0x8)
   {
     *(.text_demo3dExt);
-  } > EMI2
+  } > EMI1
   .text_nmprofiler : ALIGN(0x8)
   {
     *(.text_nmprofiler);
-  } > EMI2
+  } > EMI1
   .init : ALIGN(0x8)
   {
     *(.init);
@@ -104,10 +104,10 @@ SECTIONS
   {
     *(.data_shmem1);
   } > SHMEM1
-  .data_shared2 : ALIGN(0x8)
+  .data_shared1 : ALIGN(0x8)
   {
-    *(.data_shared2);
-  } > EMI2
+    *(.data_shared1);
+  } > EMI1
   .data_shared3 : ALIGN(0x8)
   {
     *(.data_shared3);
@@ -119,19 +119,19 @@ SECTIONS
   .rpc_services.bss : ALIGN(0x8)
   {
     *(.rpc_services.bss);
-  } > EMI2
+  } > EMI1
   .rpc_services : ALIGN(0x8)
   {
     *(.rpc_services);
-  } > EMI2
+  } > EMI1
   .heap : ALIGN(0x8)
   {
 	*(.heap);
-  } > EMI2
+  } > EMI1
   .heap1 : ALIGN(0x8)
   {
     *(.heap1);
-  } > EMI2
+  } > EMI1
   .heap2 : ALIGN(0x8)
   {
     *(.heap2);
@@ -150,16 +150,16 @@ SECTIONS
 	. = ORIGIN(SHMEM1) + LENGTH(SHMEM1);
     __HEAP_9_END = .;
   } > SHMEM1
-  .heap10 : ALIGN(0x8)
-  {
-    *(.heap10);
-	. = ORIGIN(EMI2) + LENGTH(EMI2);
-    __HEAP_10_END = .;
-  } > EMI2
   .heap11 : ALIGN(0x8)
   {
     *(.heap11);
-	. = ORIGIN(EMI3) + LENGTH(EMI3);
+	. = ORIGIN(EMI1) + LENGTH(EMI1);
     __HEAP_11_END = .;
+  } > EMI1
+  .heap13 : ALIGN(0x8)
+  {
+    *(.heap13);
+	. = ORIGIN(EMI3) + LENGTH(EMI3);
+    __HEAP_13_END = .;
   } > EMI3
 }

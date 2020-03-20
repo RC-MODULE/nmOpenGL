@@ -54,7 +54,7 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 		setHeap(8);
 		NMGLSynchroData* synchroData = myMallocT<NMGLSynchroData>();
 		synchroData->init();
-		setHeap(10);
+		setHeap(12);
 		PolygonsArray* polygonsArray = myMallocT<PolygonsArray>();
 		polygonsArray->init();
 		cntxt.init(synchroData, polygonsArray);

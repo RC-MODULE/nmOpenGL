@@ -7,12 +7,11 @@
 #include "link.h"
 #include "nmglvs_nmc0.h"
 	
-#pragma data_section ".data_shared"
-//SECTION(".data_shared") float vertices_DDR[2000 * 12];
-//SECTION(".data_shared") float normal_DDR[2000 * 9];
-//SECTION(".data_shared") float vertices_DDR2[2000 * 12];
-//SECTION(".data_shared") float normal_DDR2[2000 * 9];
-SECTION(".data_shared") float twoTriangles[24 * 4] = {
+//SECTION(".data_shared0") float vertices_DDR[2000 * 12];
+//SECTION(".data_shared0") float normal_DDR[2000 * 9];
+//SECTION(".data_shared0") float vertices_DDR2[2000 * 12];
+//SECTION(".data_shared0") float normal_DDR2[2000 * 9];
+SECTION(".data_shared0") float twoTriangles[24 * 4] = {
 	110, 90, 0, 1,
 	90, 110, 0, 1,
 	90, 90, 0, 1,
@@ -42,7 +41,7 @@ SECTION(".data_shared") float twoTriangles[24 * 4] = {
 	125, 95, 0, 1,
 };
 
-SECTION(".text_shared") int main()
+SECTION(".text_shared0") int main()
 {
 	nmglvsNm0Init();
 	setHeap(10);

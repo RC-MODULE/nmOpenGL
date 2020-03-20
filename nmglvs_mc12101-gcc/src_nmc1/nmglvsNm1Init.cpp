@@ -7,6 +7,7 @@
 #include "ringbuffer.h"
 #include "nmprofiler.h"
 #include "cache.h"
+#include "nmgl_data1.h"
 
 #include "nmgl.h"
 
@@ -34,6 +35,7 @@ int exitNM1 = 0;
 
 template<class T> T* myMallocT(int size) {
 	T* result = (T*)halMalloc32(size * sizeof32(T));
+
 	if (result == 0) throw -2;
 	return result;
 }
@@ -44,7 +46,7 @@ template<class T> T* myMallocT() {
 	return result;
 }
 
-SECTION(".text_nmglvs") int nmglvsNm1Init(NMGL_Context_NM1& cntxt)
+SECTION(".text_nmglvs") int nmglvsNm1Init()
 {
 	halSleep(100);
 	halSetProcessorNo(1);
@@ -57,13 +59,16 @@ SECTION(".text_nmglvs") int nmglvsNm1Init(NMGL_Context_NM1& cntxt)
 		}
 		setHeap(11);
 		cntxt.patterns = myMallocT<Patterns>();
+
 		NMGLSynchroData* synchroData = (NMGLSynchroData*)halSyncAddr((int*)cntxt.patterns, 0);
 		cntxt.synchro.init(synchroData);
 		cntxt.polygonsData = (PolygonsArray*)halSyncAddr(0, 0);
 
+		setHeap(13);
 		cntxt.imagesData = myMallocT<ImageData>();
 		cntxt.imagesData->init();
 
+		setHeap(11);
 		DepthImage32* depthImage = myMallocT<DepthImage32>();
 
 		cntxt.colorBuffer.init(cntxt.imagesData->ptrHead(), WIDTH_IMAGE, HEIGHT_IMAGE);

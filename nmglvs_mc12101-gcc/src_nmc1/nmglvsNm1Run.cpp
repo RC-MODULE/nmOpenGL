@@ -8,6 +8,7 @@
 #include "ringbuffer.h"
 #include "nmprofiler.h"
 #include "cache.h"
+#include "nmgl_data1.h"
 
 #include "nmgl.h"
 
@@ -16,7 +17,7 @@
 
 extern int exitNM1;
 
-SECTION(".text_nmglvs") int nmglvsNm1Run(NMGL_Context_NM1 &cntxt)
+SECTION(".text_nmglvs") int nmglvsNm1Run()
 {
 	if(exitNM1 == 0){
 		return 1;
