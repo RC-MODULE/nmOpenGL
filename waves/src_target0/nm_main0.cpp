@@ -41,7 +41,7 @@ struct Vector3f {
 	float z;
 };
 
-SECTION(".data_shared") float colorTriangles[4 * FRAME_SIZE];
+SECTION(".data_shared0") float colorTriangles[4 * FRAME_SIZE];
 
 SECTION(".data_imu1") nm32fcr h0_sram[STR_SIZE];
 SECTION(".data_imu1") nm32f   re_im_sram[COL_SIZE];
