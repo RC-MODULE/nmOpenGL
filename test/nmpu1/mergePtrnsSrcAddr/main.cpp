@@ -3,6 +3,7 @@
 #include "time.h"
 #include "stdio.h"
 #include "demo3d_common.h"
+#include "demo3d_nm0.h"
 
 #define SIZE 1024
 ///////////////////////////////////////////////////////////////////////////////////////
