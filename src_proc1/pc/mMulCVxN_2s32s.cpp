@@ -4,27 +4,28 @@ int addC4DepthTest = ZBUFF_MAX;
 
 extern "C" {
 	
-	void mMulCVxN_2s32sExt(nm2s** ppSrcTreangle_2s, int* offsets, int* widths, int* heights, nm32s* pDstTreangle, int* valueC,  int count){
+	void mMulCVxN_2s32s(Patterns* patterns, Rectangle* windows, int* valueC, nm32s* pDstTreangle,  int count){
 		long long int temp;
 		nm32s* dst = pDstTreangle;
 		for(int c=0;c<count;c++){
-			long long int* src = (nm64s*) ppSrcTreangle_2s[c];
+			long long int* src = (nm64s*) patterns[c];
+			src += windows.y;
 			int x0;
-			int width = widths[c];
+			int width = windows[c].width;
 
-			if (offsets[c] == -1) {
+			if (windows[c].x == -1) {
 				width--;
 			}
 			
-			for(int y = 0; y < heights[c]; y++){
+			for(int y = 0; y < windows[c].height; y++){
 				temp = src[y];
-				nm32s* pDst = dst + y * widths[c];
+				nm32s* pDst = dst + y * windows[c].width;
 				if (offsets[c] == -1) {
 					*pDst = addC4DepthTest;
 					pDst++;
 				}
 				else {
-					temp >>= (offsets[c] * 2);
+					temp >>= (windows[c].x * 2);
 				}
 				for(int x = 0; x < width; x++){
 					int mul = ((temp & 0x3) * valueC[c]);
@@ -34,7 +35,7 @@ extern "C" {
 					temp >>= 2;
 				}
 			}
-			dst += heights[c] * widths[c];
+			dst += windows[c].height * windows[c].width;
 			
 		}
 	}

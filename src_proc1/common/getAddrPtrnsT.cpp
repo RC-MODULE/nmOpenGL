@@ -20,8 +20,9 @@ inline void ADD_COPY(const void* src, void* dst, int size, int i) {
 	points[i] = msdAdd(task, 0);
 }
 
-SECTION(".text_demo3d") int getAddrPtrnsT(NMGL_Context_NM1* context, Patterns* patterns, Polygons* poly){
+SECTION(".text_demo3d") int getAddrPtrnsT(NMGL_Context_NM1* context, Polygons* poly){
 	Polygons* polyTmp = (Polygons*)context->buffer0;
+	PatternsArray* patterns = context->patterns;
 	int size = poly->count;
 	nm32s* temp0 = nmppsAddr_32s(context->buffer0, sizeof32(Polygons));
 	nm32s* dydx = nmppsAddr_32s(temp0, NMGL_SIZE);

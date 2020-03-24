@@ -58,7 +58,7 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 			throw -1;
 		}
 		setHeap(11);
-		cntxt.patterns = myMallocT<Patterns>();
+		cntxt.patterns = myMallocT<PatternsArray>();
 
 		NMGLSynchroData* synchroData = (NMGLSynchroData*)halSyncAddr((int*)cntxt.patterns, 0);
 		cntxt.synchro.init(synchroData);
@@ -104,9 +104,9 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 
 	for (int j = 0; j < SMALL_SIZE; j++) {
 		int off = j * WIDTH_PTRN*HEIGHT_PTRN / 16;
-		cntxt.ppPtrns1_2s[j] = nmppsAddr_32s((nm32s*)pool0, off);
-		cntxt.ppPtrns2_2s[j] = nmppsAddr_32s((nm32s*)pool1, off);
-		cntxt.ppPtrnsCombined_2s_basic[j] = nmppsAddr_32s(cntxt.polyImgTmp, off);
+		cntxt.ppPtrns1_2s[j] = (Pattern*)nmppsAddr_32s((nm32s*)pool0, off);
+		cntxt.ppPtrns2_2s[j] = (Pattern*)nmppsAddr_32s((nm32s*)pool1, off);
+		cntxt.ppPtrnsCombined_2s[j] = cntxt.polyImgTmp + j;
 		cntxt.minusOne[j] = -1;
 	}
 	//sync3

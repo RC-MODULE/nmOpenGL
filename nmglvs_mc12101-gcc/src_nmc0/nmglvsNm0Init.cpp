@@ -59,7 +59,7 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 		polygonsArray->init();
 		cntxt.init(synchroData, polygonsArray);
 
-		cntxt.patterns = (Patterns*)halSyncAddr((int*)synchroData, 1);
+		cntxt.patterns = (PatternsArray*)halSyncAddr((int*)synchroData, 1);
 		halSyncAddr((int*)cntxt.polygonsData, 1);
 
 		cntxt.beginEndInfo.vertex = myMallocT<v4nm32f>(BIG_NMGL_SIZE);

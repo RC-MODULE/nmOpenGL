@@ -5,18 +5,28 @@
 #include <stdio.h>
 
 
+SECTION(".data_imu0") Rectangle windows[NMGL_SIZE];
+
 SECTION(".text_demo3d") void drawTriangles(NMGL_Context_NM1* context) {
 	PolygonsConnector connector(context->polygonsData);
 	Polygons* poly = connector.ptrTail();
-	getAddrPtrnsT(context, context->patterns, poly);
+	getAddrPtrnsT(context, poly);
 	nm32s* mulZ = context->buffer0;
 	nm32s* mulC = context->buffer0;
 	nm32s* zMaskBuffer = context->buffer1;
-	
+
+	msdWaitDma(0);
+
+	merge_v4nm32s(context->offsetTrX,
+		context->offsetTrY,
+		context->widths, 
+		context->heights, 
+		(v4nm32s*)windows, 
+		poly->count);
+
 	int point = 0;
 
 	msdWaitDma(1);
-	msdWaitDma(0);
 	int countTrangles = poly->count;
 	(*connector.pTail)++;
 
@@ -29,41 +39,37 @@ SECTION(".text_demo3d") void drawTriangles(NMGL_Context_NM1* context) {
 		int* valuesC = context->valuesC + point;
 		int* valuesZ = context->valuesZ + point;
 
+		//копирование паттернов во внутреннюю память. Паттерны копируются
+		//не полностью, чтобы сэкономить время на пересылку
 		copyPacket_32s(context->ppSrcPackPtrns + point_x3, 
 			context->ppDstPackPtrns + point_x3, 
 			context->nSizePtrn32 + point_x3, 3 * localSize);
 
+		//объединение паттернов сторон в паттерн треугольника
+		//объединение происходит не полностью (только значимой части) для
+		//оптимизации
 		mAndVxN_32u((nm32u**)context->ppPtrns1_2s, 
 			(nm32u**)context->ppPtrns2_2s, 
-			(nm32u**)context->ppPtrnsCombined_2s_basic, 
+			(nm32u**)context->ppPtrnsCombined_2s, 
 			context->nSizePtrn32 + point_x3, localSize);
-#ifdef __GNUC__
-		nmppsMulC_AddV_AddC_32s(context->offsetTrY + point, WIDTH_PTRN / 16,
-			(nm32s*)context->ppPtrnsCombined_2s_basic, 0,
-			(nm32s*)context->ppPtrnsCombined_2s, localSize);
-#else
-		for (int i = 0; i < localSize; i++) {
-			context->ppPtrnsCombined_2s[i] = (nm2s*)((nm32s*)context->ppPtrnsCombined_2s_basic[i] + 
-				context->offsetTrY[point + i] * WIDTH_PTRN / 16);
-		}
-#endif // __GNUC__
+
 		//проверка активирования теста глубины
 		if (context->depthBuffer.enabled == NMGL_FALSE) {
-			mMulCVxN_2s32sExt(context->ppPtrnsCombined_2s,
-				offsetsX,
-				widths,
-				heights,
-				(nm32s*)zMaskBuffer,
-				context->minusOne, localSize);
+			mMulCVxN_2s32s(
+				context->polyImgTmp,
+				windows + point,
+				context->minusOne,
+				zMaskBuffer,
+				localSize);
 		}
 		else {
 			//умножение бинарных масок на Z
-			mMulCVxN_2s32sExt(context->ppPtrnsCombined_2s,
-				offsetsX,
-				widths,
-				heights,
-				(nm32s*)mulZ,
-				valuesZ, localSize);
+			mMulCVxN_2s32s(
+				context->polyImgTmp,
+				windows + point,
+				valuesZ,
+				mulZ,
+				localSize);
 
 
 			//mulZ теперь хранит z-треугольники
@@ -77,11 +83,12 @@ SECTION(".text_demo3d") void drawTriangles(NMGL_Context_NM1* context) {
 		}
 
 		//color v4nm8s in imgOffset
-		mMulCVxN_2s_v4nm8sExt(context->ppPtrnsCombined_2s,
-			offsetsX,
-			widths,
-			heights,
-			(v4nm8s*)mulC, (v4nm8s*)valuesC, localSize);
+		mMulCVxN_2s_v4nm8s(
+			context->polyImgTmp,
+			windows + point,
+			(v4nm8s*)valuesC,
+			mulC,
+			localSize);
 
 		//mulBuffer теперь хранит цвет
 

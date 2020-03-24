@@ -52,9 +52,19 @@ typedef v4nm8s rgb8888;
 #define AMOUNT_ANGLES (2*WIDTH_PTRN + 2*HEIGHT_PTRN)
 #define NPATTERNS 	  AMOUNT_ANGLES * OFFSETS * 2
 
-struct Patterns {
-	int ptrns[NPATTERNS * WIDTH_PTRN * HEIGHT_PTRN / 16];
+typedef int Pattern[WIDTH_PTRN * HEIGHT_PTRN / 16];
+
+struct PatternsArray {
+	Pattern ptrns[NPATTERNS];
 	int table_dydx[(2 * WIDTH_PTRN) * (HEIGHT_PTRN + 2)];
+};
+
+
+struct Rectangle {
+	int x;
+	int y;
+	int width;
+	int height;
 };
 
 /**

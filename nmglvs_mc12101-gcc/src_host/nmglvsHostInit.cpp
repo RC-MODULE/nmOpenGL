@@ -55,9 +55,9 @@ int nmglvsHostInit()
 //----------------init-nmc1------------------------------
 	//nmc1, sync0
 	int patternsNM = halSync(1,1);
-	Patterns* patterns = (Patterns*)nmppsMalloc_32s(sizeof32(Patterns));
+	PatternsArray* patterns = (PatternsArray*)nmppsMalloc_32s(sizeof32(PatternsArray));
 	hostCreatePatterns(patterns);
-	halWriteMemBlock(patterns, patternsNM, sizeof32(Patterns), 1);
+	halWriteMemBlock(patterns, patternsNM, sizeof32(PatternsArray), 1);
 //----------------init-ringbuffer-------------
 	//nmc1, sync3
 	ImageData* nmImageRB = (ImageData*)halSync(4, 1);

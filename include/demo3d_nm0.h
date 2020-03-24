@@ -75,7 +75,7 @@ struct NMGL_Context_NM0 {
 	NMGLSynchro synchro;
 	PolygonsArray* polygonsData;
 	NMGLenum error;
-	Patterns* patterns;
+	PatternsArray* patterns;
 	int dummy;
 
 	float* buffer0;
