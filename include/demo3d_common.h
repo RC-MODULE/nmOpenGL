@@ -88,6 +88,8 @@ struct Polygons {
 	int z[NMGL_SIZE];
 	int offsetsY[NMGL_SIZE];
 	int heights[NMGL_SIZE];
+
+	Rectangle ptrnsWindow[NMGL_SIZE];
 	
 
 	int count;
