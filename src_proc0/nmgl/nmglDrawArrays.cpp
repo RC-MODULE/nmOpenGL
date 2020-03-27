@@ -172,6 +172,8 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			setSegmentMask(cntxt, cntxt.trianInner, masks);
 			rasterizeT(&cntxt.trianInner, masks);
 			break;
+		case NMGL_LINES:
+			break;
 		}
 	}
 

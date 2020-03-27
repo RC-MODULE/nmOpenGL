@@ -15,6 +15,8 @@ struct Lines{
 	float* y1;
 	int* z;
 	v4nm32s* colors;
+	int size;
+	int maxSize;
 };
 
 struct Triangles{
@@ -826,6 +828,7 @@ void reverseMatrix3x3in4x4(mat4nm32f* src, mat4nm32f* dst);
 void setSegmentMask(NMGL_Context_NM0 &cntxt, Triangles &triangles, SegmentMask* masks);
 void pushToTriangles_t(const float *vertexX, const float *vertexY, const float *vertexZ, const v4nm32f* color, Triangles& triangles, int countVertex);
 void rasterizeT(const Triangles* triangles, const SegmentMask* masks);
+void rasterizeL(const Lines* lines, const SegmentMask* masks);
 void updatePolygonsT(Polygons* poly, Triangles* triangles, int count, int segX, int segY);
 void updatePolygonsL(Polygons* poly, Lines* lines, int count, int segX, int segY);
 

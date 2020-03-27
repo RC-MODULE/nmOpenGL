@@ -49,7 +49,8 @@ void rasterizeT(const Triangles* triangles, const SegmentMask* masks){
 					copyArraysByIndices((void**)triangles, indices, (void**)&localTrian, 7, resultSize);
 					copyColorByIndices_BGRA_RGBA(triangles->colors, indices, (v4nm32s*)localTrian.colors, resultSize);
 
-					waitPolygons(connector);
+					//waitPolygons(connector);
+					while (connector.isFull());
 					Polygons* poly = connector.ptrHead();
 					poly->count = 0;
 					updatePolygonsT(poly, &localTrian, resultSize, segX, segY);
