@@ -50,7 +50,6 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 		if (fromHost != 0xC0DE0086) {					// get  handshake from host
 			throw -1;
 		}
-
 		setHeap(8);
 		NMGLSynchroData* synchroData = myMallocT<NMGLSynchroData>();
 		synchroData->init();
@@ -66,10 +65,6 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 		cntxt.beginEndInfo.normal = myMallocT<v4nm32f>(BIG_NMGL_SIZE);
 		cntxt.beginEndInfo.color = myMallocT<v4nm32f>(BIG_NMGL_SIZE);
 		cntxt.beginEndInfo.maxSize = BIG_NMGL_SIZE;
-		/*printf("vertex=0x%x, normal=0x%x, color=0x%x\n", 
-			cntxt.beginEndInfo.vertex,
-			cntxt.beginEndInfo.normal,
-			cntxt.beginEndInfo.color);*/
 	}
 	catch (int& e) {
 		if (e == -2) {

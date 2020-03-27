@@ -4,7 +4,6 @@
 #include "nmtype.h"
 #include "nmgl.h"
 #include "demo3d_common.h"
-#include "ringbuffer.h"
 #include "imagebuffer.h"
 #include "myserverdma.h"
 #include "nmgltex_nm1.h"
@@ -94,7 +93,9 @@ extern "C" {
 	void selectPaintSide(nm32s* pSrc, int X, int Y, nm32s* pDst, int nSize);
 	
 	void mMulCVxN_2s32s(Pattern* ppSrcTreangle_2s, Rectangle* window, int* valueC, nm32s* pDstTreangle_32s, int count);
-	void mMulCVxN_2s_v4nm8s(Pattern* ppSrcTreangle_2s, Rectangle* window, v4nm8s* valueC, nm32s* pDstTreangle_32s, int count);
+	void mMulCVxN_2s_RGB8888(Pattern* ppSrcTreangle_2s, Rectangle* window, v4nm8s* valueC, nm32s* pDstTreangle_32s, int count);
+	void mMulCVxN_2s16s(Pattern* ppSrcTreangle_2s, Rectangle* window, int* valueC, nm16s* pDstTreangle_32s, int count);
+	void mMulCVxN_2s_RGB565(Pattern* ppSrcTreangle_2s, Rectangle* window, int* valueC, nm16s* pDstTreangle_32s, int count);
 	
 	
 	void mAndVxN_32u(nm32u** pSrc1, nm32u** pSrc2, nm32u** pDst, int* size, int count);

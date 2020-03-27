@@ -1,12 +1,12 @@
 #include "demo3d_nm1.h"
 
-int addC4DepthTest = ZBUFF_INIT_VALUE;
+int addC4DepthTest_15s = ZBUFF_MAX_15s;
 
 extern "C" {
 	
-	void mMulCVxN_2s32s(Pattern* patterns, Rectangle* windows, int* valueC, nm32s* pDstTreangle,  int count){
+	void mMulCVxN_2s16s(Pattern* patterns, Rectangle* windows, int* valueC, nm16s* pDstTreangle,  int count){
 		long long int temp;
-		nm32s* dst = pDstTreangle;
+		short* dst = pDstTreangle;
 		for(int c=0;c<count;c++){
 			long long int* src = (nm64s*) patterns[c];
 			src += windows[c].y;
@@ -19,10 +19,10 @@ extern "C" {
 			
 			for(int y = 0; y < windows[c].height; y++){
 				temp = src[y];
-				nm32s* pDst = dst + y * windows[c].width;
+				nm16s* pDst = dst + y * windows[c].width;
 				if (windows[c].x < 0) {
 					for(int i = 0; i > windows[c].x; i--){
-						*pDst = addC4DepthTest;
+						*pDst = addC4DepthTest_15s;
 						pDst++;
 					}
 				}
@@ -31,8 +31,8 @@ extern "C" {
 				}
 				for(int x = 0; x < width; x++){
 					int mul = ((temp & 0x3) * valueC[c]);
-					int tmp = mul & 0x80000000;
-					*pDst = (mul + addC4DepthTest) & 0x7FFFFFFF | tmp;
+					int tmp = mul & 0x8000;
+					*pDst = (mul + addC4DepthTest_15s) & 0x7FFF | tmp;
 					pDst++;
 					temp >>= 2;
 				}

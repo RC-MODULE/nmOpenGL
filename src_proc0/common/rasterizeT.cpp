@@ -53,7 +53,7 @@ void rasterizeT(const Triangles* triangles, const SegmentMask* masks){
 					Polygons* poly = connector.ptrHead();
 					poly->count = 0;
 					updatePolygonsT(poly, &localTrian, resultSize, segX, segY);
-
+					
 					connector.incHead();
 					cntxt.synchro.writeInstr(1, NMC1_DRAW_TRIANGLES);
 

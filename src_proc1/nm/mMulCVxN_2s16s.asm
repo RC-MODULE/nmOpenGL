@@ -1,52 +1,57 @@
-//void mMulCVxN_2s32s(Pattern* ppSrcTreangle_2s, Rectangle* window, int* valueC, nm32s* pDstTreangle_32s, int count)
+//void mMulCVxN_2s16s(Pattern* ppSrcTreangle_2s, Rectangle* window, int* valueC, nm16s* pDstTreangle, int count)
 
 data ".data_demo3d"
-	matr1: long [8]=(0hl dup 3,
+	matr: long [14]=(0hl dup 5,
 					  11hl,
-					  2200000000hl,				  
-					  0hl dup 3);
-	addr_matr: word[34] = (matr1 + 8, matr1 + 6, matr1 + 4, matr1 + 4, matr1 + 4, matr1 + 4, matr1 + 4, matr1 + 4, 
-						 matr1 + 4, matr1 + 4, matr1 + 4, matr1 + 4, matr1 + 4, matr1 + 4, matr1 + 4, matr1 + 4, 
-						 matr1 + 4, matr1 + 4, matr1 + 4, matr1 + 4, matr1 + 4, matr1 + 4, matr1 + 4, matr1 + 4, 
-						 matr1 + 4, matr1 + 4, matr1 + 4, matr1 + 4, matr1 + 4, matr1 + 4, matr1 + 4, matr1 + 2, matr1, matr1);		  
-	sb_array: long[34] = ( 0a8hl,
-						   0a8hl,
-						   0a8hl,
-						   02a0hl,
-						   0a80hl,
-						   02a00hl,
-						   0a800hl,
-						   02a000hl,
-						   0a8000hl,
-						   02a0000hl,
-						   0a80000hl,						   
-						   02a00000hl,	
-						   0a800000hl,
-						   02a000000hl,	
-						   0a8000000hl,
-						   02a0000000hl,
-						   0a80000000hl,
-						   02a_00000000hl,
-						   0a8_00000000hl,
-						   02a0_00000000hl,
-						   0a80_00000000hl,
-						   02a00_00000000hl,
-						   0a800_00000000hl,
-						   02a000_00000000hl,
-						   0a8000_00000000hl,
-						   02a0000_00000000hl,
-						   0a80000_00000000hl,
-						   02a00000_00000000hl,
-						   0a800000_00000000hl,
-						   02a000000_00000000hl,
-						   0a8000000_00000000hl,
-						   0a8000000_00000000hl,
-						   0a8000000_00000000hl,
-						   0a8000000_00000000hl);
-		global _addC4DepthTest: word = 07FFFFFFFh;
+					  220000hl,
+					  3300000000hl,
+					  44000000000000hl,				  
+					  0hl dup 5);
+	addr_matr: word[36] = (matr + 16, matr + 14, matr + 12, matr + 10, matr + 8, matr + 8, matr + 8, matr + 8, 
+						 matr + 8, matr + 8, matr + 8, matr + 8, matr + 8, matr + 8, matr + 8, matr + 8, 
+						 matr + 8, matr + 8, matr + 8, matr + 8, matr + 8, matr + 8, matr + 8, matr + 8, 
+						 matr + 8, matr + 8, matr + 8, matr + 8, matr + 8, matr + 8, matr + 8, matr + 6, 
+						 matr + 4, matr + 2, matr, matr);		  
+	sb_array: long[36] = ( 0aa8hl,
+						   0aa8hl,
+						   0aa8hl,
+						   0aa8hl,
+						   0aa8hl,
+						   02aa0hl,
+						   0aa80hl,
+						   02aa00hl,
+						   0aa800hl,
+						   02aa000hl,
+						   0aa8000hl,
+						   02aa0000hl,
+						   0aa80000hl,						   
+						   02aa00000hl,	
+						   0aa800000hl,
+						   02aa000000hl,	
+						   0aa8000000hl,
+						   02aa0000000hl,
+						   0aa80000000hl,
+						   02aa_00000000hl,
+						   0aa8_00000000hl,
+						   02aa0_00000000hl,
+						   0aa80_00000000hl,
+						   02aa00_00000000hl,
+						   0aa800_00000000hl,
+						   02aa000_00000000hl,
+						   0aa8000_00000000hl,
+						   02aa0000_00000000hl,
+						   0aa80000_00000000hl,
+						   02aa00000_00000000hl,
+						   0aa800000_00000000hl,
+						   0aa800000_00000000hl,
+						   0aa800000_00000000hl,
+						   0aa800000_00000000hl,
+						   0aa800000_00000000hl,
+						   0aa800000_00000000hl);
+		global _addC4DepthTest_15s: word = 07FFF7FFFh;
 end ".data_demo3d";
-global _mMulCVxN_2s32s: label;
-global _mMulCVxN_2s_RGB8888: label;
+global _mMulCVxN_2s16s: label;
+global _mMulCVxN_2s_v4nm8s: label;
 
 macro mainLoopRepN(N)
 	own Next:label;
@@ -60,9 +65,9 @@ macro mainLoopRepN(N)
 		rep N [ar6++gr6] = afifo;
 		ar0 = ar6;
  <Next>
-	ar4 = [ar3+=2]	with gr2--;
-	sb = [ar5+=4]; 
-	rep 4 wfifo =[ar4++],ftw,wtw;
+	ar4 = [ar3+=4]	with gr2--;
+	sb = [ar5+=8]; 
+	rep 6 wfifo =[ar4++],ftw,wtw;
 	ar6 = gr4	with gr4+=gr3 noflags;
 	if > delayed goto Next;
 		rep N with vsum, ram, vr;
@@ -82,7 +87,7 @@ macro mainLoopRepN(N)
 end mainLoopRepN;
 
 begin ".text_demo3d"
-<_mMulCVxN_2s_RGB8888>
+<_mMulCVxN_2s_RGB565>
 	ar5 = ar7-2;
 	push ar0,gr0;
 	push ar1,gr1;
@@ -94,13 +99,13 @@ begin ".text_demo3d"
 	gr0 = [--ar5];		//Patterns* triangles
 	ar1 = [--ar5];		//Rectangle windows
 	ar2 = [--ar5];		//int* valueC
-	nb1 = 80808080h;
+	nb1 = 84108410h;	//5-6-5
 	gr5 = false;
 	vr = gr5;
 	delayed goto NextTreangle;
 		ar6 = [--ar5];		//nm32s* pDstTreangle_32s	
 		gr7 = [--ar5];		//int count
-<_mMulCVxN_2s32s>
+<_mMulCVxN_2s16s>
 	ar5 = ar7-2;
 	push ar0,gr0;
 	push ar1,gr1;
@@ -114,43 +119,46 @@ begin ".text_demo3d"
 	ar2 = [--ar5];		//int* valueC
 	ar6 = [--ar5];		//nm32s* pDstTreangle_32s	
 	gr7 = [--ar5];		//int count
-	gr5 = [_addC4DepthTest];
+	gr5 = [_addC4DepthTest_15s];
 	vr = gr5;
-	nb1 = 0C0000000h;
+	nb1 = 0C000C000h;
 <NextTreangle>	
 	//write mulC to matrix
 	repNHeightStart: label;
 	gr5 = [ar2++];
-	[matr1+6] = gr5;
-	[matr1+9] = gr5;
+	ar5 = matr;
+	[matr+10] = gr5;
+	[matr+15] = gr5	with gr5 <<= 16;
+	[matr+12] = gr5;
+	[matr+17] = gr5;
 	
 	//
-	ar0 = gr0	with gr3 = gr1 << 4;	//gr3=64
+	ar0 = gr0	with gr3 = gr1 << 4;	//gr3=64	//ВАЖНО: значение gr3 равно размеру паттерна в int
 	gr0+=gr3;
 	
 	gr3 = [ar1 + 1];	//y
-	ar3 = ar0		with gr3 <<= 1;			//!ВАЖНО - величина сдвига зависит от ширины паттерна
+	ar3 = ar0		with gr3 <<= 1;			//!ВАЖНО - величина сдвига зависит от ширины паттерна. gr3 умножается на ширину паттера в int
 	ar0 = ar3 + gr3;
 	
 	//computing addr first matrix and sb
+	gr5 = 3;		//величина gr5 зависит от от возможных отрицательных значений x
 	gr3 = [ar1];		//x
-	gr5 = 1;		//величина gr5 зависит от от возможных отрицательных значений x
 	ar3 = addr_matr	with gr3+=gr5;	
 	ar3+=gr3	with gr5 = gr3 << 1;
 	ar5 = sb_array;
 	ar5+=gr5;
-		
+	
 	
 	ar4 = [ar3]	with gr3 = gr1 >> 1;	//gr3 = 2
 	sb = [ar5];
-	rep 4 wfifo = [ar4++], ftw,wtw;
+	rep 6 wfifo = [ar4++], ftw,wtw;
 	
 	gr2 = [ar1 + 2];		//width
 	gr4 = [ar1 + 3];		//height
 	ar4 = repNHeightStart	with gr4 <<= 5;
 	delayed goto ar4+gr4;
 		ar1 += gr1;
-		gr2 >>= 1;			//ширина в 64-битных словах
+		gr2 >>= 2;			//ширина в 64-битных словах
 		gr6 = gr2 << 1;
 <repNHeightStart>
 	mainLoopRepN(1 );

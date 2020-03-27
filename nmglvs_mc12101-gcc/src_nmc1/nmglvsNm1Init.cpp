@@ -82,7 +82,6 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 	}
 	halHostSync(0x600DB00F);	// send ok to host
 
-
 	msdInit();
 
 #ifdef __GNUC__

@@ -3,6 +3,7 @@
 #include "nmtype.h"
 #include "nmgltype.h"
 #include "nmsynchro.h"
+#include "ringbuffer.h"
 
 #ifdef __GNUC__
 	#define setHeap(n) nmc_malloc_set_heap(n) 
@@ -42,6 +43,8 @@ typedef v4nm8s rgb8888;
 #define COUNT_IMAGE_BUFFER 8
 
 #define ZBUFF_MAX 0x7FFFFFFF
+#define ZBUFF_MAX_15s 0x7FFF
+#define ZBUFF_INIT_VALUE ZBUFF_MAX
 
 #define MAX_SIDE_POLYGON 32
 #define HEIGHT_PTRN   MAX_SIDE_POLYGON

@@ -83,7 +83,7 @@ SECTION(".text_demo3d") void drawTriangles(NMGL_Context_NM1* context) {
 		}
 
 		//color v4nm8s in imgOffset
-		mMulCVxN_2s_v4nm8s(
+		mMulCVxN_2s_RGB8888(
 			context->polyImgTmp,
 			windows + point,
 			(v4nm8s*)valuesC,
