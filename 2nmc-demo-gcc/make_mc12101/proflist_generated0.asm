@@ -133,7 +133,6 @@ FUNCTION(__Z21cullFaceSortTrianglesR9Triangles,"__Z21cullFaceSortTrianglesR9Tria
 FUNCTION(__Z5lightP9s_v4nm32fS0_i,"__Z5lightP9s_v4nm32fS0_i");// 0x0000000000001372 [.text_demo3d]
 FUNCTION(__Z7pow_32fPfS_fiS_,"__Z7pow_32fPfS_fiS_");// 0x0000000000001614 [.text_demo3d]
 FUNCTION(__Z17pushToTriangles_tPKfS0_S0_PK9s_v4nm32fR9Trianglesi,"__Z17pushToTriangles_tPKfS0_S0_PK9s_v4nm32fR9Trianglesi");// 0x0000000000001656 [.text_demo3d]
-FUNCTION(__Z10rasterizeLP5Linesi,"__Z10rasterizeLP5Linesi");// 0x00000000000017ac [.text_demo3d]
 FUNCTION(__Z12waitPolygonsR22HalRingBufferConnectorI8PolygonsLi128EE,"__Z12waitPolygonsR22HalRingBufferConnectorI8PolygonsLi128EE");// 0x00000000000017b2 [.text_demo3d]
 FUNCTION(__Z10rasterizeTPK9TrianglesPK11SegmentMask,"__Z10rasterizeTPK9TrianglesPK11SegmentMask");// 0x000000000000185e [.text_demo3d]
 FUNCTION(_readMaskToLimitDst,"_readMaskToLimitDst");// 0x0000000000001d7e [.text_demo3d]

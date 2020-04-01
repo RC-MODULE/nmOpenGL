@@ -133,9 +133,8 @@ struct NMGL_Context_NM0 {
 	
 	NMGL_Context_NM0_Texture texState;
 
-	void init(NMGLSynchroData* syncroData, PolygonsArray* polygonsArray){
+	void init(NMGLSynchroData* syncroData){
 		synchro.init(syncroData);
-		polygonsData = polygonsArray;
 
 		currentMatrixStack = &modelviewMatrixStack;
 		isUseTwoSidedMode = NMGL_FALSE;

@@ -60,10 +60,6 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 		setHeap(11);
 		cntxt.patterns = myMallocT<PatternsArray>();
 
-		NMGLSynchroData* synchroData = (NMGLSynchroData*)halSyncAddr((int*)cntxt.patterns, 0);
-		cntxt.synchro.init(synchroData);
-		cntxt.polygonsData = (PolygonsArray*)halSyncAddr(0, 0);
-
 		setHeap(13);
 		cntxt.imagesData = myMallocT<ImageData>();
 		cntxt.imagesData->init();
@@ -80,6 +76,11 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 		}
 		return e;
 	}
+
+	NMGLSynchroData* synchroData = (NMGLSynchroData*)halSyncAddr((int*)cntxt.patterns, 0);
+	cntxt.synchro.init(synchroData);
+	cntxt.polygonsData = (PolygonsArray*)halSyncAddr(0, 0);
+
 	halHostSync(0x600DB00F);	// send ok to host
 
 	msdInit();

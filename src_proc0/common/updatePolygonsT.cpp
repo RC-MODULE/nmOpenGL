@@ -27,11 +27,11 @@ void updatePolygonsT(Polygons* poly, Triangles* triangles, int count, int segX, 
 	float* dx12 = cntxt.buffer2 + 5 * NMGL_SIZE;
 	float* dx02 = cntxt.buffer0 + 5 * NMGL_SIZE;
 	float* dx01 = cntxt.buffer1 + 5 * NMGL_SIZE;
-	float* crossProducts = cntxt.buffer3 + 8 * NMGL_SIZE;
+	float* crossProducts = cntxt.buffer3 + 7 * NMGL_SIZE;
 	float* minX = cntxt.buffer0 + 6 * NMGL_SIZE;
 	float* maxX = cntxt.buffer1 + 6 * NMGL_SIZE;
-	float* minY = cntxt.buffer3 + 9 * NMGL_SIZE;	
-	int* dydx = (int*)cntxt.buffer3 + 10 * NMGL_SIZE;
+	float* minY = cntxt.buffer3 + 8 * NMGL_SIZE;	
+	int* dydx = (int*)cntxt.buffer3 + 9 * NMGL_SIZE;
 	nmblas_scopy(2 * WIDTH_PTRN * (HEIGHT_PTRN + 2), (float*)cntxt.patterns->table_dydx, 1, (float*)dydx, 1);
 	int segWidth = cntxt.windowInfo.x1[segX] - cntxt.windowInfo.x0[segX];
 
@@ -62,10 +62,13 @@ void updatePolygonsT(Polygons* poly, Triangles* triangles, int count, int segX, 
 	nmppsConvert_32s32f((nm32s*)temp2, temp1, count);
 	nmppsConvert_32s32f((nm32s*)temp3, temp2, count);
 	nmppsConvert_32s32f((nm32s*)temp0, temp3, count);
-	doubleSub_32f(triangles->x0, triangles->x1, minX, minX, temp2 + NMGL_SIZE, temp3 + NMGL_SIZE, count);
+	doubleSub_32f(triangles->x0, triangles->x1, 
+		minX, minX, 
+		temp2 + NMGL_SIZE, temp0 + NMGL_SIZE, 
+		count);
 
 	nmppsAdd_32f(temp1, temp2 + NMGL_SIZE, temp0, count);
-	nmppsAdd_32f(temp2, temp3 + NMGL_SIZE, temp1, count);
+	nmppsAdd_32f(temp2, temp0 + NMGL_SIZE, temp1, count);
 	nmppsAdd_32f(temp3, temp2 + NMGL_SIZE, temp1 + NMGL_SIZE, count);
 	ternaryLt0_AddC_AddC_32f(crossProducts, temp0, NPATTERNS/2, 0, temp3, count);
 	nmppsConvert_32f32s_rounding(temp3, poly->numbersPattrns01 + poly->count, 0, count);

@@ -93,16 +93,16 @@ SECTION(".text_demo3d") int getAddrPtrnsT(NMGL_Context_NM1* context, Polygons* p
 
 #ifdef __GNUC__	
 	CHECK_STATUS(4);
-	nmppsMulC_AddC_32s(polyTmp->numbersPattrns01, WIDTH_PTRN * HEIGHT_PTRN / 16, (int)patterns->ptrns, temp1, size);
+	nmppsMulC_AddC_32s(polyTmp->numbersPattrns01, sizeof32(Pattern), (int)patterns->ptrns, temp1, size);
 	CHECK_STATUS(5);
-	nmppsMulC_AddC_32s(polyTmp->numbersPattrns12, WIDTH_PTRN * HEIGHT_PTRN / 16, (int)patterns->ptrns, temp2, size);
+	nmppsMulC_AddC_32s(polyTmp->numbersPattrns12, sizeof32(Pattern), (int)patterns->ptrns, temp2, size);
 	CHECK_STATUS(6);
-	nmppsMulC_AddC_32s(polyTmp->numbersPattrns02, WIDTH_PTRN * HEIGHT_PTRN / 16, (int)patterns->ptrns, temp0, size);
+	nmppsMulC_AddC_32s(polyTmp->numbersPattrns02, sizeof32(Pattern), (int)patterns->ptrns, temp0, size);
 #else
 	for (int i = 0; i < size; i++) {
-		temp1[i] = (int)(&patterns->ptrns[polyTmp->numbersPattrns01[i] * WIDTH_PTRN * HEIGHT_PTRN / 16]);
-		temp2[i] = (int)(&patterns->ptrns[polyTmp->numbersPattrns12[i] * WIDTH_PTRN * HEIGHT_PTRN / 16]);
-		temp0[i] = (int)(&patterns->ptrns[polyTmp->numbersPattrns02[i] * WIDTH_PTRN * HEIGHT_PTRN / 16]);
+		temp1[i] = (int)(&patterns->ptrns[polyTmp->numbersPattrns01[i]]);
+		temp2[i] = (int)(&patterns->ptrns[polyTmp->numbersPattrns12[i]]);
+		temp0[i] = (int)(&patterns->ptrns[polyTmp->numbersPattrns02[i]]);
 	}
 #endif
 	mergePtrnsAddr3((nm32s**)temp0, (nm32s**)temp1, (nm32s**)temp2, SMALL_SIZE, context->ppSrcPackPtrns, size);

@@ -1,12 +1,10 @@
 #include "demo3d_nm1.h"
 
-int addC4DepthTest = ZBUFF_MAX;
-
 extern "C" {
-	
-	void mMulCVxN_2s32s(Pattern* patterns, Rectangle* windows, int* valueC, nm32s* pDstTreangle,  int count){
+	void mMulCVxN_2s_RGB8888(Pattern* patterns, Rectangle* windows, v4nm8s* valueC, nm32s* pDstTreangle,  int count){
 		long long int temp;
 		nm32s* dst = pDstTreangle;
+		nm8s* colors = (nm8s*)valueC;
 		for(int c=0;c<count;c++){
 			nm64s* src = (nm64s*) (patterns + c);
 			src += windows[c].y;
@@ -19,11 +17,14 @@ extern "C" {
 			
 			for(int y = 0; y < windows[c].height; y++){
 				temp = src[y];
-				nm32s* pDst = dst + y * windows[c].width;
+				nm8s* pDst = (nm8s*)(dst + y * windows[c].width);
 				if (windows[c].x < 0) {
 					for(int i = 0; i > windows[c].x; i--){
-						*pDst = addC4DepthTest;
-						pDst++;
+						pDst[0] = 0;
+						pDst[1] = 0;
+						pDst[2] = 0;
+						pDst[3] = 0;
+						pDst+=4;
 					}
 				}
 				else {
@@ -31,10 +32,12 @@ extern "C" {
 				}
 				
 				for(int x = 0; x < width; x++){
-					int mul = ((temp & 0x3) * valueC[c]);
-					int tmp = mul & 0x80000000;
-					*pDst = (mul + addC4DepthTest) & 0x7FFFFFFF | tmp;
-					pDst++;
+					int mul = temp & 0x3;
+					pDst[0] = (mul * colors[4 * c + 0] & 0xFF);
+					pDst[1] = (mul * colors[4 * c + 1] & 0xFF);
+					pDst[2] = (mul * colors[4 * c + 2] & 0xFF);
+					pDst[3] = (mul * colors[4 * c + 3] & 0xFF);
+					pDst += 4;
 					temp >>= 2;
 				}
 			}

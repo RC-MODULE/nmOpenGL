@@ -13,7 +13,7 @@ extern  Triangles localTrian;
 SECTION(".text_demo3d")
 void rasterizeL(const Lines* lines, const SegmentMask* masks){
 
-	int count = lines->size;
+	/*int count = lines->size;
 	localTrian.x0 = cntxt.buffer0;
 	localTrian.y0 = cntxt.buffer0 + NMGL_SIZE;
 	localTrian.x1 = cntxt.buffer1;
@@ -59,5 +59,5 @@ void rasterizeL(const Lines* lines, const SegmentMask* masks){
 				}
 			}
 		}
-	}
+	}*/
 }

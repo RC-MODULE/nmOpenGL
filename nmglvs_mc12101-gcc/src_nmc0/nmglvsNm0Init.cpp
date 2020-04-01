@@ -42,29 +42,23 @@ template<class T> inline T* myMallocT(int count) {
 
 SECTION(".text_nmglvs") int nmglvsNm0Init()
 {
-	halSleep(100);
 	halSetProcessorNo(0);
-
+	halSleep(100);
+	NMGLSynchroData* synchroData;
 	try {
 		int fromHost = halHostSync(0xC0DE0000);		// send handshake to host
 		if (fromHost != 0xC0DE0086) {					// get  handshake from host
 			throw -1;
 		}
+
 		setHeap(8);
-		NMGLSynchroData* synchroData = myMallocT<NMGLSynchroData>();
+		synchroData = myMallocT<NMGLSynchroData>();
 		synchroData->init();
-		setHeap(12);
-		PolygonsArray* polygonsArray = myMallocT<PolygonsArray>();
-		polygonsArray->init();
-		cntxt.init(synchroData, polygonsArray);
+		setHeap(10);
+		cntxt.polygonsData = myMallocT<PolygonsArray>();
+		cntxt.polygonsData->init();
+		cntxt.init(synchroData);
 
-		cntxt.patterns = (PatternsArray*)halSyncAddr((int*)synchroData, 1);
-		halSyncAddr((int*)cntxt.polygonsData, 1);
-
-		cntxt.beginEndInfo.vertex = myMallocT<v4nm32f>(BIG_NMGL_SIZE);
-		cntxt.beginEndInfo.normal = myMallocT<v4nm32f>(BIG_NMGL_SIZE);
-		cntxt.beginEndInfo.color = myMallocT<v4nm32f>(BIG_NMGL_SIZE);
-		cntxt.beginEndInfo.maxSize = BIG_NMGL_SIZE;
 	}
 	catch (int& e) {
 		if (e == -2) {
@@ -72,6 +66,10 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 		}
 		return e;
 	}
+
+	cntxt.patterns = (PatternsArray*)halSyncAddr(synchroData, 1);
+	halSyncAddr(cntxt.polygonsData, 1);
+
 	halHostSync(0x600DB00F);	// send ok to host
 
 	cntxt.trianInner.x0 = x0;
