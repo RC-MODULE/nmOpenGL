@@ -17,6 +17,20 @@ public:
 		bits = (int*)mask;
 		hasNotZeroBits = 0;
 	}
+
+	int get(int index) {
+		int word = bits[index / 32];
+		word >>= index % 32;
+		return word & 1;
+	}
+
+	void put(int index, int value) {
+		int word = bits[index / 32];
+		int mask = 1 << (index % 32);
+		value <<= index % 32;
+		word = word & ~mask | value & mask;
+		bits[index / 32] = word;
+	}
 };
 
 
@@ -29,13 +43,26 @@ public:
 		even.init(evenMask);
 		odd.init(oddMask);
 	}
+
+	int get(int index) {
+		if (index % 2) {
+			return odd.get(index / 2);
+		}
+		else {
+			return even.get(index / 2);
+		}
+	}
+
+	void put(int index, int value) {
+		if (index % 2) {
+			odd.put(index / 2, value);
+		}
+		else {
+			even.put(index / 2, value);
+		}
+	}
 };
 
-class connectorMask {
-	BitMask mask;
-	int word;
-	int posInWord;
-};
 
 struct Lines{
 	float* x0;
