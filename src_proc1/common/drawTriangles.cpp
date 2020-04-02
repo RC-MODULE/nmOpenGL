@@ -90,12 +90,6 @@ SECTION(".text_demo3d") void drawTriangles(NMGL_Context_NM1* context) {
 			(v4nm8s*)valuesC,
 			mulC,
 			localSize);
-		/*mMulCVxN_2s32s(
-			context->polyImgTmp,
-			windows + point,
-			(nm32s*)valuesC,
-			mulC,
-			localSize);*/
 
 		//mulBuffer теперь хранит цвет
 

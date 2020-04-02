@@ -19,7 +19,7 @@ SECTION(".text_demo3d") int waitPolygons(PolygonsConnector &connector) {
 }
 
 SECTION(".text_demo3d")
-void rasterizeT(const Triangles* triangles, const SegmentMask* masks){
+void rasterizeT(const Triangles* triangles, const BitMask* masks){
 	int count = triangles->size;
 	localTrian.x0 = cntxt.buffer0;
 	localTrian.y0 = cntxt.buffer0 + NMGL_SIZE;

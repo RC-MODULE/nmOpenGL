@@ -4,7 +4,7 @@
 #include "nmblas.h"
 
 SECTION(".text_demo3d")
-void setSegmentMask(NMGL_Context_NM0 &cntxt, Triangles &triangles, SegmentMask* masks) {
+void setSegmentMask(NMGL_Context_NM0 &cntxt, Triangles &triangles, BitMask* masks) {
 	
 	int size = triangles.size;
 	float* minXY = cntxt.buffer2 + 6 * NMGL_SIZE;
@@ -22,10 +22,10 @@ void setSegmentMask(NMGL_Context_NM0 &cntxt, Triangles &triangles, SegmentMask* 
 			upperLimit->v0 = cntxt.windowInfo.x1_f[segX];
 			upperLimit->v1 = cntxt.windowInfo.y1_f[segY];
 
-			int* maskXLt = (int*)cntxt.buffer0;
-			int* maskYLt = (int*)cntxt.buffer1;
-			int* maskXGt = (int*)cntxt.buffer2;
-			int* maskYGt = (int*)cntxt.buffer3;
+			int* maskXLt = (int*)cntxt.dividedMasks[0].even.bits;
+			int* maskYLt = (int*)cntxt.dividedMasks[0].odd.bits;
+			int* maskXGt = (int*)cntxt.dividedMasks[1].even.bits;
+			int* maskYGt = (int*)cntxt.dividedMasks[1].odd.bits;
 			nmppsCmpLtC_v2nm32f((v2nm32f*)minXY, upperLimit, (nm1*)maskXLt, (nm1*)maskYLt, 1, size);
 			nmppsCmpGtC_v2nm32f((v2nm32f*)maxXY, lowerLimit, (nm1*)maskXGt, (nm1*)maskYGt, 1, size);
 			for (int i = 0, cnt = 0; cnt < size; i++, cnt += 32) {
@@ -34,7 +34,10 @@ void setSegmentMask(NMGL_Context_NM0 &cntxt, Triangles &triangles, SegmentMask* 
 			}
 			int size32 = MIN(NMGL_SIZE / 32, size / 32 + 2);
 			if (firstNonZeroIndx_32s(masks[iSeg].bits, size32) >= 0) {
-				masks[iSeg].hasNotZeroBits |= 1;
+				masks[iSeg].hasNotZeroBits = 1;
+			}
+			else {
+				masks[iSeg].hasNotZeroBits = 0;
 			}
 		}
 	}

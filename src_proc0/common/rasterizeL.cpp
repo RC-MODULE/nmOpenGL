@@ -11,7 +11,7 @@ extern  Triangles localTrian2;
 extern  Triangles localTrian;
 
 SECTION(".text_demo3d")
-void rasterizeL(const Lines* lines, const SegmentMask* masks){
+void rasterizeL(const Lines* lines, const BitMask* masks){
 
 	/*int count = lines->size;
 	localTrian.x0 = cntxt.buffer0;

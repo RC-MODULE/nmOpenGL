@@ -27,16 +27,23 @@ SECTION(".data_imu6")	float y2[NMGL_SIZE];
 SECTION(".data_imu7")	int z_int[NMGL_SIZE];
 SECTION(".data_imu6")	v4nm32s lightsValues[NMGL_SIZE];
 
+SECTION(".data_imu7") int dividedMasksMemory[4][NMGL_SIZE / 32];
+
+SECTION(".data_imu6") int masksBits[36][NMGL_SIZE / 32];
+
+int counter = 0;
 
 template<class T> inline T* myMallocT() {
 	T* result = (T*)halMalloc32(sizeof32(T));
-	if (result == 0) throw -2;
+	if (result == 0) throw counter;
+	counter++;
 	return result;
 }
 
 template<class T> inline T* myMallocT(int count) {
 	T* result = (T*)halMalloc32(count * sizeof32(T));
-	if (result == 0) throw -2;
+	if (result == 0) throw counter;
+	counter++;
 	return result;
 }
 
@@ -48,7 +55,7 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 	try {
 		int fromHost = halHostSync(0xC0DE0000);		// send handshake to host
 		if (fromHost != 0xC0DE0086) {					// get  handshake from host
-			throw -1;
+			return 1;
 		}
 
 		setHeap(8);
@@ -66,9 +73,8 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 
 	}
 	catch (int& e) {
-		if (e == -2) {
-			halHostSync(0xDEADB00F);
-		}
+		printf("error=%d\n", e);
+		halHostSync(0xDEADB00F);
 		return e;
 	}
 
@@ -94,7 +100,15 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 	cntxt.buffer2 = nmglBuffer2;
 	cntxt.buffer3 = nmglBuffer3;
 
+	cntxt.dividedMasks[0].init((nm1*)dividedMasksMemory[0], (nm1*)dividedMasksMemory[1]);
+	cntxt.dividedMasks[1].init((nm1*)dividedMasksMemory[2], (nm1*)dividedMasksMemory[3]);
 
+
+	nmglViewport(0, 0, WIDTH_IMAGE, HEIGHT_IMAGE);
+	int countSegs = cntxt.windowInfo.nColumns * cntxt.windowInfo.nRows;
+	for (int i = 0; i < countSegs; i++) {
+		cntxt.segmentMasks[i].init((nm1*)masksBits[i]);
+	}
 #ifdef __GNUC__
 	halDmaInitC();
 	halInstrCacheEnable();
@@ -106,7 +120,6 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 	//sync4
 	halHostSync((int)0x600d600d);
 
-	nmglViewport(0, 0, WIDTH_IMAGE, HEIGHT_IMAGE);
 	return 0;
 } 
 
