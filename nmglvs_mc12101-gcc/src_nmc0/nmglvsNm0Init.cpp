@@ -113,7 +113,7 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 	halDmaInitC();
 	halInstrCacheEnable();
 #ifdef PROFILER0
-	nmprofiler_init();
+	profiler_init();
 #endif // PROFILER0	
 #endif // __GNUC__
 

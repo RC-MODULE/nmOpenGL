@@ -36,12 +36,11 @@ SECTION(".text_demo3d") int getAddrPtrnsT(NMGL_Context_NM1* context, Polygons* p
 	ADD_COPY(poly->numbersPattrns12, polyTmp->numbersPattrns12, size, 5);
 	ADD_COPY(poly->numbersPattrns02, polyTmp->numbersPattrns02, size, 6);
 	ADD_COPY(poly->color, polyTmp->color, 4 * size, 7);
-	ADD_COPY(poly->ptrnSizesOf32_12, polyTmp->ptrnSizesOf32_12, size, 8);
-	ADD_COPY(poly->ptrnSizesOf32_02, polyTmp->ptrnSizesOf32_02, size, 9);
+	ADD_COPY(poly->ptrnSizesOf32_02, polyTmp->ptrnSizesOf32_02, size, 8);
 
-	ADD_COPY(poly->z, context->valuesZ, size, 10);
-	ADD_COPY(poly->offsetsY, context->offsetTrY, size, 11);
-	ADD_COPY(poly->heights, context->heights, size, 12);
+	ADD_COPY(poly->z, context->valuesZ, size, 9);
+	ADD_COPY(poly->offsetsY, context->offsetTrY, size, 10);
+	ADD_COPY(poly->heights, context->heights, size, 11);
 
 	nm32s* temp1 = context->buffer1;
 	nm32s* temp2 = nmppsAddr_32s(context->buffer1, NMGL_SIZE);
@@ -111,10 +110,10 @@ SECTION(".text_demo3d") int getAddrPtrnsT(NMGL_Context_NM1* context, Polygons* p
 	nmppsConvert_32s8s(polyTmp->color, (nm8s*)context->valuesC, 4 * size);
 
 	CHECK_STATUS(8);
-	CHECK_STATUS(9);
+	nmppsSub_32s(polyTmp->ptrnSizesOf32_02, polyTmp->ptrnSizesOf32_01, temp0, size);
 	mergePtrnsAddr3((nm32s**)polyTmp->ptrnSizesOf32_02, 
 		(nm32s**)polyTmp->ptrnSizesOf32_01, 
-		(nm32s**)polyTmp->ptrnSizesOf32_12,
+		(nm32s**)temp0,
 		SMALL_SIZE,
 		(nm32s**)context->nSizePtrn32,
 	 size);

@@ -40,7 +40,7 @@ void updatePolygonsT(Polygons* poly, Triangles* triangles, int count, int segX, 
 	nmppsSub_32f(triangles->y1, triangles->y0, dy01, count);
 
 	tripleMulC_32f(dy12, dy02, dy01, WIDTH_PTRN / 16, temp0, temp1, temp2, count);
-	nmppsConvert_32f32s_rounding(temp0, poly->ptrnSizesOf32_12 + poly->count, 0, count);
+	//nmppsConvert_32f32s_rounding(temp0, poly->ptrnSizesOf32_12 + poly->count, 0, count);
 	nmppsConvert_32f32s_rounding(temp1, poly->ptrnSizesOf32_02 + poly->count, 0, count);
 	nmppsConvert_32f32s_rounding(temp2, poly->ptrnSizesOf32_01 + poly->count, 0, count);
 	

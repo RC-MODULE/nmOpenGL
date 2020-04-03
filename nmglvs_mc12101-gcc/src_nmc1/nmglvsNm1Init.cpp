@@ -8,6 +8,7 @@
 #include "nmprofiler.h"
 #include "cache.h"
 #include "nmgl_data1.h"
+#include "nmprofiler.h"
 
 #include "nmgl.h"
 
@@ -84,11 +85,11 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 	halHostSync(0x600DB00F);	// send ok to host
 
 	msdInit();
-
+	
 #ifdef __GNUC__
 	halInstrCacheEnable();
 #ifdef PROFILER1
-	nmprofiler_init();
+	PROFILER_START();
 #endif // PROFILER1	
 #endif // __GNUC__
 	cntxt.smallColorBuff.init(segImage, WIDTH_SEG, HEIGHT_SEG);

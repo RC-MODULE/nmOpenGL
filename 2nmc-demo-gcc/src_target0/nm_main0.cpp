@@ -4,7 +4,6 @@
 #include "stdio.h"
 #include "nmpp.h"
 #include "nmgl.h"
-#include "link.h"
 #include "nmglvs_nmc0.h"
 	
 //SECTION(".data_shared0") float vertices_DDR[2000 * 12];

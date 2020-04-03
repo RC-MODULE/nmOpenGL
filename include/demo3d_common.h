@@ -32,6 +32,7 @@ typedef v4nm8s rgb8888;
 #define WIDTH_SEG 128
 #define HEIGHT_SEG 128
 #define NMGL_SIZE 1024
+#define POLYGONS_SIZE NMGL_SIZE
 
 #define BLACK 0x00000000
 #define DARK_GRAY 0x44444444
@@ -77,24 +78,22 @@ struct Rectangle {
  *  Полигон должен вписываться в квадрат 32*32 пикселей
  */
 struct Polygons {
-	int numbersPattrns01[NMGL_SIZE];
-	int numbersPattrns12[NMGL_SIZE];
-	int numbersPattrns02[NMGL_SIZE];
-	int ptrnSizesOf32_01[NMGL_SIZE];
-	int ptrnSizesOf32_12[NMGL_SIZE];
-	int ptrnSizesOf32_02[NMGL_SIZE];
-	int pointInImage[NMGL_SIZE];
-	int widths[NMGL_SIZE];
-	int offsetsX[NMGL_SIZE];
-	int color[4 * NMGL_SIZE];
+	int numbersPattrns01[POLYGONS_SIZE];
+	int numbersPattrns12[POLYGONS_SIZE];
+	int numbersPattrns02[POLYGONS_SIZE];
+	int ptrnSizesOf32_01[POLYGONS_SIZE];
+	int ptrnSizesOf32_02[POLYGONS_SIZE];
+	int pointInImage[POLYGONS_SIZE];
+	int offsetsX[POLYGONS_SIZE];
+	int offsetsY[POLYGONS_SIZE];
+	int widths[POLYGONS_SIZE];
+	int heights[POLYGONS_SIZE];
 
-	int z[NMGL_SIZE];
-	int offsetsY[NMGL_SIZE];
-	int heights[NMGL_SIZE];
+	int color[4 * POLYGONS_SIZE];
 
-	Rectangle ptrnsWindow[NMGL_SIZE];
-	
+	int z[POLYGONS_SIZE];
 
+	//Rectangle ptrnsWindow[POLYGONS_SIZE];
 	int count;
 	int dummy[15];
 

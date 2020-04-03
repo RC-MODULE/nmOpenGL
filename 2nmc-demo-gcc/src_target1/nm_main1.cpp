@@ -3,8 +3,6 @@
 #include "nmgl.h"
 #include "nmglvs_nmc1.h"
 
-#include "link.h"
-
 int main()
 { 
 	nmglvsNm1Init();
