@@ -4,7 +4,6 @@
 #include "nmtype.h"
 #include "nmgl.h"
 #include "demo3d_common.h"
-#include "ringbuffer.h"
 #include "imagebuffer.h"
 #include "myserverdma.h"
 #include "nmgltex_nm1.h"
@@ -15,9 +14,9 @@ typedef void DepthCore(nm32s &buffZ, nm32s &trianSrcZ, nm32s &trianDstZ);
 void selectPatterns(nm32s* dydxTable, nm32s* dX, nm32s* dY, nm32s* x0, nm32s* pPtrnPaintSide, nm32s** pSrcPack, int nSize, int* pTmp);
 
 struct NMGL_Context_NM1 {
-	int polyImgTmp[WIDTH_PTRN*HEIGHT_PTRN*SMALL_SIZE / 16];
+	Pattern polyImgTmp[SMALL_SIZE];
 	
-	Patterns* patterns;
+	PatternsArray* patterns;
 
 	nm32s** ppSrcPackPtrns;
 	nm32s** ppDstPackPtrns;
@@ -39,10 +38,9 @@ struct NMGL_Context_NM1 {
 	nm32s** zBuffPoints;
 	nm32s** imagePoints;
 
-	nm2s* ppPtrns1_2s[SMALL_SIZE];
-	nm2s* ppPtrns2_2s[SMALL_SIZE];
-	nm2s* ppPtrnsCombined_2s[SMALL_SIZE];
-	nm2s* ppPtrnsCombined_2s_basic[SMALL_SIZE];
+	Pattern* ppPtrns1_2s[SMALL_SIZE];
+	Pattern* ppPtrns2_2s[SMALL_SIZE];
+	Pattern* ppPtrnsCombined_2s[SMALL_SIZE];
 	nm32s minusOne[SMALL_SIZE];
 
 	nm32s* offsetTrX;
@@ -94,8 +92,10 @@ extern "C" {
 
 	void selectPaintSide(nm32s* pSrc, int X, int Y, nm32s* pDst, int nSize);
 	
-	void mMulCVxN_2s32sExt(nm2s** ppSrcTreangle_2s, int* offsets, int* widths, int* heights, nm32s* pDstTreangle, int* valueC,  int count);
-	void mMulCVxN_2s_v4nm8sExt(nm2s** ppSrcTreangle_2s, int* offsets, int* widths, int* heights, v4nm8s* pDstTreangle, v4nm8s* valueC, int count);
+	void mMulCVxN_2s32s(Pattern* ppSrcTreangle_2s, Rectangle* window, int* valueC, nm32s* pDstTreangle_32s, int count);
+	void mMulCVxN_2s_RGB8888(Pattern* ppSrcTreangle_2s, Rectangle* window, v4nm8s* valueC, nm32s* pDstTreangle_32s, int count);
+	void mMulCVxN_2s16s(Pattern* ppSrcTreangle_2s, Rectangle* window, int* valueC, nm16s* pDstTreangle_32s, int count);
+	void mMulCVxN_2s_RGB565(Pattern* ppSrcTreangle_2s, Rectangle* window, int* valueC, nm16s* pDstTreangle_32s, int count);
 	
 	
 	void mAndVxN_32u(nm32u** pSrc1, nm32u** pSrc2, nm32u** pDst, int* size, int count);
@@ -130,11 +130,14 @@ extern "C" {
 	void absIfNegElse0(int* src, int* dst, int size);
 
 	int totalSum(nm32s* pVec, int size);
+
+	void merge_v4nm32s(nm32s* src1, nm32s* src2, nm32s* src3, nm32s* src4, v4nm32s* dst, int size);
+	
 }
 
 void drawTriangles(NMGL_Context_NM1* context);
 void drawLines(NMGL_Context_NM1* context);
-int getAddrPtrnsT(NMGL_Context_NM1* context, Patterns* patterns, Polygons* poly);
-int getAddrPtrnsL(NMGL_Context_NM1* context, Patterns* patterns, Polygons* poly);
+int getAddrPtrnsT(NMGL_Context_NM1* context, Polygons* poly);
+int getAddrPtrnsL(NMGL_Context_NM1* context, Polygons* poly);
 
 #endif

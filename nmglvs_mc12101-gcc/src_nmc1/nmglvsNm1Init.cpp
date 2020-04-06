@@ -8,6 +8,7 @@
 #include "nmprofiler.h"
 #include "cache.h"
 #include "nmgl_data1.h"
+#include "nmprofiler.h"
 
 #include "nmgl.h"
 
@@ -58,11 +59,7 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 			throw -1;
 		}
 		setHeap(11);
-		cntxt.patterns = myMallocT<Patterns>();
-
-		NMGLSynchroData* synchroData = (NMGLSynchroData*)halSyncAddr((int*)cntxt.patterns, 0);
-		cntxt.synchro.init(synchroData);
-		cntxt.polygonsData = (PolygonsArray*)halSyncAddr(0, 0);
+		cntxt.patterns = myMallocT<PatternsArray>();
 
 		setHeap(13);
 		cntxt.imagesData = myMallocT<ImageData>();
@@ -80,15 +77,19 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 		}
 		return e;
 	}
+
+	NMGLSynchroData* synchroData = (NMGLSynchroData*)halSyncAddr((int*)cntxt.patterns, 0);
+	cntxt.synchro.init(synchroData);
+	cntxt.polygonsData = (PolygonsArray*)halSyncAddr(0, 0);
+
 	halHostSync(0x600DB00F);	// send ok to host
 
-
 	msdInit();
-
+	
 #ifdef __GNUC__
 	halInstrCacheEnable();
 #ifdef PROFILER1
-	nmprofiler_init();
+	PROFILER_START();
 #endif // PROFILER1	
 #endif // __GNUC__
 	cntxt.smallColorBuff.init(segImage, WIDTH_SEG, HEIGHT_SEG);
@@ -104,9 +105,9 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 
 	for (int j = 0; j < SMALL_SIZE; j++) {
 		int off = j * WIDTH_PTRN*HEIGHT_PTRN / 16;
-		cntxt.ppPtrns1_2s[j] = nmppsAddr_32s((nm32s*)pool0, off);
-		cntxt.ppPtrns2_2s[j] = nmppsAddr_32s((nm32s*)pool1, off);
-		cntxt.ppPtrnsCombined_2s_basic[j] = nmppsAddr_32s(cntxt.polyImgTmp, off);
+		cntxt.ppPtrns1_2s[j] = (Pattern*)nmppsAddr_32s((nm32s*)pool0, off);
+		cntxt.ppPtrns2_2s[j] = (Pattern*)nmppsAddr_32s((nm32s*)pool1, off);
+		cntxt.ppPtrnsCombined_2s[j] = cntxt.polyImgTmp + j;
 		cntxt.minusOne[j] = -1;
 	}
 	//sync3

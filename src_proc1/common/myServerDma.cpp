@@ -6,7 +6,7 @@
 int cbUpdate();
 
 //структура данных с информацией о копировани€х
-SECTION(".data_demo3d") MyDmaServer<MSD_SIZE, MSD_NUM_CHANNELS> dmaServer(cbUpdate);
+SECTION(".data_demo3d") MyDmaServer<MSD_SIZE, MSD_NUM_CHANNELS> dmaServer;
 SECTION(".data_demo3d") MyDmaClient<MSD_SIZE> dmaClient[MSD_NUM_CHANNELS];
 
 
@@ -21,6 +21,7 @@ SECTION(".text_demo3d") int cbUpdate() {
 }
 
 SECTION(".text_demo3d") void msdInit() {
+	dmaServer.init(cbUpdate);
 	for (int i = 0; i < MSD_NUM_CHANNELS; i++) {
 		dmaClient[i].bind(dmaServer.getChannelBuffer(i));
 		dmaClient[i].memcopyPush = (tmemcopy32)nmppsCopy_32s;

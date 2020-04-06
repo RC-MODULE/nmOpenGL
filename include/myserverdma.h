@@ -1,7 +1,6 @@
 #ifndef __MY_SERVER_DMA_H__
 #define __MY_SERVER_DMA_H__ 
 
-
 #define MSD_DMA 1
 #define MSD_DMA_2D 2
 #define MSD_SIZE 256
@@ -67,7 +66,8 @@ public:
 	MyDmaTask* currentTask;													// Указатель на текущую задчу. По нему в callback функции можно , например, выставить статус завершенной
 																			// Иниализация кольцевых буферов DMA задач
 																			// Иниализация DMA , сохранение обработчика ПДП
-	MyDmaServer(msdCallback dmaCallback) {
+	void init(msdCallback dmaCallback) {
+		
 		isWorking = false;
 		for (int ch = 0; ch < NUM_CHANNELS; ch++) {
 			channel[ch].create();											// выделяем кольцевой буфер задач
@@ -102,6 +102,7 @@ public:
 
 	// здесь установливается порядок обхода задач, (например, стратегия где задачи выибираются по одной поочередно из каждого канала. В данном примере важно чтобы NUM_CHANNELS - степерь двойка
 	inline void startNextTask() {
+#ifdef __NM__
 		isWorking = true;					// флаг что сервер ишачит
 		for (int i = 0; i < NUM_CHANNELS; i++) {
 			currentChannel = &channel[i];
@@ -110,7 +111,21 @@ public:
 				return;
 			}
 		}
-		isWorking = false;				// флаг что сервер чилит
+		isWorking = false;				// флаг что сервер чили
+#else
+		for (int i = 0; i < NUM_CHANNELS; i++) {
+			currentChannel = &channel[i];
+			if (!currentChannel->isEmpty()) {
+				MyDmaTask* currentTask = currentChannel->ptrTail();
+				msdStartCopy(currentTask);
+				if (currentTask->callback != 0) {
+					currentTask->callback();
+				}
+				currentChannel->incTail();
+				return;
+			}
+		}
+#endif
 	}
 	// Запустить все задачи на на исполнение 
 	void startJob() {

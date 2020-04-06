@@ -4,7 +4,6 @@
 #include "stdio.h"
 #include "nmpp.h"
 #include "nmgl.h"
-#include "link.h"
 #include "nmglvs_nmc0.h"
 	
 //SECTION(".data_shared0") float vertices_DDR[2000 * 12];
@@ -163,6 +162,12 @@ SECTION(".text_shared0") int main()
 		nmglTranslatef(150, 150, 0);
 
 		nmglDrawArrays(NMGL_TRIANGLES, 0, 3 * amountPolygons2);
+		/*nmglBegin(NMGL_TRIANGLES);
+		for (int i = 0; i < 3 * amountPolygons2; i++) {
+			nmglVertex3fv(&vertices_DDR2[4 * i]);
+			nmglNormal3fv(&normal_DDR2[3 * i]);
+		}
+		nmglEnd();*/
 #ifdef __OPEN_GL__
 		angle += 0.03;
 #else

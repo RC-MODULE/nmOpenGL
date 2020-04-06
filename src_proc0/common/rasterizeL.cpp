@@ -6,65 +6,57 @@
 #include "stdio.h"
 #include "nmprofiler.h"
 
-
+extern  int indices[NMGL_SIZE];
+extern  Triangles localTrian2;
+extern  Triangles localTrian;
 
 SECTION(".text_demo3d")
-void rasterizeL(Lines* lines, int count){
+void rasterizeL(const Lines* lines, const BitMask* masks){
 
-	/*float* minX = cntxt.buffer0;
-	float* maxX = cntxt.buffer1;
-	float* minY = cntxt.buffer2;
-	float* maxY = cntxt.buffer3;
-	findMinMax2(lines->x0, lines->x1, minX, maxX, count);
-	findMinMax2(lines->y0, lines->y1, minY, maxY, count);
-	nmppsMerge_32f(minX, minY, minXY, count);
-	nmppsMerge_32f(maxX, maxY, maxXY, count);
+	/*int count = lines->size;
+	localTrian.x0 = cntxt.buffer0;
+	localTrian.y0 = cntxt.buffer0 + NMGL_SIZE;
+	localTrian.x1 = cntxt.buffer1;
+	localTrian.y1 = cntxt.buffer1 + NMGL_SIZE;
+	localTrian.x2 = cntxt.buffer2;
+	localTrian.y2 = cntxt.buffer2 + NMGL_SIZE;
+	localTrian.colors = (v4nm32s*)cntxt.buffer3;
+	localTrian.z = (int*)cntxt.buffer3 + 4 * NMGL_SIZE;
 
-	for (int segY = 0; segY < cntxt.windowInfo.nRows; segY++) {
-		for (int segX = 0; segX < cntxt.windowInfo.nColumns; segX++) {
-			int polygonsCheck = 0;
-			v2nm32f* lowerLimit = (v2nm32f*)&cntxt.tmp;
-			v2nm32f* upperLimit = (v2nm32f*)&cntxt.tmp.vec[2];
-			lowerLimit->v0 = cntxt.windowInfo.x0_f[segX];
-			lowerLimit->v1 = cntxt.windowInfo.y0_f[segY];
-			upperLimit->v0 = cntxt.windowInfo.x1_f[segX];
-			upperLimit->v1 = cntxt.windowInfo.y1_f[segY];
+	PolygonsConnector connector(cntxt.polygonsData);
 
-			nmppsCmpLtC_v2nm32f((v2nm32f*)minXY, (v2nm32f*)upperLimit, masks.xLt, masks.yLt, 1, count);
-			nmppsCmpGtC_v2nm32f((v2nm32f*)maxXY, (v2nm32f*)lowerLimit, masks.xGt, masks.yGt, 1, count);
-			polygonsCheck = andMask(&masks, maskRes, count);
-			if (polygonsCheck) {
-				addInstrNMC1(&cntxt.synchro.commandsRB,
-					NMC1_COPY_SEG_FROM_IMAGE,
-					cntxt.windowInfo.x0[segX],
-					cntxt.windowInfo.y0[segY],
-					cntxt.windowInfo.x1[segX] - cntxt.windowInfo.x0[segX],
-					cntxt.windowInfo.y1[segY] - cntxt.windowInfo.y0[segY]);
+	for (int segY = 0, iSeg = 0; segY < cntxt.windowInfo.nRows; segY++) {
+		for (int segX = 0; segX < cntxt.windowInfo.nColumns; segX++, iSeg++) {
+			if (masks[iSeg].hasNotZeroBits != 0) {
 
-				while (halRingBufferIsFull(nmglPolygonsRB));
-				Polygons* poly = (Polygons*)halRingBufferHead(nmglPolygonsRB);
+				int resultSize = readMask(masks[iSeg].bits, indices, count);
+				if (resultSize) {
 
-				localLines.x1 = cntxt.buffer1;
-				localLines.y1 = cntxt.buffer1 + NMGL_SIZE;
-				localLines.x0 = cntxt.buffer2;
-				localLines.y0 = cntxt.buffer2 + NMGL_SIZE;
-				localLines.z = poly->z;
-				localLines.colors = (v4nm32s*)poly->color;
-				
-				int localSize = copyArraysByMask((void**)lines, (nm1*)maskRes, (void**)&localLines, 5, count);
-				maskSelectionLight_RGBA_BGRA((v4nm32s*)lines->colors, (nm1*)maskRes, (v4nm32s*)poly->color, count);
-				fillPolygonsL(poly, &localLines, localSize, segX, segY);
+					cntxt.synchro.writeInstr(1, NMC1_COPY_SEG_FROM_IMAGE,
+						cntxt.windowInfo.x0[segX],
+						cntxt.windowInfo.y0[segY],
+						cntxt.windowInfo.x1[segX] - cntxt.windowInfo.x0[segX],
+						cntxt.windowInfo.y1[segY] - cntxt.windowInfo.y0[segY],
+						iSeg);
 
-				nmglPolygonsRB->head++;
-				addInstrNMC1(&cntxt.synchro.commandsRB, NMC1_DRAW_TRIANGLES);
+					copyArraysByIndices((void**)triangles, indices, (void**)&localTrian, 7, resultSize);
+					copyColorByIndices_BGRA_RGBA(triangles->colors, indices, (v4nm32s*)localTrian.colors, resultSize);
 
-				addInstrNMC1(&cntxt.synchro.commandsRB,
-					NMC1_COPY_SEG_TO_IMAGE,
-					cntxt.windowInfo.x0[segX],
-					cntxt.windowInfo.y0[segY],
-					cntxt.windowInfo.x1[segX] - cntxt.windowInfo.x0[segX],
-					cntxt.windowInfo.y1[segY] - cntxt.windowInfo.y0[segY]);
-				
+					while (connector.isFull());
+					Polygons* poly = connector.ptrHead();
+					poly->count = 0;
+					updatePolygonsT(poly, &localTrian, resultSize, segX, segY);
+
+					connector.incHead();
+					cntxt.synchro.writeInstr(1, NMC1_DRAW_TRIANGLES);
+
+					cntxt.synchro.writeInstr(1,
+						NMC1_COPY_SEG_TO_IMAGE,
+						cntxt.windowInfo.x0[segX],
+						cntxt.windowInfo.y0[segY],
+						cntxt.windowInfo.x1[segX] - cntxt.windowInfo.x0[segX],
+						cntxt.windowInfo.y1[segY] - cntxt.windowInfo.y0[segY]);
+				}
 			}
 		}
 	}*/

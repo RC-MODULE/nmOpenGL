@@ -50,7 +50,6 @@ void nmglVertex3fv(const NMGLfloat *v)
 {
 	CHECK_SIZE();
 	int i = cntxt.beginEndInfo.vertexCounter;
-	printf("i=%d\n", i);
 	cntxt.beginEndInfo.vertex[i].vec[0] = v[0];
 	cntxt.beginEndInfo.vertex[i].vec[1] = v[1];
 	cntxt.beginEndInfo.vertex[i].vec[2] = v[2];

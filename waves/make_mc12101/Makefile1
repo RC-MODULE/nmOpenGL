@@ -69,7 +69,7 @@ LINKER_FLAGS     =   -Xlinker -Map=.main1.map $(LIB_DIRS) "-Wl,-Tldscript-nmc1.l
 
 # regular search of *.c *.cpp,*.asm sources in all $(SRC_DIRS)
 ALL_CPP =$(wildcard $(addsuffix /*.cpp, $(SRC_DIRS)))
-ALL_ASM =$(wildcard $(addsuffix /*.asm, $(SRC_DIRS))) proflist_generated1.asm
+ALL_ASM =$(wildcard $(addsuffix /*.asm, $(SRC_DIRS)))
 ALL_C   =$(wildcard $(addsuffix /*.c, $(SRC_DIRS)))
 ALL_H   =$(wildcard $(addsuffix /*.h, $(HEADER_DIRS)))
 

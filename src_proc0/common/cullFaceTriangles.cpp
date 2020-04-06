@@ -16,9 +16,6 @@ colorVec[4 * (iDst) + 1] = colorVec[4 * (iSrc) + 1];						\
 colorVec[4 * (iDst) + 2] = colorVec[4 * (iSrc) + 2];						\
 colorVec[4 * (iDst) + 3] = colorVec[4 * (iSrc) + 3];
 
-SECTION(".data_imu7") int evenMaskVec[NMGL_SIZE / 32];
-SECTION(".data_imu7") int oddMaskVec[NMGL_SIZE / 32];
-
 SECTION(".text_demo3d")
 void cullFaceSortTriangles(Triangles &triangles){
 	int count = triangles.size;
@@ -26,6 +23,9 @@ void cullFaceSortTriangles(Triangles &triangles){
 	float* walkDirection = cntxt.buffer2 + 6 * NMGL_SIZE;
 	float* temp0 = cntxt.buffer0 + 6 * NMGL_SIZE;
 	float* temp1 = cntxt.buffer3;
+	int* evenMaskVec = cntxt.dividedMasks[0].even.bits;
+	int* oddMaskVec= cntxt.dividedMasks[0].odd.bits;
+
 	nmppsMul_Mul_Sub_32f(triangles.x0, triangles.y1, triangles.x1, triangles.y0, walkDirection, count);
 	nmppsMul_Mul_Sub_32f(triangles.x1, triangles.y2, triangles.x2, triangles.y1, temp1, count);
 	nmppsAdd_32f(walkDirection, temp1, temp0, count);
