@@ -6,6 +6,9 @@
 #pragma code_section ".text_nmgl"
 
 void nmglvsSwapBuffer(){
+
+	nmglFlush();
+
 	static int time = 0;
 	static clock_t t0, t1;
 	t1 = clock();

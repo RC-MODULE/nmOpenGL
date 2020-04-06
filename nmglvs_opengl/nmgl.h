@@ -39,6 +39,13 @@ extern "C" {
 	);
 };
 
+
+#define nmglBegin				glBegin	
+#define nmglEnd					glEnd
+#define nmglVertex3fv			glVertex3fv
+#define nmglVertex3f			glVertex3f
+#define nmglNormal3fv			glNormal3fv
+#define nmglNormal3f			glNormal3f
 #define nmglRotatef				glRotatef		
 #define nmglScalef				glScalef		
 #define nmglTranslatef			glTranslatef

@@ -1,6 +1,7 @@
-//void mMulCVxN_2s32sExt(nm2s** ppSrcTreangle_2s, int* offsets, int* widths, int* heights, nm32s* pDstTreangle_32s, int* valueC,  int count){
+//void mMulCVxN_2s32s(Pattern* ppSrcTreangle_2s, Rectangle* window, int* valueC, nm32s* pDstTreangle_32s, int count)
+
 data ".data_demo3d"
-	matr1: long [8]=(0hl, 0hl, 0hl,
+	matr1: long [8]=(0hl dup 3,
 					  11hl,
 					  2200000000hl,				  
 					  0hl dup 3);
@@ -44,8 +45,8 @@ data ".data_demo3d"
 						   0a8000000_00000000hl);
 		global _addC4DepthTest: word = 07FFFFFFFh;
 end ".data_demo3d";
-global _mMulCVxN_2s32sExt: label;
-global _mMulCVxN_2s_v4nm8sExt: label;
+global _mMulCVxN_2s32s: label;
+global _mMulCVxN_2s_RGB8888: label;
 
 macro mainLoopRepN(N)
 	own Next:label;
@@ -53,99 +54,104 @@ macro mainLoopRepN(N)
 	own endTreangle:label;
 	own LastIter: label;
 //first column	
-	gr3 = ar6	with gr4--;
+	gr4 = ar6	with gr2--;
 	rep N ram,data = [ar0++] with vsum, data, vr;
-	if =0 delayed goto endTreangle	with gr3+=gr1 noflags;
+	if =0 delayed goto endTreangle	with gr4+=gr3 noflags;
 		rep N [ar6++gr6] = afifo;
 		ar0 = ar6;
  <Next>
-	ar4 = [ar1++gr1]	with gr4--;
-	sb = [ar5++gr5]; 
+	ar4 = [ar3+=2]	with gr2--;
+	sb = [ar5+=4]; 
 	rep 4 wfifo =[ar4++],ftw,wtw;
-	ar6 = gr3	with gr3+=gr1 noflags;
+	ar6 = gr4	with gr4+=gr3 noflags;
 	if > delayed goto Next;
 		rep N with vsum, ram, vr;
 		rep N [ar6++gr6] = afifo; 
 <endTreangle>
-	pop ar4, gr4	with gr7--;
-	ar6 = ar0;
+	ar6 = ar0	with gr7--;
+	nul;
 	if > delayed goto NextTreangle;
 		nul;
 		nul;
 	delayed goto EndProgram;
 		nul;
 		nul;
-	nul;nul;nul;nul;
-	nul;nul;nul;nul;
+	nul;nul;
+	nul;nul;
+	nul;nul;
 end mainLoopRepN;
 
 begin ".text_demo3d"
-<_mMulCVxN_2s_v4nm8sExt>
+<_mMulCVxN_2s_RGB8888>
 	ar5 = ar7-2;
 	push ar0,gr0;
 	push ar1,gr1;
-	push ar2,gr2;
-	push ar3,gr3;
-	push ar4,gr4;
+	push ar2,gr2	with gr1 = false;
+	push ar3,gr3	with gr1++;
+	push ar4,gr4	with gr1<<=2;
 	push ar5,gr5;
 	push ar6,gr6;
-	gr0 = [--ar5];		//nm2s** ppSrcTreangle_2s
-	gr4 = [--ar5];		//int* offsets  -1..32
-	ar2 = [--ar5];		//int* widths
-	ar3 = [--ar5];		//int* heights
-	ar6 = [--ar5];		//nm32s* pDstTreangle_32s
+	gr0 = [--ar5];		//Patterns* triangles
+	ar1 = [--ar5];		//Rectangle windows
+	ar2 = [--ar5];		//int* valueC
 	nb1 = 80808080h;
 	gr5 = false;
 	vr = gr5;
 	delayed goto NextTreangle;
-		ar4 = [--ar5];		//int* valueC
+		ar6 = [--ar5];		//nm32s* pDstTreangle_32s	
 		gr7 = [--ar5];		//int count
-<_mMulCVxN_2s32sExt>
+<_mMulCVxN_2s32s>
 	ar5 = ar7-2;
 	push ar0,gr0;
 	push ar1,gr1;
-	push ar2,gr2;
-	push ar3,gr3;
-	push ar4,gr4;
+	push ar2,gr2	with gr1 = false;
+	push ar3,gr3	with gr1++;
+	push ar4,gr4	with gr1<<=2;
 	push ar5,gr5;
 	push ar6,gr6;
-	gr0 = [--ar5];		//nm2s** ppSrcTreangle_2s
-	gr4 = [--ar5];		//int* offsets  -1..32
-	ar2 = [--ar5];		//int* widths
-	ar3 = [--ar5];		//int* heights
-	ar6 = [--ar5];		//nm32s* pDstTreangle_32s
-	ar4 = [--ar5];		//int* valueC
+	gr0 = [--ar5];		//Patterns* triangles
+	ar1 = [--ar5];		//Rectangle windows
+	ar2 = [--ar5];		//int* valueC
+	ar6 = [--ar5];		//nm32s* pDstTreangle_32s	
 	gr7 = [--ar5];		//int count
 	gr5 = [_addC4DepthTest];
 	vr = gr5;
 	nb1 = 0C0000000h;
 <NextTreangle>	
+	//write mulC to matrix
 	repNHeightStart: label;
-	gr5 = [ar4++];
+	gr5 = [ar2++];
 	[matr1+6] = gr5;
 	[matr1+9] = gr5;
 	
-	ar0 = [gr0] with gr0++;
-	gr1 = [gr4]	with gr4++;
+	//
+	ar0 = gr0	with gr3 = gr1 << 4;	//gr3=64
+	gr0+=gr3;
+	
+	gr3 = [ar1 + 1];	//y
+	ar3 = ar0		with gr3 <<= 1;			//!ВАЖНО - величина сдвига зависит от ширины паттерна
+	ar0 = ar3 + gr3;
 	
 	//computing addr first matrix and sb
-	push ar4, gr4	with gr1++;
-	ar1 = addr_matr;
-	ar1+=gr1	with gr5 = gr1 << 1;
+	gr3 = [ar1];		//x
+	gr5 = 1;		//величина gr5 зависит от от возможных отрицательных значений x
+	ar3 = addr_matr	with gr3+=gr5;	
+	ar3+=gr3	with gr5 = gr3 << 1;
 	ar5 = sb_array;
 	ar5+=gr5;
 		
-	gr1 = 2;
-	ar4 = [ar1++gr1]	with gr5 = gr1 << 1;
-	sb = [ar5++gr5];
+	
+	ar4 = [ar3]	with gr3 = gr1 >> 1;	//gr3 = 2
+	sb = [ar5];
 	rep 4 wfifo = [ar4++], ftw,wtw;
 	
-	gr4 = [ar3++];
+	gr2 = [ar1 + 2];		//width
+	gr4 = [ar1 + 3];		//height
 	ar4 = repNHeightStart	with gr4 <<= 5;
 	delayed goto ar4+gr4;
-		gr4 = [ar2++];
-		gr6 = gr4		with gr4>>=1;
-		nul;
+		ar1 += gr1;
+		gr2 >>= 1;			//ширина в 64-битных словах
+		gr6 = gr2 << 1;
 <repNHeightStart>
 	mainLoopRepN(1 );
 	

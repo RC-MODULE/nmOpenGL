@@ -8,6 +8,7 @@
 #include "ringbuffer.h"
 #include "nmprofiler.h"
 #include "cache.h"
+#include "nmgl_data1.h"
 
 #include "nmgl.h"
 
@@ -29,7 +30,7 @@ SECTION(".text_demo3d") int copyCounterDepth() {
 	return copyImageCounterDepth++;
 }
 
-SECTION(".text_nmglvs") int nmglvsNm1Step(NMGL_Context_NM1 &cntxt)
+SECTION(".text_nmglvs") int nmglvsNm1Step()
 {	
 
 	cntxt.synchro.popInstr(&currentCommand);

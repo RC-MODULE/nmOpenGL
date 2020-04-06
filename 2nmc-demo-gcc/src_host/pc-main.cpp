@@ -28,7 +28,7 @@ int main()
 	float* vertices = new float[4000 * 12];
 	float* normal = new float[4000 * 9];
 	//float* vertices = (float*)halMalloc32(4000 * 12);
-	//float* normal = (float)halMalloc32(4000 * 12);
+	//float* normal = (float*)halMalloc32(4000 * 9);
 	int ok;
 
 	int sizePolygons = sizeof32(Polygons);
@@ -60,6 +60,8 @@ int main()
 
 	delete vertices;
 	delete normal;
+	//halFree(vertices);
+	//halFree(normal);
 	int flag = -1;
 	int counter = 0;
 

@@ -8,6 +8,62 @@
 
 #define BIG_NMGL_SIZE (128 * NMGL_SIZE)
 
+class BitMask {
+public:
+	int* bits;
+	int hasNotZeroBits; 
+
+	void init(nm1* mask) {
+		bits = (int*)mask;
+		hasNotZeroBits = 0;
+	}
+
+	int get(int index) {
+		int word = bits[index / 32];
+		word >>= index % 32;
+		return word & 1;
+	}
+
+	void put(int index, int value) {
+		int word = bits[index / 32];
+		int mask = 1 << (index % 32);
+		value <<= index % 32;
+		word = word & ~mask | value & mask;
+		bits[index / 32] = word;
+	}
+};
+
+
+class BitDividedMask{
+public:
+	BitMask even;
+	BitMask odd;
+
+	void init(nm1* evenMask, nm1* oddMask) {
+		even.init(evenMask);
+		odd.init(oddMask);
+	}
+
+	int get(int index) {
+		if (index % 2) {
+			return odd.get(index / 2);
+		}
+		else {
+			return even.get(index / 2);
+		}
+	}
+
+	void put(int index, int value) {
+		if (index % 2) {
+			odd.put(index / 2, value);
+		}
+		else {
+			even.put(index / 2, value);
+		}
+	}
+};
+
+
 struct Lines{
 	float* x0;
 	float* y0;
@@ -15,6 +71,8 @@ struct Lines{
 	float* y1;
 	int* z;
 	v4nm32s* colors;
+	int size;
+	int maxSize;
 };
 
 struct Triangles{
@@ -31,6 +89,30 @@ struct Triangles{
 };
 void copyTriangles(const Triangles &src, int offsetSrc, Triangles &dst, int offsetDst, int size);
 
+class NmglBeginEndInfo{
+public:
+	v4nm32f* vertex;
+	v4nm32f* normal;
+	v4nm32f* color;
+	int vertexCounter;
+	int normalCounter;
+	int colorCounter;
+
+	NMGLenum mode;
+	bool inBeginEnd;
+
+	int dummy;
+	int maxSize;
+
+	NmglBeginEndInfo(){
+		vertexCounter = 0;
+		normalCounter = 0;
+		colorCounter = 0;
+		inBeginEnd = false;
+	}
+
+};
+
 struct MatrixStack {
 	mat4nm32f* base;
 	int current;
@@ -42,17 +124,16 @@ struct MatrixStack {
 	}
 };
 
-struct SegmentMask {
-	int* bits;
-	int hasNotZeroBits;
-};
 
 struct NMGL_Context_NM0 {
 	NMGLSynchro synchro;
 	PolygonsArray* polygonsData;
 	NMGLenum error;
-	Patterns* patterns;
+	PatternsArray* patterns;
 	int dummy;
+
+	BitMask segmentMasks[36];
+	BitDividedMask dividedMasks[2];
 
 	float* buffer0;
 	float* buffer1;
@@ -60,6 +141,7 @@ struct NMGL_Context_NM0 {
 	float* buffer3;
 
 	Triangles trianInner;
+	NmglBeginEndInfo beginEndInfo;
 
 	mat4nm32f modelviewMatrix[16];
 	mat4nm32f projectionMatrix[2];
@@ -100,15 +182,14 @@ struct NMGL_Context_NM0 {
 	float lightConstAtt[MAX_LIGHTS];
 	float lightLinAtt[MAX_LIGHTS];
 	float lightQuadAtt[MAX_LIGHTS];
-	float isEnabledLight[MAX_LIGHTS];
+	bool isEnabledLight[MAX_LIGHTS];
 	int isLighting;
 	float specularExp;
 	
 	NMGL_Context_NM0_Texture texState;
 
-	void init(NMGLSynchroData* syncroData, PolygonsArray* polygonsArray){
+	void init(NMGLSynchroData* syncroData){
 		synchro.init(syncroData);
-		polygonsData = polygonsArray;
 
 		currentMatrixStack = &modelviewMatrixStack;
 		isUseTwoSidedMode = NMGL_FALSE;
@@ -166,7 +247,7 @@ struct NMGL_Context_NM0 {
 			lightPosition[i].vec[0] = 0;
 			lightPosition[i].vec[1] = 0;
 			lightPosition[i].vec[2] = 1;
-			lightPosition[i].vec[2] = 0;
+			lightPosition[i].vec[3] = 0;
 
 			lightSpotDirection[i].vec[0] = 0;
 			lightSpotDirection[i].vec[1] = 0;
@@ -178,7 +259,7 @@ struct NMGL_Context_NM0 {
 			lightConstAtt[i] = 1;
 			lightLinAtt[i] = 0;
 			lightQuadAtt[i] = 0;
-			isEnabledLight[i] = 0;
+			isEnabledLight[i] = false;
 		}
 
 		lightAmbient[MAX_LIGHTS].vec[0] = 0.2;
@@ -212,14 +293,6 @@ struct NMGL_Context_NM0 {
 		texState.init();
 		
 	}
-};
-
-struct MasksSeg
-{
-	int xLt[NMGL_SIZE / 32];
-	int yLt[NMGL_SIZE / 32];
-	int xGt[NMGL_SIZE / 32];
-	int yGt[NMGL_SIZE / 32];
 };
 
 
@@ -785,17 +858,25 @@ extern "C"{
 	void doubleAdd_32f(float* src1, float* src2, float* srcAdd1, float* srcAdd2, float* dst1, float* dst2, int size);
 	void tripleMulC_32f(float* src1, float* src2, float* src3, float C, float* dst1, float* dst2, float* dst3, int size);
 	void doubleAbsIfNegElse0_32f(float* src1, float* src2, float* dst1, float* dst2, int size);
+
+	//функция вычисляет основную часть освещения по формуле
+	// res = a + nvp * d + f(nvp) * nh * s, где
+	// a - ambient
+	// nvp - n_dot_vp
+	// d - diffuse
+	// nh - n_dot_h_in_srm
+	// s - specular
+	// f(x) = 1, if (x!=0), else 0
+	void baseLighti(v4nm32f* ambient, v2nm32f* n_dot_vp, v4nm32f* diffuse, v2nm32f* n_dot_h_in_srm, v4nm32f* specular, v4nm32f* dst, int count);
 }
 void reverseMatrix3x3in4x4(mat4nm32f* src, mat4nm32f* dst);
 
-//void addInstrNMC1(HalRingBuffer* commandsRB, int instr, int param0 = 0, int param1 = 0, int param2 = 0, int param3 = 0, int param4 = 0, int param5 = 0);
-
-void setSegmentMask(NMGL_Context_NM0 &cntxt, Triangles &triangles, SegmentMask* masks);
+void setSegmentMask(NMGL_Context_NM0 &cntxt, Triangles &triangles, BitMask* masks);
 void pushToTriangles_t(const float *vertexX, const float *vertexY, const float *vertexZ, const v4nm32f* color, Triangles& triangles, int countVertex);
-void rasterizeT(const Triangles* triangles, const SegmentMask* masks);
-
-void fillPolygonsT(Polygons* poly, Triangles* triangles, int count, int segX, int segY);
-void fillPolygonsL(Polygons* poly, Lines* lines, int count, int segX, int segY);
+void rasterizeT(const Triangles* triangles, const BitMask* masks);
+void rasterizeL(const Lines* lines, const BitMask* masks);
+void updatePolygonsT(Polygons* poly, Triangles* triangles, int count, int segX, int segY);
+void updatePolygonsL(Polygons* poly, Lines* lines, int count, int segX, int segY);
 
 void pow_32f(nm32f* srcVec, nm32f* dstVec, float powC, int size, nm32f* pTmp1);
 

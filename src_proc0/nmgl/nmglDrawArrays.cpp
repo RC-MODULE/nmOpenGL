@@ -7,9 +7,6 @@
 #include "arraymanager.h"
 #include "stdio.h"
 
-SECTION(".data_imu6")	int masksBits[36][NMGL_SIZE / 32];
-SECTION(".data_imu6")	SegmentMask masks[36];
-
 SECTION(".data_imu5")	float vertexX[3 * NMGL_SIZE];
 SECTION(".data_imu6")	float vertexY[3 * NMGL_SIZE];
 SECTION(".data_imu4")	float vertexZ[3 * NMGL_SIZE];
@@ -21,13 +18,11 @@ SECTION(".data_imu6")	ArrayManager<float> vertexAM;
 SECTION(".data_imu6")	ArrayManager<float> normalAM;
 SECTION(".data_imu6")	ArrayManager<v4nm32f> colorAM;
 
-SECTION(".data_imu6") int maskTmp2[BIG_NMGL_SIZE / 32];
 
 template < typename T >
 inline void copyVec(const void* src, void* dst, size_t size) {
 	nmblas_scopy(size * sizeof32(T), (float*)src, 1, (float*)dst, 1);
 }
-
 
 SECTION(".text_nmgl")
 void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
@@ -67,12 +62,12 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 		mulC_v4nm32f(cntxt.lightAmbient, &cntxt.materialAmbient, cntxt.ambientMul, MAX_LIGHTS + 1);
 		mulC_v4nm32f(cntxt.lightDiffuse, &cntxt.materialDiffuse, cntxt.diffuseMul, MAX_LIGHTS);
 		mulC_v4nm32f(cntxt.lightSpecular, &cntxt.materialSpecular, cntxt.specularMul, MAX_LIGHTS);
+		nmppsAdd_32f((float*)(cntxt.ambientMul + MAX_LIGHTS), 
+			(float*)&cntxt.materialEmissive, 
+			(float*)(cntxt.ambientMul + MAX_LIGHTS), 4);
 	}
 
 	reverseMatrix3x3in4x4(cntxt.modelviewMatrixStack.top(), &cntxt.normalMatrix);
-	for (int i = 0; i < 36; i++) {
-		masks[i].bits = masksBits[i];
-	}
 
 	while (!vertexAM.isEmpty()) {
 		//vertex
@@ -164,12 +159,12 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			if (cntxt.isCullFace) {
 				cullFaceSortTriangles(cntxt.trianInner);
 			}
-			for (int i = 0; i < 36; i++) {
-				masks[i].hasNotZeroBits = 0;
-			}
-			setSegmentMask(cntxt, cntxt.trianInner, masks);
-			rasterizeT(&cntxt.trianInner, masks);
+			setSegmentMask(cntxt, cntxt.trianInner, cntxt.segmentMasks);
+			rasterizeT(&cntxt.trianInner, cntxt.segmentMasks);
+			break;
+		case NMGL_LINES:
 			break;
 		}
 	}
+
 }
