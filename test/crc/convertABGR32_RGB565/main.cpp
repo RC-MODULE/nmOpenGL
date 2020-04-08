@@ -116,7 +116,7 @@ int convertABGR32_RGB565_singleInputIntermediateValue_singleOutputIntermediateVa
 
     srcArray[0].vec[0] = 0x3333333355555555;
     srcArray[0].vec[1] = 0xAAAAAAAACCCCCCCC;
-    nmppsPut_16s(expectedDstArray, 0, 0xC98A);
+    nmppsPut_16s(expectedDstArray, 0, 0xAE6C);
     
     //Act
     convertABGR32_RGB565(srcArray, dstArray, count);
@@ -143,7 +143,7 @@ int convertABGR32_RGB565_manyInputValues_manyOutputValues()
     constexpr int count = 4;
     abgr32 *srcArray = new abgr32[count];    
     rgb565 *dstArray = nmppsMalloc_16s(count);
-    nm32u expectedRGB565Values[count] = {0xC98A, 0xFFFF, 0xAECA, 0xBF4C};
+    nm32u expectedRGB565Values[count] = {0xAE6C, 0xFFFF, 0x2B08, 0x3518};
     rgb565 *expectedDstArray = nmppsMalloc_16s(count);
     // The following arrays are used for comparison
     int16b dstArray_int16b[count];
@@ -155,11 +155,11 @@ int convertABGR32_RGB565_manyInputValues_manyOutputValues()
     srcArray[1].vec[0] = 0xFFFFFFFFFFFFFFFF;
     srcArray[1].vec[1] = 0xFFFFFFFFFFFFFFFF; 
 
-    srcArray[2].vec[0] = 0xD800000050000000;
-    srcArray[2].vec[1] = 0xFFFFFFFFA8000000; 
+    srcArray[2].vec[0] = 0x000000D800000005;
+    srcArray[2].vec[1] = 0xFFFFFFFF000000A8; 
 
-    srcArray[3].vec[0] = 0xE800000060000000;
-    srcArray[3].vec[1] = 0xFFFFFFFFB8000000; 
+    srcArray[3].vec[0] = 0x000000E800000006;
+    srcArray[3].vec[1] = 0xFFFFFFFF000000B8; 
 
     // Populate expectedDstArray by expected values
     for (int i = 0; i < count; ++i){
@@ -191,7 +191,7 @@ int convertABGR32_RGB565_fiveInputValues_fiveOutputValues()
     constexpr int count = 8;
     abgr32 *srcArray = new abgr32[count];    
     rgb565 *dstArray = nmppsMalloc_16s(count);
-    nm32u expectedRGB565Values[count] = {0xC98A, 0xFFFF, 0xAECA, 0xBF4C, 0xC98A, 0x1010, 0x1010, 0x1010};
+    nm32u expectedRGB565Values[count] = {0xAE6C, 0xFFFF, 0x2B08, 0x3518, 0xAE6C, 0x1010, 0x1010, 0x1010};
     rgb565 *expectedDstArray = nmppsMalloc_16s(count);
     // The following arrays are used for comparison
     int16b dstArray_int16b[count];
@@ -203,11 +203,11 @@ int convertABGR32_RGB565_fiveInputValues_fiveOutputValues()
     srcArray[1].vec[0] = 0xFFFFFFFFFFFFFFFF;
     srcArray[1].vec[1] = 0xFFFFFFFFFFFFFFFF; 
 
-    srcArray[2].vec[0] = 0xD800000050000000;
-    srcArray[2].vec[1] = 0xFFFFFFFFA8000000; 
+    srcArray[2].vec[0] = 0x000000D800000005;
+    srcArray[2].vec[1] = 0xFFFFFFFF000000A8; 
 
-    srcArray[3].vec[0] = 0xE800000060000000;
-    srcArray[3].vec[1] = 0xFFFFFFFFB8000000;
+    srcArray[3].vec[0] = 0x000000E800000006;
+    srcArray[3].vec[1] = 0xFFFFFFFF000000B8;
 
     srcArray[4].vec[0] = 0x3333333355555555;
     srcArray[4].vec[1] = 0xAAAAAAAACCCCCCCC;
@@ -243,7 +243,7 @@ int convertABGR32_RGB565_sixInputValues_sixOutputValues()
     constexpr int count = 8;
     abgr32 *srcArray = new abgr32[count];    
     rgb565 *dstArray = nmppsMalloc_16s(count);
-    nm32u expectedRGB565Values[count] = {0xC98A, 0xFFFF, 0xAECA, 0xBF4C, 0xC98A, 0xAECA,0x1010, 0x1010};
+    nm32u expectedRGB565Values[count] = {0xAE6C, 0xFFFF, 0x2B08, 0x3518, 0xAE6C, 0x2B08,0x1010, 0x1010};
     rgb565 *expectedDstArray = nmppsMalloc_16s(count);
     // The following arrays are used for comparison
     int16b dstArray_int16b[count];
@@ -255,17 +255,17 @@ int convertABGR32_RGB565_sixInputValues_sixOutputValues()
     srcArray[1].vec[0] = 0xFFFFFFFFFFFFFFFF;
     srcArray[1].vec[1] = 0xFFFFFFFFFFFFFFFF; 
 
-    srcArray[2].vec[0] = 0xD800000050000000;
-    srcArray[2].vec[1] = 0xFFFFFFFFA8000000; 
+    srcArray[2].vec[0] = 0x000000D800000005;
+    srcArray[2].vec[1] = 0xFFFFFFFF000000A8; 
 
-    srcArray[3].vec[0] = 0xE800000060000000;
-    srcArray[3].vec[1] = 0xFFFFFFFFB8000000;
+    srcArray[3].vec[0] = 0x000000E800000006;
+    srcArray[3].vec[1] = 0xFFFFFFFF000000B8;
 
     srcArray[4].vec[0] = 0x3333333355555555;
     srcArray[4].vec[1] = 0xAAAAAAAACCCCCCCC;
 
-    srcArray[5].vec[0] = 0xD800000050000000;
-    srcArray[5].vec[1] = 0xFFFFFFFFA8000000;
+    srcArray[5].vec[0] = 0x000000D800000005;
+    srcArray[5].vec[1] = 0xFFFFFFFF000000A8;
 
     // Populate expectedDstArray by expected values
     for (int i = 0; i < count; ++i){
@@ -299,7 +299,7 @@ int convertABGR32_RGB565_sevenInputValues_sevenOutputValues()
     constexpr int count = 8;
     abgr32 *srcArray = new abgr32[count];    
     rgb565 *dstArray = nmppsMalloc_16s(count);
-    nm32u expectedRGB565Values[count] = {0xC98A, 0xFFFF, 0xAECA, 0xBF4C, 0xC98A, 0xAECA, 0xBF4C, 0x1010};
+    nm32u expectedRGB565Values[count] = {0xAE6C, 0xFFFF, 0x2B08, 0x3518, 0xAE6C, 0x2B08, 0x3518, 0x1010};
     rgb565 *expectedDstArray = nmppsMalloc_16s(count);
     // The following arrays are used for comparison
     int16b dstArray_int16b[count];
@@ -311,23 +311,23 @@ int convertABGR32_RGB565_sevenInputValues_sevenOutputValues()
     srcArray[1].vec[0] = 0xFFFFFFFFFFFFFFFF;
     srcArray[1].vec[1] = 0xFFFFFFFFFFFFFFFF; 
 
-    srcArray[2].vec[0] = 0xD800000050000000;
-    srcArray[2].vec[1] = 0xFFFFFFFFA8000000; 
+    srcArray[2].vec[0] = 0x000000D800000005;
+    srcArray[2].vec[1] = 0xFFFFFFFF000000A8; 
 
-    srcArray[3].vec[0] = 0xE800000060000000;
-    srcArray[3].vec[1] = 0xFFFFFFFFB8000000;
+    srcArray[3].vec[0] = 0x000000E800000006;
+    srcArray[3].vec[1] = 0xFFFFFFFF000000B8;
 
     srcArray[4].vec[0] = 0x3333333355555555;
     srcArray[4].vec[1] = 0xAAAAAAAACCCCCCCC;
 
-    srcArray[5].vec[0] = 0xD800000050000000;
-    srcArray[5].vec[1] = 0xFFFFFFFFA8000000;
+    srcArray[5].vec[0] = 0x000000D800000005;
+    srcArray[5].vec[1] = 0xFFFFFFFF000000A8;
 
-    srcArray[6].vec[0] = 0xE800000060000000;
-    srcArray[6].vec[1] = 0xFFFFFFFFB8000000;
+    srcArray[6].vec[0] = 0x000000E800000006;
+    srcArray[6].vec[1] = 0xFFFFFFFF000000B8;
 
-    srcArray[7].vec[0] = 0xE800000060000000;
-    srcArray[7].vec[1] = 0xFFFFFFFFB8000000;
+    srcArray[7].vec[0] = 0x000000E800000006;
+    srcArray[7].vec[1] = 0xFFFFFFFF000000B8;
 
     // Populate expectedDstArray by expected values
     for (int i = 0; i < count; ++i){
