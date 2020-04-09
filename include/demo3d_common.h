@@ -17,7 +17,7 @@
 #ifdef __GNUC__
 #define SECTION(sec) __attribute__((section(sec)))
 #else
-#define SECTION(sec)
+#define SECTION(sec) 
 #endif // __GNUC__
 
 typedef nm16s rgb565;

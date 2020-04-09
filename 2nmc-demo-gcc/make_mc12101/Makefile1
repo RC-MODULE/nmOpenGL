@@ -59,6 +59,7 @@ LIB_DIRS         = -L "$(NMC_GCC_TOOLPATH)/nmc4-ide/lib" -L"$(NMPP)/lib" -L"$(HA
 TMP_DIR          = Release
 #-------------- RELEASE/ALL config -------------------
 CC 				 = nmc-g++
+CC_FLAGS		 = -O2 -fno-builtin-printf -std=c++11
 AS               = nmc-gcc 				 
 AS_FLAGS    	 = -c -mmas -x assembler -Wa,-split_sir -mnmc4-fixed
 LIBS             = -lnmpp-nmc4 -lhal-mc12101
@@ -126,10 +127,10 @@ $(TMP_DIR)/%.o: %.asm
 	$(AS) $(AS_FLAGS) $(<) -o$(@) $(INC_DIRS)
 	
 $(TMP_DIR)/%.o: %.cpp 
-	$(CC) $(CC_FLAGS) -c $(<) -o$(@) $(INC_DIRS) -O2
+	$(CC) $(CC_FLAGS) -c $(<) -o$(@) $(INC_DIRS)
 
 $(TMP_DIR)/%.o: %.c
-	$(CC) $(CC_FLAGS) -c $(<) -o$(@) $(INC_DIRS) -O2
+	$(CC) $(CC_FLAGS) -c $(<) -o$(@) $(INC_DIRS)
 	
 proflist:
 	lua53 $(HAL)/script/profiler-gcc.lua .main1.map > proflist_generated1.asm 

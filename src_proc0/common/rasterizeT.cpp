@@ -47,6 +47,7 @@ void rasterizeT(const Triangles* triangles, const BitMask* masks){
 						iSeg);
 
 					copyArraysByIndices((void**)triangles, indices, (void**)&localTrian, 7, resultSize);
+					//copyColorByIndices(triangles->colors, indices, (v4nm32s*)localTrian.colors, resultSize);
 					copyColorByIndices_BGRA_RGBA(triangles->colors, indices, (v4nm32s*)localTrian.colors, resultSize);
 
 					//waitPolygons(connector);

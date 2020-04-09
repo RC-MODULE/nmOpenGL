@@ -837,11 +837,11 @@ extern "C"{
 	void findMinMax2(float* src1, float* src2, float* dstMin, float* dstMax, int nSize);
 
 	void copyArraysByIndices(void** srcPointers, int* indices, void** dstPointers, int nArrays, int size);
-	void copyColorByIndices_BGRA_RGBA(v4nm32s* srcColor, int* indices, v4nm32s* dstColor, int size);
 
 	void absIfNegElse0_32f(float* src, float* dst, int size);
 
 	void remap_32u(nm32u* pSrcVec, nm32u* pDstVec, nm32s* pRemapTable, int nSize);
+	void copyColorByIndices(v4nm32s* srcColor, int* indices, v4nm32s* dstColor, int size);
 	
 	void ternaryLt0_AddC_AddC_32f(nm32f* srcFlags, nm32f* srcVec, float valueLeft, float valueRight, float* dstVec, int size);
 	int readMask(nm1* mask, int* dstIndices, int size);
@@ -881,6 +881,8 @@ void updatePolygonsL(Polygons* poly, Lines* lines, int count, int segX, int segY
 void pow_32f(nm32f* srcVec, nm32f* dstVec, float powC, int size, nm32f* pTmp1);
 
 void cullFaceSortTriangles(Triangles &triangles);
+
+void copyColorByIndices_BGRA_RGBA(v4nm32s* srcColor, int* indices, v4nm32s* dstColor, int size);
 
 /**
  *  \defgroup color Light

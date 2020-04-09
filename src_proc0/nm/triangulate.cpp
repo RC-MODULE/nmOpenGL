@@ -1,4 +1,4 @@
-#include <stack>
+/*#include <stack>
 #include <iostream>
 #include <cstdlib>
 #include <cmath> // pow for NMC-SDK
@@ -247,3 +247,4 @@ int checkAndSplitLargestEdge(const Triangle& tr, nm32f xMax, nm32f yMax, Triangl
 }
 
 
+*/

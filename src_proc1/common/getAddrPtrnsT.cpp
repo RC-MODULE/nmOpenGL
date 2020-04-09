@@ -3,6 +3,7 @@
 #include "demo3d_nm1.h"
 #include "nmgldef.h"
 #include "stdio.h"
+#include "service.h"
 
 
 
@@ -108,6 +109,8 @@ SECTION(".text_demo3d") int getAddrPtrnsT(NMGL_Context_NM1* context, Polygons* p
 
 	CHECK_STATUS(7);
 	nmppsConvert_32s8s(polyTmp->color, (nm8s*)context->valuesC, 4 * size);
+	//convertABGR32_RGB565((abgr32*)polyTmp->color, (rgb565*)temp0, size);
+	//convertRGB565_RGB8888((rgb565*)temp0, (rgb8888*)context->valuesC, size);
 
 	CHECK_STATUS(8);
 	nmppsSub_32s(polyTmp->ptrnSizesOf32_02, polyTmp->ptrnSizesOf32_01, temp0, size);
