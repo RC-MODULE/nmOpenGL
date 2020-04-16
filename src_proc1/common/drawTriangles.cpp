@@ -93,7 +93,6 @@ SECTION(".text_demo3d") void drawTriangles(NMGL_Context_NM1* context) {
 
 		//mulBuffer теперь хранит цвет
 
-
 		//функция накладывает маску на буфер с цветами 
 		//и копирует треугольник в изображение
 		mMaskVxN_32s((nm32s*)mulC,

@@ -110,6 +110,7 @@ SECTION(".text_demo3d") int getAddrPtrnsT(NMGL_Context_NM1* context, Polygons* p
 	CHECK_STATUS(7);
 	nmppsConvert_32s8s(polyTmp->color, (nm8s*)context->valuesC, 4 * size);
 	//convertABGR32_RGB565((abgr32*)polyTmp->color, (rgb565*)temp0, size);
+	//duplicate_16s((nm16s*)temp0, context->valuesC, size);
 	//convertRGB565_RGB8888((rgb565*)temp0, (rgb8888*)context->valuesC, size);
 
 	CHECK_STATUS(8);
@@ -120,5 +121,8 @@ SECTION(".text_demo3d") int getAddrPtrnsT(NMGL_Context_NM1* context, Polygons* p
 		SMALL_SIZE,
 		(nm32s**)context->nSizePtrn32,
 	 size);
+	//CHECK_STATUS(9);
+	//nmppsConvert_32s16s(polyTmp->z, (nm16s*)context->valuesZ, size);
+	//nmppsCopy_32s(polyTmp->z, context->valuesZ, size);
 	return 0;
 }

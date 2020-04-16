@@ -8,9 +8,11 @@
 
 #include "VShell.h"
 #include "demo3d_common.h"
+#include "service.h"
 
 
 extern ImageConnector hostImageRB;
+int tempImage[WIDTH_IMAGE * HEIGHT_IMAGE];
 
 int nmglvsHostReadImage(int* dstImage)
 {
@@ -21,6 +23,8 @@ int nmglvsHostReadImage(int* dstImage)
 #else
 	if (mouseStatus.nKey != VS_MOUSE_LBUTTON) {
 #endif
+		//hostImageRB.pop((ImageRGB8888*)tempImage, 1);
+		//convertRGB565_RGB8888((rgb565*)tempImage, (rgb8888*)dstImage, WIDTH_IMAGE * HEIGHT_IMAGE);
 		hostImageRB.pop((ImageRGB8888*)dstImage, 1);
 	}
 	else {

@@ -132,6 +132,8 @@ extern "C" {
 	int totalSum(nm32s* pVec, int size);
 
 	void merge_v4nm32s(nm32s* src1, nm32s* src2, nm32s* src3, nm32s* src4, v4nm32s* dst, int size);
+
+	void duplicate_16s(const nm16s *srcArray, nm32s *dstArray, int count);
 	
 }
 

@@ -127,6 +127,9 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 		}
 
 		clamp_32f((float*)colorOrNormal, 0, 1, (float*)cntxt.buffer3, 4 * localSize);
+		//cntxt.tmp.vec[0] = 31;
+		//cntxt.tmp.vec[1] = 63;
+		//cntxt.tmp.vec[2] = 31;
 		cntxt.tmp.vec[0] = 255.0;
 		cntxt.tmp.vec[1] = 255.0;
 		cntxt.tmp.vec[2] = 255.0;
