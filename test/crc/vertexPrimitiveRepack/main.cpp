@@ -55,11 +55,6 @@ int vertexPrimitiveRepack_modeIsGL_TRIANGLES_FAN15Vertexes_returns13();
 int vertexPrimitiveRepack_modeIsGL_TRIANGLES_FAN45Vertexes_returns43();
 int vertexPrimitiveRepack_modeIsGL_TRIANGLES_FAN90Vertexes_returns88();
 
-int vertexPrimitiveRepack_srcVertexIsNull_errorIsEINVAL ();
-int vertexPrimitiveRepack_srcColorIsNull_errorIsEINVAL ();
-int vertexPrimitiveRepack_dstVertexIsNull_errorIsEINVAL ();
-int vertexPrimitiveRepack_dstColorIsNull_errorIsEINVAL ();
-
 int main(int argc, char **argv)
 {
     puts("VertexPrimitiveRepack tests: ");
@@ -111,10 +106,6 @@ int main(int argc, char **argv)
 	RUN_TEST(vertexPrimitiveRepack_modeIsGL_TRIANGLES_FAN45Vertexes_returns43);
 	RUN_TEST(vertexPrimitiveRepack_modeIsGL_TRIANGLES_FAN90Vertexes_returns88);	
 
-    RUN_TEST(vertexPrimitiveRepack_srcVertexIsNull_errorIsEINVAL);
-    RUN_TEST(vertexPrimitiveRepack_srcColorIsNull_errorIsEINVAL);
-    RUN_TEST(vertexPrimitiveRepack_dstVertexIsNull_errorIsEINVAL);
-    RUN_TEST(vertexPrimitiveRepack_dstColorIsNull_errorIsEINVAL);
     puts("OK");
 	return 0;
 }
@@ -1660,86 +1651,3 @@ int vertexPrimitiveRepack_modeIsGL_TRIANGLES_FAN90Vertexes_returns88 ()
     return 0;
 }
 
-int vertexPrimitiveRepack_srcVertexIsNull_errorIsEINVAL ()
-{
-	// Arrange
-    v4nm32f     *srcVertex = NULL;
-    v4nm32f     srcColor[5] = {0};
-    nm32f       dstVertex[48] = {0} ;
-    v4nm32f     dstColor[12] = {0};
-    int 		vertCount = 5;
-    int 		mode = NMGL_TRIANGLES;
-
-    errno = 0;
-
-	// Act
-    vertexPrimitiveRepack(srcVertex, srcColor,dstVertex, dstColor, mode, vertCount);
-
-	// Assert
-    TEST_ASSERT(errno == EINVAL);
-
-    return 0;
-}
-
-int vertexPrimitiveRepack_srcColorIsNull_errorIsEINVAL ()
-{
-	// Arrange
-    v4nm32f     srcVertex[5] = {0};
-    v4nm32f     *srcColor = NULL;
-    nm32f       dstVertex[48] = {0} ;
-    v4nm32f     dstColor[12] = {0};
-    int 		vertCount = 5;
-    int 		mode = NMGL_TRIANGLES;
-
-    errno = 0;
-	
-	// Act
-    vertexPrimitiveRepack(srcVertex, srcColor,dstVertex, dstColor, mode, vertCount);
-
-	// Assert
-    TEST_ASSERT(errno == EINVAL);
-
-    return 0;
-}
-
-int vertexPrimitiveRepack_dstVertexIsNull_errorIsEINVAL ()
-{
-	// Arrange
-    v4nm32f     srcVertex[5] = {0};
-    v4nm32f     srcColor[5] = {0};
-    nm32f       *dstVertex = NULL;
-    v4nm32f     dstColor[12] = {0};
-    int 		vertCount = 5;
-    int 		mode = NMGL_TRIANGLES;
-
-    errno = 0;
-
-	// Act
-    vertexPrimitiveRepack(srcVertex, srcColor,dstVertex, dstColor, mode, vertCount);
-
-	// Assert
-    TEST_ASSERT(errno == EINVAL);
-
-    return 0;
-}
-
-int vertexPrimitiveRepack_dstColorIsNull_errorIsEINVAL ()
-{
-	// Arrange
-    v4nm32f     srcVertex[5] = {0};
-    v4nm32f     srcColor[5] = {0};
-    nm32f       dstVertex[48] = {0} ;
-    v4nm32f     *dstColor = NULL;
-    int 		vertCount = 5;
-    int 		mode = NMGL_TRIANGLES;
-
-    errno = 0;
-
-	// Act
-    vertexPrimitiveRepack(srcVertex, srcColor,dstVertex, dstColor, mode, vertCount);
-
-	// Assert
-    TEST_ASSERT(errno == EINVAL);
-
-    return 0;
-}
