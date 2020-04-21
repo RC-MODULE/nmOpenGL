@@ -61,7 +61,7 @@ if (!x) \
 }
 #define TEST_VEC_ARRAYS_EQUAL(array1, array2, size) \
 { \
-	int __i; \
+	volatile int __i; \
 	for (__i = 0; __i < size; ++__i){ \
 		if ((!equalf(array1[__i].vec[0], array2[__i].vec[0])) || \
 			(!equalf(array1[__i].vec[1], array2[__i].vec[1])) || \
