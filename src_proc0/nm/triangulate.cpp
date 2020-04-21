@@ -41,17 +41,6 @@ int triangulate(const nm32f *srcVertex,
 	v4nm32f *dstColor,
 	int *srcTreatedCount)
 {
-
-	if ((NULL == srcVertex)	|| 
-		(NULL == srcColor)	||
-		(NULL == dstVertex) ||
-		(NULL == dstColor)	||
-		(NULL == srcTreatedCount)) {
-
-		errno = EINVAL;
-		return -1;
-	}
-
 	int currentDstSize = 0;
 
 	int i = 0; // make it local to assign it to srcTreatedCount

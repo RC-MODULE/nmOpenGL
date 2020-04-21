@@ -15,8 +15,6 @@ int convertABGR32_RGB565_manyInputValues_manyOutputValues();
 int convertABGR32_RGB565_fiveInputValues_fiveOutputValues();
 int convertABGR32_RGB565_sixInputValues_sixOutputValues();
 int convertABGR32_RGB565_sevenInputValues_sevenOutputValues();
-int convertABGR32_RGB565_srcArrayIsNull_errorIsEINVAL();
-int convertABGR32_RGB565_dstArrayIsNull_errorIsEINVAL();
 
 
 int main(int argc, char **argv)
@@ -29,8 +27,6 @@ int main(int argc, char **argv)
     RUN_TEST(convertABGR32_RGB565_fiveInputValues_fiveOutputValues);
     RUN_TEST(convertABGR32_RGB565_sixInputValues_sixOutputValues);
     RUN_TEST(convertABGR32_RGB565_sevenInputValues_sevenOutputValues);
-    RUN_TEST(convertABGR32_RGB565_srcArrayIsNull_errorIsEINVAL);
-    RUN_TEST(convertABGR32_RGB565_dstArrayIsNull_errorIsEINVAL);
     puts("OK");
     return 0;
 }
@@ -353,40 +349,3 @@ int convertABGR32_RGB565_sevenInputValues_sevenOutputValues()
     return 0;
 }
 
-int convertABGR32_RGB565_srcArrayIsNull_errorIsEINVAL()
-{
-    // Arrange
-    constexpr int count = 1;
-    abgr32 *srcArray = NULL;    
-    rgb565 *dstArray = nmppsMalloc_16s(count);
-        
-    //Act
-    errno  = 0;
-    convertABGR32_RGB565(srcArray, dstArray, count);
-
-    //Assert
-    TEST_ASSERT(errno == EINVAL);
-
-    nmppsFree(dstArray);
-
-    return 0;
-}
-
-int convertABGR32_RGB565_dstArrayIsNull_errorIsEINVAL()
-{
-    // Arrange
-    constexpr int count = 1;
-    abgr32 *srcArray = new abgr32[count];    
-    rgb565 *dstArray = NULL;
-
-    //Act
-    errno  = 0;
-    convertABGR32_RGB565(srcArray, dstArray, count);
-
-    //Assert
-    TEST_ASSERT(errno == EINVAL);
-
-    delete srcArray;
-
-    return 0;
-}

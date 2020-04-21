@@ -6,14 +6,6 @@
 
 void convertABGR32_RGB565(const abgr32 *srcArray, rgb565 *dstArray, int count)
 {
-
-	if ((srcArray == NULL) | (dstArray == NULL) | (count <= 0))
-	{
-		errno = EINVAL;
-		return;
-	}
-
-	/* */
     for (int i = 0; i < count; i++)
     {
 	int16b RGB565_temp; // Temporary storage for the RGB565 value

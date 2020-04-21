@@ -10,12 +10,7 @@ int vertexPrimitiveRepack_triangle_fan(const v4nm32f *srcVertex, const v4nm32f *
 
 int vertexPrimitiveRepack(const v4nm32f *srcVertex, const v4nm32f *srcColor, nm32f *dstVertex, v4nm32f *dstColor, int mode, int vertCount)
 {
-    if ((srcVertex == NULL) | (srcColor == NULL) | (dstVertex == NULL) | (dstColor == NULL) | (vertCount <= 0))
-	{
-		errno = EINVAL;
-		return -1;
-	}
-
+	/* If vertCount is 0, inner functions will return 0 */
     switch (mode)
     {
         case NMGL_TRIANGLES:
