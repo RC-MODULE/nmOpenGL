@@ -5,7 +5,8 @@
 #include <stdio.h>
 
 
-SECTION(".data_imu0") Rectangle windows[NMGL_SIZE];
+SECTION(".data_imu0") Vector2 ptrnInnPoints[NMGL_SIZE];
+SECTION(".data_imu0") Size ptrnSizes[NMGL_SIZE];
 
 SECTION(".text_demo3d") void drawTriangles(NMGL_Context_NM1* context) {
 	PolygonsConnector connector(context->polygonsData);
@@ -14,30 +15,21 @@ SECTION(".text_demo3d") void drawTriangles(NMGL_Context_NM1* context) {
 	nm32s* mulZ = context->buffer0;
 	nm32s* mulC = context->buffer0;
 	nm32s* zMaskBuffer = context->buffer1;
+	int countTrangles = poly->count;
 
 	msdWaitDma(0);
-
-	merge_v4nm32s(context->offsetTrX,
-		context->offsetTrY,
-		context->widths, 
-		context->heights, 
-		(v4nm32s*)windows, 
-		poly->count);
+	nmppsMerge_32s(context->offsetTrX, context->offsetTrY, (nm32s*)ptrnInnPoints, countTrangles);
+	nmppsMerge_32s(context->widths, context->heights, (nm32s*)ptrnSizes, countTrangles);
 
 	int point = 0;
 
 	msdWaitDma(1);
-	int countTrangles = poly->count;
+	
 	(*connector.pTail)++;
 
 	while (countTrangles > 0) {
 		int localSize = MIN(countTrangles, SMALL_SIZE);
 		int point_x3 = point * 3;
-		int* widths = context->widths + point;
-		int* heights = context->heights + point;
-		int* offsetsX = context->offsetTrX + point;
-		int* valuesC = context->valuesC + point;
-		int* valuesZ = context->valuesZ + point;
 
 		//копирование паттернов во внутреннюю память. Паттерны копируются
 		//не полностью, чтобы сэкономить время на пересылку
@@ -53,12 +45,12 @@ SECTION(".text_demo3d") void drawTriangles(NMGL_Context_NM1* context) {
 			(nm32u**)context->ppPtrnsCombined_2s, 
 			context->nSizePtrn32 + point_x3, localSize);
 
-
 		//проверка активирования теста глубины
 		if (context->depthBuffer.enabled == NMGL_FALSE) {
 			mMulCVxN_2s32s(
 				context->polyImgTmp,
-				windows + point,
+				ptrnInnPoints + point,
+				ptrnSizes + point,
 				context->minusOne,
 				zMaskBuffer,
 				localSize);
@@ -67,8 +59,9 @@ SECTION(".text_demo3d") void drawTriangles(NMGL_Context_NM1* context) {
 			//умножение бинарных масок на Z
 			mMulCVxN_2s32s(
 				context->polyImgTmp,
-				windows + point,
-				valuesZ,
+				ptrnInnPoints + point,
+				ptrnSizes + point,
+				context->valuesZ + point,
 				mulZ,
 				localSize);
 
@@ -76,18 +69,20 @@ SECTION(".text_demo3d") void drawTriangles(NMGL_Context_NM1* context) {
 			//mulZ теперь хранит z-треугольники
 
 			//функция теста глубины
-			depthTest(context->zBuffPoints + point, WIDTH_SEG,
+			depthTest_32s(context->zBuffPoints + point, 
+				WIDTH_SEG,
 				(nm32s*)mulZ,
 				(nm32s*)zMaskBuffer,
-				heights,
-				widths, localSize);
+				ptrnSizes + point, 
+				localSize);
 		}
 
 		//color v4nm8s in imgOffset
 		mMulCVxN_2s_RGB8888(
 			context->polyImgTmp,
-			windows + point,
-			(v4nm8s*)valuesC,
+			ptrnInnPoints + point,
+			ptrnSizes + point,
+			(v4nm8s*)(context->valuesC + point),
 			mulC,
 			localSize);
 
@@ -98,7 +93,8 @@ SECTION(".text_demo3d") void drawTriangles(NMGL_Context_NM1* context) {
 		mMaskVxN_32s((nm32s*)mulC,
 			(nm32s*)zMaskBuffer,
 			context->imagePoints + point, WIDTH_SEG,
-			heights, widths, localSize);
+			ptrnSizes + point,
+			localSize);
 
 		countTrangles -= SMALL_SIZE;
 		point += SMALL_SIZE;

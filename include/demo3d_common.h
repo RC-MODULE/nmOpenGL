@@ -63,6 +63,15 @@ struct PatternsArray {
 	int table_dydx[(2 * WIDTH_PTRN) * (HEIGHT_PTRN + 2)];
 };
 
+struct Vector2 {
+	int x;
+	int y;
+};
+
+struct Size {
+	int width;
+	int height;
+};
 
 struct Rectangle {
 	int x;
@@ -70,6 +79,7 @@ struct Rectangle {
 	int width;
 	int height;
 };
+
 
 /**
  *  Структура для передачи полигонов от nmpu0 к nmpu1.
@@ -93,7 +103,6 @@ struct Polygons {
 
 	int z[POLYGONS_SIZE];
 
-	//Rectangle ptrnsWindow[POLYGONS_SIZE];
 	int count;
 	int dummy[15];
 

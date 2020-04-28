@@ -1,31 +1,36 @@
 #include "demo3d_nm1.h"
 
 extern "C" {
-	void mMulCVxN_2s_RGB565(Pattern* patterns, Rectangle* windows, int* valueC, nm16s* pDstTreangle,  int count){
+	void mMulCVxN_2s_RGB565(Pattern* patterns, 
+		Vector2* ptrnPoints,
+		Size* ptrnSizes,
+		int* valueC, 
+		nm16s* pDstTreangle,  
+		int count){
 		long long int temp;
 		nm16s* dst = pDstTreangle;
 		nm32s* colors = (nm32s*)valueC;
 		for(int c=0;c<count;c++){
 			nm64s* src = (nm64s*) (patterns + c);
-			src += windows[c].y;
+			src += ptrnPoints[c].y;
 
-			int width = windows[c].width;
+			int width = ptrnSizes[c].width;
 
-			if (windows[c].x < 0) {
-				width += windows[c].x;
+			if (ptrnPoints[c].x < 0) {
+				width += ptrnPoints[c].x;
 			}
 			
-			for(int y = 0; y < windows[c].height; y++){
+			for(int y = 0; y < ptrnSizes[c].height; y++){
 				temp = src[y];
-				nm16s* pDst = dst + y * windows[c].width;
-				if (windows[c].x < 0) {
-					for(int i = 0; i > windows[c].x; i--){
+				nm16s* pDst = dst + y * ptrnSizes[c].width;
+				if (ptrnPoints[c].x < 0) {
+					for(int i = 0; i > ptrnPoints[c].x; i--){
 						pDst[0] = 0;
 						pDst++;
 					}
 				}
 				else {
-					temp >>= (windows[c].x * 2);
+					temp >>= (ptrnPoints[c].x * 2);
 				}
 				
 				for(int x = 0; x < width; x++){
@@ -42,7 +47,7 @@ extern "C" {
 					temp >>= 2;
 				}
 			}
-			dst += windows[c].height * windows[c].width;
+			dst += ptrnSizes[c].height * ptrnSizes[c].width;
 		}
 	}
 

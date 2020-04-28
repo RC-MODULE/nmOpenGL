@@ -8,8 +8,8 @@ data ".data_demo3d"
 end ".data_demo3d";
 
 begin ".text_demo3d"
-global _depthTest: label;
-<_depthTest>
+global _depthTest_32s: label;
+<_depthTest_32s>
 .branch;
 	ar5 = ar7-2;
 	push ar0,gr0;
@@ -23,17 +23,16 @@ global _depthTest: label;
 	gr0 = [--ar5];		//int ImageStride
 	ar1 = [--ar5];		//nm16s* pTriangles
 	ar6 = [--ar5]	with gr2 = false;		//nm16s* dstMask
-	ar3 = [--ar5]	with gr2++;		//int* pTriangsHeight
-	ar4 = [--ar5]	with gr2++;		//int* pTriangsWidth
-	gr4 = [--ar5];		//int count
+	ar3 = [--ar5]	with gr2++;		//Size* sizes
+	gr4 = [--ar5]	with gr2++;		//int count
 	gr7 = 80000000h;
 	nb1 = gr7;
 	f1cr = gr7;
 	wtw;
 <NextTreangle>		
 	startProg: label;
-	gr5 = [ar3++];						//height
-	gr7 = [ar4++];	//gr7 = width
+	gr7 = [ar3++];		//gr7 = width
+	gr5 = [ar3++];		//height
 	ar0 = [ar2++]	with	gr7 >>= 1;	//addr in Img
 	ar5 = [_currentDepthTest];
 	delayed call ar5;

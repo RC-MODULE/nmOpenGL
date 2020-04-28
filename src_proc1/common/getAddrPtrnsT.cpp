@@ -5,9 +5,6 @@
 #include "stdio.h"
 #include "service.h"
 
-
-
-
 SECTION(".data_demo3d") unsigned int points[14];
 
 SECTION(".data_demo3d") MyDmaTask task;

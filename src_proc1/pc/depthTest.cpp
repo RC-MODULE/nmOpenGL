@@ -43,33 +43,35 @@ extern "C" {
 
 
 extern "C" {
-	
-	
-		void mSubV_32s_w( nm32s* depthBuffer, int srcStride1, 
-						nm32s* depthTriangle, int srcStride2, 
-						nm32s* pDst, int dstStride,
-						int nHeight, int nWidth){ 
-								for(int y=0;y<nHeight;y++){
-									int* src1 = depthBuffer + y*srcStride1;
-									int* src2 = depthTriangle + y*srcStride2;
-									int* dst  = pDst  + y*dstStride;
-									for(int x=0;x<nWidth;x++){
-										currentDepthTest(src1[x], src2[x], dst[x]);
-									}
-								}
-								
-								
-							}
 							
 							
-	void depthTest(nm32s** pROI, int imageStride, nm32s* pTriangles, nm32s* pDst,  int* pTriangsHeight, int* pTriangsWidth, int count){
-		nm32s* rtr = pTriangles;
-		nm32s* dst = pDst;
-		for (int i = 0; i < count; i++) {
-			mSubV_32s_w(pROI[i],imageStride,rtr,pTriangsWidth[i],dst,pTriangsWidth[i],pTriangsHeight[i], pTriangsWidth[i]);
-			rtr += pTriangsHeight[i] * pTriangsWidth[i];
-			dst += pTriangsHeight[i] * pTriangsWidth[i];
+	void depthTest_32s(nm32s** pROI,
+		int imageStride, 
+		nm32s* depthTrians, 
+		nm32s* dstMask,  
+		Size* trianSizes, 
+		int count){
+
+		for (int c = 0; c < count; c++) {
+			nm32s* pointInImage = pROI[c];
+			int* src1 = pointInImage;
+			int* src2 = depthTrians;
+			int* dst = dstMask;
+
+			for (int y = 0; y < trianSizes[c].height; y++) {
+				for (int x = 0; x <  trianSizes[c].width; x++) {
+					currentDepthTest(src1[x], src2[x], dst[x]);
+				}
+				src1 += imageStride;
+				src2 += trianSizes[c].width;
+				dst += trianSizes[c].width;
+			}
+
+			depthTrians += trianSizes[c].width * trianSizes[c].height;
+			dstMask += trianSizes[c].width * trianSizes[c].height;
+
 		}
+		
 	}
 	
 	

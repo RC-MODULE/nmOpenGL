@@ -1,17 +1,17 @@
 #include "nmtype.h"
 extern "C" {
-	void mMaskV_32s(nm32s* pTriangle, int srcStride1,
-						nm32s* pImg, int srcStride2,
-						nm32s* pMask, int maskStride,
-						nm32s* pSameImg, int dstStride,
+	void mMaskV_16s(nm16s* pTriangle, int srcStride1,
+						nm16s* pImg, int srcStride2,
+						nm16s* pMask, int maskStride,
+						nm16s* pSameImg, int dstStride,
 						int nHeight, int nWidth)
 						{
 	
 								for(int y = 0; y < nHeight; y++) {
-									int* triangles_32s = pTriangle + y * srcStride1;
-									int* image_32s     = pImg      + y * srcStride2;
-									int* masks_32s     = pMask     + y * maskStride;
-									int* result_32s    = pSameImg  + y * dstStride;
+									nm16s* triangles_32s = pTriangle + y * srcStride1;
+									nm16s* image_32s     = pImg      + y * srcStride2;
+									nm16s* masks_32s     = pMask     + y * maskStride;
+									nm16s* result_32s    = pSameImg  + y * dstStride;
 									for(int x = 0; x < nWidth; x++) {
 										if (masks_32s[x] < 0) {
 											result_32s[x] = triangles_32s[x];
@@ -24,7 +24,7 @@ extern "C" {
 	
 							}
 	
-	void mMaskVxN_32s(nm32s* pTriangles, nm32s* pMask, nm32s** pROI, int imageStride, int* pTrianglesHeight, int* pTrianglesWidth, int count)
+	void mMaskVxN_16s(nm16s* pTriangles, nm16s* pMask, nm16s** pROI, int imageStride, int* pTrianglesHeight, int* pTrianglesWidth, int count)
 	{
 		int maskOffset     = 0;
 		int triangleOffset = 0;
@@ -37,7 +37,7 @@ extern "C" {
 			triangleHeight = pTrianglesHeight[i];
 			triangleSize = triangleWidth * triangleHeight;
 			maskSize = triangleSize;
-			mMaskV_32s(pTriangles + triangleOffset, triangleWidth,
+			mMaskV_16s(pTriangles + triangleOffset, triangleWidth,
 						pROI[i], imageStride, pMask + maskOffset,
 						triangleWidth, pROI[i], imageStride,
 						triangleHeight, triangleWidth);
