@@ -363,27 +363,27 @@ extern "C"{
 
 	/**
 	 *  \defgroup split_v4nm32f split_v4nm32f
-	 *  \brief Функция разбиения 4хмерного вектора на 4 отдельных значения
+	 *  \brief Функция разбиения 4х(-)мерного вектора на 4 отдельных значения(вектор на значения не бьется)
 	 *  
-	 *  \param srcVec [in] Входной массив векторов
-	 *  \param step [in] Шаг чтения входного массива
+	 *  \param srcVec [in] Входной массив векторов (массив векторов?)
+	 *  \param step [in] Шаг чтения входного массива (шаг в чем , в элементах v4nm32f?)
 	 *  \param dstX [out] Выходной массив первых компонент вектора
 	 *  \param dstY [out] Выходной массив вторых компонент вектора
 	 *  \param dstZ [out] Выходной массив третьих компонент вектора
 	 *  \param dstW [out] Выходной массив четвертых компонент вектора
-	 *  \param countVec [in] Размер массива в элементах
-	 *  \retval Return description
+	 *  \param countVec [in] Размер массива в элементах (в v4nm32f?)
+	 *  \retval Return description (description?)
 	 *  
 	 *  \par
 	 *  \xmlonly
 	 *      <testperf>
-	 *          <param> srcVec </param> <values> imu0 </values>
-	 *          <param> step </param> <values> 0 </values>
-	 *          <param> dstX </param> <values> imu0 imu1 </values>
-	 *          <param> dstY </param> <values> imu0 imu1 imu2 </values>
-	 *          <param> dstZ </param> <values> imu0 imu1 imu2 imu3 </values>
-	 *          <param> dstW </param> <values> imu0 imu1 imu2 imu3 imu4 </values>
-	 *          <param> countVec </param> <values> 128 512 1014 </values>
+	 *          <param name="srcVec"> im0 </param>
+	 *          <param name="step"  > 2 </param>
+	 *          <param name="dstX"  > im0 im1 </param>
+	 *          <param name="dstY"  > im0 im1 im2 </param>
+	 *          <param name="dstZ"  > im0 im1 im2 im3 </param>
+	 *          <param name="dstW"  > im0 im1 im2 im3 im4 </param>
+	 *          <param name="countVec"> 128 512 1014 </param>
 	 *      </testperf>
 	 *  \endxmlonly
 	 */
