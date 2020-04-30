@@ -8,7 +8,7 @@ ROOT=../../../..
 #NMCGCC = $(NMC_GCC_TOOLPATH)/nmc4-ide
 -include nmc4vars_win.mk
 
-
+SHELL =cmd
 .SUFFIXES:
 
 #NMPP?=

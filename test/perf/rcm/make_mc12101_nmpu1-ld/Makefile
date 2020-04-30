@@ -6,6 +6,7 @@ ROOT=../../../..
 
 #include $(NMC_GCC_TOOLPATH)/nmc4-ide/include/nmc4vars_win.mk
 #NMCGCC = $(NMC_GCC_TOOLPATH)/nmc4-ide
+SHELL =cmd
 -include nmc4vars_win.mk
 
 
