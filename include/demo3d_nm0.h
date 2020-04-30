@@ -296,8 +296,334 @@ struct NMGL_Context_NM0 {
 };
 
 
-
 extern "C"{
+	
+	void absIfNegElse0_32f(float* src, float* dst, int size);
+	void addC_v4nm32f(v4nm32f* pSrcV, v4nm32f* pSrcC, v4nm32f* pDst, int size);
+	
+	//функция вычисляет основную часть освещения по формуле
+	// res = a + nvp * d + f(nvp) * nh * s, где
+	// a - ambient
+	// nvp - n_dot_vp
+	// d - diffuse
+	// nh - n_dot_h_in_srm
+	// s - specular
+	// f(x) = 1, if (x!=0), else 0
+	void baseLighti(v4nm32f* ambient, v2nm32f* n_dot_vp, v4nm32f* diffuse, v2nm32f* n_dot_h_in_srm, v4nm32f* specular, v4nm32f* dst, int count);
+	
+	/**
+	 *  \defgroup clamp clamp
+	 *  \brief Функция приведения чисел к фиксированному диапазону
+	 *  
+	 *  \param pSrcVec [in] Входной массив
+	 *  \param min [in] Минимальный порог диапазона
+	 *  \param max [in] Максимальный порог диапазона
+	 *  \param pDstVec [out] Выходной массив
+	 *  \param nSize [in] Число элементов массива
+	 *  \retval Return description
+	 *  
+	 *  \par
+	 *  \xmlonly
+	 *      <testperf>
+	 *          <param name="pSrcVec"> im0 </param>
+	 *          <param name="min"> 2 </param>
+	 *          <param name="max"> 4 </param>
+	 *          <param name="pDstVec"> im0 im1 </param>
+	 *          <param name="nSize"> 128 512 1024 </param>
+	 *  		<size> nSize </size>
+	 *      </testperf>
+	 *  \endxmlonly
+	 */
+	 //! \{
+	void clamp_32f(nm32f* pSrcVec, float min, float max, nm32f* pDstVec, int nSize);
+	 //! \}
+		
+	/**
+	 *  \defgroup cnv32f_v2v4 cnv32f_v2v4
+	 *  \brief Функция конвертации двухмерного вектора в четырехмерный 
+	 *  с заданными значениями третьей и четвертой компоненты
+	 *  
+	 *  \param srcVec [in] Входный массив
+	 *  \param stride [in] Шаг чтения
+	 *  \param value3 [in] Значение третьей компоненты элемента выходного массива
+	 *  \param value4 [in] Значение четвертой компоненты элемента выходного массива
+	 *  \param dstVec [out] Выходной массив
+	 *  \param size [in] Размер массива в элементах
+	 *  \retval Return description
+	 *  
+	 *  \par
+	 *  \xmlonly
+	 *      <testperf>
+	 *          <param name="srcVec"> im0 </param>
+	 *          <param name="stride"> 0 1 </param>
+	 *          <param name="value3"> 1 </param>
+	 *          <param name="value4"> 2 </param>
+	 *          <param name="dstVec"> im0 im1 </param>
+	 *          <param name="countVec"> 128 512 1024 </param>
+	 *  		<size> size </size>
+	 *      </testperf>
+	 *  \endxmlonly
+	 */
+	 //! \{
+	void cnv32f_v2v4(const v2nm32f* srcVec, int stride, float value3, float value4, v4nm32f* dstVec, int size);
+	 //! \}
+	 
+	 /**
+	 *  \defgroup cnv32f_v3v4 cnv32f_v3v4
+	 *  \brief Функция конвертации трехмерного вектора в четырехмерный 
+	 *  
+	 *  \param src [in] Входный массив
+	 *  \param dst [out] Выходный массив
+	 *  \param value4 [in] Значение четвертой компоненты элемента выходного массива
+	 *  \param size [in] Размер массива в элементах
+	 *  \retval Return description
+	 *  
+	 *  \par
+	 *  \xmlonly
+	 *      <testperf>
+	 *          <param name="src_v3nm32f"> </param>
+	 *          <param name="dst_v4nm32f"> </param>
+	 *          <param name="value4"> </param>
+	 *          <param name="size"> </param>
+	 *          <size> size </size>
+	 *      </testperf>
+	 *  \endxmlonly
+	 */
+	 //! \{
+	void cnv32f_v3v4(const nm32f* src, nm32f* dst, float value4, int size);
+	 //! \}
+	
+	void copyArraysByIndices(void** srcPointers, int* indices, void** dstPointers, int nArrays, int size);
+	void copyColorByIndices(v4nm32s* srcColor, int* indices, v4nm32s* dstColor, int size);
+	
+
+	/**
+	 *  \defgroup dotC_gt0 dotC_gt0
+	 *  \brief Функция скалярного произведения массивa векторов и постоянного вектора с последующимся занулением отрицательных значений
+	 *  
+	 *  \param srcVec [in] Входной массив векторов
+	 *  \param srcC [in] Указатель на постоянный вектор
+	 *  \param dstValues [out] Выходной массив полученных значений (продублированный)
+	 *  \param nSize [in] Число векторов в массиве
+	 *  \retval Return description
+	 *  
+	 *  \par
+	 *  \xmlonly
+	 *      <testperf>
+	 *          <param name="srcVec"> im0 </param>
+	 *          <param name="srcC"> im0 </param>
+	 *          <param name="dstValues"> im0 im1 </param>
+	 *          <param name="nSize"> 128 512 1024 </param>
+	 *   		<size> nSize </size>
+	 *      </testperf>
+	 *  \endxmlonly
+	 */
+	 //! \{
+	void dotC_gt0_v4nm32f(v4nm32f* srcVec, v4nm32f* srcC, v2nm32f* dstValues, int nSize);
+	 //! \}
+	
+	
+	/**
+	 *  \defgroup dotV_gt0 dotV_gt0
+	 *  \brief Функция скалярного произведения массивов векторов с последующимся занулением отрицательных значений
+	 *  
+	 *  \param srcVec1 [in] Первый входной массив
+	 *  \param srcVec2 [in] Второй входной массив
+	 *  \param dstValues [out] Выходной массив полученных значений (продублированный)
+	 *  \param nSize [in] Число элементов
+	 *  \retval Return description
+	 *  
+	 *  \par
+	 *  \xmlonly
+	 *      <testperf>
+	 *          <param name="srcVec1"> im0 </param>
+	 *          <param name="srcVec2"> im0 im1 </param>
+	 *          <param name="dstValues"> im0 im1 im2 </param>
+	 *          <param name="nSize"> 128 512 1024 </param>
+	 *    		<size> nSize </size>
+	 *      </testperf>
+	 *  \endxmlonly
+	 */
+	 //! \{
+	void dotV_gt0_v4nm32f(v4nm32f* srcVec1, v4nm32f* srcVec2, v2nm32f* dstValues, int nSize);
+	void dotV_v4nm32f(v4nm32f* srcVec1, v4nm32f* srcVec2, v2nm32f* dstValues, int nSize);
+	 //! \}
+	
+	
+	/**
+	 *  \defgroup dotMulC_AddC dotMulC_AddC
+	 *  \brief Функция умножения постоянного 4-хмерного вектора на массив продублированных констант с прибавлением другого постоянного вектора.
+	 *  Массив констант должен быть продублированным
+	 *  
+	 *  \param srcVec [in] Входной массив констант
+	 *  \param mulC [in] Указатель на постоянный вектор-множитель
+	 *  \param addC [in] Указатель на постоянный вектор-слагаемое
+	 *  \param dst [out] Выходной массив векторов
+	 *  \param nSize [in] Число векторов
+	 *  \retval Return description
+	 *  
+	 *  \par
+	 *  \xmlonly
+	 *      <testperf>
+	 *          <param name="srcVec"> im0 </param>
+	 *          <param name="mulC"> im0 </param>
+	 *          <param name="addC"> im0 </param>
+	 *          <param name="dst"> im0 im1 </param>
+	 *          <param name="nSize"> 128 512 1024 </param>
+	 *    		<size> nSize </size>
+	 *      </testperf>
+	 *  \endxmlonly
+	 */
+	 //! \{
+	void dotMulC_AddC_v4nm32f(v2nm32f* srcVec, v4nm32f* mulC, v4nm32f* addC, v4nm32f* dst, int nSize);
+	 //! \}
+
+	 /**
+	 *  \defgroup dotMulC_AddC dotMulC_AddC
+	 *  \brief Функция умножения массива 4-хмерных векторов 
+	 *  на массив продублированных констант
+	 *
+	 *  \param srcVec [in] Входной массив констант
+	 *  \param mulVec [in] Указатель на массив векторов
+	 *  \param dst [out] Выходной массив векторов
+	 *  \param nSize [in] Число векторов
+	 *  \retval Return description
+	 *
+	 *  \par
+	 *  \xmlonly
+	 *      <testperf>
+	 *          <param name="srcVec"> im0 </param>
+	 *          <param name="mulVec"> im0 </param>
+	 *          <param name="dst"> im0 im1 </param>
+	 *          <param name="nSize"> 128 512 1024 </param>
+	 *  		<size> nSize </size>
+	 *      </testperf>
+	 *  \endxmlonly
+	 */
+	 //! \{
+	void dotMulV_v4nm32f(v2nm32f* srcVec, v4nm32f* mulVec, v4nm32f* dst, int nSize);
+	 //! \}
+	
+	/**
+	 *  \defgroup dotMulC_Add dotMulC_Add
+	 *  \brief Функция умножения постоянного 4-хмерного вектора на на массив констант с прибавлением массива других 4-хмерных векторов.
+	 *  Массив констант должен быть продублированным
+	 *  
+	 *  \param srcVec [in] Массив констант
+	 *  \param mulC [in] Указатель на умножающийся постоянный вектор
+	 *  \param addVec [in] Массив прибавляющихся векторов
+	 *  \param dst [out] Выходной массив
+	 *  \param nSize [in] Число элементов
+	 *  \retval Return description
+	 *  
+	 *  \par
+	 *  \xmlonly
+	 *      <testperf>
+	 *          <param name="srcVec"> im0 </param>
+	 *          <param name="mulC"> im0 </param>
+	 *          <param name="addVec"> im0 im1 </param>
+	 *          <param name="dst"> im0 im1 im2 </param>
+	 *          <param name="nSize"> 128 512 1024 </param>
+	 *    		<size> nSize </size>
+	 *      </testperf>
+	 *  \endxmlonly
+	 */
+	 //! \{
+	void dotMulC_Add_v4nm32f(v2nm32f* srcVec, v4nm32f* mulC, v4nm32f* addVec, v4nm32f* dst, int nSize);
+	 //! \}
+
+	 /**
+	 *  \defgroup dotMulC_Add dotMulC_Add
+	 *  \brief Функция умножения постоянного 4-хмерного вектора на на массив констант с прибавлением массива других 4-хмерных векторов.
+	 *  Массив констант должен быть продублированным
+	 *
+	 *  \param srcVec [in] Массив констант
+	 *  \param mulC [in] Указатель на умножающийся постоянный вектор
+	 *  \param addVec [in] Массив прибавляющихся векторов
+	 *  \param dst [out] Выходной массив
+	 *  \param nSize [in] Число элементов
+	 *  \retval Return description
+	 *
+	 *  \par
+	 *  \xmlonly
+	 *      <testperf>
+	 *          <param name="srcVec"> im0 </param>
+	 *          <param name="mulC"> im0 </param>
+	 *          <param name="addVec"> im0 im1 </param>
+	 *          <param name="dst"> im0 im1 im2 </param>
+	 *          <param name="nSize"> 128 512 1024 </param>
+	 *    		<size> nSize </size>
+	 *      </testperf>
+	 *  \endxmlonly
+	 */
+	 //! \{
+	void dotMulC_Add_v4nm32f(v2nm32f* srcVec, v4nm32f* mulC, v4nm32f* addVec, v4nm32f* dst, int nSize);
+	 //! \}
+	
+	void doubleAbsIfNegElse0_32f(float* src1, float* src2, float* dst1, float* dst2, int size);
+	void doubleAdd_32f(float* src1, float* src2, float* srcAdd1, float* srcAdd2, float* dst1, float* dst2, int size);
+	void doubleClamp_32f(float* src1, float* src2, float min, float max, float* dst1, float* dst2, int size);
+	void doubleMulC_32f(float* src1, float* src2, float C1, float C2, float* dst1, float* dst2, int size);
+	void doubleSub_32f(float* src1, float* src2, float* srcSub1, float* srcSub2, float* dst1, float* dst2, int size);
+	void doubleSubC_32f(float* src1, float* src2, float C1, float C2, float* dst1, float* dst2, int size);
+	void fastInvSqrt(float* srcVec, float* dstVec, int size);
+	int firstNonZeroIndx_32s(int* pSrcVec, int nSize);
+	
+	/**
+	 *  \defgroup findMinMax2 findMinMax2
+	 *  \brief Поэлементный поиск минимум и максимума из двух массивов
+	 *  
+	 *  \param src1 [in] Description for src1
+	 *  \param src2 [in] Description for src2
+	 *  \param dstMin [in] Description for dstMin
+	 *  \param dstMax [in] Description for dstMax
+	 *  \param nSize [in] Description for nSize
+	 *  \retval Return description
+	 *  
+	 *  \par
+	 *  \xmlonly
+	 *      <testperf>
+	 *          <param name="src1"> im0 </param>
+	 *          <param name="src2"> im0 im1 </param>
+	 *          <param name="dstMin"> im0 im1 im2 </param>
+	 *          <param name="dstMax"> im0 im1 im2 </param>
+	 *          <param name="nSize"> nSize </param>
+	 *          <size> nSize </size>
+	 *      </testperf>
+	 *  \endxmlonly
+	 */
+	 //! \{
+	void findMinMax2(float* src1, float* src2, float* dstMin, float* dstMax, int nSize);	
+	 //! \}
+
+	/**
+	 *  \defgroup findMinMax3 findMinMax3
+	 *  \brief Поэлементный поиск минимум и максимума из трех массивов
+	 *  
+	 *  \param src1 [in] Первый входной массив
+	 *  \param src2 [in] Второй входной массив
+	 *  \param src3 [in] Третий входной массив
+	 *  \param dstMin [out] Выходной массив с минимумом
+	 *  \param dstMax [out] Выходной массив с максимумом
+	 *  \param nSize [in] Description for size
+	 *  \retval Return description
+	 *  
+	 *  \par
+	 *  \xmlonly
+	 *      <testperf>
+	 *          <param name="src1"> im0 </param>
+	 *          <param name="src2"> im0 </param>
+	 *          <param name="src3"> im0 </param>
+	 *          <param name="dstMin"> im0 im1 </param>
+	 *          <param name="dstMax"> im0 im1 </param>
+	 *          <param name="nSize"> 128 512 1024 </param>
+	 *    		<size> nSize </size>
+	 *      </testperf>
+	 *  \endxmlonly
+	 */
+	 //! \{
+	void findMinMax3(float* src1, float* src2, float* src3, float* dstMin, float* dstMax, int nSize);
+	 //! \}
 	
 	/**
 	 *  \defgroup loadIdentify loadIdentify
@@ -309,7 +635,8 @@ extern "C"{
 	 *  \par
 	 *  \xmlonly
 	 *      <testperf>
-	 *          <param> matrix </param> <values> imu0 </values>
+	 *          <param name="matrix"> im0 </param>
+	 *    		<size> 4*4 </size>
 	 *      </testperf>
 	 *  \endxmlonly
 	 */
@@ -318,52 +645,197 @@ extern "C"{
 	 //! \}
 	
 	/**
+	 *  \defgroup meanOfThreeToInt meanOfThreeToInt
+	 *  \brief Функция поиска среднего значения из трех элементов и сонвертирования его в целочисленный тип
+	 *  
+	 *  \param src1 [in] Входной массив первых значений
+	 *  \param src2 [in] Входной массив вторых значений
+	 *  \param src3 [in] Входной массив третьих значений
+	 *  \param result [out] Выходной массив в целочисленном формате
+	 *  \param nSize [in] Число элементов массива
+	 *  \retval Return description
+	 *  
+	 *  \par
+	 *  \xmlonly
+	 *      <testperf>
+	 *          <param name="src1"> im0 </param>
+	 *          <param name="src2"> im0 im1 </param>
+	 *          <param name="src3"> im0 im1 im2 </param>
+	 *          <param name="result"> im0 im1 im2 im3 </param>
+	 *          <param name="nSize"> 128 512 1024 </param>
+	 *    		<size> nSize </size>
+	 *      </testperf>
+	 *  \endxmlonly
+	 */
+	 //! \{
+	void meanToInt3(float* src1, float* src2, float* src3, int* result, int nSize);
+	 //! \}
+	 
+	void meanToInt2(float* src1, float* src2, int* result, int nSize);
+	
+		
+	/**
+	 *  \defgroup mulC_f mulC_f
+	 *  \brief Функция умножение массива на постоянное значение
+	 *  
+	 *  \param pSrcV [in] Входной массив
+	 *  \param pSrcC [in] Указатель на постоянное значение
+	 *  \param pDst [out] Выходной массив
+	 *  \param nSize [in] Число элементов
+	 *  \retval Return description
+	 *  
+	 *  \par
+	 *  \xmlonly
+	 *      <testperf>
+	 *          <param name="pSrcV"> im0 </param>
+	 *          <param name="pSrcC"> im0 </param>
+	 *          <param name="pDst"> im0 im1 </param>
+	 *          <param name="nSize"> 128 512 1024 </param>
+	 *    		<size> nSize </size>
+	 *      </testperf>
+	 *  \endxmlonly
+	 */
+	 //! \{
+	void mulC_v4nm32f(v4nm32f* pSrcV, v4nm32f* pSrcC, v4nm32f* pDst, int nSize);
+	 //! \}
+	
+	/**
 	 *  \defgroup mul_mat4nm32f_v4nm32f mul_mat4nm32f_v4nm32f
 	 *  \brief Функция умножение матрицы 4х4 на массив 4хмерных векторов. Матрица задается по столбцам
 	 *  
-	 *  \param srcMatrix4x4 [in] Входная матрица 4х4 (column-major order)
-	 *  \param srcVector4xN [in] Входной массив векторов
-	 *  \param dstVector4xN [in] Выходной массив
+	 *  \param srcMat4x4 [in] Входная матрица 4х4 (column-major order)
+	 *  \param srcVec4xN [in] Входной массив векторов
+	 *  \param dstVec4xN [in] Выходной массив
 	 *  \param count [in] Число векторов
 	 *  \retval Return description
 	 *  
 	 *  \par
 	 *  \xmlonly
 	 *      <testperf>
-	 *          <param> srcMatrix4x4 </param> <values>  </values>
-	 *          <param> srcVector4xN </param> <values>  </values>
-	 *          <param> dstVector4xN </param> <values>  </values>
-	 *          <param> count </param> <values>  </values>
+	 *          <param name="srcMat4x4"> im0 </param>
+	 *          <param name="srcVec4xN"> im0 im1 </param>
+	 *          <param name="dstVec4xN"> im0 im1 im2 </param>
+	 *          <param name="count"> 128 512 1024 </param>
+	 *    		<size> count </size>
 	 *      </testperf>
 	 *  \endxmlonly
 	 */
-	void mul_mat4nm32f_v4nm32f(mat4nm32f* srcMatrix4x4,	v4nm32f* srcVector4xN, v4nm32f* dstVector4xN, int count);
+	 //! \{
+	void mul_mat4nm32f_v4nm32f(mat4nm32f* srcMat4x4,	v4nm32f* srcVec4xN, v4nm32f* dstVec4xN, int count);
+	 //! \}
+
+	 /**
+	 *  \defgroup mul_v4nm32f_mat4nm32f mul_v4nm32f_mat4nm32f
+	 *  \brief Функция массива 4хмерных векторов на матрицу 4х4. Матрица задается по строкам
+	 *
+	 *  \param srcMat4x4 [in] Входная матрица 4х4 (row-major order)
+	 *  \param srcVec4xN [in] Входной массив векторов
+	 *  \param dstVec4xN [in] Выходной массив
+	 *  \param count [in] Число векторов
+	 *  \retval Return description
+	 *
+	 *  \par
+	 *  \xmlonly
+	 *      <testperf>
+	 *          <param name="srcMat4x4"> im0 </param>
+	 *          <param name="srcVec4xN"> im0 im1 </param>
+	 *          <param name="dstVec4xN"> im0 im1 im2 </param>
+	 *          <param name="count"> 128 512 1024 </param>
+	 *     		<size> count </size>
+	 *      </testperf>
+	 *  \endxmlonly
+	 */
+	 //! \{
+	void mul_v4nm32f_mat4nm32f(v4nm32f* srcVec4xN, mat4nm32f* srcMat4x4, v4nm32f* dstVec4xN, int count);
+	 //! \}
+	
+	
+	int readMask(nm1* mask, int* dstIndices, int size);
+	int readMaskToLimitDst(nm1* mask, int* dstIndices, int* treated, int size, int maxSize);
+	void remap_32u(nm32u* pSrcVec, nm32u* pDstVec, nm32s* pRemapTable, int nSize);
 
 	/**
-	*  \defgroup mul_v4nm32f_mat4nm32f mul_v4nm32f_mat4nm32f
-	*  \brief Функция массива 4хмерных векторов на матрицу 4х4. Матрица задается по строкам
-	*
-	*  \param srcMatrix4x4 [in] Входная матрица 4х4 (row-major order)
-	*  \param srcVector4xN [in] Входной массив векторов
-	*  \param dstVector4xN [in] Выходной массив
-	*  \param count [in] Число векторов
-	*  \retval Return description
-	*
-	*  \par
-	*  \xmlonly
-	*      <testperf>
-	*          <param> srcMatrix4x4 </param> <values>  </values>
-	*          <param> srcVector4xN </param> <values>  </values>
-	*          <param> dstVector4xN </param> <values>  </values>
-	*          <param> count </param> <values>  </values>
-	*      </testperf>
-	*  \endxmlonly
-	*/
-	void mul_v4nm32f_mat4nm32f(v4nm32f* srcVector4xN, mat4nm32f* srcMatrix4x4, v4nm32f* dstVector4xN, int count);
+	 *  \defgroup replaceEq0_f replaceEq0
+	 *  \brief Функция замены нуля другим значением
+	 *  
+	 *  \param srcVec [in] Входной массив
+	 *  \param dstVec [out] Выходной массив
+	 *  \param nSize [in] Число элементов в массиве
+	 *  \param nReplaceC [in] Втсавляемое число
+	 *  \retval Return description
+	 *  
+	 *  \par
+	 *  \xmlonly
+	 *      <testperf>
+	 *          <param name="srcVec"> im0 </param>
+	 *          <param name="dstVec"> im0 im1 </param>
+	 *          <param name="nSize"> 128 512 1024 </param>
+	 *          <param name="nReplaceC"> 1 </param>
+	 *     		<size> nSize </size>
+	 *      </testperf>
+	 *  \endxmlonly
+	 */
+	 //! \{
+	void replaceEq0_32f(float* srcVec, float* dstVec, int nSize, float nReplaceC);
+	 //! \}
+	
+	
+
+	/**
+	 *  \defgroup set_v4nm32f set_v4nm32f
+	 *  \brief Функция инициализации элементов массива постоянным значением.
+	 *  
+	 *  \param dstVec [out] Инициализируемый массив
+	 *  \param valueC [in] Значение константы
+	 *  \param nSize [in] Размер вектора в элементах
+	 *  \retval Return description
+	 *  
+	 *  \par
+	 *  \xmlonly
+	 *      <testperf>
+	 *          <param name="dstVec"> im0 </param>
+	 *          <param name="valueC"> im0 im1 </param>
+	 *          <param name="nSize"> 128 512 1024 </param>
+	 *      		<size> nSize </size>
+	 *      </testperf>
+	 *  \endxmlonly
+	 */
+	 //! \{
+	void set_v4nm32f(v4nm32f* dstVec, v4nm32f* valueC, int nSize);
+	 //! \}
+	
+	
+
+	/**
+	 *  \defgroup sortByYinTriangle sortByYinTriangle
+	 *  \brief Функция поэлементной сортировки двухмерных элементов по возрастанию 2-й компоненты
+	 *  
+	 *  \param srcAxy [in, out] Первый входной массив двухмерных векторов
+	 *  \param srcBxy [in, out] Второй входной массив двухмерных векторов
+	 *  \param srcCxy [in, out] Третий входной массив двухмерных векторов
+	 *  \param nSize [in] Число элементов
+	 *  \retval Return description
+	 *  
+	 *  \par
+	 *  \xmlonly
+	 *      <testperf>
+	 *          <param name="srcAxy"> im0 </param>
+	 *          <param name="srcBxy"> im0 im1 </param>
+	 *          <param name="srcCxy"> im0 im1 im2 </param>
+	 *          <param name="nSize"> 128 512 1024 </param>
+	 *      	<size> nSize </size>
+	 *      </testperf>
+	 *  \endxmlonly
+	 */
+	 //! \{
+	void sortByY3(float* srcAxy, float* srcBxy, float* srcCxy, int nSize);
+	 //! \}
+	 
+	void sortByY2(float* srcXY0, float* srcXY1, int nSize);
 
 	/**
 	 *  \defgroup split_v4nm32f split_v4nm32f
-	 *  \brief Функция разбиения 4х(-)мерного вектора на 4 отдельных значения(вектор на значения не бьется)
+	 *  \brief Функция разбивки 4х(-)мерного вектора на 4 отдельных значения(вектор на значения не бьется)
 	 *  
 	 *  \param srcVec [in] Входной массив векторов (массив векторов?)
 	 *  \param step [in] Шаг чтения входного массива (шаг в чем , в элементах v4nm32f?)
@@ -384,6 +856,7 @@ extern "C"{
 	 *          <param name="dstZ"  > im0 im1 im2 im3 </param>
 	 *          <param name="dstW"  > im0 im1 im2 im3 im4 </param>
 	 *          <param name="countVec"> 128 512 1014 </param>
+	 *      	<size> countVec </size>
 	 *      </testperf>
 	 *  \endxmlonly
 	 */
@@ -405,176 +878,19 @@ extern "C"{
 	 *  \par
 	 *  \xmlonly
 	 *      <testperf>
-	 *          <param> srcVec </param> <values> imu0 </values>
-	 *          <param> step </param> <values> imu0 imu1 </values>
-	 *          <param> dstX </param> <values> imu0 imu1 imu2 </values>
-	 *          <param> dstY </param> <values> imu0 imu1 imu2 imu3 </values>
-	 *          <param> countVec </param> <values> 128 512 1024 </values>
+	 *          <param name="srcVec"> im0 </param>
+	 *          <param name="step"> im0 im1 </param>
+	 *          <param name="dstX"> im0 im1 im2 </param>
+	 *          <param name="dstY"> im0 im1 im2 im3 </param>
+	 *          <param name="countVec"> 128 512 1024 </param>
+	 *       	<size> countVec </size>
 	 *      </testperf>
 	 *  \endxmlonly
 	 */
+	 //! \{
 	void split_v2nm32f(v2nm32f* srcVec, int step, float* dstX, float* dstY, int countVec);
-	
-	void copyOddOffset(float* src, float* dst, int first, int size);
-	
-
-	/**
-	 *  \defgroup dotC_gt0 dotC_gt0
-	 *  \brief Функция скалярного произведения массивa векторов и постоянного вектора с последующимся занулением отрицательных значений
-	 *  
-	 *  \param srcVec [in] Входной массив векторов
-	 *  \param srcC [in] Указатель на постоянный вектор
-	 *  \param dstValues [in] Выходной массив полученных значений (продублированный)
-	 *  \param nSize [in] Число векторов в массиве
-	 *  \retval Return description
-	 *  
-	 *  \par
-	 *  \xmlonly
-	 *      <testperf>
-	 *          <param> srcVec </param> <values> imu0 </values>
-	 *          <param> srcC </param> <values> imu0 </values>
-	 *          <param> dstValues </param> <values> imu0 imu1 </values>
-	 *          <param> nSize </param> <values> 128 512 1024 </values>
-	 *      </testperf>
-	 *  \endxmlonly
-	 */
-	 //! \{
-	void dotC_gt0_v4nm32f(v4nm32f* srcVec, v4nm32f* srcC, v2nm32f* dstValues, int nSize);
-	 //! \}
-	
-	
-	/**
-	 *  \defgroup dotV_gt0 dotV_gt0
-	 *  \brief Функция скалярного произведения массивов векторов с последующимся занулением отрицательных значений
-	 *  
-	 *  \param srcVec1 [in] Первый входной массив
-	 *  \param srcVec2 [in] Второй входной массив
-	 *  \param dstValues [in] Выходной массив полученных значений (продублированный)
-	 *  \param nSize [in] Число элементов
-	 *  \retval Return description
-	 *  
-	 *  \par
-	 *  \xmlonly
-	 *      <testperf>
-	 *          <param> srcVec1 </param> <values> imu0 </values>
-	 *          <param> srcVec2 </param> <values> imu0 imu1 </values>
-	 *          <param> dstValues </param> <values> imu0 imu1 imu2 </values>
-	 *          <param> nSize </param> <values> 128 512 1024 </values>
-	 *      </testperf>
-	 *  \endxmlonly
-	 */
-	 //! \{
-	void dotV_gt0_v4nm32f(v4nm32f* srcVec1, v4nm32f* srcVec2, v2nm32f* dstValues, int nSize);
-	 //! \}
-	
-	
-	void dotV_v4nm32f(v4nm32f* srcVec1, v4nm32f* srcVec2, v2nm32f* dstValues, int nSize);
-	
-	/**
-	 *  \defgroup dotMulC_AddC dotMulC_AddC
-	 *  \brief Функция умножения постоянного 4-хмерного вектора на массив продублированных констант с прибавлением другого постоянного вектора.
-	 *  Массив констант должен быть продублированным
-	 *  
-	 *  \param n_dot_VP [in] Входной массив констант
-	 *  \param mulC [in] Указатель на постоянный вектор-множитель
-	 *  \param addC [in] Указатель на постоянный вектор-слагаемое
-	 *  \param dst [out] Выходной массив векторов
-	 *  \param nSize [in] Число векторов
-	 *  \retval Return description
-	 *  
-	 *  \par
-	 *  \xmlonly
-	 *      <testperf>
-	 *          <param> n_dot_VP </param> <values> imu0 </values>
-	 *          <param> mulC </param> <values> imu0 </values>
-	 *          <param> addC </param> <values> imu0 </values>
-	 *          <param> dst </param> <values> imu0 imu1 </values>
-	 *          <param> nSize </param> <values> 128 512 1024 </values>
-	 *      </testperf>
-	 *  \endxmlonly
-	 */
-	 //! \{
-	void dotMulC_AddC_v4nm32f(v2nm32f* srcVec, v4nm32f* mulC, v4nm32f* addC, v4nm32f* dst, int nSize);
-	 //! \}
-
-	 /**
-	 *  \defgroup dotMulC_AddC dotMulC_AddC
-	 *  \brief Функция умножения массива 4-хмерных векторов 
-	 *  на массив продублированных констант
-	 *
-	 *  \param n_dot_VP [in] Входной массив констант
-	 *  \param mul [in] Указатель на массив векторов
-	 *  \param dst [out] Выходной массив векторов
-	 *  \param nSize [in] Число векторов
-	 *  \retval Return description
-	 *
-	 *  \par
-	 *  \xmlonly
-	 *      <testperf>
-	 *          <param> n_dot_VP </param> <values> imu0 </values>
-	 *          <param> mul </param> <values> imu0 </values>
-	 *          <param> dst </param> <values> imu0 imu1 </values>
-	 *          <param> nSize </param> <values> 128 512 1024 </values>
-	 *      </testperf>
-	 *  \endxmlonly
-	 */
-	 //! \{
-	void dotMulV_v4nm32f(v2nm32f* srcVec, v4nm32f* mulVec, v4nm32f* dst, int nSize);
 	//! \}
-	
-	/**
-	 *  \defgroup dotMulC_Add dotMulC_Add
-	 *  \brief Функция умножения постоянного 4-хмерного вектора на на массив констант с прибавлением массива других 4-хмерных векторов.
-	 *  Массив констант должен быть продублированным
-	 *  
-	 *  \param n_dot_VP [in] Массив констант
-	 *  \param mulC [in] Указатель на умножающийся постоянный вектор
-	 *  \param addVec [in] Массив прибавляющихся векторов
-	 *  \param dst [out] Выходной массив
-	 *  \param nSize [in] Число элементов
-	 *  \retval Return description
-	 *  
-	 *  \par
-	 *  \xmlonly
-	 *      <testperf>
-	 *          <param> n_dot_VP </param> <values> imu0 </values>
-	 *          <param> mulC </param> <values> imu0 </values>
-	 *          <param> addVec </param> <values> imu0 imu1 </values>
-	 *          <param> dst </param> <values> imu0 imu1 imu2 </values>
-	 *          <param> nSize </param> <values> 128 512 1024 </values>
-	 *      </testperf>
-	 *  \endxmlonly
-	 */
-	 //! \{
-	void dotMulC_Add_v4nm32f(v2nm32f* n_dot_VP, v4nm32f* mulC, v4nm32f* addVec, v4nm32f* dst, int nSize);
-	 //! \}
 
-	 /**
-	 *  \defgroup dotMulC_Add dotMulC_Add
-	 *  \brief Функция умножения постоянного 4-хмерного вектора на на массив констант с прибавлением массива других 4-хмерных векторов.
-	 *  Массив констант должен быть продублированным
-	 *
-	 *  \param n_dot_VP [in] Массив констант
-	 *  \param mulC [in] Указатель на умножающийся постоянный вектор
-	 *  \param addVec [in] Массив прибавляющихся векторов
-	 *  \param dst [out] Выходной массив
-	 *  \param nSize [in] Число элементов
-	 *  \retval Return description
-	 *
-	 *  \par
-	 *  \xmlonly
-	 *      <testperf>
-	 *          <param> n_dot_VP </param> <values> imu0 </values>
-	 *          <param> mulC </param> <values> imu0 </values>
-	 *          <param> addVec </param> <values> imu0 imu1 </values>
-	 *          <param> dst </param> <values> imu0 imu1 imu2 </values>
-	 *          <param> nSize </param> <values> 128 512 1024 </values>
-	 *      </testperf>
-	 *  \endxmlonly
-	 */
-	 //! \{
-	void dotMulC_Add_v4nm32f(v2nm32f* n_dot_VP, v4nm32f* mulC, v4nm32f* addVec, v4nm32f* dst, int nSize);
-	//! \}
 
 	/**
 	 *  \defgroup subCRev subCRev
@@ -589,285 +905,22 @@ extern "C"{
 	 *  \par
 	 *  \xmlonly
 	 *      <testperf>
-	 *          <param> pSrcV </param> <values> imu0 </values>
-	 *          <param> pSrcC </param> <values> imu0 </values>
-	 *          <param> pDst </param> <values> imu0 imu1 </values>
-	 *          <param> nSize </param> <values> 128 512 1024 </values>
+	 *          <param name="pSrcV"> im0 </param>
+	 *          <param name="pSrcC"> im0 </param>
+	 *          <param name="pDst"> im0 im1 </param>
+	 *          <param name="nSize"> 128 512 1024 </param>
+	 *       	<size> nSize </size>
 	 *      </testperf>
 	 *  \endxmlonly
 	 */
 	 //! \{
 	void subCRev_v4nm32f(v4nm32f* pSrcV, v4nm32f* pSrcC, v4nm32f* pDst, int nSize);
 	 //! \}
-
-	/**
-	 *  \defgroup addC addC
-	 *  \brief Функция прибавление постоянного значения к массиву
-	 *  
-	 *  \param pSrcV [in] Входной массив
-	 *  \param pSrcC [in] Указатель на константу
-	 *  \param pDst [out] Выходной массив
-	 *  \param nSize [in] Число элементов в массиве
-	 *  \retval Return description
-	 *  
-	 *  \par
-	 *  \xmlonly
-	 *      <testperf>
-	 *          <param> pSrcV </param> <values> imu0 </values>
-	 *          <param> pSrcC </param> <values> imu0 </values>
-	 *          <param> pDst </param> <values> imu0 imu1 </values>
-	 *          <param> nSize </param> <values> 128 512 1024 </values>
-	 *      </testperf>
-	 *  \endxmlonly
-	 */
-	 //! \{
-	void addC_v4nm32f(v4nm32f* pSrcV, v4nm32f* pSrcC, v4nm32f* pDst, int nSize);
-	 //! \}
-	
-	/**
-	 *  \defgroup mulC_f mulC_f
-	 *  \brief Функция умножение массива на постоянное значение
-	 *  
-	 *  \param pSrcV [in] Входной массив
-	 *  \param pSrcC [in] Указатель на постоянное значение
-	 *  \param pDst [out] Выходной массив
-	 *  \param nSize [in] Число элементов
-	 *  \retval Return description
-	 *  
-	 *  \par
-	 *  \xmlonly
-	 *      <testperf>
-	 *          <param> pSrcV </param> <values> imu0 </values>
-	 *          <param> pSrcC </param> <values> imu0 </values>
-	 *          <param> pDst </param> <values> imu0 imu1 </values>
-	 *          <param> nSize </param> <values> 128 512 1024 </values>
-	 *      </testperf>
-	 *  \endxmlonly
-	 */
-	 //! \{
-	void mulC_v4nm32f(v4nm32f* pSrcV, v4nm32f* pSrcC, v4nm32f* pDst, int nSize);
-	 //! \}
-
-	/**
-	 *  \defgroup clamp clamp
-	 *  \brief Функция приведения чисел к фиксированному диапазону
-	 *  
-	 *  \param pSrcVec [in] Входной массив
-	 *  \param min [in] Минимальный порог диапазона
-	 *  \param max [in] Максимальный порог диапазона
-	 *  \param pDstVec [out] Выходной массив
-	 *  \param nSize [in] Число элементов массива
-	 *  \retval Return description
-	 *  
-	 *  \par
-	 *  \xmlonly
-	 *      <testperf>
-	 *          <param> pSrcVec </param> <values> imu0 </values>
-	 *          <param> min </param> <values> 2 </values>
-	 *          <param> max </param> <values> 4 </values>
-	 *          <param> pDstVec </param> <values> imu0 imu1 </values>
-	 *          <param> nSize </param> <values> 128 512 1024 </values>
-	 *      </testperf>
-	 *  \endxmlonly
-	 */
-	 //! \{
-	void clamp_32f(nm32f* pSrcVec, float min, float max, nm32f* pDstVec, int nSize);
-	 //! \}
-	
-	
-	/**
-	 *  \defgroup meanOfThreeToInt meanOfThreeToInt
-	 *  \brief Функция поиска среднего значения из трех элементов и сонвертирования его в целочисленный тип
-	 *  
-	 *  \param src1 [in] Входной массив первых значений
-	 *  \param src2 [in] Входной массив вторых значений
-	 *  \param src3 [in] Входной массив третьих значений
-	 *  \param result [out] Выходной массив в целочисленном формате
-	 *  \param nSize [in] Число элементов массива
-	 *  \retval Return description
-	 *  
-	 *  \par
-	 *  \xmlonly
-	 *      <testperf>
-	 *          <param> src1 </param> <values> imu0 </values>
-	 *          <param> src2 </param> <values> imu0 imu1 </values>
-	 *          <param> src3 </param> <values> imu0 imu1 imu2 </values>
-	 *          <param> result </param> <values> imu0 imu1 imu2 imu3 </values>
-	 *          <param> nSize </param> <values> 128 512 1024 </values>
-	 *      </testperf>
-	 *  \endxmlonly
-	 */
-	 //! \{
-	void meanToInt3(float* src1, float* src2, float* src3, int* result, int nSize);
-	 //! \}
-	 
-	void meanToInt2(float* src1, float* src2, int* result, int nSize);
-
-	/**
-	 *  \defgroup sortByYinTriangle sortByYinTriangle
-	 *  \brief Функция поэлементной сортировки двухмерных элементов по возрастанию 2-й компоненты
-	 *  
-	 *  \param srcAxy [in, out] Первый входной массив двухмерных векторов
-	 *  \param srcBxy [in, out] Второй входной массив двухмерных векторов
-	 *  \param srcCxy [in, out] Третий входной массив двухмерных векторов
-	 *  \param nSize [in] Число элементов
-	 *  \retval Return description
-	 *  
-	 *  \par
-	 *  \xmlonly
-	 *      <testperf>
-	 *          <param> srcAxy </param> <values> imu0 </values>
-	 *          <param> srcBxy </param> <values> imu0 imu1 </values>
-	 *          <param> srcCxy </param> <values> imu0 imu1 imu2 </values>
-	 *          <param> nSize </param> <values> 128 512 1024 </values>
-	 *      </testperf>
-	 *  \endxmlonly
-	 */
-	 //! \{
-	void sortByY3(float* srcAxy, float* srcBxy, float* srcCxy, int nSize);
-	 //! \}
-	 
-	void sortByY2(float* srcXY0, float* srcXY1, int nSize);
-	
-	/**
-	 *  \defgroup cnv32f cnv32f
-	 *  \brief Функция конвертирования двухмерного вектора в четырехмерный 
-	 *  с заданными значениями третьей и четвертой компоненты
-	 *  
-	 *  \param srcVec [in] Входный массив
-	 *  \param stride [in] Шаг чтения
-	 *  \param value3 [in] Значение третьей компоненты элемента выходного массива
-	 *  \param value4 [in] Значение четвертой компоненты элемента выходного массива
-	 *  \param dstVec [in] Выходной массив
-	 *  \param countVec [in] Размер массива в элементах
-	 *  \retval Return description
-	 *  
-	 *  \par
-	 *  \xmlonly
-	 *      <testperf>
-	 *          <param> srcVec </param> <values> imu0 </values>
-	 *          <param> stride </param> <values> 0 1 </values>
-	 *          <param> value3 </param> <values> 1 </values>
-	 *          <param> value4 </param> <values> 2 </values>
-	 *          <param> dstVec </param> <values> imu0 imu1 </values>
-	 *          <param> countVec </param> <values> 128 512 1024 </values>
-	 *      </testperf>
-	 *  \endxmlonly
-	 */
-	 //! \{
-	void cnv32f_v2v4(const v2nm32f* srcVec, int stride, float value3, float value4, v4nm32f* dstVec, int countVec);
-	 //! \}
-	 
-	void cnv32f_v3v4(const nm32f* src_v3nm32f, nm32f* dst_v4nm32f, float value4, int size);
-
-	/**
-	 *  \defgroup set_v4nm32f set_v4nm32f
-	 *  \brief Функция инициализации элементов массива постоянным значением.
-	 *  
-	 *  \param dstVec [out] Инициализируемый массив
-	 *  \param valueC [in] Значение константы
-	 *  \param nSize [in] Размер вектора в элементах
-	 *  \retval Return description
-	 *  
-	 *  \par
-	 *  \xmlonly
-	 *      <testperf>
-	 *          <param> dstVec </param> <values> imu0 </values>
-	 *          <param> valueC </param> <values> imu1 </values>
-	 *          <param> nSize </param> <values> 128 512 1024 </values>
-	 *      </testperf>
-	 *  \endxmlonly
-	 */
-	 //! \{
-	void set_v4nm32f(v4nm32f* dstVec, v4nm32f* valueC, int nSize);
-	 //! \}
-
-	/**
-	 *  \defgroup replaceEq0_f replaceEq0
-	 *  \brief Функция замены нуля другим значением
-	 *  
-	 *  \param srcVec [in] Входной массив
-	 *  \param dstVec [out] Выходной массив
-	 *  \param nSize [in] Число элементов в массиве
-	 *  \param nReplaceC [in] Втсавляемое число
-	 *  \retval Return description
-	 *  
-	 *  \par
-	 *  \xmlonly
-	 *      <testperf>
-	 *          <param> srcVec </param> <values> imu0 </values>
-	 *          <param> dstVec </param> <values> imu0 imu1 </values>
-	 *          <param> nSize </param> <values> 128 512 1024 </values>
-	 *          <param> nReplaceC </param> <values> 1 </values>
-	 *      </testperf>
-	 *  \endxmlonly
-	 */
-	 //! \{
-	void replaceEq0_32f(float* srcVec, float* dstVec, int nSize, float nReplaceC);
-	 //! \}
-
-	/**
-	 *  \defgroup findMinMax findMinMax
-	 *  \brief Поэлементный поиск минимум и максимума из трех массивов
-	 *  
-	 *  \param src1 [in] Первый входной массив
-	 *  \param src2 [in] Второй входной массив
-	 *  \param src3 [in] Третий входной массив
-	 *  \param dstMin [out] Выходной массив с минимумом
-	 *  \param dstMax [out] Выходной массив с максимумом
-	 *  \param nSize [in] Description for size
-	 *  \retval Return description
-	 *  
-	 *  \par
-	 *  \xmlonly
-	 *      <testperf>
-	 *          <param> src1 </param> <values> imu0 </values>
-	 *          <param> src2 </param> <values> imu0 </values>
-	 *          <param> src3 </param> <values> imu0 </values>
-	 *          <param> dstMin </param> <values> imu0 imu1 imu2 </values>
-	 *          <param> dstMax </param> <values> imu0 imu1 imu2 </values>
-	 *          <param> nSize </param> <values> 128 512 1024 </values>
-	 *      </testperf>
-	 *  \endxmlonly
-	 */
-	//! \{
-	void findMinMax3(float* src1, float* src2, float* src3, float* dstMin, float* dstMax, int nSize);
-	//! \}
-	
-	void findMinMax2(float* src1, float* src2, float* dstMin, float* dstMax, int nSize);
-
-	void copyArraysByIndices(void** srcPointers, int* indices, void** dstPointers, int nArrays, int size);
-
-	void absIfNegElse0_32f(float* src, float* dst, int size);
-
-	void remap_32u(nm32u* pSrcVec, nm32u* pDstVec, nm32s* pRemapTable, int nSize);
-	void copyColorByIndices(v4nm32s* srcColor, int* indices, v4nm32s* dstColor, int size);
 	
 	void ternaryLt0_AddC_AddC_32f(nm32f* srcFlags, nm32f* srcVec, float valueLeft, float valueRight, float* dstVec, int size);
-	int readMask(nm1* mask, int* dstIndices, int size);
-	int readMaskToLimitDst(nm1* mask, int* dstIndices, int* treated, int size, int maxSize);
-
-	int firstNonZeroIndx_32s(int* pSrcVec, int nSize);
-
-	void fastInvSqrt(float* srcVec, float* dstVec, int size);
-
-	void doubleSubC_32f(float* src1, float* src2, float C1, float C2, float* dst1, float* dst2, int size);
-	void doubleMulC_32f(float* src1, float* src2, float C1, float C2, float* dst1, float* dst2, int size);
-	void doubleClamp_32f(float* src1, float* src2, float min, float max, float* dst1, float* dst2, int size);
-	void doubleSub_32f(float* src1, float* src2, float* srcSub1, float* srcSub2, float* dst1, float* dst2, int size);
-	void doubleAdd_32f(float* src1, float* src2, float* srcAdd1, float* srcAdd2, float* dst1, float* dst2, int size);
 	void tripleMulC_32f(float* src1, float* src2, float* src3, float C, float* dst1, float* dst2, float* dst3, int size);
-	void doubleAbsIfNegElse0_32f(float* src1, float* src2, float* dst1, float* dst2, int size);
 
-	//функция вычисляет основную часть освещения по формуле
-	// res = a + nvp * d + f(nvp) * nh * s, где
-	// a - ambient
-	// nvp - n_dot_vp
-	// d - diffuse
-	// nh - n_dot_h_in_srm
-	// s - specular
-	// f(x) = 1, if (x!=0), else 0
-	void baseLighti(v4nm32f* ambient, v2nm32f* n_dot_vp, v4nm32f* diffuse, v2nm32f* n_dot_h_in_srm, v4nm32f* specular, v4nm32f* dst, int count);
+
 }
 void reverseMatrix3x3in4x4(mat4nm32f* src, mat4nm32f* dst);
 
@@ -893,15 +946,6 @@ void copyColorByIndices_BGRA_RGBA(v4nm32s* srcColor, int* indices, v4nm32s* dstC
  *  \param size [in] Число вершин
  *  \retval Return description
  *  \details Функция использует массивы nmglBuffer0, nmglBuffer1, nmglBuffer2, nmglBuffer3
- *  
- *  \par
- *  \xmlonly
- *      <testperf>
- *          <param> vertex </param> <values> imu0  </values>
- *          <param> srcNormal_dstColor </param> <values> imu0 imu1 </values>
- *          <param> size </param> <values> 128 512 1024 </values>
- *      </testperf>
- *  \endxmlonly
  */
 //! \{
 void light(v4nm32f* vertex, v4nm32f* srcNormal_dstColor, int size);
