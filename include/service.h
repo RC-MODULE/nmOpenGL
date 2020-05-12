@@ -44,6 +44,18 @@ struct Triangle {
 	nm32f edgeSize(int i) const;
 };
 
+typedef struct Vertices {
+	nm32f ax;
+	nm32f ay;
+	nm32f az;
+	nm32f bx;
+	nm32f by;
+	nm32f bz;
+	nm32f cx;
+	nm32f cy;
+	nm32f cz;
+} Vertices;
+
 int triangulateOneTriangle(const Triangle &tr, nm32f xMax, nm32f yMax, int trLimit, std::vector<Triangle>& trVec);
 int triangulate(const nm32f *srcVertex, const v4nm32f *srcColor, int srcCount, int maxWidth, int maxHeight, int maxDstSize, nm32f *dstVertex, v4nm32f *dstColor, int *srcTreatedCount);
 
