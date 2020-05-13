@@ -54,9 +54,9 @@ extern "C" {
 
 		for (int c = 0; c < count; c++) {
 			nm32s* pointInImage = pROI[c];
-			int* src1 = pointInImage;
-			int* src2 = depthTrians;
-			int* dst = dstMask;
+			nm32s* src1 = pointInImage;
+			nm32s* src2 = depthTrians;
+			nm32s* dst = dstMask;
 
 			for (int y = 0; y < trianSizes[c].height; y++) {
 				for (int x = 0; x <  trianSizes[c].width; x++) {
@@ -72,8 +72,7 @@ extern "C" {
 
 		}
 		
-	}
-	
+	}	
 	
 	
 }

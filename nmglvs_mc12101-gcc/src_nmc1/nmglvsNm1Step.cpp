@@ -135,7 +135,7 @@ SECTION(".text_nmglvs") int nmglvsNm1Step()
 			msdAdd2D(src, dst, width * height, width, 
 				cntxt.smallDepthBuff.getWidth(), cntxt.depthBuffer.getWidth(), 1);
 		}
-		nm32s* src = (nm32s*)cntxt.smallColorBuff.data;
+		nm32s* src = (nm32s*)cntxt.smallDepthBuff.data;
 		nm32s* dst = nmppsAddr_32s((int*)cntxt.colorBuffer.data, y0 * cntxt.colorBuffer.getWidth() + x0);
 		msdAdd2D(src, dst, width * height, width,
 			cntxt.smallColorBuff.getWidth(), cntxt.colorBuffer.getWidth(), 1);

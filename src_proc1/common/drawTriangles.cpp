@@ -12,9 +12,9 @@ SECTION(".text_demo3d") void drawTriangles(NMGL_Context_NM1* context) {
 	PolygonsConnector connector(context->polygonsData);
 	Polygons* poly = connector.ptrTail();
 	getAddrPtrnsT(context, poly);
-	nm32s* mulZ = context->buffer0;
-	nm32s* mulC = context->buffer0;
-	nm32s* zMaskBuffer = context->buffer1;
+	nm32s* mulZ = (nm32s*)context->buffer0;
+	nm32s* mulC = (nm32s*)context->buffer0;
+	nm32s* zMaskBuffer = (nm32s*)context->buffer1;
 	int countTrangles = poly->count;
 
 	msdWaitDma(0);
@@ -69,7 +69,7 @@ SECTION(".text_demo3d") void drawTriangles(NMGL_Context_NM1* context) {
 			//mulZ теперь хранит z-треугольники
 
 			//функция теста глубины
-			depthTest_32s(context->zBuffPoints + point, 
+			depthTest_32s((nm32s**)(context->zBuffPoints + point), 
 				WIDTH_SEG,
 				(nm32s*)mulZ,
 				(nm32s*)zMaskBuffer,
@@ -90,9 +90,9 @@ SECTION(".text_demo3d") void drawTriangles(NMGL_Context_NM1* context) {
 
 		//функция накладывает маску на буфер с цветами 
 		//и копирует треугольник в изображение
-		mMaskVxN_32s((nm32s*)mulC,
-			(nm32s*)zMaskBuffer,
-			context->imagePoints + point, WIDTH_SEG,
+		mMaskVxN_32s(mulC,
+			zMaskBuffer,
+			(nm32s**)(context->imagePoints + point), WIDTH_SEG,
 			ptrnSizes + point,
 			localSize);
 

@@ -43,7 +43,6 @@ nmc4vars_win.mk:
 SHELL 			 = cmd
 endif
 
-
 -include 		 nmc4vars_win.mk
 #include          $(ROOT)/global.mk
 

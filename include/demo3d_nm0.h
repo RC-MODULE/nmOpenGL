@@ -28,7 +28,7 @@ public:
 		int word = bits[index / 32];
 		int mask = 1 << (index % 32);
 		value <<= index % 32;
-		word = word & ~mask | value & mask;
+		word = ( word & ~mask ) | ( value & mask );
 		bits[index / 32] = word;
 	}
 };
@@ -295,21 +295,71 @@ struct NMGL_Context_NM0 {
 	}
 };
 
-
 extern "C"{
 	
-	void absIfNegElse0_32f(float* src, float* dst, int size);
+	/**
+	 *  \defgroup addC_v4nm32f addC_v4nm32f
+	 *  \brief Функция сложения массива 4-мерных векторов с 4-мерным вектором
+	 *  
+	 *  \param pSrcV [in] Входной массив 4-хмерных векторов
+	 *  \param pSrcC [in] Указатель на 4-мерный вектор
+	 *  \param pDst [out] Выходной массив
+	 *  \param size [in] Число векторов
+	 *  
+	 *  \par
+	 *  \xmlonly
+	 *      <testperf>
+	 *          <param name="pSrcV"> im0 </param>
+	 *          <param name="pSrcC"> im0 </param>
+	 *          <param name="pDst"> im0 im1 </param>
+	 *          <param name="size"> 128 512 1024 </param>
+	 *          <size> size </size>
+	 *      </testperf>
+	 *  \endxmlonly
+	 */
+	 //! \{
 	void addC_v4nm32f(v4nm32f* pSrcV, v4nm32f* pSrcC, v4nm32f* pDst, int size);
+	 //! \}
 	
-	//функция вычисляет основную часть освещения по формуле
-	// res = a + nvp * d + f(nvp) * nh * s, где
-	// a - ambient
-	// nvp - n_dot_vp
-	// d - diffuse
-	// nh - n_dot_h_in_srm
-	// s - specular
-	// f(x) = 1, if (x!=0), else 0
+
+	/**
+	 *  \defgroup baseLighti baseLighti
+	 *  \brief Функция вычисления основной части освещения
+	 *  
+	 *  \param ambient [in] Указатель на амбиентную составляющую источника освещения
+	 *  \param n_dot_vp [in] Указатель на продублированный массив скалярного произведения нормали и дистанцией между источником и точкой
+	 *  \param diffuse [in] Указатель на амбиентную составляющую источника освещения
+	 *  \param n_dot_h_in_srm [in] Что-то пока что не очень ясное
+	 *  \param specular [in]  Тоже неясно
+	 *  \param dst [out] Выходной массив
+	 *  \param count [in] Число векторов
+	 *  
+	 *  \details Функция вычисляет основную часть освещения по формуле 
+	 *  res = a + nvp * d + f(nvp) * nh * s, где
+	 *  a - ambient
+	 *  nvp - n_dot_vp
+	 *  d - diffuse
+	 *  nh - n_dot_h_in_srm
+	 *  s - specular
+	 *  f(x) = 1, if (x!=0), else 0	
+	 *  
+	 *  \par
+	 *  \xmlonly
+	 *      <testperf>
+	 *          <param name="ambient"> im0 </param>
+	 *          <param name="n_dot_vp"> im0 </param>
+	 *          <param name="diffuse"> im0 </param>
+	 *          <param name="n_dot_h_in_srm"> im0 im1 </param>
+	 *          <param name="specular"> im0 </param>
+	 *          <param name="dst"> im0 im1 im2 </param>
+	 *          <param name="count"> 128 512 1024 </param>
+	 *          <size> count </size>
+	 *      </testperf>
+	 *  \endxmlonly
+	 */
+	 //! \{
 	void baseLighti(v4nm32f* ambient, v2nm32f* n_dot_vp, v4nm32f* diffuse, v2nm32f* n_dot_h_in_srm, v4nm32f* specular, v4nm32f* dst, int count);
+	 //! \}
 	
 	/**
 	 *  \defgroup clamp clamp
@@ -319,23 +369,23 @@ extern "C"{
 	 *  \param min [in] Минимальный порог диапазона
 	 *  \param max [in] Максимальный порог диапазона
 	 *  \param pDstVec [out] Выходной массив
-	 *  \param nSize [in] Число элементов массива
+	 *  \param size [in] Число элементов массива
 	 *  \retval Return description
 	 *  
 	 *  \par
 	 *  \xmlonly
 	 *      <testperf>
 	 *          <param name="pSrcVec"> im0 </param>
-	 *          <param name="min"> 2 </param>
-	 *          <param name="max"> 4 </param>
+	 *          <param name="min"> 0 </param>
+	 *          <param name="max"> 1 </param>
 	 *          <param name="pDstVec"> im0 im1 </param>
-	 *          <param name="nSize"> 128 512 1024 </param>
-	 *  		<size> nSize </size>
+	 *          <param name="size"> 128 512 1024 </param>
+	 *  		<size> size </size>
 	 *      </testperf>
 	 *  \endxmlonly
 	 */
 	 //! \{
-	void clamp_32f(nm32f* pSrcVec, float min, float max, nm32f* pDstVec, int nSize);
+	void clamp_32f(nm32f* pSrcVec, float min, float max, nm32f* pDstVec, int size);
 	 //! \}
 		
 	/**
@@ -393,6 +443,28 @@ extern "C"{
 	void cnv32f_v3v4(const nm32f* src, nm32f* dst, float value4, int size);
 	 //! \}
 	
+	/**
+	 *  \defgroup Group Group name
+	 *  \brief Brief description
+	 *  
+	 *  \param srcPointers [in] Description for srcPointers
+	 *  \param indices [in] Description for indices
+	 *  \param dstPointers [in] Description for dstPointers
+	 *  \param nArrays [in] Description for nArrays
+	 *  \param size [in] Description for size
+	 *  
+	 *  \par
+	 *  \xmlonly
+	 *      <testperf>
+	 *          <param name="srcPointers"> </param>
+	 *          <param name="indices"> </param>
+	 *          <param name="dstPointers"> </param>
+	 *          <param name="nArrays"> </param>
+	 *          <param name="size"> </param>
+	 *          <size> </size>
+	 *      </testperf>
+	 *  \endxmlonly
+	 */
 	void copyArraysByIndices(void** srcPointers, int* indices, void** dstPointers, int nArrays, int size);
 	void copyColorByIndices(v4nm32s* srcColor, int* indices, v4nm32s* dstColor, int size);
 	
@@ -404,7 +476,7 @@ extern "C"{
 	 *  \param srcVec [in] Входной массив векторов
 	 *  \param srcC [in] Указатель на постоянный вектор
 	 *  \param dstValues [out] Выходной массив полученных значений (продублированный)
-	 *  \param nSize [in] Число векторов в массиве
+	 *  \param size [in] Число векторов в массиве
 	 *  \retval Return description
 	 *  
 	 *  \par
@@ -413,13 +485,13 @@ extern "C"{
 	 *          <param name="srcVec"> im0 </param>
 	 *          <param name="srcC"> im0 </param>
 	 *          <param name="dstValues"> im0 im1 </param>
-	 *          <param name="nSize"> 128 512 1024 </param>
-	 *   		<size> nSize </size>
+	 *          <param name="size"> 128 512 1024 </param>
+	 *   		<size> size </size>
 	 *      </testperf>
 	 *  \endxmlonly
 	 */
 	 //! \{
-	void dotC_gt0_v4nm32f(v4nm32f* srcVec, v4nm32f* srcC, v2nm32f* dstValues, int nSize);
+	void dotC_gt0_v4nm32f(v4nm32f* srcVec, v4nm32f* srcC, v2nm32f* dstValues, int size);
 	 //! \}
 	
 	
@@ -430,7 +502,7 @@ extern "C"{
 	 *  \param srcVec1 [in] Первый входной массив
 	 *  \param srcVec2 [in] Второй входной массив
 	 *  \param dstValues [out] Выходной массив полученных значений (продублированный)
-	 *  \param nSize [in] Число элементов
+	 *  \param size [in] Число элементов
 	 *  \retval Return description
 	 *  
 	 *  \par
@@ -439,14 +511,14 @@ extern "C"{
 	 *          <param name="srcVec1"> im0 </param>
 	 *          <param name="srcVec2"> im0 im1 </param>
 	 *          <param name="dstValues"> im0 im1 im2 </param>
-	 *          <param name="nSize"> 128 512 1024 </param>
-	 *    		<size> nSize </size>
+	 *          <param name="size"> 128 512 1024 </param>
+	 *    		<size> size </size>
 	 *      </testperf>
 	 *  \endxmlonly
 	 */
 	 //! \{
-	void dotV_gt0_v4nm32f(v4nm32f* srcVec1, v4nm32f* srcVec2, v2nm32f* dstValues, int nSize);
-	void dotV_v4nm32f(v4nm32f* srcVec1, v4nm32f* srcVec2, v2nm32f* dstValues, int nSize);
+	void dotV_gt0_v4nm32f(v4nm32f* srcVec1, v4nm32f* srcVec2, v2nm32f* dstValues, int size);
+	void dotV_v4nm32f(v4nm32f* srcVec1, v4nm32f* srcVec2, v2nm32f* dstValues, int size);
 	 //! \}
 	
 	
@@ -459,7 +531,7 @@ extern "C"{
 	 *  \param mulC [in] Указатель на постоянный вектор-множитель
 	 *  \param addC [in] Указатель на постоянный вектор-слагаемое
 	 *  \param dst [out] Выходной массив векторов
-	 *  \param nSize [in] Число векторов
+	 *  \param size [in] Число векторов
 	 *  \retval Return description
 	 *  
 	 *  \par
@@ -469,13 +541,13 @@ extern "C"{
 	 *          <param name="mulC"> im0 </param>
 	 *          <param name="addC"> im0 </param>
 	 *          <param name="dst"> im0 im1 </param>
-	 *          <param name="nSize"> 128 512 1024 </param>
-	 *    		<size> nSize </size>
+	 *          <param name="size"> 128 512 1024 </param>
+	 *    		<size> size </size>
 	 *      </testperf>
 	 *  \endxmlonly
 	 */
 	 //! \{
-	void dotMulC_AddC_v4nm32f(v2nm32f* srcVec, v4nm32f* mulC, v4nm32f* addC, v4nm32f* dst, int nSize);
+	void dotMulC_AddC_v4nm32f(v2nm32f* srcVec, v4nm32f* mulC, v4nm32f* addC, v4nm32f* dst, int size);
 	 //! \}
 
 	 /**
@@ -486,7 +558,7 @@ extern "C"{
 	 *  \param srcVec [in] Входной массив констант
 	 *  \param mulVec [in] Указатель на массив векторов
 	 *  \param dst [out] Выходной массив векторов
-	 *  \param nSize [in] Число векторов
+	 *  \param size [in] Число векторов
 	 *  \retval Return description
 	 *
 	 *  \par
@@ -495,13 +567,13 @@ extern "C"{
 	 *          <param name="srcVec"> im0 </param>
 	 *          <param name="mulVec"> im0 </param>
 	 *          <param name="dst"> im0 im1 </param>
-	 *          <param name="nSize"> 128 512 1024 </param>
-	 *  		<size> nSize </size>
+	 *          <param name="size"> 128 512 1024 </param>
+	 *  		<size> size </size>
 	 *      </testperf>
 	 *  \endxmlonly
 	 */
 	 //! \{
-	void dotMulV_v4nm32f(v2nm32f* srcVec, v4nm32f* mulVec, v4nm32f* dst, int nSize);
+	void dotMulV_v4nm32f(v2nm32f* srcVec, v4nm32f* mulVec, v4nm32f* dst, int size);
 	 //! \}
 	
 	/**
@@ -513,7 +585,7 @@ extern "C"{
 	 *  \param mulC [in] Указатель на умножающийся постоянный вектор
 	 *  \param addVec [in] Массив прибавляющихся векторов
 	 *  \param dst [out] Выходной массив
-	 *  \param nSize [in] Число элементов
+	 *  \param size [in] Число элементов
 	 *  \retval Return description
 	 *  
 	 *  \par
@@ -523,13 +595,13 @@ extern "C"{
 	 *          <param name="mulC"> im0 </param>
 	 *          <param name="addVec"> im0 im1 </param>
 	 *          <param name="dst"> im0 im1 im2 </param>
-	 *          <param name="nSize"> 128 512 1024 </param>
-	 *    		<size> nSize </size>
+	 *          <param name="size"> 128 512 1024 </param>
+	 *    		<size> size </size>
 	 *      </testperf>
 	 *  \endxmlonly
 	 */
 	 //! \{
-	void dotMulC_Add_v4nm32f(v2nm32f* srcVec, v4nm32f* mulC, v4nm32f* addVec, v4nm32f* dst, int nSize);
+	void dotMulC_Add_v4nm32f(v2nm32f* srcVec, v4nm32f* mulC, v4nm32f* addVec, v4nm32f* dst, int size);
 	 //! \}
 
 	 /**
@@ -541,7 +613,7 @@ extern "C"{
 	 *  \param mulC [in] Указатель на умножающийся постоянный вектор
 	 *  \param addVec [in] Массив прибавляющихся векторов
 	 *  \param dst [out] Выходной массив
-	 *  \param nSize [in] Число элементов
+	 *  \param size [in] Число элементов
 	 *  \retval Return description
 	 *
 	 *  \par
@@ -551,13 +623,13 @@ extern "C"{
 	 *          <param name="mulC"> im0 </param>
 	 *          <param name="addVec"> im0 im1 </param>
 	 *          <param name="dst"> im0 im1 im2 </param>
-	 *          <param name="nSize"> 128 512 1024 </param>
-	 *    		<size> nSize </size>
+	 *          <param name="size"> 128 512 1024 </param>
+	 *    		<size> size </size>
 	 *      </testperf>
 	 *  \endxmlonly
 	 */
 	 //! \{
-	void dotMulC_Add_v4nm32f(v2nm32f* srcVec, v4nm32f* mulC, v4nm32f* addVec, v4nm32f* dst, int nSize);
+	void dotMulC_Add_v4nm32f(v2nm32f* srcVec, v4nm32f* mulC, v4nm32f* addVec, v4nm32f* dst, int size);
 	 //! \}
 	
 	void doubleAbsIfNegElse0_32f(float* src1, float* src2, float* dst1, float* dst2, int size);
@@ -567,33 +639,33 @@ extern "C"{
 	void doubleSub_32f(float* src1, float* src2, float* srcSub1, float* srcSub2, float* dst1, float* dst2, int size);
 	void doubleSubC_32f(float* src1, float* src2, float C1, float C2, float* dst1, float* dst2, int size);
 	void fastInvSqrt(float* srcVec, float* dstVec, int size);
-	int firstNonZeroIndx_32s(int* pSrcVec, int nSize);
+	int firstNonZeroIndx_32s(int* pSrcVec, int size);
 	
 	/**
 	 *  \defgroup findMinMax2 findMinMax2
 	 *  \brief Поэлементный поиск минимум и максимума из двух массивов
 	 *  
-	 *  \param src1 [in] Description for src1
-	 *  \param src2 [in] Description for src2
-	 *  \param dstMin [in] Description for dstMin
+	 *  \param srcVec1 [in] Description for src1
+	 *  \param srcVec2 [in] Description for src2
+	 *  \param dstMin [out] Description for dstMin
 	 *  \param dstMax [in] Description for dstMax
-	 *  \param nSize [in] Description for nSize
+	 *  \param size [in] Description for size
 	 *  \retval Return description
 	 *  
 	 *  \par
 	 *  \xmlonly
 	 *      <testperf>
-	 *          <param name="src1"> im0 </param>
-	 *          <param name="src2"> im0 im1 </param>
+	 *          <param name="srcVec1"> im0 </param>
+	 *          <param name="srcVec2"> im0 im1 </param>
 	 *          <param name="dstMin"> im0 im1 im2 </param>
-	 *          <param name="dstMax"> im0 im1 im2 </param>
-	 *          <param name="nSize"> nSize </param>
-	 *          <size> nSize </size>
+	 *          <param name="dstMax"> im0 im1 im2 im3 </param>
+	 *          <param name="size"> 128 512 1024 </param>
+	 *          <size> size </size>
 	 *      </testperf>
 	 *  \endxmlonly
 	 */
 	 //! \{
-	void findMinMax2(float* src1, float* src2, float* dstMin, float* dstMax, int nSize);	
+	void findMinMax2(float* srcVec1, float* srcVec2, float* dstMin, float* dstMax, int size);	
 	 //! \}
 
 	/**
@@ -605,7 +677,7 @@ extern "C"{
 	 *  \param src3 [in] Третий входной массив
 	 *  \param dstMin [out] Выходной массив с минимумом
 	 *  \param dstMax [out] Выходной массив с максимумом
-	 *  \param nSize [in] Description for size
+	 *  \param size [in] Description for size
 	 *  \retval Return description
 	 *  
 	 *  \par
@@ -616,13 +688,13 @@ extern "C"{
 	 *          <param name="src3"> im0 </param>
 	 *          <param name="dstMin"> im0 im1 </param>
 	 *          <param name="dstMax"> im0 im1 </param>
-	 *          <param name="nSize"> 128 512 1024 </param>
-	 *    		<size> nSize </size>
+	 *          <param name="size"> 128 512 1024 </param>
+	 *    		<size> size </size>
 	 *      </testperf>
 	 *  \endxmlonly
 	 */
 	 //! \{
-	void findMinMax3(float* src1, float* src2, float* src3, float* dstMin, float* dstMax, int nSize);
+	void findMinMax3(float* src1, float* src2, float* src3, float* dstMin, float* dstMax, int size);
 	 //! \}
 	
 	/**
@@ -636,7 +708,7 @@ extern "C"{
 	 *  \xmlonly
 	 *      <testperf>
 	 *          <param name="matrix"> im0 </param>
-	 *    		<size> 4*4 </size>
+	 *    		<size> 16 </size>
 	 *      </testperf>
 	 *  \endxmlonly
 	 */
@@ -645,14 +717,14 @@ extern "C"{
 	 //! \}
 	
 	/**
-	 *  \defgroup meanOfThreeToInt meanOfThreeToInt
-	 *  \brief Функция поиска среднего значения из трех элементов и сонвертирования его в целочисленный тип
+	 *  \defgroup meanToInt3 meanToInt3
+	 *  \brief Функция поиска среднего значения из трех элементов и конвертирования его в целочисленный тип
 	 *  
 	 *  \param src1 [in] Входной массив первых значений
 	 *  \param src2 [in] Входной массив вторых значений
 	 *  \param src3 [in] Входной массив третьих значений
 	 *  \param result [out] Выходной массив в целочисленном формате
-	 *  \param nSize [in] Число элементов массива
+	 *  \param size [in] Число элементов массива
 	 *  \retval Return description
 	 *  
 	 *  \par
@@ -662,16 +734,39 @@ extern "C"{
 	 *          <param name="src2"> im0 im1 </param>
 	 *          <param name="src3"> im0 im1 im2 </param>
 	 *          <param name="result"> im0 im1 im2 im3 </param>
-	 *          <param name="nSize"> 128 512 1024 </param>
-	 *    		<size> nSize </size>
+	 *          <param name="size"> 128 512 1024 </param>
+	 *    		<size> size </size>
 	 *      </testperf>
 	 *  \endxmlonly
 	 */
 	 //! \{
-	void meanToInt3(float* src1, float* src2, float* src3, int* result, int nSize);
+	void meanToInt3(float* src1, float* src2, float* src3, int* result, int size);
 	 //! \}
 	 
-	void meanToInt2(float* src1, float* src2, int* result, int nSize);
+	 /**
+	 *  \defgroup meanToIn23 meanToInt2
+	 *  \brief Функция поиска среднего значения из двух элементов и конвертирования его в целочисленный тип
+	 *  
+	 *  \param src1 [in] Входной массив первых значений
+	 *  \param src2 [in] Входной массив вторых значений
+	 *  \param result [out] Выходной массив
+	 *  \param size [in] Число элементов массива
+	 *  \retval Return description
+	 *  
+	 *  \par
+	 *  \xmlonly
+	 *      <testperf>
+	 *          <param name="src1"> im0 </param>
+	 *          <param name="src2"> im0 im1 </param>
+	 *          <param name="result"> im0 im1 im2 </param>
+	 *          <param name="size"> 128 512 1024 </param>
+	 *          <size> size </size>
+	 *      </testperf>
+	 *  \endxmlonly
+	 */
+	 //! \{
+	void meanToInt2(float* src1, float* src2, int* result, int size);
+	 //! \}
 	
 		
 	/**
@@ -681,7 +776,7 @@ extern "C"{
 	 *  \param pSrcV [in] Входной массив
 	 *  \param pSrcC [in] Указатель на постоянное значение
 	 *  \param pDst [out] Выходной массив
-	 *  \param nSize [in] Число элементов
+	 *  \param size [in] Число элементов
 	 *  \retval Return description
 	 *  
 	 *  \par
@@ -690,13 +785,13 @@ extern "C"{
 	 *          <param name="pSrcV"> im0 </param>
 	 *          <param name="pSrcC"> im0 </param>
 	 *          <param name="pDst"> im0 im1 </param>
-	 *          <param name="nSize"> 128 512 1024 </param>
-	 *    		<size> nSize </size>
+	 *          <param name="size"> 128 512 1024 </param>
+	 *    		<size> size </size>
 	 *      </testperf>
 	 *  \endxmlonly
 	 */
 	 //! \{
-	void mulC_v4nm32f(v4nm32f* pSrcV, v4nm32f* pSrcC, v4nm32f* pDst, int nSize);
+	void mulC_v4nm32f(v4nm32f* pSrcV, v4nm32f* pSrcC, v4nm32f* pDst, int size);
 	 //! \}
 	
 	/**
@@ -752,7 +847,7 @@ extern "C"{
 	
 	int readMask(nm1* mask, int* dstIndices, int size);
 	int readMaskToLimitDst(nm1* mask, int* dstIndices, int* treated, int size, int maxSize);
-	void remap_32u(nm32u* pSrcVec, nm32u* pDstVec, nm32s* pRemapTable, int nSize);
+	void remap_32u(nm32u* pSrcVec, nm32u* pDstVec, nm32s* pRemapTable, int size);
 
 	/**
 	 *  \defgroup replaceEq0_f replaceEq0
@@ -760,7 +855,7 @@ extern "C"{
 	 *  
 	 *  \param srcVec [in] Входной массив
 	 *  \param dstVec [out] Выходной массив
-	 *  \param nSize [in] Число элементов в массиве
+	 *  \param size [in] Число элементов в массиве
 	 *  \param nReplaceC [in] Втсавляемое число
 	 *  \retval Return description
 	 *  
@@ -769,14 +864,14 @@ extern "C"{
 	 *      <testperf>
 	 *          <param name="srcVec"> im0 </param>
 	 *          <param name="dstVec"> im0 im1 </param>
-	 *          <param name="nSize"> 128 512 1024 </param>
+	 *          <param name="size"> 128 512 1024 </param>
 	 *          <param name="nReplaceC"> 1 </param>
-	 *     		<size> nSize </size>
+	 *     		<size> size </size>
 	 *      </testperf>
 	 *  \endxmlonly
 	 */
 	 //! \{
-	void replaceEq0_32f(float* srcVec, float* dstVec, int nSize, float nReplaceC);
+	void replaceEq0_32f(float* srcVec, float* dstVec, int size, float nReplaceC);
 	 //! \}
 	
 	
@@ -787,7 +882,7 @@ extern "C"{
 	 *  
 	 *  \param dstVec [out] Инициализируемый массив
 	 *  \param valueC [in] Значение константы
-	 *  \param nSize [in] Размер вектора в элементах
+	 *  \param size [in] Размер вектора в элементах
 	 *  \retval Return description
 	 *  
 	 *  \par
@@ -795,13 +890,13 @@ extern "C"{
 	 *      <testperf>
 	 *          <param name="dstVec"> im0 </param>
 	 *          <param name="valueC"> im0 im1 </param>
-	 *          <param name="nSize"> 128 512 1024 </param>
-	 *      		<size> nSize </size>
+	 *          <param name="size"> 128 512 1024 </param>
+	 *      		<size> size </size>
 	 *      </testperf>
 	 *  \endxmlonly
 	 */
 	 //! \{
-	void set_v4nm32f(v4nm32f* dstVec, v4nm32f* valueC, int nSize);
+	void set_v4nm32f(v4nm32f* dstVec, v4nm32f* valueC, int size);
 	 //! \}
 	
 	
@@ -813,7 +908,7 @@ extern "C"{
 	 *  \param srcAxy [in, out] Первый входной массив двухмерных векторов
 	 *  \param srcBxy [in, out] Второй входной массив двухмерных векторов
 	 *  \param srcCxy [in, out] Третий входной массив двухмерных векторов
-	 *  \param nSize [in] Число элементов
+	 *  \param size [in] Число элементов
 	 *  \retval Return description
 	 *  
 	 *  \par
@@ -822,16 +917,16 @@ extern "C"{
 	 *          <param name="srcAxy"> im0 </param>
 	 *          <param name="srcBxy"> im0 im1 </param>
 	 *          <param name="srcCxy"> im0 im1 im2 </param>
-	 *          <param name="nSize"> 128 512 1024 </param>
-	 *      	<size> nSize </size>
+	 *          <param name="size"> 128 512 1024 </param>
+	 *      	<size> size </size>
 	 *      </testperf>
 	 *  \endxmlonly
 	 */
 	 //! \{
-	void sortByY3(float* srcAxy, float* srcBxy, float* srcCxy, int nSize);
+	void sortByY3(float* srcAxy, float* srcBxy, float* srcCxy, int size);
 	 //! \}
 	 
-	void sortByY2(float* srcXY0, float* srcXY1, int nSize);
+	void sortByY2(float* srcXY0, float* srcXY1, int size);
 
 	/**
 	 *  \defgroup split_v4nm32f split_v4nm32f
@@ -899,7 +994,7 @@ extern "C"{
 	 *  \param pSrcV [in] Входной массив
 	 *  \param pSrcC [in] Указатель на константу
 	 *  \param pDst [out] Выходной массив
-	 *  \param nSize [in] Число элементов в массиве
+	 *  \param size [in] Число элементов в массиве
 	 *  \retval Return description
 	 *  
 	 *  \par
@@ -908,13 +1003,13 @@ extern "C"{
 	 *          <param name="pSrcV"> im0 </param>
 	 *          <param name="pSrcC"> im0 </param>
 	 *          <param name="pDst"> im0 im1 </param>
-	 *          <param name="nSize"> 128 512 1024 </param>
-	 *       	<size> nSize </size>
+	 *          <param name="size"> 128 512 1024 </param>
+	 *       	<size> size </size>
 	 *      </testperf>
 	 *  \endxmlonly
 	 */
 	 //! \{
-	void subCRev_v4nm32f(v4nm32f* pSrcV, v4nm32f* pSrcC, v4nm32f* pDst, int nSize);
+	void subCRev_v4nm32f(v4nm32f* pSrcV, v4nm32f* pSrcC, v4nm32f* pDst, int size);
 	 //! \}
 	
 	void ternaryLt0_AddC_AddC_32f(nm32f* srcFlags, nm32f* srcVec, float valueLeft, float valueRight, float* dstVec, int size);
@@ -922,20 +1017,20 @@ extern "C"{
 
 
 }
-void reverseMatrix3x3in4x4(mat4nm32f* src, mat4nm32f* dst);
 
-void setSegmentMask(NMGL_Context_NM0 &cntxt, Triangles &triangles, BitMask* masks);
 void pushToTriangles_t(const float *vertexX, const float *vertexY, const float *vertexZ, const v4nm32f* color, Triangles& triangles, int countVertex);
+void reverseMatrix3x3in4x4(mat4nm32f* src, mat4nm32f* dst);
+void pow_32f(nm32f* srcVec, nm32f* dstVec, float powC, int size, nm32f* pTmp1);
+void copyColorByIndices_BGRA_RGBA(v4nm32s* srcColor, int* indices, v4nm32s* dstColor, int size);
+
+
+//functions that use NMGLSynchroL_ContextNM0
+void cullFaceSortTriangles(Triangles &triangles);
+void setSegmentMask(NMGL_Context_NM0 &cntxt, Triangles &triangles, BitMask* masks);
 void rasterizeT(const Triangles* triangles, const BitMask* masks);
 void rasterizeL(const Lines* lines, const BitMask* masks);
 void updatePolygonsT(Polygons* poly, Triangles* triangles, int count, int segX, int segY);
 void updatePolygonsL(Polygons* poly, Lines* lines, int count, int segX, int segY);
-
-void pow_32f(nm32f* srcVec, nm32f* dstVec, float powC, int size, nm32f* pTmp1);
-
-void cullFaceSortTriangles(Triangles &triangles);
-
-void copyColorByIndices_BGRA_RGBA(v4nm32s* srcColor, int* indices, v4nm32s* dstColor, int size);
 
 /**
  *  \defgroup color Light

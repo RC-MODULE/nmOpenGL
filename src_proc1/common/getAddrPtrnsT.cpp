@@ -70,6 +70,7 @@ SECTION(".text_demo3d") int getAddrPtrnsT(NMGL_Context_NM1* context, Polygons* p
 	nmppsCopy_32s((nm32s*)srcTail12, dstTail + 2 * tail, tail);
 
 	CHECK_STATUS(1);
+	//nmppsRShiftC_32u((nm32u*)polyTmp->pointInImage, 0, (nm32u*)polyTmp->pointInImage, size);
 	nmppsAndC_32u((nm32u*)polyTmp->pointInImage, 1, (nm32u*)temp1, size);
 	nmppsSub_32s(polyTmp->pointInImage, temp1, polyTmp->pointInImage, size);
 #ifdef __GNUC__	

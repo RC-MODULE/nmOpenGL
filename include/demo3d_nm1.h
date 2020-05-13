@@ -8,7 +8,9 @@
 #include "myserverdma.h"
 #include "nmgltex_nm1.h"
 
+
 typedef void DepthCore(nm32s &buffZ, nm32s &trianSrcZ, nm32s &trianDstZ);
+typedef void DepthCore16(nm16s &buffZ, nm16s &trianSrcZ, nm16s &trianDstZ);
 
 
 void selectPatterns(nm32s* dydxTable, nm32s* dX, nm32s* dY, nm32s* x0, nm32s* pPtrnPaintSide, nm32s** pSrcPack, int nSize, int* pTmp);
@@ -87,7 +89,11 @@ extern "C" {
 	void mMaskVxN_32s(nm32s* pTriangles, nm32s* pMask, nm32s** pROI, int imageStride, Size* ptrnSizes, int count);
 	 //! \}
 	
+
+	void mMaskVxN_16s(nm16s* pTriangles, nm16s* pMask, nm16s** pROI, int imageStride, Size* ptrnSizes, int count);
+
 	void depthTest_32s(nm32s** pROI, int imageStride, nm32s* pTriangles, nm32s* pDstMask, Size* pTriangSizes, int count);
+	void depthTest_16s(nm16s** pROI, int imageStride, nm16s* pTriangles, nm16s* pDstMask, Size* pTriangSizes, int count);
 	
 
 	void selectPaintSide(nm32s* pSrc, int X, int Y, nm32s* pDst, int nSize);
