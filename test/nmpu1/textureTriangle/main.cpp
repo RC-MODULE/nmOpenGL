@@ -285,12 +285,13 @@ int rawToImage (nm32s* triangles, Rectangle* windows, image_t* images, int count
     int srcRow = 0;
     int dstRow = 0;
     int col = 0;
+
+    nm32s* triangle = triangles;
     
     for (i = 0; i < count; i++)
     {
         int width = windows[i].width;
         int height = windows[i].height;
-        nm32s* triangle = triangles + i*width*height;//TODO: incorrect formula
         nm32s pixel_pos = 0;
         nm32s pixel_value = 0;
         
@@ -300,7 +301,8 @@ int rawToImage (nm32s* triangles, Rectangle* windows, image_t* images, int count
         images[i].type = UNSIGNED_BYTE;
         
         //copy pixels from triangles to image
-        images[i].pixels = (unsigned char*) malloc(width*height*4);
+        images[i].pixels = (unsigned char*) malloc(width*height*4); //TODO: nmc char type has size of 4 bytes. 
+                                                                    //Perhaps it would be better to use UNSIGNED_INT_8_8_8_8
         for (srcRow = height-1, dstRow = 0; srcRow >= 0; srcRow--, dstRow++)
         {
             for (col = 0; col < width; col++)
@@ -309,10 +311,12 @@ int rawToImage (nm32s* triangles, Rectangle* windows, image_t* images, int count
                 pixel_value = triangle[srcRow*width + col];
                 ((unsigned char*)images[i].pixels)[pixel_pos] = (pixel_value & 0x0000ff00) >> 8;
                 ((unsigned char*)images[i].pixels)[pixel_pos + 1] = (pixel_value & 0x00ff0000) >> 16;
-                ((unsigned char*)images[i].pixels)[pixel_pos+ 2] = (pixel_value & 0xff000000) >> 24;
+                ((unsigned char*)images[i].pixels)[pixel_pos + 2] = (pixel_value & 0xff000000) >> 24;
                 ((unsigned char*)images[i].pixels)[pixel_pos + 3] = (pixel_value & 0x000000ff);
             }
         }
+        
+        triangle += windows[i].height * windows[i].width;
 
         // for (dstRow = 0; dstRow < height; dstRow++)
         // {
