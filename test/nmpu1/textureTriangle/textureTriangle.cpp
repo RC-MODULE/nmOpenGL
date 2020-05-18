@@ -14,43 +14,44 @@ void textureTriangle(Pattern* patterns,
 {
     printf ("Start textureTriangle\n"); 
     
-    int i = 0;
-    int row = 0;
-    int col = 0;
-    
-    for (i = 0; i < count; i++)
-    {
-        int width = windows[i].width;
-        int height = windows[i].height;
-        nm32s* srcTriangle = pSrcTriangle + i*width*height;//TODO: incorrect formula
-        nm32s* dstTriangle = pDstTriangle + i*width*height;//TODO: incorrect formula
-        nm32s pixel_pos = 0;
-        nm32s pixel_value = 0;
+    long long int temp;
+    nm32s* dst = pDstTriangle;
+    nm32s* src = pSrcTriangle;
+    for(int c=0;c<count;c++){
+        nm64s* pattern = (nm64s*) (patterns + c);
+        pattern += windows[c].y;
         
-        //copy pixels from pSrcTriangle to pDstTriangle
-        for (row = 0; row < height; row++)
-        {
-            for (col = 0; col < width; col++)
-            {
-                pixel_pos = (row*width + col)*4;
-                pixel_value = srcTriangle[row*width + col];
-                ((unsigned char*)dstTriangle)[pixel_pos] = (pixel_value & 0x000000ff);
-                ((unsigned char*)dstTriangle)[pixel_pos + 1] = (pixel_value & 0x0000ff00) >> 8;
-                ((unsigned char*)dstTriangle)[pixel_pos+ 2] = (pixel_value & 0x00ff0000) >> 16;
-                ((unsigned char*)dstTriangle)[pixel_pos + 3] = (pixel_value & 0xff000000) >> 24;
+        int width = windows[c].width;
+
+        if (windows[c].x < 0) {
+            width += windows[c].x;
+        }
+        
+        for(int y = 0; y < windows[c].height; y++){
+            temp = pattern[y];
+            nm32s* pDst = (nm32s*)(dst + y * windows[c].width);
+            nm32s* pSrc = (nm32s*)(src + y * windows[c].width);
+            if (windows[c].x < 0) {
+                for(int i = 0; i > windows[c].x; i--){
+                    pDst[0] = 0x00000000;
+                    pDst+=1;
+                    pSrc+=1;
+                }
+            }
+            else {
+                temp >>= (windows[c].x * 2);
+            }
+            
+            for(int x = 0; x < width; x++){
+                int mul = temp & 0x3;
+                pDst[0] = mul * pSrc[0];
+                pDst += 1;
+                pSrc += 1;
+                temp >>= 2;
             }
         }
-
-        // for (row = 0; row < height; row++)
-        // {
-            // for (col = 0; col < width; col++)
-            // {
-                // printf ("%08x ", ((int*)images[i].pixels)[row*width + col]);
-            // }
-        // printf ("\n\n");            
-        // }
-  
-        // printf ("\n\n");   
+        src += windows[c].height * windows[c].width;
+        dst += windows[c].height * windows[c].width;
     }
     
     printf ("End textureTriangle\n");     
