@@ -161,7 +161,7 @@ SECTION(".text_demo3d")
 int main ()
 {
     //Массив данных о треугольниках (координаты вершин, текстурные координаты и т.д.)
-    Triangles triangles [TRIANGLE_AMOUNT];
+    Triangles triangles;
     
     //Массивы растеризованных и закрашенных треугольников
     nm32s pSrcTriangle [WIDTH_PTRN * HEIGHT_PTRN * TRIANGLE_AMOUNT]; //
@@ -187,7 +187,40 @@ int main ()
     windows[1].width = 26;
     windows[1].height = 25;
 
-
+    //setup triangles parameters
+    float x0[TRIANGLE_AMOUNT] = {0.0f, 0.0f};
+    float y0[TRIANGLE_AMOUNT] = {0.0f, 0.0f};
+    float x1[TRIANGLE_AMOUNT] = {0.0f, 0.0f};
+    float y1[TRIANGLE_AMOUNT] = {0.0f, 0.0f};
+    float x2[TRIANGLE_AMOUNT] = {0.0f, 0.0f};
+    float y2[TRIANGLE_AMOUNT] = {0.0f, 0.0f};
+    
+    float s0[TRIANGLE_AMOUNT] = {0.0f, 0.0f};
+    float t0[TRIANGLE_AMOUNT] = {0.0f, 0.0f};
+    float s1[TRIANGLE_AMOUNT] = {0.0f, 0.0f};
+    float t1[TRIANGLE_AMOUNT] = {0.0f, 0.0f};
+    float s2[TRIANGLE_AMOUNT] = {0.0f, 0.0f};
+    float t2[TRIANGLE_AMOUNT] = {0.0f, 0.0f};
+   
+    float z[TRIANGLE_AMOUNT] = {0.0f, 0.0f};
+    
+    triangles.x0 = x0;
+    triangles.y0 = y0;
+    triangles.x1 = x1;
+    triangles.y1 = y1;
+    triangles.x2 = x2;
+    triangles.y2 = y2;
+ 
+    triangles.s0 = s0;
+    triangles.t0 = t0;
+    triangles.s1 = s1;
+    triangles.t1 = t1;
+    triangles.s2 = s2;
+    triangles.t2 = t2;
+    
+    triangles.z = z;
+    triangles.size = TRIANGLE_AMOUNT;
+ 
     printf ("Start textureTriangle test...\n");
 
     //Активный текстурный модуль
@@ -210,7 +243,7 @@ int main ()
     mMulCVxN_2s_RGB8888(patterns, windows, (v4nm8s*)valueC, pSrcTriangle, TRIANGLE_AMOUNT);
     
     //texture triangles
-    textureTriangle(patterns, triangles, windows, pSrcTriangle, pDstTriangle, count);
+    textureTriangle(patterns, &triangles, windows, pSrcTriangle, pDstTriangle, count);
 
     //convert result to image_t to compare with etalon    
     rawToImage(pDstTriangle, windows, result_images, count);
