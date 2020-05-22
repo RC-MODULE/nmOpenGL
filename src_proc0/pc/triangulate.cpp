@@ -1,4 +1,3 @@
-#include <stack>
 #include <iostream>
 #include <cstdlib>
 #include <cmath> // pow for NMC-SDK
@@ -46,6 +45,7 @@ int triangulate(const nm32f *srcVertex,
 		Point a;
 		Point b;
 		Point c;
+
 		a.x = srcVertex[i];
 		a.y = srcVertex[i + srcCount];
 		a.z = srcVertex[i + 2 * srcCount];
@@ -63,7 +63,12 @@ int triangulate(const nm32f *srcVertex,
 		// Try to triangulate the triangle
 		std::vector<Triangle> trVec;
 		int spaceLeft = maxDstSize - currentDstSize;
-		int res = triangulateOneTriangle(tr, (nm32f) maxWidth, (nm32f) maxHeight, spaceLeft, trVec);
+		int res = triangulateOneTriangle(tr, 
+										(nm32f) maxWidth, 
+										(nm32f) maxHeight, 
+										(void *) &dstVertex[3* currentDstSize], 
+										(void *) &dstColor[3 * currentDstSize],
+										spaceLeft);
 		// If the number of result smaller triangles is too big
 		if (res == -1) {
 			// Finish triangulation
@@ -71,6 +76,7 @@ int triangulate(const nm32f *srcVertex,
 		} else {
 			// Copy vertexes of the result triangles to the output vertex array (dstVertex)
 			// Copy colors of the result triangles to the output color array (dstColor)
+			#if 0
 			for (size_t i = 0; i < trVec.size(); ++i) {
 				Point a = trVec[i].points[0];
 				Point b = trVec[i].points[1];
@@ -90,54 +96,168 @@ int triangulate(const nm32f *srcVertex,
 				dstColor[3 * currentDstSize + 3 * i + 1] = 	b.color;
 				dstColor[3 * currentDstSize + 3 * i + 2] = 	c.color;
 			}
+			#endif
 			// Increase the number of the result output triangles
-			currentDstSize += trVec.size();
+			currentDstSize += res;
 		}
 	}
 	*srcTreatedCount = i;
 	return currentDstSize;
 }
 
-int triangulateOneTriangle(const Triangle& tr, nm32f xMax, nm32f yMax, int trLimit, std::vector<Triangle>& trVec){
-	std::stack<Triangle> trStack;
-	trStack.push(tr);
-	int trCount = 0;
+void printVertices(Vertices *vcs)
+{
+	printf("%f %f %f %f %f %f %f %f %f \n\r", 	
+								vcs->ax,
+								vcs->ay,
+								vcs->az,
+								vcs->bx,
+								vcs->by,
+								vcs->bz,
+								vcs->cx,
+								vcs->cy,
+								vcs->cz);
 	
-	while ((!trStack.empty()) && (trCount < trLimit)) {
+}
+
+int triangulateOneTriangle(const Triangle& tr, nm32f xMax, nm32f yMax, void *dstVertexBuf, void *dstColorBuf, int bufSize){
+
+	Stack verticesStack = createStack(dstVertexBuf, bufSize);
+	Stack colorsStack = createStack(dstColorBuf, bufSize);
+	Vertices trVertices = {
+							tr.points[0].x, tr.points[0].y, tr.points[0].z,
+							tr.points[1].x, tr.points[1].y, tr.points[1].z,
+							tr.points[2].x, tr.points[2].y, tr.points[2].z,
+						  };	
+	Colors trColors = {
+						tr.points[0].color, 
+						tr.points[1].color, 
+						tr.points[2].color
+					  };	
+	pushBack(&verticesStack, (void *) &trVertices, sizeof(trVertices));
+	//pushBack(&colorsStack, (void *) &trColors, sizeof(trColors));
+
+	int overflow = 0; // Indicate that there is no more space in output buffer
+
+	while (!isEmpty(&verticesStack) && !overflow) {
 		// Get the triangle out of the stack
-		Triangle triangle = trStack.top();
-		trStack.pop();
+		Vertices curTrVertices;
+		Colors curTrColors;
+		popBack(&verticesStack, (void *) &curTrVertices, sizeof(curTrVertices));
+		//popBack(&colorsStack, (void *) &curTrColors, sizeof(curTrColors));
+		puts("Pop back: ");		
+		printVertices(&curTrVertices);
+		// Create triangle from vertices and colors
+		// to pass it to the function
+		Point a;
+		Point b;
+		Point c;
+
+		a.x = curTrVertices.ax; 
+		a.y = curTrVertices.ay; 
+		a.z = curTrVertices.az; 
+		b.x = curTrVertices.bx; 
+		b.y = curTrVertices.by; 
+		b.z = curTrVertices.bz; 
+		c.x = curTrVertices.cx; 
+		c.y = curTrVertices.cy; 
+		c.z = curTrVertices.cz; 
+		a.color = curTrColors.a; 
+		b.color = curTrColors.b; 
+		c.color = curTrColors.c; 
+		Triangle tr{a, b, c};
+
 		// Process the triangle:
 		Triangle trOut1;
 		Triangle trOut2;
 		// Check the size and split if it is necessary
-		//int res = checkAndSplitFirstLargeEdge(triangle, xMax, yMax, trOut1, trOut2);
-		int res = checkAndSplitLargestEdge(triangle, xMax, yMax, trOut1, trOut2);
-		// Triangle has been splited
-		if (0 == res) {
-			trStack.push(trOut1);
-			trStack.push(trOut2);
+		//int trIsSplitted = checkAndSplitFirstLargeEdge(triangle, xMax, yMax, trOut1, trOut2);
+		int trIsSplitted = checkAndSplitLargestEdge(tr, xMax, yMax, trOut1, trOut2);
+		// Triangle has been splitted
+		if (trIsSplitted) {
+			if (space(&verticesStack) >= 2){
+				Vertices trOut1Vertices = {
+											trOut1.points[0].x,
+											trOut1.points[0].y,
+											trOut1.points[0].z,
+											trOut1.points[1].x,
+											trOut1.points[1].y,
+											trOut1.points[1].z,
+											trOut1.points[2].x,
+											trOut1.points[2].y,
+											trOut1.points[2].z
+										  };
+				Colors trOut1Colors = {
+											trOut1.points[0].color,
+											trOut1.points[1].color,
+											trOut1.points[2].color
+										};
+				pushBack(&verticesStack, &trOut1Vertices, sizeof(trOut1Vertices));
+				//pushBack(&colorsStack, &trOut1Colors, sizeof(&trOut1Colors));
+
+				Vertices trOut2Vertices = {
+											trOut2.points[0].x,
+											trOut2.points[0].y,
+											trOut2.points[0].z,
+											trOut2.points[1].x,
+											trOut2.points[1].y,
+											trOut2.points[1].z,
+											trOut2.points[2].x,
+											trOut2.points[2].y,
+											trOut2.points[2].z
+										  };
+				Colors trOut2Colors = {
+											trOut2.points[0].color,
+											trOut2.points[1].color,
+											trOut2.points[2].color
+										};
+				pushBack(&verticesStack, &trOut2Vertices, sizeof(trOut2Vertices));
+				//pushBack(&colorsStack, &trOut2Colors, sizeof(&trOut2Colors));
+			} else {
+				// This triangle splitted is too big
+				// There is no space in output buffer
+				overflow = 1;
+			}
 			continue;
 		} else {
 			// Triangle size is OK
 			// Push the triangle to the output 
-			trCount += 1;
-			trVec.push_back(triangle);
+			// There is always place in output buffer
+			// because I pop this triangle out of it
+			Vertices trVertices = {
+										tr.points[0].x,
+										tr.points[0].y,
+										tr.points[0].z,
+										tr.points[1].x,
+										tr.points[1].y,
+										tr.points[1].z,
+										tr.points[2].x,
+										tr.points[2].y,
+										tr.points[2].z
+									  };
+			Colors trColors = {
+										tr.points[0].color,
+										tr.points[1].color,
+										tr.points[2].color
+									};
+
+			pushFront(&verticesStack, &trVertices, sizeof(trVertices));
+			//pushFront(&colorsStack, &trColors, sizeof(&trColors));
 		}		
 	}
 
 	// If there are no more triangles in the stack to divide
-	if (trStack.empty())
+	if (isEmpty(&verticesStack))
 	{
-		// All output triangles are in out
-		return 0;
+		// All output triangles are in output buffer
+		return stackSize(&verticesStack);
 	} else {
 		// 'While' is finished because there are no more free space
 		// for the triangles
 		return -1;
 	}
 }
-
+#if 0
 int checkAndSplitFirstLargeEdge(const Triangle& tr, nm32f xMax, nm32f yMax, Triangle &trOut1, Triangle& trOut2)
 {
 	Point a = tr.points[0];
@@ -159,7 +279,7 @@ int checkAndSplitFirstLargeEdge(const Triangle& tr, nm32f xMax, nm32f yMax, Tria
 		d.color.vec[3] = (a.color.vec[3] + b.color.vec[3]) / 2;
 		trOut1 = Triangle{a, d, c};
 		trOut2 = Triangle{b, d, c};
-		return 0;
+		return 1;
 	}
 	// Check bc side
 	if (fabs(b.x - c.x) > xMax || fabs(b.y - c.y) > yMax) {
@@ -174,7 +294,7 @@ int checkAndSplitFirstLargeEdge(const Triangle& tr, nm32f xMax, nm32f yMax, Tria
 		//std::cout << " " << "d.x = " << d.x << ", " << "d.y = " << d.y << std::endl;
 		trOut1 = Triangle{b, d, a};
 		trOut2 = Triangle{c, d, a};
-		return 0;
+		return 1;
 	}
 	// Check ac side
 	if (fabs(a.x - c.x) > xMax || fabs(a.y - c.y) > yMax) {
@@ -188,11 +308,11 @@ int checkAndSplitFirstLargeEdge(const Triangle& tr, nm32f xMax, nm32f yMax, Tria
 		d.color.vec[3] = (a.color.vec[3] + c.color.vec[3]) / 2;
 		trOut1 = Triangle{a, d, b};
 		trOut2 = Triangle{c, d, b};
-		return 0;
+		return 1;
 	}
-	return -1;
+	return 0;
 }
-
+#endif
 int checkAndSplitLargestEdge(const Triangle& tr, nm32f xMax, nm32f yMax, Triangle &trOut1, Triangle& trOut2)
 {
 	nm32f edgeSizeLimit = sqrt(pow(xMax, 2) + pow(yMax, 2));
@@ -226,9 +346,9 @@ int checkAndSplitLargestEdge(const Triangle& tr, nm32f xMax, nm32f yMax, Triangl
 		d.color.vec[3] = (a.color.vec[3] + b.color.vec[3]) / 2;
 		trOut1 = Triangle{ a, c, d };
 		trOut2 = Triangle{ b, c, d };
-		return 0;
+		return 1;
 	} else {
-		return -1;
+		return 0;
 	}
 }
 
