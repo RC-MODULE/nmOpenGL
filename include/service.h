@@ -47,15 +47,7 @@ struct Triangle {
 
 typedef struct Vertices 
 {
-	nm32f ax;
-	nm32f ay;
-	nm32f az;
-	nm32f bx;
-	nm32f by;
-	nm32f bz;
-	nm32f cx;
-	nm32f cy;
-	nm32f cz;
+	nm32f v[9];
 } Vertices;
 
 typedef struct Colors 
@@ -73,7 +65,16 @@ typedef struct Stack
 	void *data;
 } Stack;
 
+typedef struct VertexBuf 
+{
+	int top;
+	int front;
+	int size;
+	void *data;
+} VertexBuf;
+
 static void printStack(Stack *st, int itemSize);
+static void printVertexBuf(VertexBuf *vbuf, int itemSize);
 
 static Stack createStack(void *data, int size)
 {
@@ -82,9 +83,104 @@ static Stack createStack(void *data, int size)
 	st.top = size;
 	st.front = -1;
 	st.size = size;
-	printStack(&st, sizeof(Vertices)/sizeof(int));
+	//printStack(&st, sizeof(Vertices)/sizeof(int));
 	return st;
 }
+
+static VertexBuf createVertexBuf(void *data, int size)
+{
+	VertexBuf vertexBuf;
+	vertexBuf.data = data;
+	vertexBuf.top = size;
+	vertexBuf.front = -1;
+	vertexBuf.size = size;
+	//printVertexBuf(&vertexBuf, sizeof(VertexBuf)/sizeof(nm32f));
+	return vertexBuf;
+}
+
+static int vBufIsFull(VertexBuf *vbuf)
+{
+	return ((vbuf->front + 1) == vbuf->top);	
+}
+
+static int vBufIsEmpty(VertexBuf *vbuf)
+{
+	return (vbuf->top == vbuf->size);	
+}
+
+static int vBufSize(VertexBuf *vbuf)
+{
+	return (vbuf->front + 1);	
+}
+
+static int vBufSpace(VertexBuf *vbuf)
+{
+	return (vbuf->top - vbuf->front - 1);	
+}
+//      push here         
+//          |
+//
+//          V
+// |-|-|-|-|-|x|x|
+static int vertexBufPushBack(VertexBuf *vbuf, Vertices *vert)
+{
+	if (vBufIsFull(vbuf)){
+		puts("pushBack: Buffer is full!");
+		return -1;
+	} else {
+		vbuf->top -= 1;
+		nm32f *dst = (nm32f *) vbuf->data; 
+		for (int i = 0; i < 9; ++i){
+			dst[i * vbuf->size + vbuf->top] = vert->v[i];
+		}	
+		//printf("pushBack: ");
+		//printVertexBuf(vbuf, sizeof(VertexBuf)/sizeof(int));
+		return 0;
+	}
+}
+
+//      push here         
+//          |
+//          V
+// |x|x|x|x|-|-|-|
+static int vertexBufPushFront(VertexBuf *vbuf, Vertices *vert)
+{
+	if (vBufIsFull(vbuf)){
+		puts("pushFront: Buffer is full");
+		return -1;
+	} else {
+		vbuf->front += 1;
+		nm32f *dst = (nm32f *) vbuf->data; 
+		for (int i = 0; i < 9; ++i){
+			dst[i * vbuf->size + vbuf->front] = vert->v[i];
+		}	
+		//printf("pushFront: ");
+		//printVertexBuf(vbuf, sizeof(VertexBuf)/sizeof(int));
+		return 0;
+	}
+}
+
+//   return this item         
+//          |
+//          V
+// |-|-|-|-|x|x|x|
+static int vertexBufPopBack(VertexBuf *vbuf, Vertices *vert)
+{
+	if (vBufIsEmpty(vbuf)){
+		puts("popBack: Buffer is empty!");
+		return -1;
+	} else {
+		nm32f *src = (nm32f *) vbuf->data; 
+		for (int i = 0; i < 9; ++i){
+			vert->v[i] = src[i * vbuf->size + vbuf->top];
+		}	
+		vbuf->top += 1;
+		//printf("popBack: ");
+		//printVertexBuf(vbuf, sizeof(VertexBuf)/sizeof(nm32f));
+		return 0;
+	}
+}
+
 
 static int isFull(Stack *st)
 {
@@ -119,8 +215,8 @@ static int pushBack(Stack *st, void *item, int itemSize)
 		st->top -= 1;
 		void *dst = (void *) ((int) st->data + st->top * itemSize); 
 		memcpy(dst, item, itemSize);
-		printf("pushBack: ");
-		printStack(st, sizeof(Vertices)/sizeof(int));
+		//printf("pushBack: ");
+		//printStack(st, sizeof(Vertices)/sizeof(int));
 		return 0;
 	}
 }
@@ -138,8 +234,8 @@ static int pushFront(Stack *st, void *item, int itemSize)
 		st->front += 1;
 		void *dst = (void *) ((int) st->data + st->front * itemSize); 
 		memcpy(dst, item, itemSize);
-		printf("pushFront: ");
-		printStack(st, sizeof(Vertices)/sizeof(int));
+		//printf("pushFront: ");
+		//printStack(st, sizeof(Vertices)/sizeof(int));
 		return 0;
 	}
 }
@@ -157,9 +253,9 @@ static int popBack(Stack *st, void *item, int itemSize)
 		void *src = (void *) ((int) st->data + st->top * itemSize); 
 		memcpy(item, src, itemSize);
 		st->top += 1;
-		printf("Item size is %i \n\r", itemSize);
-		printf("popBack: ");
-		printStack(st, sizeof(Vertices)/sizeof(int));
+		//printf("Item size is %i \n\r", itemSize);
+		//printf("popBack: ");
+		//printStack(st, sizeof(Vertices)/sizeof(int));
 		return 0;
 	}
 }
@@ -176,8 +272,24 @@ static void printStack(Stack *st, int itemSize)
 #endif
 }
 
+static void printVertexBuf(VertexBuf *vbuf, int itemSize)
+{
+#if 1 
+	nm32f *data = (nm32f *) vbuf->data;
+	printf(" (free %i it):\n\r", vBufSpace(vbuf));
+	for (int i = 0; i < 9; ++i){
+		for (int j = 0; j < vbuf->size; ++j){
+			printf("%3.2f ", data[i * vbuf->size + j]);
+		}
+		puts("");
+	}
+	puts("");
+#endif
+}
+
 //int triangulateOneTriangle(const Triangle &tr, nm32f xMax, nm32f yMax, int trLimit, std::vector<Triangle>& trVec);
-int triangulateOneTriangle(const Triangle& tr, nm32f xMax, nm32f yMax, void *dstVertexBuf, void *dstColorBuf, int bufSize);
+//int triangulateOneTriangle(const Triangle& tr, nm32f xMax, nm32f yMax, void *dstVertexBuf, void *dstColorBuf, int bufSize);
+int triangulateOneTriangle(const Triangle& tr, nm32f xMax, nm32f yMax, VertexBuf *verticesStack, void *dstColorBuf, int bufSize);
 int triangulate(const nm32f *srcVertex, const v4nm32f *srcColor, int srcCount, int maxWidth, int maxHeight, int maxDstSize, nm32f *dstVertex, v4nm32f *dstColor, int *srcTreatedCount);
 
 #endif //__SERVICE_H__

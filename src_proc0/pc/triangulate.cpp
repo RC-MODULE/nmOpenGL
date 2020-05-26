@@ -40,7 +40,9 @@ int triangulate(const nm32f *srcVertex,
 	int currentDstSize = 0;
 
 	int i = 0; // make it local to assign it to srcTreatedCount
+	VertexBuf verticesStack = createVertexBuf((void *) dstVertex, maxDstSize);
 	for (i = 0; i < srcCount; ++i) {
+		//puts("Get triangle");
 		// Get the triangle from the source
 		Point a;
 		Point b;
@@ -66,7 +68,7 @@ int triangulate(const nm32f *srcVertex,
 		int res = triangulateOneTriangle(tr, 
 										(nm32f) maxWidth, 
 										(nm32f) maxHeight, 
-										(void *) &dstVertex[3* currentDstSize], 
+										&verticesStack, 
 										(void *) &dstColor[3 * currentDstSize],
 										spaceLeft);
 		// If the number of result smaller triangles is too big
@@ -74,31 +76,8 @@ int triangulate(const nm32f *srcVertex,
 			// Finish triangulation
 			break;
 		} else {
-			// Copy vertexes of the result triangles to the output vertex array (dstVertex)
-			// Copy colors of the result triangles to the output color array (dstColor)
-			#if 0
-			for (size_t i = 0; i < trVec.size(); ++i) {
-				Point a = trVec[i].points[0];
-				Point b = trVec[i].points[1];
-				Point c = trVec[i].points[2];
-
-				dstVertex[currentDstSize + i] = 				 a.x;
-				dstVertex[currentDstSize + i + maxDstSize] = 	 a.y;
-				dstVertex[currentDstSize + i + 2 * maxDstSize] = a.z;
-				dstVertex[currentDstSize + i + 3 * maxDstSize] = b.x;
-				dstVertex[currentDstSize + i + 4 * maxDstSize] = b.y;
-				dstVertex[currentDstSize + i + 5 * maxDstSize] = b.z;
-				dstVertex[currentDstSize + i + 6 * maxDstSize] = c.x;
-				dstVertex[currentDstSize + i + 7 * maxDstSize] = c.y;
-				dstVertex[currentDstSize + i + 8 * maxDstSize] = c.z;
-
-				dstColor[3 * currentDstSize + 3 * i] = 		a.color;
-				dstColor[3 * currentDstSize + 3 * i + 1] = 	b.color;
-				dstColor[3 * currentDstSize + 3 * i + 2] = 	c.color;
-			}
-			#endif
 			// Increase the number of the result output triangles
-			currentDstSize += res;
+			currentDstSize = res;
 		}
 	}
 	*srcTreatedCount = i;
@@ -108,60 +87,73 @@ int triangulate(const nm32f *srcVertex,
 void printVertices(Vertices *vcs)
 {
 	printf("%f %f %f %f %f %f %f %f %f \n\r", 	
-								vcs->ax,
-								vcs->ay,
-								vcs->az,
-								vcs->bx,
-								vcs->by,
-								vcs->bz,
-								vcs->cx,
-								vcs->cy,
-								vcs->cz);
+								vcs->v[0],
+								vcs->v[1],
+								vcs->v[2],
+								vcs->v[3],
+								vcs->v[4],
+								vcs->v[5],
+								vcs->v[6],
+								vcs->v[7],
+								vcs->v[8]);
 	
 }
 
-int triangulateOneTriangle(const Triangle& tr, nm32f xMax, nm32f yMax, void *dstVertexBuf, void *dstColorBuf, int bufSize){
+// Return:
+// -1 - деление не удалось, в выходном буфере нет места
+// n - текущее количество треугольников в выходном буфере
+int triangulateOneTriangle(const Triangle& tr, nm32f xMax, nm32f yMax, VertexBuf *verticesStack, void *dstColorBuf, int bufSize)
+{
+	// ***Проверить, есть ли место в выходном массиве
+	// Хотя бы под исходный треугольник, если его делить не надо
+	int vsize = vBufSpace(verticesStack);
+	if (vsize < 1){
+			return -1;
+	} else {
+			// do nothing here, just continue
+	}
 
-	Stack verticesStack = createStack(dstVertexBuf, bufSize);
-	Stack colorsStack = createStack(dstColorBuf, bufSize);
-	Vertices trVertices = {
-							tr.points[0].x, tr.points[0].y, tr.points[0].z,
-							tr.points[1].x, tr.points[1].y, tr.points[1].z,
-							tr.points[2].x, tr.points[2].y, tr.points[2].z,
-						  };	
 	Colors trColors = {
 						tr.points[0].color, 
 						tr.points[1].color, 
 						tr.points[2].color
 					  };	
-	pushBack(&verticesStack, (void *) &trVertices, sizeof(trVertices));
+	Stack colorsStack = createStack(dstColorBuf, bufSize);
 	//pushBack(&colorsStack, (void *) &trColors, sizeof(trColors));
+
+	Vertices trVertices = {
+							tr.points[0].x, tr.points[0].y, tr.points[0].z,
+							tr.points[1].x, tr.points[1].y, tr.points[1].z,
+							tr.points[2].x, tr.points[2].y, tr.points[2].z,
+						  };	
+
+	vertexBufPushBack(verticesStack, &trVertices);
 
 	int overflow = 0; // Indicate that there is no more space in output buffer
 
-	while (!isEmpty(&verticesStack) && !overflow) {
+	while (!vBufIsEmpty(verticesStack) && !overflow) {
 		// Get the triangle out of the stack
 		Vertices curTrVertices;
 		Colors curTrColors;
-		popBack(&verticesStack, (void *) &curTrVertices, sizeof(curTrVertices));
+		vertexBufPopBack(verticesStack, &curTrVertices);
 		//popBack(&colorsStack, (void *) &curTrColors, sizeof(curTrColors));
-		puts("Pop back: ");		
-		printVertices(&curTrVertices);
+		//puts("Pop back: ");		
+		//printVertices(&curTrVertices);
 		// Create triangle from vertices and colors
 		// to pass it to the function
 		Point a;
 		Point b;
 		Point c;
 
-		a.x = curTrVertices.ax; 
-		a.y = curTrVertices.ay; 
-		a.z = curTrVertices.az; 
-		b.x = curTrVertices.bx; 
-		b.y = curTrVertices.by; 
-		b.z = curTrVertices.bz; 
-		c.x = curTrVertices.cx; 
-		c.y = curTrVertices.cy; 
-		c.z = curTrVertices.cz; 
+		a.x = curTrVertices.v[0]; 
+		a.y = curTrVertices.v[1]; 
+		a.z = curTrVertices.v[2]; 
+		b.x = curTrVertices.v[3]; 
+		b.y = curTrVertices.v[4]; 
+		b.z = curTrVertices.v[5]; 
+		c.x = curTrVertices.v[6]; 
+		c.y = curTrVertices.v[7]; 
+		c.z = curTrVertices.v[8]; 
 		a.color = curTrColors.a; 
 		b.color = curTrColors.b; 
 		c.color = curTrColors.c; 
@@ -175,7 +167,7 @@ int triangulateOneTriangle(const Triangle& tr, nm32f xMax, nm32f yMax, void *dst
 		int trIsSplitted = checkAndSplitLargestEdge(tr, xMax, yMax, trOut1, trOut2);
 		// Triangle has been splitted
 		if (trIsSplitted) {
-			if (space(&verticesStack) >= 2){
+			if (vsize >= 2){
 				Vertices trOut1Vertices = {
 											trOut1.points[0].x,
 											trOut1.points[0].y,
@@ -192,7 +184,7 @@ int triangulateOneTriangle(const Triangle& tr, nm32f xMax, nm32f yMax, void *dst
 											trOut1.points[1].color,
 											trOut1.points[2].color
 										};
-				pushBack(&verticesStack, &trOut1Vertices, sizeof(trOut1Vertices));
+				vertexBufPushBack(verticesStack, &trOut1Vertices);
 				//pushBack(&colorsStack, &trOut1Colors, sizeof(&trOut1Colors));
 
 				Vertices trOut2Vertices = {
@@ -211,14 +203,14 @@ int triangulateOneTriangle(const Triangle& tr, nm32f xMax, nm32f yMax, void *dst
 											trOut2.points[1].color,
 											trOut2.points[2].color
 										};
-				pushBack(&verticesStack, &trOut2Vertices, sizeof(trOut2Vertices));
+				vertexBufPushBack(verticesStack, &trOut2Vertices);
 				//pushBack(&colorsStack, &trOut2Colors, sizeof(&trOut2Colors));
 			} else {
 				// This triangle splitted is too big
 				// There is no space in output buffer
+				//printf("vsize = %i front = %i top = %i\n\r", vsize, verticesStack->front, verticesStack->top);
 				overflow = 1;
 			}
-			continue;
 		} else {
 			// Triangle size is OK
 			// Push the triangle to the output 
@@ -241,19 +233,22 @@ int triangulateOneTriangle(const Triangle& tr, nm32f xMax, nm32f yMax, void *dst
 										tr.points[2].color
 									};
 
-			pushFront(&verticesStack, &trVertices, sizeof(trVertices));
+			vertexBufPushFront(verticesStack, &trVertices);
 			//pushFront(&colorsStack, &trColors, sizeof(&trColors));
 		}		
 	}
 
 	// If there are no more triangles in the stack to divide
-	if (isEmpty(&verticesStack))
+	if (vBufIsEmpty(verticesStack))
 	{
 		// All output triangles are in output buffer
-		return stackSize(&verticesStack);
+		int ret = vBufSize(verticesStack);
+		//printf("Return %i\n\r", ret);
+		return ret; 
 	} else {
 		// 'While' is finished because there are no more free space
 		// for the triangles
+		//puts("Overflow");
 		return -1;
 	}
 }
