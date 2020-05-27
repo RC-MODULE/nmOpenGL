@@ -128,8 +128,10 @@ begin ".text_demo3d"
 	//write mulC to matrix
 	repNHeightStart: label;
 	gr5 = [ar2++]		with gr3 = false;
-	[matr1+6] = gr5		with gr3++;
-	[matr1+9] = gr5		with gr3 <<= 6; //!ВАЖНО - величина gr3 равна размеру паттерна в int
+	[matr+10] = gr5		with gr3++;
+	[matr+15] = gr5		with gr5 <<= 16;
+	[matr+12] = gr5		with gr3 <<= 6; //!ВАЖНО - величина gr3 равна размеру паттерна в int;
+	[matr+17] = gr5;
 	
 	ar5 = gr0	with gr0+=gr3;	//Pattern
 	

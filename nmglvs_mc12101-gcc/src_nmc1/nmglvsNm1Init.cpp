@@ -18,10 +18,8 @@ SECTION(".data_imu3")	int pool1[SIZE_BANK];
 SECTION(".data_imu2")	int segImage[WIDTH_SEG * HEIGHT_SEG];
 SECTION(".data_imu2")	int segZBuff[WIDTH_SEG * HEIGHT_SEG];
 
-SECTION(".data_imu0") nm32s offsetTrX[NMGL_SIZE];
-SECTION(".data_imu0") nm32s offsetTrY[NMGL_SIZE];
-SECTION(".data_imu0") nm32s widths[NMGL_SIZE];
-SECTION(".data_imu0") nm32s heights[NMGL_SIZE];
+SECTION(".data_imu0") Vector2 ptrnInnPoints[NMGL_SIZE];
+SECTION(".data_imu0") Size ptrnSizes[NMGL_SIZE];
 SECTION(".data_shmem1") nm32s valuesZ[NMGL_SIZE];
 SECTION(".data_shmem1") nm32s valuesC[NMGL_SIZE];
 
@@ -104,7 +102,7 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 	cntxt.buffer1 = pool1;
 
 	for (int j = 0; j < SMALL_SIZE; j++) {
-		int off = j * WIDTH_PTRN*HEIGHT_PTRN / 16;
+		int off = j * sizeof32(Pattern);
 		cntxt.ppPtrns1_2s[j] = (Pattern*)nmppsAddr_32s((nm32s*)pool0, off);
 		cntxt.ppPtrns2_2s[j] = (Pattern*)nmppsAddr_32s((nm32s*)pool1, off);
 		cntxt.ppPtrnsCombined_2s[j] = cntxt.polyImgTmp + j;
@@ -113,10 +111,8 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 	//sync3
 	halHostSync((int)cntxt.imagesData);
 
-	cntxt.offsetTrX = offsetTrX;
-	cntxt.offsetTrY = offsetTrY;
-	cntxt.widths = widths;
-	cntxt.heights = heights;
+	cntxt.ptrnInnPoints = ptrnInnPoints;
+	cntxt.ptrnSizes = ptrnSizes;
 	cntxt.valuesZ = valuesZ;
 	cntxt.valuesC = valuesC;
 

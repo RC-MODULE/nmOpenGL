@@ -24,6 +24,16 @@ inline void copyVec(const void* src, void* dst, size_t size) {
 	nmblas_scopy(size * sizeof32(T), (float*)src, 1, (float*)dst, 1);
 }
 
+/* функция nmglDrawArrays является функцией со статическим конвеером.
+Значения переданные из массивов, которые задаются с помощью функций 
+nmglVertexPointer, nmglNormalPointer, nmglColorPointer
+проходят следующие этапы.
+
+							Видовая
+							матрица
+Координаты вершин, нормалей ---------> Видовые координаты
+*/
+
 SECTION(".text_nmgl")
 void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 	if (cntxt.vertexArray.enabled == NMGL_FALSE) {

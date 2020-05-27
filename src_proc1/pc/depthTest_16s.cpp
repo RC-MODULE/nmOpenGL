@@ -45,7 +45,7 @@ extern "C" {
 extern "C" {
 							
 	
-	void depthTest_16s(nm16s** pROI,
+	void depthTest16(nm16s** pROI,
 		int imageStride, 
 		nm16s* depthTrians, 
 		nm16s* dstMask,  

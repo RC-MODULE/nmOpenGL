@@ -1,15 +1,15 @@
 
 //void depthFunc_rw(nm16s** pROI, int imageStride, nm16s* pTriangles, nm16s* pDstSub  int* pTriangsHeight, int* pTriangsWidth, int count);
 
-extern _depthTestCore_Lt_rw: label;
+extern _depthTestCore16_Lt_rw: label;
 
 data ".data_demo3d"
-	global _currentDepthTest: word = _depthTestCore_Lt_rw;
+	global _currentDepthTest16: word = _depthTestCore16_Lt_rw;
 end ".data_demo3d";
 
 begin ".text_demo3d"
-global _depthTest_32s: label;
-<_depthTest_32s>
+global _depthTest16: label;
+<_depthTest16>
 .branch;
 	ar5 = ar7-2;
 	push ar0,gr0;
@@ -33,8 +33,8 @@ global _depthTest_32s: label;
 	startProg: label;
 	gr7 = [ar3++];		//gr7 = width
 	gr5 = [ar3++];		//height
-	ar0 = [ar2++]	with	gr7 >>= 1;	//addr in Img
-	ar5 = [_currentDepthTest];
+	ar0 = [ar2++]	with	gr7 >>= 2;	//addr in Img
+	ar5 = [_currentDepthTest16];
 	delayed call ar5;
 		with gr6 = gr7<<1;
 		with gr1 = gr6;

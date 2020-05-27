@@ -4,10 +4,6 @@
 #include <nmpp.h>
 #include <stdio.h>
 
-
-SECTION(".data_imu0") Vector2 ptrnInnPoints[NMGL_SIZE];
-SECTION(".data_imu0") Size ptrnSizes[NMGL_SIZE];
-
 SECTION(".text_demo3d") void drawTriangles(NMGL_Context_NM1* context) {
 	PolygonsConnector connector(context->polygonsData);
 	Polygons* poly = connector.ptrTail();
@@ -18,8 +14,6 @@ SECTION(".text_demo3d") void drawTriangles(NMGL_Context_NM1* context) {
 	int countTrangles = poly->count;
 
 	msdWaitDma(0);
-	nmppsMerge_32s(context->offsetTrX, context->offsetTrY, (nm32s*)ptrnInnPoints, countTrangles);
-	nmppsMerge_32s(context->widths, context->heights, (nm32s*)ptrnSizes, countTrangles);
 
 	int point = 0;
 
@@ -49,8 +43,8 @@ SECTION(".text_demo3d") void drawTriangles(NMGL_Context_NM1* context) {
 		if (context->depthBuffer.enabled == NMGL_FALSE) {
 			mMulCVxN_2s32s(
 				context->polyImgTmp,
-				ptrnInnPoints + point,
-				ptrnSizes + point,
+				context->ptrnInnPoints + point,
+				context->ptrnSizes + point,
 				context->minusOne,
 				zMaskBuffer,
 				localSize);
@@ -59,8 +53,8 @@ SECTION(".text_demo3d") void drawTriangles(NMGL_Context_NM1* context) {
 			//умножение бинарных масок на Z
 			mMulCVxN_2s32s(
 				context->polyImgTmp,
-				ptrnInnPoints + point,
-				ptrnSizes + point,
+				context->ptrnInnPoints + point,
+				context->ptrnSizes + point,
 				context->valuesZ + point,
 				mulZ,
 				localSize);
@@ -69,19 +63,19 @@ SECTION(".text_demo3d") void drawTriangles(NMGL_Context_NM1* context) {
 			//mulZ теперь хранит z-треугольники
 
 			//функция теста глубины
-			depthTest_32s((nm32s**)(context->zBuffPoints + point), 
+			depthTest32((nm32s**)(context->zBuffPoints + point),
 				WIDTH_SEG,
 				(nm32s*)mulZ,
 				(nm32s*)zMaskBuffer,
-				ptrnSizes + point, 
+				context->ptrnSizes + point,
 				localSize);
 		}
 
 		//color v4nm8s in imgOffset
 		mMulCVxN_2s_RGB8888(
 			context->polyImgTmp,
-			ptrnInnPoints + point,
-			ptrnSizes + point,
+			context->ptrnInnPoints + point,
+			context->ptrnSizes + point,
 			(v4nm8s*)(context->valuesC + point),
 			mulC,
 			localSize);
@@ -93,7 +87,7 @@ SECTION(".text_demo3d") void drawTriangles(NMGL_Context_NM1* context) {
 		mMaskVxN_32s(mulC,
 			zMaskBuffer,
 			(nm32s**)(context->imagePoints + point), WIDTH_SEG,
-			ptrnSizes + point,
+			context->ptrnSizes + point,
 			localSize);
 
 		countTrangles -= SMALL_SIZE;

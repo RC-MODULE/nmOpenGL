@@ -9,10 +9,11 @@ extern "C" {
 		Size* ptrnSizes,
 		int* valueC, 
 		nm16s* pDstTreangle,  
-		int count){
+		int count)
+	{
 		long long int temp;
 		short* dst = pDstTreangle;
-		for(int c=0;c<count;c++){
+		for(int c = 0; c < count; c++){
 			long long int* src = (nm64s*) patterns[c];
 			src += ptrnPoints[c].y;
 			int x0;
