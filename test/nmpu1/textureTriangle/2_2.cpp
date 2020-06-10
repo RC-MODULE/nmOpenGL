@@ -12,18 +12,21 @@ extern "C"
 {
 #endif
 
-SECTION(TEXTURE_SECTION) unsigned char pixels_2_2[12] = {  
+SECTION(TEXTURE_SECTION)
+unsigned char pixels_2_2[12] = {  
 0xff, 0xff, 0xff, 0x00, 0x00, 0x00, 
-0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 
+0x00, 0x00, 0x00, 0x00, 0x00, 0xff, 
 };  
 
-SECTION(TEXTURE_SECTION) image_t image_2_2 = { 
+SECTION(TEXTURE_SECTION)
+image_t image_2_2 = { 
     2,
     2,
     RGB,
     UNSIGNED_BYTE,
     pixels_2_2
 };  
+
 
 
 #ifdef __cplusplus
