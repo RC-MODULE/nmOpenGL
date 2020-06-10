@@ -189,20 +189,20 @@ int main ()
 
     //setup triangles parameters
     float x0[TRIANGLE_AMOUNT] = {0.0f, 0.0f};
-    float y0[TRIANGLE_AMOUNT] = {0.0f, 0.0f};
-    float x1[TRIANGLE_AMOUNT] = {0.0f, 0.0f};
-    float y1[TRIANGLE_AMOUNT] = {0.0f, 0.0f};
-    float x2[TRIANGLE_AMOUNT] = {0.0f, 0.0f};
-    float y2[TRIANGLE_AMOUNT] = {0.0f, 0.0f};
+    float y0[TRIANGLE_AMOUNT] = {10.0f, 10.0f};
+    float x1[TRIANGLE_AMOUNT] = {15.0f, 15.0f};
+    float y1[TRIANGLE_AMOUNT] = {30.0f, 30.0f};
+    float x2[TRIANGLE_AMOUNT] = {26.0f, 26.0f};
+    float y2[TRIANGLE_AMOUNT] = {5.0f, 5.0f};
     
     float s0[TRIANGLE_AMOUNT] = {0.0f, 0.0f};
     float t0[TRIANGLE_AMOUNT] = {0.0f, 0.0f};
-    float s1[TRIANGLE_AMOUNT] = {0.0f, 0.0f};
-    float t1[TRIANGLE_AMOUNT] = {0.0f, 0.0f};
-    float s2[TRIANGLE_AMOUNT] = {0.0f, 0.0f};
+    float s1[TRIANGLE_AMOUNT] = {0.5f, 0.5f};
+    float t1[TRIANGLE_AMOUNT] = {0.5f, 0.5f};
+    float s2[TRIANGLE_AMOUNT] = {0.5f, 0.5f};
     float t2[TRIANGLE_AMOUNT] = {0.0f, 0.0f};
    
-    float z[TRIANGLE_AMOUNT] = {0.0f, 0.0f};
+    float z[TRIANGLE_AMOUNT] = {1.0f, 1.0f}; //minus (z in camera space)
     
     triangles.x0 = x0;
     triangles.y0 = y0;
