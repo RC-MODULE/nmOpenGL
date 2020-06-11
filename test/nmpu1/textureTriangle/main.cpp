@@ -242,6 +242,14 @@ int main ()
     boundTexObject->texWrapS = NMGL_REPEAT; // default REPEAT
     boundTexObject->texWrapT = NMGL_REPEAT;// default REPEAT
 
+    cntxt.texState.texUnits[activeTexUnitIndex].texFunctionName = NMGL_REPLACE; //default = NMGL_MODULATE
+    
+    //default texEnvColor = (0.0f, 0.0f, 0.0f, 0.0f)
+    cntxt.texState.texUnits[activeTexUnitIndex].texEnvColor[0] = 0.0f;
+    cntxt.texState.texUnits[activeTexUnitIndex].texEnvColor[1] = 0.0f;
+    cntxt.texState.texUnits[activeTexUnitIndex].texEnvColor[2] = 0.0f;
+    cntxt.texState.texUnits[activeTexUnitIndex].texEnvColor[3] = 0.0f;
+
     // printPattern(patterns, pSrcTriangle, TRIANGLE_AMOUNT);
     
     //fill triangles with colors

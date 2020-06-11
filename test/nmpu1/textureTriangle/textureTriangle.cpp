@@ -20,7 +20,7 @@ extern NMGL_Context_NM1 cntxt;
 // typedef enum { NEAREST, LINEAR, NEAREST_MIPMAP_NEAREST, NEAREST_MIPMAP_LINEAR, LINEAR_MIPMAP_NEAREST, LINEAR_MIPMAP_LINEAR } filter_mode_t;
 // typedef enum { REPEAT, CLAMP_TO_EDGE } wrap_mode_t;
 typedef enum { MINIFICATION, MAGNIFICATION } lod_t;
-typedef enum { MODULATE, REPLACE, DECAL, BLEND, ADD} texEnv_mode_t;
+// typedef enum { MODULATE, REPLACE, DECAL, BLEND, ADD} texEnv_mode_t;
 
 typedef struct Vec2f {
     float x;
@@ -51,11 +51,6 @@ int textureBaseLevel = 0;
 int textureMaxLevel = 1000;
 color borderColor;
 
-//texEnvColor consists of rgb + alpha
-Vec3f texEnvColor;
-float texEnvColorAlpha;
-
-NMGLint texEnvMode = NMGL_REPLACE; //default = NMGL_MODULATE
 NMGLint texBaseInternalFormat = NMGL_RGB; //At now only RGB texture internal format is supported
 
 int max (int a, int b)
@@ -307,10 +302,13 @@ void textureTriangle(Pattern* patterns,
 	pixelValue.g = 0;
 	pixelValue.b = 0;
     
-	texEnvColor.x = 0.0f;
-	texEnvColor.y = 0.0f;
-	texEnvColor.y = 0.0f;
-	texEnvColorAlpha = 0.0f;
+    //texEnvColor consists of rgb + alpha
+    Vec3f texEnvColor;
+    float texEnvColorAlpha;
+	texEnvColor.x = cntxt.texState.texUnits[activeTexUnitIndex].texEnvColor[0];
+	texEnvColor.y = cntxt.texState.texUnits[activeTexUnitIndex].texEnvColor[1];
+	texEnvColor.y = cntxt.texState.texUnits[activeTexUnitIndex].texEnvColor[2];
+	texEnvColorAlpha = cntxt.texState.texUnits[activeTexUnitIndex].texEnvColor[3];
 
 	//primitive color (glColor3f)
 	Vec3f vertexRGB;
@@ -325,7 +323,7 @@ void textureTriangle(Pattern* patterns,
     NMGLint textureWrapS = boundTexObject->texWrapS; // default NMGL_REPEAT
     NMGLint textureWrapT = boundTexObject->texWrapT; // default NMGL_REPEAT
 
-
+    NMGLint texEnvMode = cntxt.texState.texUnits[activeTexUnitIndex].texFunctionName; //default = NMGL_MODULATE
     
 	//Calculate some parameters from OpenGL 1.3 spec
 	int n = log2(boundTexObject->texImages2D[0].width);
