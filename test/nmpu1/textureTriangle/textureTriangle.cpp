@@ -17,8 +17,8 @@ extern NMGL_Context_NM1 cntxt;
 #define  TEXTURE_BASE_LEVEL 0
 #define  TEXTURE_MAX_LEVEL  1000	
 
-typedef enum { NEAREST, LINEAR, NEAREST_MIPMAP_NEAREST, NEAREST_MIPMAP_LINEAR, LINEAR_MIPMAP_NEAREST, LINEAR_MIPMAP_LINEAR } filter_mode_t;
-typedef enum { REPEAT, CLAMP_TO_EDGE } wrap_mode_t;
+// typedef enum { NEAREST, LINEAR, NEAREST_MIPMAP_NEAREST, NEAREST_MIPMAP_LINEAR, LINEAR_MIPMAP_NEAREST, LINEAR_MIPMAP_LINEAR } filter_mode_t;
+// typedef enum { REPEAT, CLAMP_TO_EDGE } wrap_mode_t;
 typedef enum { MINIFICATION, MAGNIFICATION } lod_t;
 typedef enum { MODULATE, REPLACE, DECAL, BLEND, ADD} texEnv_mode_t;
 
@@ -40,10 +40,10 @@ typedef struct color {
     unsigned char a;
 } color;
 
-filter_mode_t textureMinFilter = NEAREST; //default NEAREST_MIPMAP_LINEAR
-filter_mode_t textureMagFilter = NEAREST; //default LINEAR
-wrap_mode_t textureWrapS = REPEAT; // default REPEAT
-wrap_mode_t textureWrapT = REPEAT; // default REPEAT
+// filter_mode_t textureMinFilter = NEAREST; //default NEAREST_MIPMAP_LINEAR
+// filter_mode_t textureMagFilter = NEAREST; //default LINEAR
+// wrap_mode_t textureWrapS = REPEAT; // default REPEAT
+// wrap_mode_t textureWrapT = REPEAT; // default REPEAT
 float c = 0.0; // minification vs. magnification switchover point, look glspec 1.3, chapter 3.8.8
 lod_t minMagFlag = MINIFICATION;
 unsigned int borderWidth = 0; //TEXTURE BORDER - texture image's specified border width
@@ -136,7 +136,7 @@ int getPixelValue(unsigned int x, unsigned int y, TexImage2D image, color * pixe
 }
 
 
-float wrapCoord (wrap_mode_t textureWrapMode, int texAxisSize, float texCoord)
+float wrapCoord (NMGLint textureWrapMode, int texAxisSize, float texCoord)
 {
 	float min_coord_val = 1 / (float)texAxisSize*0.5; //CLAMP_TO_EDGE
 	//float min_s = 0.0f; //CLAMP
@@ -145,9 +145,9 @@ float wrapCoord (wrap_mode_t textureWrapMode, int texAxisSize, float texCoord)
 	float resTexCoord = 0.0f;
 
 	//Apply texture Wrap modes
-	if (textureWrapMode == REPEAT)
+	if (textureWrapMode == NMGL_REPEAT)
 		resTexCoord = texCoord - floor(texCoord);
-	else if (textureWrapMode == CLAMP_TO_EDGE)
+	else if (textureWrapMode == NMGL_CLAMP_TO_EDGE)
 	{
 		if (texCoord > max_coord_val) resTexCoord = max_coord_val;
 		else if (texCoord < min_coord_val) resTexCoord = min_coord_val;
@@ -163,7 +163,7 @@ float wrapCoord (wrap_mode_t textureWrapMode, int texAxisSize, float texCoord)
 	return resTexCoord;
 }
 
-color getPixelLinear(Vec2f st, wrap_mode_t textureWrapS, wrap_mode_t textureWrapT, TexImage2D texture)
+color getPixelLinear(Vec2f st, NMGLint textureWrapS, NMGLint textureWrapT, TexImage2D texture)
 {
 
 	unsigned int i0 = 0;
@@ -178,12 +178,12 @@ color getPixelLinear(Vec2f st, wrap_mode_t textureWrapS, wrap_mode_t textureWrap
 	float u_floor = floor(u - 0.5f);
 	float v_floor = floor(v - 0.5f);
 
-	if (textureWrapS == REPEAT)
+	if (textureWrapS == NMGL_REPEAT)
 		i0 = fmod(u_floor, texture.width);
 	else
 		i0 = u_floor;
 
-	if (textureWrapT == REPEAT)
+	if (textureWrapT == NMGL_REPEAT)
 		j0 = fmod(v_floor, texture.height);
 	else
 		j0 = v_floor;
@@ -191,12 +191,12 @@ color getPixelLinear(Vec2f st, wrap_mode_t textureWrapS, wrap_mode_t textureWrap
 	float i0plus1 = i0 + 1;
 	float j0plus1 = j0 + 1;
 
-	if (textureWrapS == REPEAT)
+	if (textureWrapS == NMGL_REPEAT)
 		i1 = fmod(i0plus1, texture.width);
 	else
 		i1 = i0plus1;
 
-	if (textureWrapT == REPEAT)
+	if (textureWrapT == NMGL_REPEAT)
 		j1 = fmod(j0plus1, texture.height);
 	else
 		j1 = j0plus1;
@@ -318,6 +318,13 @@ void textureTriangle(Pattern* patterns,
 	vertexRGB.y = 1.0;
 	vertexRGB.z = 1.0;
 	float vertexAlpha = 1.0;
+
+
+    NMGLint textureMinFilter = boundTexObject->texMinFilter; //default NEAREST_MIPMAP_LINEAR
+    NMGLint textureMagFilter = boundTexObject->texMagFilter; //default LINEAR
+    NMGLint textureWrapS = boundTexObject->texWrapS; // default NMGL_REPEAT
+    NMGLint textureWrapT = boundTexObject->texWrapT; // default NMGL_REPEAT
+
 
     
 	//Calculate some parameters from OpenGL 1.3 spec
@@ -495,7 +502,7 @@ void textureTriangle(Pattern* patterns,
 
 /* Calculate minification vs. magnification switchover point */
 
-						if ((textureMagFilter == LINEAR) && ((textureMinFilter == NEAREST_MIPMAP_NEAREST) || (textureMinFilter == NEAREST_MIPMAP_LINEAR)))
+						if ((textureMagFilter == NMGL_LINEAR) && ((textureMinFilter == NMGL_NEAREST_MIPMAP_NEAREST) || (textureMinFilter == NMGL_NEAREST_MIPMAP_LINEAR)))
 							c = 0.5f;
 						else
 							c = 0.0f;
@@ -559,8 +566,8 @@ void textureTriangle(Pattern* patterns,
 						unsigned int d2 = 0;
 
 
-						if (((minMagFlag == MINIFICATION) && (textureMinFilter == NEAREST)) ||
-							((minMagFlag == MAGNIFICATION) && (textureMagFilter == NEAREST)))
+						if (((minMagFlag == MINIFICATION) && (textureMinFilter == NMGL_NEAREST)) ||
+							((minMagFlag == MAGNIFICATION) && (textureMagFilter == NMGL_NEAREST)))
 						{
 
 							//Not mipmapping. So wrap texture coordinates for texture of level 0 
@@ -569,8 +576,8 @@ void textureTriangle(Pattern* patterns,
 
 							pixelValue = getPixelNearest(st, boundTexObject->texImages2D[0]);
 						}
-						else if (((minMagFlag == MINIFICATION) && (textureMinFilter == LINEAR)) ||
-							((minMagFlag == MAGNIFICATION) && (textureMagFilter == LINEAR)))
+						else if (((minMagFlag == MINIFICATION) && (textureMinFilter == NMGL_LINEAR)) ||
+							((minMagFlag == MAGNIFICATION) && (textureMagFilter == NMGL_LINEAR)))
 						{
 
 							//Not mipmapping. So wrap texture coordinates for texture of level 0 
@@ -579,7 +586,7 @@ void textureTriangle(Pattern* patterns,
 
 							pixelValue = getPixelLinear(st, textureWrapS, textureWrapT, boundTexObject->texImages2D[0]);
 						}
-						else if ((minMagFlag == MINIFICATION) && ((textureMinFilter == NEAREST_MIPMAP_NEAREST) || (textureMinFilter == LINEAR_MIPMAP_NEAREST)))
+						else if ((minMagFlag == MINIFICATION) && ((textureMinFilter == NMGL_NEAREST_MIPMAP_NEAREST) || (textureMinFilter == NMGL_LINEAR_MIPMAP_NEAREST)))
 						{
 							d = 0;
 							if (lod < 0.5f || (equalf(lod,0.5f) == 1))
@@ -590,7 +597,7 @@ void textureTriangle(Pattern* patterns,
 								d = q;
 							else
 							{
-								printf("mipmap:NEAREST_MIPMAP_NEAREST: d is undefined\n");
+								printf("mipmap:NMGL_NEAREST_MIPMAP_NEAREST: d is undefined\n");
 								getchar();
 							}
 
@@ -598,9 +605,9 @@ void textureTriangle(Pattern* patterns,
 							st.x = wrapCoord(textureWrapS,boundTexObject->texImages2D[d].width, st.x);
 							st.y = wrapCoord(textureWrapT,boundTexObject->texImages2D[d].height, st.y);
 
-							if (textureMinFilter == NEAREST_MIPMAP_NEAREST)
+							if (textureMinFilter == NMGL_NEAREST_MIPMAP_NEAREST)
 								pixelValue = getPixelNearest(st, boundTexObject->texImages2D[d]);
-							else if (textureMinFilter == LINEAR_MIPMAP_NEAREST)
+							else if (textureMinFilter == NMGL_LINEAR_MIPMAP_NEAREST)
 								pixelValue = getPixelLinear(st, textureWrapS, textureWrapT, boundTexObject->texImages2D[d]);
 							else
 							{
@@ -609,7 +616,7 @@ void textureTriangle(Pattern* patterns,
 							}
 
 						}
-						else if ((minMagFlag == MINIFICATION) && ((textureMinFilter == NEAREST_MIPMAP_LINEAR) || (textureMinFilter == LINEAR_MIPMAP_LINEAR)))
+						else if ((minMagFlag == MINIFICATION) && ((textureMinFilter == NMGL_NEAREST_MIPMAP_LINEAR) || (textureMinFilter == NMGL_LINEAR_MIPMAP_LINEAR)))
 						{
 							d1 = 0;
 							d2 = 0;
@@ -638,12 +645,12 @@ void textureTriangle(Pattern* patterns,
 							st2.x = wrapCoord(textureWrapS,boundTexObject->texImages2D[d2].width,st.x);
 							st2.y = wrapCoord(textureWrapT,boundTexObject->texImages2D[d2].height,st.y);
 
-							if (textureMinFilter == NEAREST_MIPMAP_LINEAR)
+							if (textureMinFilter == NMGL_NEAREST_MIPMAP_LINEAR)
 							{
 								t1 = getPixelNearest(st1, boundTexObject->texImages2D[d1]);
 								t2 = getPixelNearest(st2, boundTexObject->texImages2D[d2]);
 							}
-							else if (textureMinFilter == LINEAR_MIPMAP_LINEAR)
+							else if (textureMinFilter == NMGL_LINEAR_MIPMAP_LINEAR)
 							{
 								t1 = getPixelLinear(st1, textureWrapS, textureWrapT, boundTexObject->texImages2D[d1]);
 								t2 = getPixelLinear(st2, textureWrapS, textureWrapT, boundTexObject->texImages2D[d2]);

@@ -236,6 +236,11 @@ int main ()
     {
        imageToTexImage(&textures[i], &boundTexObject->texImages2D[i]);
     }
+    
+    boundTexObject->texMinFilter = NMGL_NEAREST; //default NEAREST_MIPMAP_LINEAR
+    boundTexObject->texMagFilter = NMGL_NEAREST; //default LINEAR
+    boundTexObject->texWrapS = NMGL_REPEAT; // default REPEAT
+    boundTexObject->texWrapT = NMGL_REPEAT;// default REPEAT
 
     // printPattern(patterns, pSrcTriangle, TRIANGLE_AMOUNT);
     
