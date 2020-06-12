@@ -51,8 +51,6 @@ int textureBaseLevel = 0;
 int textureMaxLevel = 1000;
 color borderColor;
 
-NMGLint texBaseInternalFormat = NMGL_RGB; //At now only RGB texture internal format is supported
-
 int max (int a, int b)
 {
     return (b > a) ? b : a;
@@ -101,6 +99,12 @@ int getPixelValue(unsigned int x, unsigned int y, TexImage2D image, color * pixe
         bitsInPixel = 24;
     else if (format == NMGL_RGBA)
         bitsInPixel = 32;
+    else if (format == NMGL_ALPHA)
+        bitsInPixel = 8;
+    else if (format == NMGL_LUMINANCE)
+        bitsInPixel = 8;
+    else if (format == NMGL_LUMINANCE_ALPHA)
+      bitsInPixel = 16;
 
     bytesInPixel = bitsInPixel / 8;
     rowDataSize = ceil((width*bytesInPixel) / 4.0f) * 4; //width in bytes aligned by 4 bytes
@@ -113,6 +117,7 @@ int getPixelValue(unsigned int x, unsigned int y, TexImage2D image, color * pixe
         pixelValue->r = ((unsigned char*)pixels)[y * (width * 3 + rowPadding) + x * 3];
         pixelValue->g = ((unsigned char*)pixels)[y * (width * 3 + rowPadding) + x * 3 + 1];
         pixelValue->b = ((unsigned char*)pixels)[y * (width * 3 + rowPadding) + x * 3 + 2];
+	pixelValue->a = 255;
     }
     else if (((format == NMGL_RGBA) && (type == NMGL_UNSIGNED_BYTE)))
     {
@@ -122,6 +127,33 @@ int getPixelValue(unsigned int x, unsigned int y, TexImage2D image, color * pixe
         pixelValue->g = ((unsigned char*)pixels)[(y * width + x) * 4 + 1];
         pixelValue->b = ((unsigned char*)pixels)[(y * width + x) * 4 + 2];
         pixelValue->a = ((unsigned char*)pixels)[(y * width + x) * 4 + 3];
+    }
+    else if ((format == NMGL_ALPHA) && (type == NMGL_UNSIGNED_BYTE))
+    {
+        //Чтение производится из массива данных изображения bmp с учетом наличия в нём 
+        //дополнительных байтов для выравнивания по границе 4 байтов
+        pixelValue->r = 0;
+        pixelValue->g = 0;
+        pixelValue->b = 0;
+        pixelValue->a = ((unsigned char*)pixels)[y * (width + rowPadding) + x];
+    }
+    else if ((format == NMGL_LUMINANCE) && (type == NMGL_UNSIGNED_BYTE))
+    {
+        //Чтение производится из массива данных изображения bmp с учетом наличия в нём 
+        //дополнительных байтов для выравнивания по границе 4 байтов
+        pixelValue->r = ((unsigned char*)pixels)[y * (width + rowPadding) + x];
+        pixelValue->g = ((unsigned char*)pixels)[y * (width + rowPadding) + x];
+        pixelValue->b = ((unsigned char*)pixels)[y * (width + rowPadding) + x];
+        pixelValue->a = 255;
+    }
+    else if ((format == NMGL_LUMINANCE_ALPHA) && (type == NMGL_UNSIGNED_BYTE))
+    {
+        //Чтение производится из массива данных изображения bmp с учетом наличия в нём 
+        //дополнительных байтов для выравнивания по границе 4 байтов
+        pixelValue->r = ((unsigned char*)pixels)[y * (width * 2 + rowPadding) + x * 2];
+        pixelValue->g = ((unsigned char*)pixels)[y * (width * 2 + rowPadding) + x * 2];
+        pixelValue->b = ((unsigned char*)pixels)[y * (width * 2 + rowPadding) + x * 2];
+        pixelValue->a = ((unsigned char*)pixels)[y * (width * 2 + rowPadding) + x * 2 + 1];
     }
     else
     {
@@ -324,6 +356,8 @@ void textureTriangle(Pattern* patterns,
     NMGLint textureWrapT = boundTexObject->texWrapT; // default NMGL_REPEAT
 
     NMGLint texEnvMode = cntxt.texState.texUnits[activeTexUnitIndex].texFunctionName; //default = NMGL_MODULATE
+
+    NMGLint texBaseInternalFormat = boundTexObject->texImages2D[0].internalformat;//use level 0 texture format to select texture function
     
 	//Calculate some parameters from OpenGL 1.3 spec
 	int n = log2(boundTexObject->texImages2D[0].width);
@@ -709,12 +743,13 @@ void textureTriangle(Pattern* patterns,
 						cv.z = 0.0;
 
 						af = vertexAlpha;
-						as = 0.0; //TODO: add using alpha channel if texture has alpha-channel 
+						as = (float)pixelValue.a/255.0;  
 						ac = texEnvColorAlpha;
 						av = 0.0;
 
-						if (texBaseInternalFormat == NMGL_RGB)
+						switch (texBaseInternalFormat)
 						{
+						case NMGL_RGB:
 							switch (texEnvMode)
 							{
 								case NMGL_REPLACE:
@@ -752,14 +787,169 @@ void textureTriangle(Pattern* patterns,
 									av = af;
 									break;
 							}
+							break;
+						case NMGL_RGBA:
+							switch (texEnvMode)
+							{
+								case NMGL_REPLACE:
+									cv.x = cs.x;
+									cv.y = cs.y;
+									cv.z = cs.z;
+									av = as;
+									break;
+
+								case NMGL_MODULATE:
+									cv.x = cf.x * cs.x;
+									cv.y = cf.y * cs.y;
+									cv.z = cf.z * cs.z;
+									av = af * as;
+									break;
+
+								case NMGL_DECAL:
+								  	cv.x = cf.x * (1.0 - as) + cs.x * as;
+									cv.y = cf.y * (1.0 - as) + cs.y * as;
+									cv.z = cf.z * (1.0 - as) + cs.z * as;
+									av = af;
+									break;
+
+								case NMGL_BLEND:
+									cv.x = cf.x * (1.0 - cs.x) + cc.x * cs.x;
+									cv.y = cf.y * (1.0 - cs.y) + cc.y * cs.y;
+									cv.z = cf.z * (1.0 - cs.z) + cc.z * cs.z;
+									av = af * as;
+									break;
+
+								case NMGL_ADD:
+									cv.x = cf.x + cs.x;
+									cv.y = cf.y + cs.y;
+									cv.z = cf.z + cs.z;
+									av = af * as;
+									break;
+							}
+							break;
+
+						case NMGL_ALPHA:
+							switch (texEnvMode)
+							{
+								case NMGL_REPLACE:
+									cv.x = cf.x;
+									cv.y = cf.y;
+									cv.z = cf.z;
+									av = as;
+									break;
+
+								case NMGL_MODULATE:
+									cv.x = cf.x;
+									cv.y = cf.y;
+									cv.z = cf.z;
+									av = af * as;
+									break;
+
+								case NMGL_DECAL://undefined
+								  	cv.x = 1.0;
+									cv.y = 1.0;
+									cv.z = 1.0;
+									av = 1.0;
+									break;
+
+								case NMGL_BLEND:
+									cv.x = cf.x;
+									cv.y = cf.y;
+									cv.z = cf.z;
+									av = af * as;
+									break;
+
+								case NMGL_ADD:
+	 							    	cv.x = cf.x;
+									cv.y = cf.y;
+									cv.z = cf.z;
+									av = af * as;
+									break;
+							}
+							break;
+						case NMGL_LUMINANCE:
+							switch (texEnvMode)
+							{
+								case NMGL_REPLACE:
+									cv.x = cs.x;
+									cv.y = cs.y;
+									cv.z = cs.z;
+									av = af;
+									break;
+
+								case NMGL_MODULATE:
+									cv.x = cf.x * cs.x;
+									cv.y = cf.y * cs.y;
+									cv.z = cf.z * cs.z;
+									av = af;
+									break;
+
+								case NMGL_DECAL://undefined
+									cv.x = 1.0;
+									cv.y = 1.0;
+									cv.z = 1.0;
+									av = 1.0;
+									break;
+
+								case NMGL_BLEND:
+									cv.x = cf.x * (1.0 - cs.x) + cc.x * cs.x;
+									cv.y = cf.y * (1.0 - cs.y) + cc.y * cs.y;
+									cv.z = cf.z * (1.0 - cs.z) + cc.z * cs.z;
+									av = af;
+									break;
+
+								case NMGL_ADD:
+									cv.x = cf.x + cs.x;
+									cv.y = cf.y + cs.y;
+									cv.z = cf.z + cs.z;
+									av = af;
+									break;
+							}
+							break;
+						case NMGL_LUMINANCE_ALPHA:
+							switch (texEnvMode)
+							{
+								case NMGL_REPLACE:
+									cv.x = cs.x;
+									cv.y = cs.y;
+									cv.z = cs.z;
+									av = as;
+									break;
+
+								case NMGL_MODULATE:
+									cv.x = cf.x * cs.x;
+									cv.y = cf.y * cs.y;
+									cv.z = cf.z * cs.z;
+									av = af * as;
+									break;
+
+								case NMGL_DECAL://undefined
+									cv.x = 1.0;
+									cv.y = 1.0;
+									cv.z = 1.0;
+									av = 1.0;
+									break;
+
+								case NMGL_BLEND:
+									cv.x = cf.x * (1.0 - cs.x) + cc.x * cs.x;
+									cv.y = cf.y * (1.0 - cs.y) + cc.y * cs.y;
+									cv.z = cf.z * (1.0 - cs.z) + cc.z * cs.z;
+									av = af * as;
+									break;
+
+								case NMGL_ADD:
+									cv.x = cf.x + cs.x;
+									cv.y = cf.y + cs.y;
+									cv.z = cf.z + cs.z;
+									av = af * as;
+									break;
+							}
+							break;
+					        default:
+							printf ("Unsupported internal format\n");
+							break;
 						}
-						else
-						{
-							printf ("Only RGB texture internal format is supported.\n");
-							getchar();
-							return;
-						}
-                        
+						  
                     nm32s color = 0;
                     color = color | (((nm32s)(cv.x * 255) & 0xff) << 8);
                     color = color | (((nm32s)(cv.y * 255) & 0xff) << 16);
