@@ -94,39 +94,62 @@ int getPixelValue(unsigned int x, unsigned int y, TexImage2D image, color * pixe
     void * pixels = image.pixels;
     NMGLint format = image.internalformat;
     NMGLenum type = NMGL_UNSIGNED_BYTE;//TODO: if constant internal type then 'type' variable is unnecessary
+	int alignment = cntxt.texState.unpackAlignment;
 
-    if (format == NMGL_RGB)
-        bitsInPixel = 24;
-    else if (format == NMGL_RGBA)
-        bitsInPixel = 32;
-    else if (format == NMGL_ALPHA)
-        bitsInPixel = 8;
-    else if (format == NMGL_LUMINANCE)
-        bitsInPixel = 8;
-    else if (format == NMGL_LUMINANCE_ALPHA)
-      bitsInPixel = 16;
+#ifdef DEBUG
+		if (alignment)
+		{
+			printf("%s: wrong alignment value (%d)", __func__, alignment);
+		}
+#endif
 
-    bytesInPixel = bitsInPixel / 8;
-    rowDataSize = ceil((width*bytesInPixel) / 4.0f) * 4; //width in bytes aligned by 4 bytes
-    rowPadding = rowDataSize - width*bytesInPixel; //bytes to align
-                                                   // printf ("%d\n", rowPadding);
+	switch (format)
+	{
+		case NMGL_RGB:
+		  bytesInPixel = 3;
+		  break;
+	
+		case NMGL_RGBA:
+		  bytesInPixel = 4;
+		  break;
+	
+		case NMGL_ALPHA:
+		case NMGL_LUMINANCE:
+		  bytesInPixel = 1;
+		  break;
+	
+		case NMGL_LUMINANCE_ALPHA:
+		  bytesInPixel = 2;
+		  break;
+		  
+		default:
+		  bytesInPixel = 3;
+	
+		  break;
+	}
+
+	int rowPaddingBytes = (width * bytesInPixel) % alignment ? alignment - (width * bytesInPixel) % alignment : 0;	
+	unsigned int imageRowWidthBytes = width * bytesInPixel + rowPaddingBytes; 
+
+	unsigned int pixelPos = y * imageRowWidthBytes + x * bytesInPixel;
+
     if ((format == NMGL_RGB) && (type == NMGL_UNSIGNED_BYTE))
     {
         //Чтение производится из массива данных изображения bmp с учетом наличия в нём 
         //дополнительных байтов для выравнивания по границе 4 байтов
-        pixelValue->r = ((unsigned char*)pixels)[y * (width * 3 + rowPadding) + x * 3];
-        pixelValue->g = ((unsigned char*)pixels)[y * (width * 3 + rowPadding) + x * 3 + 1];
-        pixelValue->b = ((unsigned char*)pixels)[y * (width * 3 + rowPadding) + x * 3 + 2];
-	pixelValue->a = 255;
+        pixelValue->r = ((unsigned char*)pixels)[pixelPos];
+        pixelValue->g = ((unsigned char*)pixels)[pixelPos + 1];
+        pixelValue->b = ((unsigned char*)pixels)[pixelPos + 2];
+		pixelValue->a = 255;
     }
     else if (((format == NMGL_RGBA) && (type == NMGL_UNSIGNED_BYTE)))
     {
         //Чтение производится из массива данных изображения bmp с учетом наличия в нём 
         //дополнительных байтов для выравнивания по границе 4 байтов
-        pixelValue->r = ((unsigned char*)pixels)[(y * width + x) * 4];
-        pixelValue->g = ((unsigned char*)pixels)[(y * width + x) * 4 + 1];
-        pixelValue->b = ((unsigned char*)pixels)[(y * width + x) * 4 + 2];
-        pixelValue->a = ((unsigned char*)pixels)[(y * width + x) * 4 + 3];
+        pixelValue->r = ((unsigned char*)pixels)[pixelPos];
+        pixelValue->g = ((unsigned char*)pixels)[pixelPos + 1];
+        pixelValue->b = ((unsigned char*)pixels)[pixelPos + 2];
+        pixelValue->a = ((unsigned char*)pixels)[pixelPos + 3];
     }
     else if ((format == NMGL_ALPHA) && (type == NMGL_UNSIGNED_BYTE))
     {
@@ -135,25 +158,25 @@ int getPixelValue(unsigned int x, unsigned int y, TexImage2D image, color * pixe
         pixelValue->r = 0;
         pixelValue->g = 0;
         pixelValue->b = 0;
-        pixelValue->a = ((unsigned char*)pixels)[y * (width + rowPadding) + x];
+        pixelValue->a = ((unsigned char*)pixels)[pixelPos];
     }
     else if ((format == NMGL_LUMINANCE) && (type == NMGL_UNSIGNED_BYTE))
     {
         //Чтение производится из массива данных изображения bmp с учетом наличия в нём 
         //дополнительных байтов для выравнивания по границе 4 байтов
-        pixelValue->r = ((unsigned char*)pixels)[y * (width + rowPadding) + x];
-        pixelValue->g = ((unsigned char*)pixels)[y * (width + rowPadding) + x];
-        pixelValue->b = ((unsigned char*)pixels)[y * (width + rowPadding) + x];
+        pixelValue->r = ((unsigned char*)pixels)[pixelPos];
+        pixelValue->g = ((unsigned char*)pixels)[pixelPos];
+        pixelValue->b = ((unsigned char*)pixels)[pixelPos];
         pixelValue->a = 255;
     }
     else if ((format == NMGL_LUMINANCE_ALPHA) && (type == NMGL_UNSIGNED_BYTE))
     {
         //Чтение производится из массива данных изображения bmp с учетом наличия в нём 
         //дополнительных байтов для выравнивания по границе 4 байтов
-        pixelValue->r = ((unsigned char*)pixels)[y * (width * 2 + rowPadding) + x * 2];
-        pixelValue->g = ((unsigned char*)pixels)[y * (width * 2 + rowPadding) + x * 2];
-        pixelValue->b = ((unsigned char*)pixels)[y * (width * 2 + rowPadding) + x * 2];
-        pixelValue->a = ((unsigned char*)pixels)[y * (width * 2 + rowPadding) + x * 2 + 1];
+        pixelValue->r = ((unsigned char*)pixels)[pixelPos];
+        pixelValue->g = ((unsigned char*)pixels)[pixelPos];
+        pixelValue->b = ((unsigned char*)pixels)[pixelPos];
+        pixelValue->a = ((unsigned char*)pixels)[pixelPos + 1];
     }
     else
     {
@@ -339,7 +362,7 @@ void textureTriangle(Pattern* patterns,
     float texEnvColorAlpha;
 	texEnvColor.x = cntxt.texState.texUnits[activeTexUnitIndex].texEnvColor[0];
 	texEnvColor.y = cntxt.texState.texUnits[activeTexUnitIndex].texEnvColor[1];
-	texEnvColor.y = cntxt.texState.texUnits[activeTexUnitIndex].texEnvColor[2];
+	texEnvColor.z = cntxt.texState.texUnits[activeTexUnitIndex].texEnvColor[2];
 	texEnvColorAlpha = cntxt.texState.texUnits[activeTexUnitIndex].texEnvColor[3];
 
 	//primitive color (glColor3f)
@@ -441,7 +464,7 @@ void textureTriangle(Pattern* patterns,
 		z1 = 1 / z1;
 		z2 = 1 / z2;
 
-		// Prepare vertex attributes. Divde them by their vertex z-coordinate
+		// Prepare vertex attributes. Divde them biy their vertex z-coordinate
 		// (though we use a multiplication here because v.z = 1 / v.z)
 		//Part of calculation of perspective correct attribute values using barycentric coordinates.
         s0 *= z0;

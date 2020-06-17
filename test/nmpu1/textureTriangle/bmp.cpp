@@ -6,11 +6,6 @@
 #include "bmp.h"
 #include "image.h"
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-
 // Uncomment to create header files with textures as image_t structures.
 // #define WRITE_PIXELS_TO_FILE
 
@@ -65,50 +60,107 @@ int getColorIndex(unsigned int mask)
 		void * pixels = image.pixels;
 		format_t format = image.format;
 		type_t type = image.type;
+		int alignment = image.alignment;
+	
+		if (checkAlign(alignment))
+		{
+			printf("%s: wrong alignment value (%d)", __func__, alignment);
+			return -1;
+		}
 
-		if (format == RGB)
-			bitsInPixel = 24;
-		else if (format == RGBA)
-			bitsInPixel = 32;
 
-		bytesInPixel = bitsInPixel / 8;
-		rowDataSize = ceil((width*bytesInPixel) / 4.0f) * 4; //width in bytes aligned by 4 bytes
-		rowPadding = rowDataSize - width*bytesInPixel; //bytes to align
-													   // printf ("%d\n", rowPadding);
+		switch (format)
+		{
+			case RGB:
+			  bytesInPixel = 3;
+			  break;
+			
+			case ARGB:
+			case RGBA:
+			  bytesInPixel = 4;
+			  break;
+		
+			case ALPHA:
+			case LUMINANCE:
+			  bytesInPixel = 1;
+			  break;
+		
+			case LUMINANCE_ALPHA:
+			  bytesInPixel = 2;
+			  break;
+			  
+			default:
+			  bytesInPixel = 3;
+
+			  break;
+		}
+
+		int rowPaddingBytes = (width * bytesInPixel) % alignment ? alignment - (width * bytesInPixel) % alignment : 0;	
+		unsigned int imageRowWidthBytes = width * bytesInPixel + rowPaddingBytes; 
+
+
 		if ((format == RGB) && (type == UNSIGNED_BYTE))
 		{
 			//Чтение производится из массива данных изображения bmp с учетом наличия в нём 
 			//дополнительных байтов для выравнивания по границе 4 байтов
-			pixelValue->r = ((unsigned char*)pixels)[y * (width * 3 + rowPadding) + x * 3];
-			pixelValue->g = ((unsigned char*)pixels)[y * (width * 3 + rowPadding) + x * 3 + 1];
-			pixelValue->b = ((unsigned char*)pixels)[y * (width * 3 + rowPadding) + x * 3 + 2];
+			pixelValue->r = ((unsigned char*)pixels)[y * imageRowWidthBytes + x * bytesInPixel];
+			pixelValue->g = ((unsigned char*)pixels)[y * imageRowWidthBytes + x * bytesInPixel + 1];
+			pixelValue->b = ((unsigned char*)pixels)[y * imageRowWidthBytes + x * bytesInPixel + 2];
+			pixelValue->a = 255;
 		}
 		else if (((format == RGBA) && (type == UNSIGNED_BYTE)))
 		{
 			//Чтение производится из массива данных изображения bmp с учетом наличия в нём 
 			//дополнительных байтов для выравнивания по границе 4 байтов
-			pixelValue->r = ((unsigned char*)pixels)[(y * width + x) * 4];
-			pixelValue->g = ((unsigned char*)pixels)[(y * width + x) * 4 + 1];
-			pixelValue->b = ((unsigned char*)pixels)[(y * width + x) * 4 + 2];
-			pixelValue->a = ((unsigned char*)pixels)[(y * width + x) * 4 + 3];
+			pixelValue->r = ((unsigned char*)pixels)[y*imageRowWidthBytes + x*bytesInPixel];
+			pixelValue->g = ((unsigned char*)pixels)[y*imageRowWidthBytes + x*bytesInPixel + 1];
+			pixelValue->b = ((unsigned char*)pixels)[y*imageRowWidthBytes + x*bytesInPixel + 2];
+			pixelValue->a = ((unsigned char*)pixels)[y*imageRowWidthBytes + x*bytesInPixel + 3];
 		}
 		else if (((format == RGBA) && (type == UNSIGNED_INT_8_8_8_8)))
 		{
 			//Чтение производится из массива данных изображения bmp с учетом наличия в нём 
 			//дополнительных байтов для выравнивания по границе 4 байтов
-			pixelValue->r = (((unsigned int*)pixels)[y * width + x] & 0xFF000000) >> 24;
-			pixelValue->g = (((unsigned int*)pixels)[y * width + x] & 0x00FF0000) >> 16;
-			pixelValue->b = (((unsigned int*)pixels)[y * width + x] & 0x0000FF00) >> 8;
-			pixelValue->a = ((unsigned int*)pixels)[y * width + x] & 0x000000FF;
+			pixelValue->r = (((unsigned int*)pixels)[y * width + (rowPaddingBytes>>2) + x] & 0xFF000000) >> 24;
+			pixelValue->g = (((unsigned int*)pixels)[y * width + (rowPaddingBytes>>2) + x] & 0x00FF0000) >> 16;
+			pixelValue->b = (((unsigned int*)pixels)[y * width + (rowPaddingBytes>>2) + x] & 0x0000FF00) >> 8;
+			pixelValue->a =  ((unsigned int*)pixels)[y * width + (rowPaddingBytes>>2) + x] & 0x000000FF;
 		}
 		else if (((format == ARGB) && (type == UNSIGNED_INT_8_8_8_8)))
 		{
 			//Чтение производится из массива данных изображения bmp с учетом наличия в нём 
 			//дополнительных байтов для выравнивания по границе 4 байтов
-			pixelValue->a = (((unsigned int*)pixels)[y * width + x] & 0xFF000000) >> 24;
-			pixelValue->r = (((unsigned int*)pixels)[y * width + x] & 0x00FF0000) >> 16;
-			pixelValue->g = (((unsigned int*)pixels)[y * width + x] & 0x0000FF00) >> 8;
-			pixelValue->b = ((unsigned int*)pixels)[y * width + x] & 0x000000FF;
+			pixelValue->a = (((unsigned int*)pixels)[y * width + (rowPaddingBytes>>2) + x] & 0xFF000000) >> 24;
+			pixelValue->r = (((unsigned int*)pixels)[y * width + (rowPaddingBytes>>2) + x] & 0x00FF0000) >> 16;
+			pixelValue->g = (((unsigned int*)pixels)[y * width + (rowPaddingBytes>>2) + x] & 0x0000FF00) >> 8;
+			pixelValue->b =  ((unsigned int*)pixels)[y * width + (rowPaddingBytes>>2) + x] & 0x000000FF;
+		}
+		else if ((format == ALPHA) && (type == UNSIGNED_BYTE))
+		{
+			//Чтение производится из массива данных изображения bmp с учетом наличия в нём 
+			//дополнительных байтов для выравнивания по границе 4 байтов
+			pixelValue->r = 0;
+			pixelValue->g = 0;
+			pixelValue->b = 0;
+			pixelValue->a = ((unsigned char*)pixels)[y * imageRowWidthBytes + x * bytesInPixel];
+		}
+		else if ((format == LUMINANCE) && (type == UNSIGNED_BYTE))
+		{
+			//Чтение производится из массива данных изображения bmp с учетом наличия в нём 
+			//дополнительных байтов для выравнивания по границе 4 байтов
+			pixelValue->r = ((unsigned char*)pixels)[y * imageRowWidthBytes + x * bytesInPixel];
+			pixelValue->g = ((unsigned char*)pixels)[y * imageRowWidthBytes + x * bytesInPixel];
+			pixelValue->b = ((unsigned char*)pixels)[y * imageRowWidthBytes + x * bytesInPixel];
+			pixelValue->a = 255; 
+		}
+		else if ((format == LUMINANCE_ALPHA) && (type == UNSIGNED_BYTE))
+		{
+			//Чтение производится из массива данных изображения bmp с учетом наличия в нём 
+			//дополнительных байтов для выравнивания по границе 4 байтов
+			pixelValue->r = ((unsigned char*)pixels)[y * imageRowWidthBytes + x * bytesInPixel];
+			pixelValue->g = ((unsigned char*)pixels)[y * imageRowWidthBytes + x * bytesInPixel];
+			pixelValue->b = ((unsigned char*)pixels)[y * imageRowWidthBytes + x * bytesInPixel];
+			pixelValue->a = ((unsigned char*)pixels)[y * imageRowWidthBytes + x * bytesInPixel + 1];
 		}
 		return 0;
 	}
@@ -132,6 +184,43 @@ int getColorIndex(unsigned int mask)
 		void * pixels = image.pixels;
 		format_t format = image.format;
 		type_t type = image.type;
+		unsigned int alignment = image.alignment;
+		unsigned int bytesInPixel = 0;
+
+		if (checkAlign(alignment))
+		{
+			printf("%s: wrong alignment value (%d)", __func__, alignment);
+			return -1;
+		}
+
+		switch (format)
+		{
+			case RGB:
+			  bytesInPixel = 3;
+			  break;
+			
+			case ARGB:
+			case RGBA:
+			  bytesInPixel = 4;
+			  break;
+		
+			case ALPHA:
+			case LUMINANCE:
+			  bytesInPixel = 1;
+			  break;
+		
+			case LUMINANCE_ALPHA:
+			  bytesInPixel = 2;
+			  break;
+			  
+			default:
+			  bytesInPixel = 3;
+
+			  break;
+		}
+
+		int rowPaddingBytes = (width * bytesInPixel) % alignment ? alignment - (width * bytesInPixel) % alignment : 0;	
+		unsigned int imageRowWidthBytes = width * bytesInPixel + rowPaddingBytes; 
 
 
 		for (i = 0; i < height; i++)
@@ -156,16 +245,16 @@ int getColorIndex(unsigned int mask)
 				}
 				else if ((format == RGBA) && (type == UNSIGNED_BYTE)) //(unsigned char*)pixels[0/1/2/3/4/5/6...] = 0xR/0xG/0xB/0xA/0xR/0xG/0xB...
 				{
-					r = ((unsigned char*)pixels)[(i*width + j) * 4];
-					g = ((unsigned char*)pixels)[(i*width + j) * 4 + 1];
-					b = ((unsigned char*)pixels)[(i*width + j) * 4 + 2];
-					a = ((unsigned char*)pixels)[(i*width + j) * 4 + 3];
+					r = ((unsigned char*)pixels)[i*imageRowWidthBytes + j*bytesInPixel ];
+					g = ((unsigned char*)pixels)[i*imageRowWidthBytes + j*bytesInPixel + 1];
+					b = ((unsigned char*)pixels)[i*imageRowWidthBytes + j*bytesInPixel + 2];
+					a = ((unsigned char*)pixels)[i*imageRowWidthBytes + j*bytesInPixel + 3];
 				}
 				else if ((format == RGB) && (type == UNSIGNED_BYTE)) //(unsigned char*)pixels[0/1/2] = r/g/b
 				{
-					r = ((unsigned char*)pixels)[(i*width + j) * 3];
-					g = ((unsigned char*)pixels)[(i*width + j) * 3 + 1];
-					b = ((unsigned char*)pixels)[(i*width + j) * 3 + 2];
+					r = ((unsigned char*)pixels)[i*imageRowWidthBytes + j*bytesInPixel];
+					g = ((unsigned char*)pixels)[i*imageRowWidthBytes + j*bytesInPixel+ 1];
+					b = ((unsigned char*)pixels)[i*imageRowWidthBytes + j*bytesInPixel+ 2];
 				}
 
 
@@ -357,6 +446,7 @@ int getColorIndex(unsigned int mask)
 		uint32_t rawDataSize = 0;
 		uint32_t rowPadding = 0;
 		uint32_t bitsInPixel = 24;
+        	uint32_t bytesInPixel = 0;
 		int intWidth = 0; //width for internal use
 		int intHeight = 0; //height for internal use
 		int i = 0;
@@ -375,8 +465,14 @@ int getColorIndex(unsigned int mask)
 		unsigned int greenPos = 0;
 		unsigned int bluePos = 0;
 		unsigned int alphaPos = 0;
+        int alignment = image->alignment;
 		
-		unsigned char* data = image->pixels;
+		if (checkAlign(alignment) < 0)
+		{		
+			printf ("Default value 4 will be used.\n");
+			image->alignment = 4;
+			alignment = image->alignment;
+		}
 
 		// Open the file
 		FILE* file = fopen(imagepath, "rb");
@@ -433,6 +529,8 @@ int getColorIndex(unsigned int mask)
 
 		if (isRGBA)
 		{
+			printf ("BMP %s contains alpha component.", imagepath);
+
 			redMask = *(int*)&(dibHeader[0x36 - 0x0E]);
 			greenMask = *(int*)&(dibHeader[0x3A - 0x0E]);
 			blueMask = *(int*)&(dibHeader[0x3E - 0x0E]);
@@ -445,9 +543,14 @@ int getColorIndex(unsigned int mask)
 
 			if ((redMask != 0x00FF0000) || (greenMask != 0x0000FF00) || (blueMask != 0x000000FF) || (alphaMask != 0xFF000000))
 			{
-				printf("Unsupported BMP RGBA pixel fomrat. In bytes should be B G R A B G R A. Not a correct BMP file\n");
+				printf("Unsupported BMP RGBA pixel format. In bytes should be B G R A B G R A. Not a correct BMP file\n");
 				return 0;
 			}
+		}
+		else 
+		{
+			printf ("BMP %s does not contain alpha component,\n", imagepath);
+			printf ("so alpha value 255 will be used\n");
 		}
 
 		image->width = intWidth;
@@ -455,84 +558,131 @@ int getColorIndex(unsigned int mask)
 		image->format = format;
 		image->type = type;
 
-		rowDataSize = ceil((intWidth*bitsInPixel) / 32.0) * 4; //row width in bytes aligned by 4 bytes
-		rowPadding = rowDataSize - (intWidth*bitsInPixel) / 8; //bytes to align
-
+        	bytesInPixel = bitsInPixel/8;
+		rowDataSize = ceil((intWidth*bytesInPixel) / 4) * 4; //row width in bytes aligned by 4 bytes in BMP
+		rowPadding = rowDataSize - (intWidth*bytesInPixel); //bytes to align in BMP
 
 		// Some BMP files are misformatted, guess missing information for most common bmp (No compression, BI_RGB)
-		if (imageSize == 0)    imageSize = intWidth * intHeight * 3; // 3 : one byte for each Red, Green and Blue component
-		if (dataPos == 0)      dataPos = 54; // The BMP header is done that way
+		if (imageSize == 0) imageSize = intWidth * intHeight * 3; // 3 : one byte for each Red, Green and Blue component. 
+                                                                     // TODO: Alignment does not taking into accout!
+                                                                     // TODO: show error if BMP is misformatted?
+		if (dataPos == 0) dataPos = 54; // The BMP header is done that way
 
-		// Create a buffer
-		image->pixels = (unsigned char*)malloc(imageSize * sizeof(unsigned char));
-
-
-		// Read the actual data from the file into the buffer
-		fread(image->pixels, 1, imageSize, file);
-
-		for (i = 0; i < intHeight; i++)
+        //calc number of bytes for alignment for output image
+		int outPixelBytes = 0;
+		switch (format)
 		{
-			for (j = 0; j < intWidth; j++)
+ 			case RGB:
+			  outPixelBytes = 3;
+			  break;
+			
+			case ARGB:
+			case RGBA:
+			  outPixelBytes = 4;
+			  break;
+
+			case ALPHA:
+			case LUMINANCE:
+			  outPixelBytes = 1;
+			  break;
+
+			case LUMINANCE_ALPHA:
+			  outPixelBytes = 2;
+			  break;
+			  
+			default:
+			  outPixelBytes = 3;
+			  break;
+		}
+		int outRowPaddingBytes = (intWidth*outPixelBytes)%alignment ? alignment - (intWidth*outPixelBytes)%alignment : 0;		
+		unsigned int outRowWidthBytes = intWidth*outPixelBytes + outRowPaddingBytes; //including alignment bytes
+
+		// Create a buffer for input image
+		unsigned char* data;		
+		data = (unsigned char*)malloc(imageSize * sizeof(unsigned char));
+		
+		// Create a buffer for output image
+		unsigned int outImageSizeBytes = outRowWidthBytes * intHeight;
+		image->pixels = (unsigned char*)malloc(outImageSizeBytes * sizeof(unsigned char));
+		
+		// Read the actual data from the file into the buffer
+		fread(data, 1, imageSize, file);
+		
+		unsigned int pixelValue = 0;
+		for (i = 0; i < intHeight; i++) //in pixels
+		{
+			for (j = 0; j < intWidth; j++) //in pixels
 			{
 				if (isRGBA == 0)
 				{
-					if ((format == RGB) && (type == UNSIGNED_BYTE))
-					{
-						r = ((unsigned char*)image->pixels)[i*rowDataSize + j * 3 + 2];
-						g = ((unsigned char*)image->pixels)[i*rowDataSize + j * 3 + 1];
-						b = ((unsigned char*)image->pixels)[i*rowDataSize + j * 3];
+					
+					r = ((unsigned char*)data)[i*rowDataSize + j * 3 + 2];
+					g = ((unsigned char*)data)[i*rowDataSize + j * 3 + 1];
+					b = ((unsigned char*)data)[i*rowDataSize + j * 3];
+					a = 255;
 
-						((unsigned char*)image->pixels)[i*rowDataSize + j * 3] = r;
-						((unsigned char*)image->pixels)[i*rowDataSize + j * 3 + 1] = g;
-						((unsigned char*)image->pixels)[i*rowDataSize + j * 3 + 2] = b;
-					}
-					else
-					{
-						printf("Unsupported format and type when load from BMP.\n"); //TODO: check it in the beginning of function
-						printf("Each pixel in BMP contains 3 bytes. Try to use RGB format.\n"); //TODO: check it in the beginning of function
-					}
 				}
 				else //RGBA
 				{
-					unsigned int pixelValue = ((unsigned int*)image->pixels)[i*intWidth + j];
+					unsigned int pixelValue = ((unsigned int*)data)[i*intWidth + j];
 					r = (pixelValue & redMask) >> (redPos * 8);
 					g = (pixelValue & greenMask) >> (greenPos * 8);
 					b = (pixelValue & blueMask) >> (bluePos * 8);
-					a = (pixelValue & alphaMask) >> (alphaPos * 8);
-
-					if ((format == RGBA) && (type == UNSIGNED_INT_8_8_8_8))
-					{
-						pixelValue = 0;
-						pixelValue = pixelValue | ((unsigned int)r << 24);
-						pixelValue = pixelValue | ((unsigned int)g << 16);
-						pixelValue = pixelValue | ((unsigned int)b << 8);
-						pixelValue = pixelValue | (unsigned int)a;
-						
-						((unsigned int*)image->pixels)[i*intWidth + j] = pixelValue;
-					}
-					else if ((format == ARGB) && (type == UNSIGNED_INT_8_8_8_8))
-					{
-						pixelValue = 0;
-						pixelValue = pixelValue | ((unsigned int)a << 24);
-						pixelValue = pixelValue | ((unsigned int)r << 16);
-						pixelValue = pixelValue | ((unsigned int)g << 8);
-						pixelValue = pixelValue | (unsigned int)b;
-
-						((unsigned int*)image->pixels)[i*intWidth + j] = pixelValue;
-					}
-					else if ((format == RGBA) && (type == UNSIGNED_BYTE))
-					{
-						((unsigned char*)image->pixels)[i*rowDataSize + j * 4] = r;
-						((unsigned char*)image->pixels)[i*rowDataSize + j * 4 + 1] = g;
-						((unsigned char*)image->pixels)[i*rowDataSize + j * 4 + 2] = b;
-						((unsigned char*)image->pixels)[i*rowDataSize + j * 4 + 3] = a;
-					}
-					else
-					{
-						printf("Unsupported format and type when load from BMP\n"); //TODO: check it in the beginning of function
-						printf("Each pixel in BMP contains 4 bytes. Try to use RGBA format.\n"); //TODO: check it in the beginning of function
-					}
+					a = (pixelValue & alphaMask) >> (alphaPos * 8);	
 				}
+				
+				if ((format == RGB) && (type == UNSIGNED_BYTE))
+				{
+					((unsigned char*)image->pixels)[i*outRowWidthBytes + j * bytesInPixel] = r;
+					((unsigned char*)image->pixels)[i*outRowWidthBytes + j * bytesInPixel + 1] = g;
+					((unsigned char*)image->pixels)[i*outRowWidthBytes + j * bytesInPixel + 2] = b;
+				}
+				else if ((format == RGBA) && (type == UNSIGNED_INT_8_8_8_8))
+				{
+					pixelValue = 0;
+					pixelValue = pixelValue | ((unsigned int)r << 24);
+					pixelValue = pixelValue | ((unsigned int)g << 16);
+					pixelValue = pixelValue | ((unsigned int)b << 8);
+					pixelValue = pixelValue | (unsigned int)a;
+					
+					((unsigned int*)image->pixels)[i*intWidth + j] = pixelValue;
+				}
+				else if ((format == ARGB) && (type == UNSIGNED_INT_8_8_8_8))
+				{
+					pixelValue = 0;
+					pixelValue = pixelValue | ((unsigned int)a << 24);
+					pixelValue = pixelValue | ((unsigned int)r << 16);
+					pixelValue = pixelValue | ((unsigned int)g << 8);
+					pixelValue = pixelValue | (unsigned int)b;
+
+					((unsigned int*)image->pixels)[i*intWidth + j] = pixelValue;
+				}
+				else if ((format == RGBA) && (type == UNSIGNED_BYTE))
+				{
+					((unsigned char*)image->pixels)[i*outRowWidthBytes + j * outPixelBytes] = r;
+					((unsigned char*)image->pixels)[i*outRowWidthBytes + j * outPixelBytes + 1] = g;
+					((unsigned char*)image->pixels)[i*outRowWidthBytes + j * outPixelBytes + 2] = b;
+					((unsigned char*)image->pixels)[i*outRowWidthBytes + j * outPixelBytes + 3] = a;
+				}				
+				else if ((format == ALPHA) && (type == UNSIGNED_BYTE))
+				{
+					((unsigned char*)image->pixels)[i*outRowWidthBytes + j*outPixelBytes] = a;
+				}
+				else if ((format == LUMINANCE) && (type == UNSIGNED_BYTE))
+				{
+					((unsigned char*)image->pixels)[i*outRowWidthBytes + j*outPixelBytes] = r;
+				}
+				else if ((format == LUMINANCE_ALPHA) && (type == UNSIGNED_BYTE))
+				{
+					((unsigned char*)image->pixels)[i*outRowWidthBytes + j*outPixelBytes] = r;
+					((unsigned char*)image->pixels)[i*outRowWidthBytes + j*outPixelBytes] = a;
+				}
+				else
+				{
+					printf("Unsupported format and type when load from BMP\n"); //TODO: check it in the beginning of function
+					printf("Each pixel in BMP contains 4 bytes. Try to use RGBA format.\n"); //TODO: check it in the beginning of function
+				}
+
 			}
 		}
         
@@ -553,10 +703,48 @@ int imageToHeader(image_t* image, const char* fileName)
     int i = 0;
     int j = 0;
     char outFilePath[256] = "";
-    
+   
+
+	unsigned int alignment = image->alignment;
+	
+	if (checkAlign(alignment))
+	{
+		printf("%s: wrong alignment value (%d)", __func__, alignment);
+		return -1;
+	}
+
+	unsigned int bytesInPixel = 0;
+	switch (image->format)
+	{
+		case RGB:
+		  bytesInPixel = 3;
+		  break;
+		
+		case ARGB:
+		case RGBA:
+		  bytesInPixel = 4;
+		  break;
+	
+		case ALPHA:
+		case LUMINANCE:
+		  bytesInPixel = 1;
+		  break;
+	
+		case LUMINANCE_ALPHA:
+		  bytesInPixel = 2;
+		  break;
+		  
+		default:
+		  bytesInPixel = 3;
+	
+		  break;
+	}
+	
+	int rowPaddingBytes = (image->width * bytesInPixel) % alignment ? alignment - (image->width * bytesInPixel) % alignment : 0;	
+	unsigned int imageRowWidthBytes = image->width * bytesInPixel + rowPaddingBytes; 
+
     strcat(outFilePath, fileName);
-    strcat(outFilePath, ".h");
-    printf ("%s\n",outFilePath);
+    strcat(outFilePath, ".cpp");
     
     FILE* outFile = fopen(outFilePath, "w");
     if (!outFile) { 
@@ -572,22 +760,25 @@ int imageToHeader(image_t* image, const char* fileName)
     }
     
     
-    fprintf (outFile, "#include \"image.h\"\n\n");
-    
     int array_size = 0;
+ 
+	array_size = image->height * imageRowWidthBytes;
     
-    if (image->format == RGB)
-    {
-        array_size = image->height*image->width*3;
-    }
-    else if ((image->format == RGBA) || (image->format == ARGB))
-    {
-        array_size = image->height*image->width*4;
-    }
-    else
-    {
-        printf("Unsupported format when write pixels to file\n");
-    }
+	fprintf ( outFile, "#include \"image.h\"\n");
+	fprintf ( outFile, "#include \"texture_config.h\"\n");
+	fprintf ( outFile, "\n");
+	fprintf ( outFile, "#ifdef __GNUC__\n");
+	fprintf ( outFile, "#define SECTION(sec) __attribute__((section(sec)))\n");
+	fprintf ( outFile, "#else\n");
+	fprintf ( outFile, "#define SECTION(sec)\n");
+	fprintf ( outFile, "#endif // __GNUC__\n");
+	fprintf ( outFile, "\n");
+	fprintf ( outFile, "#ifdef __cplusplus\n");
+	fprintf ( outFile, "extern \"C\"\n");
+	fprintf ( outFile, "{\n");
+	fprintf ( outFile, "#endif\n");
+	fprintf ( outFile, "\n");
+	fprintf ( outFile, "SECTION(TEXTURE_SECTION)\n");
     
     fprintf (outFile, "unsigned char pixels_%s[%d] = {  \n", fileName, array_size);
     
@@ -599,28 +790,49 @@ int imageToHeader(image_t* image, const char* fileName)
         {
             if (image->format == RGB)
             {
-                fprintf (outFile, "0x%02x, ", ((unsigned char*)image->pixels)[i*image->width + j * 3]);
-                fprintf (outFile, "0x%02x, ", ((unsigned char*)image->pixels)[i*image->width + j * 3 + 1]);
-                fprintf (outFile, "0x%02x, ", ((unsigned char*)image->pixels)[i*image->width + j * 3 + 2]);
+                fprintf (outFile, "0x%02x, ", ((unsigned char*)image->pixels)[i*imageRowWidthBytes + j * bytesInPixel]);
+                fprintf (outFile, "0x%02x, ", ((unsigned char*)image->pixels)[i*imageRowWidthBytes + j * bytesInPixel + 1]);
+                fprintf (outFile, "0x%02x, ", ((unsigned char*)image->pixels)[i*imageRowWidthBytes + j * bytesInPixel + 2]);
             }
             else if ((image->format == RGBA) || (image->format == ARGB))
             {
-                fprintf (outFile, "0x%02x, ", ((unsigned char*)image->pixels)[i*image->width + j * 4]);
-                fprintf (outFile, "0x%02x, ", ((unsigned char*)image->pixels)[i*image->width + j * 4 + 1]);
-                fprintf (outFile, "0x%02x, ", ((unsigned char*)image->pixels)[i*image->width + j * 4 + 2]);
-                fprintf (outFile, "0x%02x, ", ((unsigned char*)image->pixels)[i*image->width + j * 4 + 3]);
+                fprintf (outFile, "0x%02x, ", ((unsigned char*)image->pixels)[i*imageRowWidthBytes + j * bytesInPixel]);
+                fprintf (outFile, "0x%02x, ", ((unsigned char*)image->pixels)[i*imageRowWidthBytes + j * bytesInPixel + 1]);
+                fprintf (outFile, "0x%02x, ", ((unsigned char*)image->pixels)[i*imageRowWidthBytes + j * bytesInPixel + 2]);
+                fprintf (outFile, "0x%02x, ", ((unsigned char*)image->pixels)[i*imageRowWidthBytes + j * bytesInPixel + 3]);
             }
+			else if (image->format == ALPHA)
+            {
+                fprintf (outFile, "0x%02x, ", ((unsigned char*)image->pixels)[i*imageRowWidthBytes + j * bytesInPixel]);
+            }
+			else if (image->format == LUMINANCE)
+            {
+                fprintf (outFile, "0x%02x, ", ((unsigned char*)image->pixels)[i*imageRowWidthBytes + j * bytesInPixel]);
+            }
+			else if (image->format == LUMINANCE_ALPHA)
+            {
+                fprintf (outFile, "0x%02x, ", ((unsigned char*)image->pixels)[i*imageRowWidthBytes + j * bytesInPixel]);
+                fprintf (outFile, "0x%02x, ", ((unsigned char*)image->pixels)[i*imageRowWidthBytes + j * bytesInPixel + 1]);
+            }
+
             else
             {
                 printf("Unsupported format when write pixels to file\n");
             }
         }
-        fprintf (outFile, "\n");
+		
+		for (j = 0; j < rowPaddingBytes; j++)
+		{
+			fprintf (outFile, "0x%02x, ", 0);
+		}
+
+		fprintf (outFile, "\n");
+
     }
     
     fprintf (outFile, "};  \n\n");
     
-    
+    fprintf ( outFile, "SECTION(TEXTURE_SECTION)\n");
     fprintf (outFile, "image_t image_%s = { \n", fileName);
     fprintf (outFile, "    %d,\n", image->width);
     fprintf (outFile, "    %d,\n", image->height);
@@ -673,6 +885,11 @@ int imageToHeader(image_t* image, const char* fileName)
     
     fprintf (outFile, "    pixels_%s\n", fileName);
     fprintf (outFile, "};  \n\n");
+
+    fprintf ( outFile, "\n\n");
+	fprintf ( outFile, "#ifdef __cplusplus\n");
+	fprintf ( outFile, "}\n");
+	fprintf ( outFile, "#endif\n");
         
     return 0;
 }
@@ -711,6 +928,14 @@ int getNameFromPath (char* filePath, char* fileName)
     return 0;
 }
 
-#ifdef __cplusplus
+int checkAlign (unsigned int alignment)
+{
+	if ((alignment != 1) && (alignment != 2) && 
+		(alignment != 4) && (alignment != 8)) 
+	{
+		printf ("Unsupported alignment value for image (%d).\n", alignment);
+		printf ("Supported values are 1, 2, 4, 8.\n");
+		return -1;
+	}
+	return 0;
 }
-#endif

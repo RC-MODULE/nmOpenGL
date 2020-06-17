@@ -150,6 +150,7 @@ image_t image_128_128 = {
     128,
     RGB,
     UNSIGNED_BYTE,
+    1,
     pixels_128_128
 };  
 

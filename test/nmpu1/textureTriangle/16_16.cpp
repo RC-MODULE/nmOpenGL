@@ -38,6 +38,7 @@ image_t image_16_16 = {
     16,
     RGB,
     UNSIGNED_BYTE,
+    1,
     pixels_16_16
 };  
 

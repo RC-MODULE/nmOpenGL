@@ -30,6 +30,7 @@ image_t image_8_8 = {
     8,
     RGB,
     UNSIGNED_BYTE,
+    1,
     pixels_8_8
 };  
 

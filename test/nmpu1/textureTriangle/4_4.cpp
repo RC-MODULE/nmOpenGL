@@ -26,6 +26,7 @@ image_t image_4_4 = {
     4,
     RGB,
     UNSIGNED_BYTE,
+    1,
     pixels_4_4
 };  
 

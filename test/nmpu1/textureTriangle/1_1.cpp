@@ -23,6 +23,7 @@ image_t image_1_1 = {
     1,
     RGB,
     UNSIGNED_BYTE,
+    1,
     pixels_1_1
 };  
 

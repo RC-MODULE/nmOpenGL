@@ -54,6 +54,7 @@ image_t image_32_32 = {
     32,
     RGB,
     UNSIGNED_BYTE,
+    1,
     pixels_32_32
 };  
 

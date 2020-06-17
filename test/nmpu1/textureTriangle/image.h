@@ -14,6 +14,7 @@ typedef struct image {
 	int height;
 	format_t format;
 	type_t type;
+    int alignment;
 	unsigned char* pixels;
 } image_t;
 	

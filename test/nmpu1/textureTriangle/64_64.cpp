@@ -86,6 +86,7 @@ image_t image_64_64 = {
     64,
     RGB,
     UNSIGNED_BYTE,
+    1,
     pixels_64_64
 };  
 

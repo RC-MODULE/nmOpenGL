@@ -250,6 +250,7 @@ int main ()
     cntxt.texState.texUnits[activeTexUnitIndex].texEnvColor[2] = 0.0f;
     cntxt.texState.texUnits[activeTexUnitIndex].texEnvColor[3] = 0.0f;
 
+    cntxt.texState.unpackAlignment = textures[0].alignment;
     // printPattern(patterns, pSrcTriangle, TRIANGLE_AMOUNT);
     
     //fill triangles with colors
@@ -345,6 +346,7 @@ int rawToImage (nm32s* triangles, Rectangle* windows, image_t* images, int count
         images[i].height = height;
         images[i].format = RGBA;
         images[i].type = UNSIGNED_BYTE;
+		images[i].alignment = 1;
         
         //copy pixels from triangles to image
         images[i].pixels = (unsigned char*) malloc(width*height*4); //TODO: nmc char type has size of 4 bytes. 

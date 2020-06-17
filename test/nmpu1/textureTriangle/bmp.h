@@ -49,6 +49,16 @@ extern "C"
     */
     int imageToHeader(image_t* image, const char* fileName);
 
+	/**
+	 * Функция checkAlign выполняет проверку допустимости значения выравнивания
+	 * данных в строках массива изображения типа image_t.
+	 *
+	 * \param alignment [in] Проверяемое значение выравнивания
+	 * \retval value [out] 0 в случае допустимого значение, -1 в случае ошибки
+	 */
+
+	int checkAlign (unsigned int alignment);
+
 #ifdef __cplusplus
 }
 #endif

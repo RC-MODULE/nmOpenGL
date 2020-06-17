@@ -278,6 +278,7 @@ image_t image_256_256 = {
     256,
     RGB,
     UNSIGNED_BYTE,
+    1,
     pixels_256_256
 };  
 
