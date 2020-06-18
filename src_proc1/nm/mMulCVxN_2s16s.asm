@@ -51,7 +51,7 @@ data ".data_demo3d"
 		global _addC4DepthTest_15s: word = 07FFF7FFFh;
 end ".data_demo3d";
 global _mMulCVxN_2s16s: label;
-global _mMulCVxN_2s_v4nm8s: label;
+global _mMulCVxN_2s_RGB565: label;
 
 macro mainLoopRepN(N)
 	own Next:label;
@@ -127,11 +127,13 @@ begin ".text_demo3d"
 <NextTreangle>	
 	//write mulC to matrix
 	repNHeightStart: label;
-	gr5 = [ar2++]		with gr3 = false;
-	[matr+10] = gr5		with gr3++;
+	gr5 = [ar2++]	with gr3 = true;
+	gr3 >>= 16;
+	gr5 = gr3 and gr5;	
+	[matr+10] = gr5		with gr3 = false;
 	[matr+15] = gr5		with gr5 <<= 16;
-	[matr+12] = gr5		with gr3 <<= 6; //!ВАЖНО - величина gr3 равна размеру паттерна в int;
-	[matr+17] = gr5;
+	[matr+12] = gr5		with gr3++;
+	[matr+17] = gr5		with gr3 <<= 6;  //!ВАЖНО - величина gr3 равна размеру паттерна в int;
 	
 	ar5 = gr0	with gr0+=gr3;	//Pattern
 	

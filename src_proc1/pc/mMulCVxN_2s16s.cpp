@@ -1,6 +1,6 @@
 #include "demo3d_nm1.h"
 
-int addC4DepthTest_15s = ZBUFF_MAX_15s;
+int addC4DepthTest_15s = ZBUFF_MAX;
 
 extern "C" {
 	

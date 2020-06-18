@@ -131,6 +131,11 @@ $(TMP_DIR)/%.o: %.cpp
 $(TMP_DIR)/%.o: %.c
 	$(CC) $(CC_FLAGS) -c $(<) -o$(@) $(INC_DIRS)
 	
+profile:	
+	python $(HAL)/script/profiler.py > proflist_generated0.asm
+	$(MAKE)
+	python $(HAL)/script/profiler.py $(MAP) > proflist_generated0.asm
+	
 proflist:
 	lua53 $(HAL)/script/profiler-gcc.lua .main0.map > proflist_generated0.asm 
 

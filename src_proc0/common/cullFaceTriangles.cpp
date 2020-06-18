@@ -69,7 +69,7 @@ void cullFaceSortTriangles(Triangles &triangles){
 		i++;
 	}
 	
-	if (resultCounter % 2 != 0) {
+	while (resultCounter % 2) {
 		COPY_TRIANGLE_IN_PLACE(resultCounter - 1, resultCounter);
 		resultCounter++;
 	}

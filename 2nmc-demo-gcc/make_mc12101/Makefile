@@ -29,6 +29,12 @@ nm1 $(TARGET1):
 	
 host $(HOST): $(VS)
 
+profile: profile0 profile1
+profile0:
+	$(MAKE) -f Makefile0 profile
+profile1:
+	$(MAKE) -f Makefile1 profile
+
 proflist: proflist0 proflist1
 proflist0:
 	$(MAKE) -f Makefile0 proflist

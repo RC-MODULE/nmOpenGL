@@ -6,6 +6,7 @@
 #include "malloc.h"
 #include "arraymanager.h"
 #include "stdio.h"
+#include "imagebuffer.h"
 
 SECTION(".data_imu5")	float vertexX[3 * NMGL_SIZE];
 SECTION(".data_imu6")	float vertexY[3 * NMGL_SIZE];
@@ -137,13 +138,10 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 		}
 
 		clamp_32f((float*)colorOrNormal, 0, 1, (float*)cntxt.buffer3, 4 * localSize);
-		//cntxt.tmp.vec[0] = 31;
-		//cntxt.tmp.vec[1] = 63;
-		//cntxt.tmp.vec[2] = 31;
-		cntxt.tmp.vec[0] = 255.0;
-		cntxt.tmp.vec[1] = 255.0;
-		cntxt.tmp.vec[2] = 255.0;
-		cntxt.tmp.vec[3] = 255.0;
+		cntxt.tmp.vec[0] = RED_COEFF;
+		cntxt.tmp.vec[1] = GREEN_COEFF;
+		cntxt.tmp.vec[2] = BLUE_COEFF;
+		cntxt.tmp.vec[3] = ALPHA_COEFF;
 		mulC_v4nm32f((v4nm32f*)cntxt.buffer3, &cntxt.tmp, colorOrNormal, localSize);
 		//----------------------------------
 
@@ -155,7 +153,7 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 		
 		//------------clipping-------------------
 
-		//------------perspective-division-----------------		static unsigned time = 0;
+		//------------perspective-division-----------------
 		nmppsDiv_32f(cntxt.buffer0, cntxt.buffer3, cntxt.buffer1 + localSize, localSize);
 		nmppsDiv_32f(cntxt.buffer1, cntxt.buffer3, cntxt.buffer2 + localSize, localSize);
 		nmppsDiv_32f(cntxt.buffer2, cntxt.buffer3, cntxt.buffer0 + localSize, localSize);

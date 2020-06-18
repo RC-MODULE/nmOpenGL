@@ -8,15 +8,6 @@
 #include "myserverdma.h"
 #include "nmgltex_nm1.h"
 
-#ifndef __NM__
-typedef void DepthCore32(nm32s &buffZ, nm32s &trianSrcZ, nm32s &trianDstZ);
-typedef void DepthCore16(nm16s &buffZ, nm16s &trianSrcZ, nm16s &trianDstZ);
-#else
-typedef void DepthCore32();
-typedef void DepthCore16();
-#endif // !__NM__
-
-
 void selectPatterns(nm32s* dydxTable, nm32s* dX, nm32s* dY, nm32s* x0, nm32s* pPtrnPaintSide, nm32s** pSrcPack, int nSize, int* pTmp);
 
 struct NMGL_Context_NM1 {
@@ -37,9 +28,12 @@ struct NMGL_Context_NM1 {
 	PolygonsArray* polygonsData;
 
 	DepthBuffer depthBuffer;
-	ImageBuffer colorBuffer;
-	ImageBuffer smallColorBuff;
-	ImageBuffer smallDepthBuff;
+	IMAGE_BUFFER_CLASS colorBuffer;
+	IMAGE_BUFFER_CLASS smallColorBuff;
+	IMAGE_BUFFER_CLASS smallDepthBuff;
+
+	IMAGE_BUFFER_CLASS smallClearColorBuff;
+	IMAGE_BUFFER_CLASS smallClearDepthBuff;
 
 	nm32s** zBuffPoints;
 	nm32s** imagePoints;
@@ -101,16 +95,15 @@ extern "C" {
 	void selectPaintSide(nm32s* pSrc, int X, int Y, nm32s* pDst, int nSize);
 	
 	void mMulCVxN_2s32s(Pattern* patterns, Vector2* innerPoint, Size* sizes, int* valueC, nm32s* pDstTreangle, int count);
-	void mMulCVxN_2s_RGB8888(Pattern* patterns, Vector2* innerPoint, Size* sizes, v4nm8s* valueC, nm32s* pDstTreangle_32s, int count);
+	void mMulCVxN_2s_RGB8888(Pattern* patterns, Vector2* innerPoint, Size* sizes, int* valueC, nm32s* pDstTreangle_32s, int count);
 	void mMulCVxN_2s16s(Pattern* patterns, Vector2* innerPoint, Size* sizes, int* valueC, nm16s* pDstTreangle_32s, int count);
-	void mMulCVxN_2s_RGB565(Pattern* patterns, Vector2* innerPoint, Size* sizes, int* valueC, nm16s* pDstTreangle_32s, int count);
+	void mMulCVxN_2s_RGB565(Pattern* patterns, Vector2* innerPoint, Size* sizes, int* valueC, nm16s* pDstTreangle_32s, int count);	
+	
+	void baseAddrOffs_32s(nm32s* baseAddr, int* offsets, nm32s** ppDst, int size);
+	void baseAddrOffs_32u(nm32u* baseAddr, int* offsets, nm32u** ppDst, int size);
+	void baseAddrOffs_16s(nm16s* baseAddr, int* offsets, nm16s** ppDst, int size);
+	void baseAddrOffs_16u(nm16u* baseAddr, int* offsets, nm16u** ppDst, int size);
 
-	//void mMulCVxN_2s32s(Pattern* ppSrcTreangle_2s, Rectangle* window, int* valueC, nm32s* pDstTreangle_32s, int count);
-	//void mMulCVxN_2s_RGB8888(Pattern* ppSrcTreangle_2s, Rectangle* window, v4nm8s* valueC, nm32s* pDstTreangle_32s, int count);
-	//void mMulCVxN_2s16s(Pattern* ppSrcTreangle_2s, Rectangle* window, int* valueC, nm16s* pDstTreangle_32s, int count);
-	//void mMulCVxN_2s_RGB565(Pattern* ppSrcTreangle_2s, Rectangle* window, int* valueC, nm16s* pDstTreangle_32s, int count);
-	
-	
 	void mAndVxN_32u(nm32u** pSrc1, nm32u** pSrc2, nm32u** pDst, int* size, int count);
 	
 	void copyPacket_32s(nm32s** ppSrc, nm32s** ppDst, int* size, int count);
@@ -147,6 +140,8 @@ extern "C" {
 	void merge_v4nm32s(nm32s* src1, nm32s* src2, nm32s* src3, nm32s* src4, v4nm32s* dst, int size);
 
 	void duplicate_16s(const nm16s *srcArray, nm32s *dstArray, int count);
+
+	void inverse_v4nm8u(const v4nm8u *srcArray, v4nm8u *dstArray, int count);
 	
 }
 

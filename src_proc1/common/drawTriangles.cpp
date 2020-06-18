@@ -3,14 +3,16 @@
 #include "nmgldef.h"
 #include <nmpp.h>
 #include <stdio.h>
+#include "imagebuffer.h"
 
 SECTION(".text_demo3d") void drawTriangles(NMGL_Context_NM1* context) {
 	PolygonsConnector connector(context->polygonsData);
 	Polygons* poly = connector.ptrTail();
+	
 	getAddrPtrnsT(context, poly);
-	nm32s* mulZ = (nm32s*)context->buffer0;
-	nm32s* mulC = (nm32s*)context->buffer0;
-	nm32s* zMaskBuffer = (nm32s*)context->buffer1;
+	COMMON_DRAW_TYPE* mulZ = (COMMON_DRAW_TYPE*)context->buffer0;
+	COMMON_DRAW_TYPE* mulC = (COMMON_DRAW_TYPE*)context->buffer0;
+	COMMON_DRAW_TYPE* zMaskBuffer = (COMMON_DRAW_TYPE*)context->buffer1;
 	int countTrangles = poly->count;
 
 	msdWaitDma(0);
@@ -41,7 +43,7 @@ SECTION(".text_demo3d") void drawTriangles(NMGL_Context_NM1* context) {
 
 		//проверка активирования теста глубины
 		if (context->depthBuffer.enabled == NMGL_FALSE) {
-			mMulCVxN_2s32s(
+			MUL_Z_FUNC(
 				context->polyImgTmp,
 				context->ptrnInnPoints + point,
 				context->ptrnSizes + point,
@@ -51,7 +53,7 @@ SECTION(".text_demo3d") void drawTriangles(NMGL_Context_NM1* context) {
 		}
 		else {
 			//умножение бинарных масок на Z
-			mMulCVxN_2s32s(
+			MUL_Z_FUNC(
 				context->polyImgTmp,
 				context->ptrnInnPoints + point,
 				context->ptrnSizes + point,
@@ -63,20 +65,20 @@ SECTION(".text_demo3d") void drawTriangles(NMGL_Context_NM1* context) {
 			//mulZ теперь хранит z-треугольники
 
 			//функция теста глубины
-			depthTest32((nm32s**)(context->zBuffPoints + point),
+			DEPTH_FUNC((COMMON_DRAW_TYPE**)(context->zBuffPoints + point),
 				WIDTH_SEG,
-				(nm32s*)mulZ,
-				(nm32s*)zMaskBuffer,
+				mulZ,
+				zMaskBuffer,
 				context->ptrnSizes + point,
 				localSize);
 		}
 
 		//color v4nm8s in imgOffset
-		mMulCVxN_2s_RGB8888(
+		MUL_C_FUNC(
 			context->polyImgTmp,
 			context->ptrnInnPoints + point,
 			context->ptrnSizes + point,
-			(v4nm8s*)(context->valuesC + point),
+			context->valuesC + point,
 			mulC,
 			localSize);
 
@@ -84,9 +86,9 @@ SECTION(".text_demo3d") void drawTriangles(NMGL_Context_NM1* context) {
 
 		//функция накладывает маску на буфер с цветами 
 		//и копирует треугольник в изображение
-		mMaskVxN_32s(mulC,
+		MASK_FUNC(mulC,
 			zMaskBuffer,
-			(nm32s**)(context->imagePoints + point), WIDTH_SEG,
+			(COMMON_DRAW_TYPE**)(context->imagePoints + point), WIDTH_SEG,
 			context->ptrnSizes + point,
 			localSize);
 

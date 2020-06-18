@@ -1,6 +1,7 @@
 	
 //void readMask(nm1* srcVec, int* dstIndices, int size){
-
+#include "imagebuffer.h";
+//import PILMO from imagebuffer;
 
 begin ".text_demo3d"
 global _readMask: label;
@@ -33,14 +34,17 @@ global _readMask: label;
 	if < delayed goto NextBit;
 		gr7 = [ar0++] with gr2 = gr1 << 5;
 		gr7;
+	//gr1 = 1; 	//для RGB8888
+	gr1 = 3;	//для RGB565
 <End>
 	gr6 and gr1;
-//если нечетное число индексов, то последний индекс дублируется
+//дублирование последнего элемента до тех пор, пока число элементов не будет кратно числу пикселей в long
 	if =0 delayed goto EndProgram;
 		ar6--;
 		nul;	
-	gr0 = [ar6++];
-	[ar6++] = gr0	with gr6++;	
+	delayed goto End;
+		gr0 = [ar6++];
+		[ar6++] = gr0	with gr6++;	
 <EndProgram>
 	with gr7 = gr6;
 	pop ar6, gr6;

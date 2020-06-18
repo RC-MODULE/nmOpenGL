@@ -113,12 +113,14 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 	halDmaInitC();
 	halInstrCacheEnable();
 #ifdef PROFILER0
-	profiler_init();
+	//halProfilerEnable();
 #endif // PROFILER0	
 #endif // __GNUC__
 
 	//sync4
 	halHostSync((int)0x600d600d);
+	nmglClearColor(0, 0, 0, 1.0f);
+	nmglClearDepthf(1);
 
 	return 0;
 } 

@@ -5,6 +5,7 @@
 #include "arraymanager.h"
 #include "nmgl.h"
 #include "nmgltex_nm0.h"
+#include "imagebuffer.h"
 
 #define BIG_NMGL_SIZE (128 * NMGL_SIZE)
 

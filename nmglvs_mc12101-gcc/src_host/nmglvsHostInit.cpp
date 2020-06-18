@@ -14,6 +14,7 @@
 #include "demo3d_host.h"
 #include "demo3d_nm1.h"
 #include "ringbuffert.h"
+#include "imagebuffer.h"
 
 
 

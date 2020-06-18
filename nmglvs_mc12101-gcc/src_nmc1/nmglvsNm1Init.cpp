@@ -30,6 +30,10 @@ SECTION(".data_shmem1") nm32s* zBuffPoints[NMGL_SIZE];
 SECTION(".data_shmem1") nm32s* imagePoints[NMGL_SIZE];
 
 
+SECTION(".data_shmem1") nm32s colorClearBuff[WIDTH_SEG * HEIGHT_SEG];
+SECTION(".data_shmem1") nm32s depthClearBuff[WIDTH_SEG * HEIGHT_SEG];
+
+
 int exitNM1 = 0;
 
 template<class T> T* myMallocT(int size) {
@@ -56,6 +60,7 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 		if (fromHost != 0xC0DE0086) {					// get  handshake from host
 			throw -1;
 		}
+		
 		setHeap(11);
 		cntxt.patterns = myMallocT<PatternsArray>();
 
@@ -64,7 +69,7 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 		cntxt.imagesData->init();
 
 		setHeap(11);
-		DepthImage32* depthImage = myMallocT<DepthImage32>();
+		DepthImage* depthImage = myMallocT<DepthImage>();
 
 		cntxt.colorBuffer.init(cntxt.imagesData->ptrHead(), WIDTH_IMAGE, HEIGHT_IMAGE);
 		cntxt.depthBuffer.init(depthImage, WIDTH_IMAGE, HEIGHT_IMAGE);
@@ -92,6 +97,9 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 #endif // __GNUC__
 	cntxt.smallColorBuff.init(segImage, WIDTH_SEG, HEIGHT_SEG);
 	cntxt.smallDepthBuff.init(segZBuff, WIDTH_SEG, HEIGHT_SEG);
+
+	cntxt.smallClearColorBuff.init(colorClearBuff, WIDTH_SEG, HEIGHT_SEG);
+	cntxt.smallClearDepthBuff.init(depthClearBuff, WIDTH_SEG, HEIGHT_SEG);
 	
 	halSleep(10);
 

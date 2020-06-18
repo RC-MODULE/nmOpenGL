@@ -85,66 +85,6 @@ void drawPattern(Line* line,
 	}
 }
 
-/*void drawPattern(Point* point,
-	int angle,
-	nm8s* dst,
-	int width,
-	int height,
-	int fillColor,
-	FillMode fillMode)
-{
-	Line line;
-	double length = sqrt(width * width + height * height);
-	double a = angle * PI / 180;
-	line.p0.x = point->x;
-	line.p0.y = point->y;
-	line.p1.x = round(length * cos(a) + point->x);
-	line.p1.y = round(length * sin(a) + point->y);
-	int deltaX = line.p1.x - line.p0.x;
-	int deltaY = line.p1.y - line.p0.y;
-	int dx = (deltaX > 0) ? 1 : -1;
-	int dy = (deltaY > 0) ? 1 : -1;
-	double k, err;
-	if (abs(deltaX) >= abs(deltaY)) {
-		line.p1.x = MAX(0, line.p1.x);
-		line.p1.x = MIN(line.p1.x, width);
-		k = 2 * (double)ABS(deltaY) / ABS(deltaX);
-		err = 0;
-		int y = line.p0.y;
-		int xst;
-		for (int x = line.p0.x; x != line.p1.x; x += dx) {
-			if (err > 1) {
-				y += dy;
-				err -= 2;
-			}
-			err += k;
-			fill(dst, x, width, y, fillColor, fillMode);
-		}
-		if (angle >= 135 && fillMode == RIGHT || 
-			angle <= 45  && fillMode == LEFT) {
-			for (int i = y * width; i < width * height; i++) {
-				dst[i] = fillColor;
-			}
-		}
-	}
-	else {
-		line.p1.y = MAX(0, line.p1.y);
-		line.p1.y = MIN(line.p1.y, width);
-		k = 2 * (double)ABS(deltaX) / ABS(deltaY);
-		err = 0;
-		int x = line.p0.x;
-		int xst;
-		for (int y = line.p0.y; y != line.p1.y; y += dy) {
-			if (err > 1) {
-				x += dx;
-				err -= 2;
-			}
-			err += k;
-			fill(dst, x, width, y, fillColor, fillMode);
-		}
-	}
-}*/
-
 void fillPattern(nm8s* pDstSource,int width, int height)
 {
 	int x=0;
@@ -156,24 +96,6 @@ void fillPattern(nm8s* pDstSource,int width, int height)
 	Line line;
 	//Point point;
 	FillMode mode[2] = { RIGHT, LEFT };
-
-	/*for (int angle = 180; angle > 0; angle--) {
-		for (int i = 0; i < OFFSETS; i++) {
-			nm8s* dsti = nmppsAddr_8s(pDstSource, cnt++ * size);
-			point.x = i;
-			point.y = 0;
-			drawPattern(&point, angle, (nm8s*)dsti, width, height, color, RIGHT);
-		}
-	}
-	for (int angle = 180; angle > 0; angle--) {
-		for (int i = 0; i < OFFSETS; i++) {
-			nm8s* dsti = nmppsAddr_8s(pDstSource, cnt++ * size);
-			point.x = i;
-			point.y = 0;
-			drawPattern(&point, angle, (nm8s*)dsti, width, height, color, LEFT);
-		}
-	}
-	return;*/
 		 
 	for (int m = 0; m < 2; m++) {
 		cnt = m * NPATTERNS / 2;

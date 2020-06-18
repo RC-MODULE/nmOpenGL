@@ -23,7 +23,7 @@ int readMask(nm1* mask, int* dstIndices, int size) {
 		}
 		i += remainingBits;
 	}
-	if (result & 1) {
+	while (result % 2) {
 		dstIndices[result] = dstIndices[result - 1];
 		result++;
 	}

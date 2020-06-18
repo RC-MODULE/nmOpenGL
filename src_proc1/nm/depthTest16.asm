@@ -21,11 +21,11 @@ global _depthTest16: label;
 	push ar6,gr6;	
 	ar2 = [--ar5];		//nm16s** pROI
 	gr0 = [--ar5];		//int ImageStride
-	ar1 = [--ar5];		//nm16s* pTriangles
+	ar1 = [--ar5]	with gr0 >>= 1;		//nm16s* pTriangles
 	ar6 = [--ar5]	with gr2 = false;		//nm16s* dstMask
 	ar3 = [--ar5]	with gr2++;		//Size* sizes
 	gr4 = [--ar5]	with gr2++;		//int count
-	gr7 = 80000000h;
+	gr7 = 80008000h;
 	nb1 = gr7;
 	f1cr = gr7;
 	wtw;

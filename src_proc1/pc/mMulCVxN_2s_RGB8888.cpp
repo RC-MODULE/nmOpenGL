@@ -4,7 +4,7 @@ extern "C" {
 	void mMulCVxN_2s_RGB8888(Pattern* patterns, 
 		Vector2* ptrnPoints,
 		Size* ptrnSizes,
-		v4nm8s* valueC, 
+		int* valueC, 
 		nm32s* pDstTreangle,  
 		int count){
 		long long int temp;

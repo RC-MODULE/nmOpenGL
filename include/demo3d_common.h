@@ -43,9 +43,6 @@ typedef v4nm8s rgb8888;
 #define COUNT_POLYGONS_BUFFER 128
 #define COUNT_IMAGE_BUFFER 8
 
-#define ZBUFF_MAX 0x7FFFFFFF
-#define ZBUFF_MAX_15s 0x7FFF
-
 #define MAX_SIDE_POLYGON 32
 #define HEIGHT_PTRN   MAX_SIDE_POLYGON
 #define WIDTH_PTRN    MAX_SIDE_POLYGON
@@ -112,12 +109,6 @@ struct Polygons {
 
 typedef HalRingBufferData<Polygons, COUNT_POLYGONS_BUFFER> PolygonsArray;
 typedef HalRingBufferConnector<Polygons, COUNT_POLYGONS_BUFFER> PolygonsConnector;
-
-typedef int ImageRGB8888[WIDTH_IMAGE * HEIGHT_IMAGE];
-typedef int DepthImage32[WIDTH_IMAGE * HEIGHT_IMAGE];
-typedef HalRingBufferData<ImageRGB8888, COUNT_IMAGE_BUFFER> ImageData;
-typedef HalRingBufferConnector<ImageRGB8888, COUNT_IMAGE_BUFFER> ImageConnector;
-
 
 //typedef int matrix[16];
 typedef struct s_mat4nm32f{

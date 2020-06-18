@@ -4,6 +4,7 @@
 #include "nmgldef.h"
 #include "stdio.h"
 #include "service.h"
+#include "imagebuffer.h"
 
 SECTION(".data_demo3d") unsigned int points[14];
 
@@ -69,22 +70,24 @@ SECTION(".text_demo3d") int getAddrPtrnsT(NMGL_Context_NM1* context, Polygons* p
 	nmppsCopy_32s((nm32s*)srcTail12, dstTail + 2 * tail, tail);
 
 	CHECK_STATUS(1);
-	//nmppsRShiftC_32u((nm32u*)polyTmp->pointInImage, 1, (nm32u*)polyTmp->pointInImage, size);
-	nmppsAndC_32u((nm32u*)polyTmp->pointInImage, 1, (nm32u*)temp1, size);
+	nmppsAndC_32u((nm32u*)polyTmp->pointInImage, PIXELS_IN_LONG_MINUS_ONE, (nm32u*)temp1, size);
 	nmppsSub_32s(polyTmp->pointInImage, temp1, polyTmp->pointInImage, size);
-#ifdef __GNUC__	
-	nmppsAddC_32s(polyTmp->pointInImage, (int)context->smallColorBuff.data, (nm32s*)context->imagePoints, size);
-	nmppsAddC_32s(polyTmp->pointInImage, (int)context->smallDepthBuff.data, (nm32s*)context->zBuffPoints, size);
-#else
-	for (int i = 0; i < size; i++) { 
-		context->imagePoints[i] = (int*)context->smallColorBuff.data + polyTmp->pointInImage[i];
-		context->zBuffPoints[i] = (int*)context->smallDepthBuff.data + polyTmp->pointInImage[i];
-	}
+#ifdef OUTPUT_IMAGE_RGB565
+	baseAddrOffs_16s((nm16s*)context->smallColorBuff.mData, 
+		polyTmp->pointInImage, (nm16s**)context->imagePoints, size);
+	baseAddrOffs_16s((nm16s*)context->smallDepthBuff.mData,
+		polyTmp->pointInImage, (nm16s**)context->zBuffPoints, size);
+#endif
+#ifdef OUTPUT_IMAGE_RGB8888
+	baseAddrOffs_32s((nm32s*)context->smallColorBuff.mData,
+		polyTmp->pointInImage, (nm32s**)context->imagePoints, size);
+	baseAddrOffs_32s((nm32s*)context->smallDepthBuff.mData,
+		polyTmp->pointInImage, (nm32s**)context->zBuffPoints, size);
 #endif
 	CHECK_STATUS(2);
 	nmppsAdd_32s(polyTmp->widths, temp1, temp2, size);
-	nmppsAddC_32s(temp2, 1, temp0, size);
-	nmppsAndC_32u((nm32u*)temp0, 0xFFFFFFFE, (nm32u*)temp2, size);
+	nmppsAddC_32s(temp2, PIXELS_IN_LONG_MINUS_ONE, temp0, size);
+	nmppsAndC_32u((nm32u*)temp0, ~PIXELS_IN_LONG_MINUS_ONE, (nm32u*)temp2, size);
 	CHECK_STATUS(5);
 	nmppsSub_32s(polyTmp->offsetsX, temp1, temp0, size);
 	nmppsMerge_32s(temp0, polyTmp->offsetsY, (nm32s*)context->ptrnInnPoints, size);
@@ -107,10 +110,15 @@ SECTION(".text_demo3d") int getAddrPtrnsT(NMGL_Context_NM1* context, Polygons* p
 	mergePtrnsAddr3((nm32s**)temp0, (nm32s**)temp1, (nm32s**)temp2, SMALL_SIZE, context->ppSrcPackPtrns, size);
 
 	CHECK_STATUS(9);
+#ifdef OUTPUT_IMAGE_RGB8888
 	nmppsConvert_32s8s(polyTmp->color, (nm8s*)context->valuesC, 4 * size);
-	//convertABGR32_RGB565((abgr32*)polyTmp->color, (rgb565*)temp0, size);
-	//duplicate_16s((nm16s*)temp0, context->valuesC, size);
-	//convertRGB565_RGB8888((rgb565*)temp0, (rgb8888*)context->valuesC, size);
+	//inverse_v4nm8u((v4nm8u*)temp1, (v4nm8u*)context->valuesC, size);
+#endif // OUTPUT_IMAGE_RGB8888
+
+#ifdef OUTPUT_IMAGE_RGB565
+	convertABGR32_RGB565((abgr32*)polyTmp->color, (rgb565*)temp0, size);
+	nmppsConvert_16u32u((nm16u*)temp0, (nm32u*)context->valuesC, size);
+#endif // OUTPUT_IMAGE_RGB565
 
 	CHECK_STATUS(10);
 	nmppsSub_32s(polyTmp->ptrnSizesOf32_02, polyTmp->ptrnSizesOf32_01, temp0, size);
@@ -120,8 +128,5 @@ SECTION(".text_demo3d") int getAddrPtrnsT(NMGL_Context_NM1* context, Polygons* p
 		SMALL_SIZE,
 		(nm32s**)context->nSizePtrn32,
 	 size);
-	//CHECK_STATUS(11);
-	//nmppsConvert_32s16s(polyTmp->z, (nm16s*)context->valuesZ, size);
-	//nmppsCopy_32s(polyTmp->z, context->valuesZ, size);
 	return 0;
 }

@@ -25,7 +25,7 @@ extern "C" DepthCore16 depthTestCore16_A_r;
 extern int addC4DepthTest;
 extern int addC4DepthTest_15s;
 
-void DepthBuffer :: update() {
+void DepthBuffer::update() {
 	switch (maskEnabled)
 	{
 	case NMGL_TRUE:
@@ -39,7 +39,7 @@ void DepthBuffer :: update() {
 			currentDepthTest32 = depthTestCore32_Lt_rw;
 			currentDepthTest16 = depthTestCore16_Lt_rw;
 			addC4DepthTest = ZBUFF_MAX;
-			addC4DepthTest_15s = ZBUFF_MAX_15s;
+			addC4DepthTest_15s = ZBUFF_MAX;
 			break;
 		case NMGL_EQUAL:
 			break;
@@ -76,7 +76,7 @@ void DepthBuffer :: update() {
 			currentDepthTest32 = depthTestCore32_Lt_r;
 			currentDepthTest16 = depthTestCore16_Lt_r;
 			addC4DepthTest = ZBUFF_MAX;
-			addC4DepthTest_15s = ZBUFF_MAX_15s;
+			addC4DepthTest_15s = ZBUFF_MAX;
 			break;
 		case NMGL_EQUAL:
 			break;

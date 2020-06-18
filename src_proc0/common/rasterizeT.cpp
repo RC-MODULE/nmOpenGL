@@ -47,8 +47,14 @@ void rasterizeT(const Triangles* triangles, const BitMask* masks){
 						iSeg);
 
 					copyArraysByIndices((void**)triangles, indices, (void**)&localTrian, 7, resultSize);
-					//copyColorByIndices(triangles->colors, indices, (v4nm32s*)localTrian.colors, resultSize);
+
+#ifdef OUTPUT_IMAGE_RGB8888
 					copyColorByIndices_BGRA_RGBA(triangles->colors, indices, (v4nm32s*)localTrian.colors, resultSize);
+#endif // OUTPUT_IMAGE_RGB8888
+#ifdef OUTPUT_IMAGE_RGB565
+					copyColorByIndices(triangles->colors, indices, (v4nm32s*)localTrian.colors, resultSize);
+#endif // OUTPUT_IMAGE_RGB565
+					
 
 					//waitPolygons(connector);
 					while (connector.isFull());
