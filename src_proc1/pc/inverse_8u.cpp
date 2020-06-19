@@ -1,4 +1,4 @@
-
+#include "nmtype.h"
 extern "C"
 {
 	
