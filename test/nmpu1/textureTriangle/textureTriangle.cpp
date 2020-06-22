@@ -331,6 +331,7 @@ color getPixelNearest(Vec2f st, TexImage2D texture)
 SECTION(".text_demo3d")
 void textureTriangle(Pattern* patterns, 
                  Triangles* triangles,
+                 nm32s** pROI,
                  Rectangle* windows, 
                  nm32s* pSrcTriangle, 
                  nm32s* pDstTriangle, 
@@ -391,6 +392,9 @@ void textureTriangle(Pattern* patterns,
     long long int temp;
     nm32s* dst = pDstTriangle;
     nm32s* src = pSrcTriangle;
+    int winX0 = 0;
+    int winY0 = 0;
+    
     for(int cnt=0;cnt<count;cnt++){
         nm64s* pattern = (nm64s*) (patterns + cnt);
         pattern += windows[cnt].y;
@@ -400,6 +404,12 @@ void textureTriangle(Pattern* patterns,
         if (windows[cnt].x < 0) {
             width += windows[cnt].x;
         }
+        
+        int winOffset = ((int)(pROI[cnt]) - (int)cntxt.smallColorBuff.data)>>2;//>> 2 = divide by sizeof int = 4 bytes
+																			   //TODO:remove magic number 2
+		winY0 = cntxt.texState.segY0 + (winOffset >> 7); //>> 7 = divide by segment width 
+														 //TODO: remove magic number 7
+		winX0 = cntxt.texState.segX0 + (winOffset & cntxt.texState.segWidth);//get reminder  of division by segment width
         
 //start calculate pixel value for texturing
         
@@ -479,6 +489,7 @@ void textureTriangle(Pattern* patterns,
         edgeFunction(x0, y0, x1, y1, x2, y2, &area);
         int pixelCnt = 0;
         
+        
         for(int y = 0; y < windows[cnt].height; y++){
             temp = pattern[y];
             nm32s* pDst = (nm32s*)(dst + y * windows[cnt].width);
@@ -500,14 +511,13 @@ void textureTriangle(Pattern* patterns,
                 if (mul > 0)//pixel belongs to triangle
                 {
                     //Calculate x and y of current pixel as float values
-                    //TODO: Incorrect. xf and yf should be relative to triangle vertex coordinates
-                    //(inside pattern or inside segment)
-                    float xf = x + 0.5f; 
-                    float yf = (y1-1-y) + 0.5f;//TODO: y1 = max vertex y, necessary to do -1 or -2 compare to windows opengl 
-                                               //because of difference in rasterization algorithms 
-                                               //Барицентрические координаты не соответствуют растеризованной картинке,
-                                               //то есть растеризованные пиксели не должны быть растеризованы, если использовать барицентрические координаты.
-                                               //Но они растеризованы -> для них вычисляются неверные барицентрическим координаты и неправильные значения текстурных координат
+                    //relative to triangle vertex coordinates inside segment
+                    float xf = winX0 + x + 0.5f; 
+                    float yf = winY0 + y + 0.5f;//TODO: Барицентрические координаты не соответствуют растеризованной картинке,
+                                               //то есть растеризованные по шаблону пиксели не должны быть растеризованы, 
+											   //если использовать барицентрические координаты.
+                                               //Но так как они растеризованы, то для них вычисляются неверные барицентрические
+											   //координаты и неправильные значения текстурных координат
                                                //Нужно как-то соотнести алгоритм растеризации и вычисление текстурных координат
                     float w0 = 0;
                     float w1 = 0;

@@ -188,12 +188,34 @@ int main ()
     windows[1].height = 25;
 
     //setup triangles parameters
-    float x0[TRIANGLE_AMOUNT] = {0.0f, 0.0f};
-    float y0[TRIANGLE_AMOUNT] = {10.0f, 10.0f};
-    float x1[TRIANGLE_AMOUNT] = {15.0f, 15.0f};
-    float y1[TRIANGLE_AMOUNT] = {30.0f, 30.0f};
-    float x2[TRIANGLE_AMOUNT] = {26.0f, 26.0f};
-    float y2[TRIANGLE_AMOUNT] = {5.0f, 5.0f};
+    
+    // float x0[TRIANGLE_AMOUNT] = {0.0f, 0.0f};
+    // float y0[TRIANGLE_AMOUNT] = {10.0f, 10.0f};
+    // float x1[TRIANGLE_AMOUNT] = {15.0f, 15.0f};
+    // float y1[TRIANGLE_AMOUNT] = {30.0f, 30.0f};
+    // float x2[TRIANGLE_AMOUNT] = {26.0f, 26.0f};
+    // float y2[TRIANGLE_AMOUNT] = {5.0f, 5.0f};
+    
+    float x0[TRIANGLE_AMOUNT] = {399.0f, 399.0f};
+    float y0[TRIANGLE_AMOUNT] = {354.0f, 354.0f};
+    float x1[TRIANGLE_AMOUNT] = {384.0f, 384.0f};
+    float y1[TRIANGLE_AMOUNT] = {374.0f, 374.0f};
+    float x2[TRIANGLE_AMOUNT] = {410.0f, 410.0f};
+    float y2[TRIANGLE_AMOUNT] = {379.0f, 379.0f};
+    
+    cntxt.texState.segX0 = 384;
+    cntxt.texState.segY0 = 256;
+    cntxt.texState.segWidth = 128;
+    
+    cntxt.smallColorBuff.data = 0x0;
+    nm32s* PROI[TRIANGLE_AMOUNT] = {0,0};
+    int pointInImage[TRIANGLE_AMOUNT] = {0,0};
+    
+    for (i = 0; i < TRIANGLE_AMOUNT; i++)
+    {
+        pointInImage[i] = 12544;
+        PROI[i] = (int*)cntxt.smallColorBuff.data + pointInImage[i];
+    }
     
     float s0[TRIANGLE_AMOUNT] = {0.0f, 0.0f};
     float t0[TRIANGLE_AMOUNT] = {0.0f, 0.0f};
@@ -253,11 +275,12 @@ int main ()
     cntxt.texState.unpackAlignment = textures[0].alignment;
     // printPattern(patterns, pSrcTriangle, TRIANGLE_AMOUNT);
     
+    
     //fill triangles with colors
     mMulCVxN_2s_RGB8888(patterns, windows, (v4nm8s*)valueC, pSrcTriangle, TRIANGLE_AMOUNT);
     
     //texture triangles
-    textureTriangle(patterns, &triangles, windows, pSrcTriangle, pDstTriangle, count);
+    textureTriangle(patterns, &triangles, PROI, windows, pSrcTriangle, pDstTriangle, count);
 
     //convert result to image_t to compare with etalon    
     rawToImage(pDstTriangle, windows, result_images, count);

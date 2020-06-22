@@ -61,6 +61,7 @@ void edgeFunction(float x0, float y0, float x1, float y1, float x2, float y2, fl
 
 \param patterns [in] Входной массив масок треугольников
 \param triangles [in] Входной массив параметров треугольников
+\param pROI [in] Массив адресов окон треугольников в цветовом буфере
 \param windows [in] Входной массив параметров размещения треугольников в сегменте
 \param pSrcTriangle [in] Входной массив цветов треугольников
 \param pDstTriangle [out] Выходной массив цветов треугольников
@@ -69,6 +70,7 @@ void edgeFunction(float x0, float y0, float x1, float y1, float x2, float y2, fl
 */
 void textureTriangle(Pattern* patterns, 
                  Triangles* triangles,
+                 nm32s** pROI,
                  Rectangle* windows, 
                  nm32s* pSrcTriangle, 
                  nm32s* pDstTriangle, 
