@@ -49,14 +49,14 @@ endif
 
 ARCH             =nmc4
 #--------------  target & input dirs -------------------
-PROJECT          = libnmopengl-$(ARCH)f
+PROJECT          = libnmopengl-$(ARCH)
 TMP_DIR          = Release
 OUT_DIR          = $(ROOT)/lib
 TARGET           = $(OUT_DIR)/$(PROJECT).a
 INC_DIRS         = -I$(ROOT)/include -I$(NMPP)/include -I$(HAL)/include
-SRC_DIRS         = $(ROOT)/src_proc0/nm $(ROOT)/src_proc0/common $(ROOT)/src_proc0/nmgl
-LIB_DIRS         = -L$(NMPP)/lib -L$(HAL)/lib
-LIBS	         = -lnmpp-nmc4f -lhal-mc12101
+LIB_DIRS         = -L$(NMPP)/lib -I$(HAL)/lib
+LIBS         	 = -lnmpp-nmc4f -lhal-mc12101
+SRC_DIRS         = $(ROOT)/src_proc1/nm $(ROOT)/src_proc1/common
 
 #include          $(ROOT)/make/src-nmc-float-gcc.mk
 #------------------------------------------------
