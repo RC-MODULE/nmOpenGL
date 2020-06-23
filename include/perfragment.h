@@ -7,7 +7,6 @@
 extern "C" {
 
 	/**
-	 *  \defgroup ptrnMulC32 ptrnMulC32
 	 *  \brief Функция умножения паттерна на константы
 	 *  
 	 *  \param patterns [in] Входной массив паттернов
@@ -18,24 +17,10 @@ extern "C" {
 	 *  \param count [in] Число паттернов
 	 *  \retval Return description
 	 *  \details Функция берет заданное окно из двуразрядного паттерна и умножает его на константу. Получившиеся 32-разрядные фрагменты располагаются в памяти подряд
-	 *  
-	 *  \par
-	 *  \xmlonly
-	 *      <testperf>
-	 *          <param name="patterns"> </param>
-	 *          <param name="windowXY"> </param>
-	 *          <param name="windowSize"> </param>
-	 *          <param name="valuesC"> </param>
-	 *          <param name="dstFragments"> </param>
-	 *          <param name="count"> </param>
-	 *          <size> </size>
-	 *      </testperf>
-	 *  \endxmlonly
 	 */
 	void ptrnMulC32(Pattern* patterns, Vector2* windowXY, Size* windowSize, int* valuesC, nm32s* dstFragments, int count);
 	
 	/**
-	 *  \defgroup ptrnMulRgb8888 ptrnMulRgb8888
 	 *  \brief Функция умножение паттерна на вектор цвета
 	 *  
 	 *  \param patterns [in] Входной массив паттернов
@@ -46,24 +31,10 @@ extern "C" {
 	 *  \param count [in] Число паттернов
 	 *  \retval Return description
 	 *  \details Функция берет заданное окно из двуразрядного паттерна и умножает его на вектор цвета. Получившиеся цветовые фрагменты располагаются в памяти подряд
-	 *  
-	 *  \par
-	 *  \xmlonly
-	 *      <testperf>
-	 *          <param name="patterns"> </param>
-	 *          <param name="windowXY"> </param>
-	 *          <param name="windowSize"> </param>
-	 *          <param name="valuesC"> </param>
-	 *          <param name="dstFragments"> </param>
-	 *          <param name="count"> </param>
-	 *          <size> </size>
-	 *      </testperf>
-	 *  \endxmlonly
 	 */
 	void ptrnMulRgb8888(Pattern* patterns, Vector2* windowXY, Size* windowSize, rgb8888* valuesC, rgb8888* dstFragments, int count);
 
 	/**
-	 *  \defgroup alphaTest alphaTest
 	 *  \brief Функция производит альфа-тестирование фрагментов изображения.
 	 *  
 	 *  \param fragments [in] Входные фрагменты изображения расположенные в памяти подряд
@@ -73,21 +44,10 @@ extern "C" {
 	 *  \details Функция прогоняет фрагменты изображения в формате RGB8888 через альфа-тест. На выходе получается маска, которую можно будет 
 	 *  затем применить на фрагменты изображения. Значения референсного значения альфа и текущий режим тестирования определяется 
 	 *  внутренними переменными функции, доступ к которым производится другим способом.
-	 *  
-	 *  \par
-	 *  \xmlonly
-	 *      <testperf>
-	 *          <param name="fragments"> </param>
-	 *          <param name="dstAlphaMask"> </param>
-	 *          <param name="totalSize"> </param>
-	 *          <size> </size>
-	 *      </testperf>
-	 *  \endxmlonly
 	 */
 	void alphaTest(rgb8888* fragments, nm32s* dstAlphaMask, int totalSize);
 	
 	/**
-	 *  \defgroup depthTest32 depthTest32
 	 *  \brief Функция производит тест глубины для фрагментов изображения
 	 *  
 	 *  \param zBuffPoints [in] Адреса нижних левых углов окон буфера глубины оответствующих фрагменту
@@ -100,25 +60,11 @@ extern "C" {
 	 *  \details Функция сравнивает предварительные фрагменты буфера глубины с самим буфером глубины. На выходе получается маска,
 	 *  которую можно будет затем применить на фрагменты изображения. Текущий режим тестирования и возможность перезаписи буфера глубины
 	 *  определяется внутренними переменными функции, доступ к которым производится другим способом
-	 *  
-	 *  \par
-	 *  \xmlonly
-	 *      <testperf>
-	 *          <param name="zBuffPoints"> </param>
-	 *          <param name="zBuffStride"> </param>
-	 *          <param name="fragments"> </param>
-	 *          <param name="fragSizes"> </param>
-	 *          <param name="dstDepthMask"> </param>
-	 *          <param name="count"> </param>
-	 *          <size> </size>
-	 *      </testperf>
-	 *  \endxmlonly
 	 */
 	void depthTest32(nm32s** zBuffPoints, int zBuffStride, nm32s* fragments, Size* fragSizes, nm32s* dstDepthMask, int count);
 	
 	
 	/**
-	 *  \defgroup blendRgb8888 blendRgb8888
 	 *  \brief Функция смешивания фрагментов изображения
 	 *  
 	 *  \param imagePoints [in] Адреса нижних левых углов окон буфера цветов соответствующих фрагменту
@@ -131,24 +77,10 @@ extern "C" {
 	 *  \details Функция смешивает пиксели фрагментов изображения с соответствующими окнами буфера цветов и с одновременным маскированием
 	 *  записывает результат в буфер цветов. Режим смешивания определяется внутренними переменными функции, доступ к которым производится
 	 *  другим способом.
-	 *  
-	 *  \par
-	 *  \xmlonly
-	 *      <testperf>
-	 *          <param name="imagePoints"> </param>
-	 *          <param name="imageStride"> </param>
-	 *          <param name="fragments"> </param>
-	 *          <param name="fragMask"> </param>
-	 *          <param name="fragSizes"> </param>
-	 *          <param name="count"> </param>
-	 *          <size> </size>
-	 *      </testperf>
-	 *  \endxmlonly
 	 */
 	void blendRgb8888(rgb8888** imagePoints, int imageStride, rgb8888* fragments, nm32s* fragMask, Size* fragSizes, int count);
 	
 	/**
-	 *  \defgroup blendRgb8888 blendRgb8888
 	 *  \brief Функция копирования фрагментов цвета в буфер цвета
 	 *  
 	 *  \param imagePoints [in] Адреса нижних левых углов окон буфера цветов соответствующих фрагменту
@@ -159,19 +91,6 @@ extern "C" {
 	 *  \param count [in] Число фрагментов
 	 *  \retval Return description
 	 *  \details Функция копирует фрагменты буфера цветов в буфер цветов с наложение маски фрагментов
-	 *  
-	 *  \par
-	 *  \xmlonly
-	 *      <testperf>
-	 *          <param name="imagePoints"> </param>
-	 *          <param name="imageStride"> </param>
-	 *          <param name="fragments"> </param>
-	 *          <param name="fragMask"> </param>
-	 *          <param name="fragSizes"> </param>
-	 *          <param name="count"> </param>
-	 *          <size> </size>
-	 *      </testperf>
-	 *  \endxmlonly
 	 */
 	void copyToFrameBufferRgb8888(rgb8888** imagePoints, int imageStride, rgb8888* fragments, nm32s* fragMask, Size* fragSizes, int count);
 	

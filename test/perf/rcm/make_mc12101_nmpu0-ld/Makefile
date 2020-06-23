@@ -22,9 +22,9 @@ AS       = nmc-gcc
 CC_FLAGS = -std=c++11 -O2 -Wall -mnmc4-float
 PROJECT  = main
 TARGET   =$(PROJECT)
-INC_DIRS = -I"$(NMPP)/include" -I"$(HAL)/include" -I../../../../include
+INC_DIRS = -I"$(NMPP)/include" -I"$(HAL)/include" -I$(ROOT)/include
 LIB_DIRS = -L"$(NMCGCC)/lib" -L"$(NMCGCC)/nmc/lib/nmc4" -L"$(NMPP)/lib" -L"$(HAL)/lib" -L$(ROOT)/lib
-LIBS     = -lnmpp-nmc4f -lhal-mc12101 -lnmopengl-nmc4f
+LIBS     = -lnmopengl-nmc4f -lnmpp-nmc4f -lhal-mc12101
 
 CFG      =  "-Wl,-Tmc12101board-nmpu0.ld"
 

@@ -1,4 +1,3 @@
-ROOT=../../../../..
 ###########################################################################################
 # (RC)Module 7/8/2015
 #
@@ -54,8 +53,8 @@ PROJECT          = main0
 OUT_DIR          = .
 TARGET           = $(OUT_DIR)/$(PROJECT).abs
 INC_DIRS         = -I"$(NMPP)/include" -I$(HAL)/include -I$(ROOT)/include
-SRC_DIRS 	 	 = ..
-LIB_DIRS         = -L "$(NMC_GCC_TOOLPATH)/nmc4-ide/lib" -L"$(NMPP)/lib" -L"$(HAL)/lib" -L"$(ROOT)/lib"
+SRC_DIRS 	 	 =  ..
+LIB_DIRS         = -L "$(NMC_GCC_TOOLPATH)/nmc4-ide/lib" -L"$(NMPP)/lib" -L"$(HAL)/lib" -I$(ROOT)/lib
 TMP_DIR          = Release
 #-------------- RELEASE/ALL config -------------------
 CC 				 = nmc-g++

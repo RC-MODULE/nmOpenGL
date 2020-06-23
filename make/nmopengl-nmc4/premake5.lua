@@ -5,7 +5,7 @@ solution "nmopengl-nmc4f"
 	project "nmopengl-nmc4f"
       kind "Makefile"
 	  
-      files { "../../include/*.h", "Makefile" , "../../src_proc0/nm/*.asm", "../../src_proc0/nmgl/*.cpp",  "../../src_proc0/common/*.cpp" }
+      files { "../../include/*.h", "Makefile" , "../../src_proc1/nm/*.asm",  "../../src_proc1/common/*.cpp" }
 	 
 	  configuration "Debug"
 		   buildcommands {"make DEBUG=y -f Makefile"}

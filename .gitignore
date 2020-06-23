@@ -24,5 +24,6 @@ ldscript
 *.map
 *.dump
 *.a
+*.lib
 
 *.dll

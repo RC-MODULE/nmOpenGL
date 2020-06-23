@@ -1,4 +1,3 @@
-ROOT=../../../../..
 ###########################################################################################
 # (RC)Module 7/8/2015
 #
@@ -50,20 +49,20 @@ ROOT=../../../../..
 include $(ROOT)/global.mk
 include 		 nmc4vars_win.mk
 #-------------- target & input dirs -------------------
-PROJECT          = main0
+PROJECT          = main1
 OUT_DIR          = .
 TARGET           = $(OUT_DIR)/$(PROJECT).abs
 INC_DIRS         = -I"$(NMPP)/include" -I$(HAL)/include -I$(ROOT)/include
-SRC_DIRS 	 	 = ..
-LIB_DIRS         = -L "$(NMC_GCC_TOOLPATH)/nmc4-ide/lib" -L"$(NMPP)/lib" -L"$(HAL)/lib" -L"$(ROOT)/lib"
+SRC_DIRS 	 	 =  ..
+LIB_DIRS         = -L "$(NMC_GCC_TOOLPATH)/nmc4-ide/lib" -L"$(NMPP)/lib" -L"$(HAL)/lib" -I$(ROOT)/lib
 TMP_DIR          = Release
 #-------------- RELEASE/ALL config -------------------
 CC 				 = nmc-g++
 AS               = nmc-gcc 				 
-AS_FLAGS    	 = -c -mmas -x assembler -Wa,-split_sir -mnmc4-float
+AS_FLAGS    	 = -c -mmas -x assembler -Wa,-split_sir -mnmc4-fixed
 CC_FLAGS		 = -std=c++11
-LIBS             = -lnmopengl-nmc4f -lnmpp-nmc4f -lhal-mc12101
-LINKER_FLAGS     =   -Xlinker -Map=.main0.map $(LIB_DIRS) "-Wl,-cmc12101brd-nmpu0.cfg"  -Wl,--whole-archive -lmc12101 -Wl,--no-whole-archive -o$(TARGET)
+LIBS             = -lnmopengl-nmc4 -lnmpp-nmc4f -lhal-mc12101
+LINKER_FLAGS     =   -Xlinker -Map=.main1.map $(LIB_DIRS) "-Wl,-cmc12101brd-nmpu0.cfg"  -Wl,--whole-archive -lmc12101 -Wl,--no-whole-archive -o$(TARGET)
 #=================== SOURCE & OBJECTS COLLECTION ===========================
 
 .SUFFIXES:
@@ -96,7 +95,7 @@ all:  $(TARGET)
 #	$(MAKE) -j4
 
 run: $(TARGET)
-	mc12101run $(TARGET)
+	mc12101run $(TARGET) -p
 	
 $(TMP_DIR):
 	-mkdir "$(@)"
