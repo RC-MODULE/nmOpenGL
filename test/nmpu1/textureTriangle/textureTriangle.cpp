@@ -754,11 +754,13 @@ void textureTriangle(Pattern* patterns,
 						float ac; 
 						float av;
                         
-                        vertexRGB.x = ((pSrc[0] >> 8 ) & 0xff)/255.0;
-                        vertexRGB.y = ((pSrc[0] >> 16) & 0xff)/255.0;
-                        vertexRGB.z = ((pSrc[0] >> 24) & 0xff)/255.0;
-                        vertexAlpha = ((pSrc[0]) & 0xff)/255.0;
+						//(nm32s)pSrc[0] = 0xARGB
+                        vertexRGB.x = ((pSrc[0] >> 16 ) & 0xff)/255.0;//r
+                        vertexRGB.y = ((pSrc[0] >> 8) & 0xff)/255.0;//g
+                        vertexRGB.z = (pSrc[0] & 0xff)/255.0;//b
+                        vertexAlpha = (((pSrc[0]) >> 24) & 0xff)/255.0;//a
 
+						//TODO: extra assignment. name vertexRGB is umbiguous and unnecessary.
 						cf.x = vertexRGB.x;
 						cf.y = vertexRGB.y;
 						cf.z = vertexRGB.z;
@@ -984,10 +986,11 @@ void textureTriangle(Pattern* patterns,
 						}
 						  
                     nm32s color = 0;
-                    color = color | (((nm32s)(cv.x * 255) & 0xff) << 8);
-                    color = color | (((nm32s)(cv.y * 255) & 0xff) << 16);
-                    color = color | (((nm32s)(cv.z * 255) & 0xff) << 24);
-                    color = color | ((nm32s)(av * 255) & 0xff);
+					//(nm32s)pDst[0] = 0xARGB
+					color = color | (((nm32s)(av * 255) & 0xff) << 24);//a
+					color = color | (((nm32s)(cv.x * 255) & 0xff) << 16); //r
+                    color = color | (((nm32s)(cv.y * 255) & 0xff) << 8);//g
+                    color = color | (((nm32s)(cv.z * 255) & 0xff));//b
                     // pDst[0] = mul * pSrc[0];
                     pDst[0] = mul * color;
                 }
