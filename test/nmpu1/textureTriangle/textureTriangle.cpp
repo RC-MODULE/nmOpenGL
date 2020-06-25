@@ -104,10 +104,10 @@ int getPixelValue(unsigned int x, unsigned int y, TexImage2D image, color * pixe
 	int alignment = cntxt.texState.unpackAlignment;
 
 #ifdef DEBUG
-		if (alignment)
-		{
-			printf("%s: wrong alignment value (%d)", __func__, alignment);
-		}
+		// if (alignment)
+		// {
+			// printf("%s: wrong alignment value (%d)", __func__, alignment);
+		// }
 #endif
 
 	switch (format)
@@ -346,7 +346,9 @@ void textureTriangle(Pattern* patterns,
                  nm32s* pDstTriangle, 
                  int count)
 {
-    printf ("Start textureTriangle\n"); 
+#ifdef DEBUG
+    // printf ("Start textureTriangle\n"); 
+#endif //DEBUG
     
     //Активный текстурный модуль
     cntxt.texState.activeTexUnitIndex = 0;
@@ -1056,8 +1058,9 @@ void textureTriangle(Pattern* patterns,
         src += windows[cnt].height * windows[cnt].width;
         dst += windows[cnt].height * windows[cnt].width;
     }
-    
-    printf ("End textureTriangle\n");     
+#ifdef DEBUG
+    // printf ("End textureTriangle\n");     
+#endif //DEBUG
     return;
 }
 
