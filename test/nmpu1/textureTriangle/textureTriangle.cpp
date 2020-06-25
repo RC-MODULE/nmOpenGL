@@ -487,6 +487,7 @@ void textureTriangle(Pattern* patterns,
         // Area of triangle.
         // Part of calculation attribute values using barycentric coordinates.
         edgeFunction(x0, y0, x1, y1, x2, y2, &area);
+        float oneOverArea = 1.0/area;
         int pixelCnt = 0;
         
         
@@ -526,6 +527,10 @@ void textureTriangle(Pattern* patterns,
                     edgeFunction(x1, y1, x2, y2, xf, yf, &w0);
                     edgeFunction(x2, y2, x0, y0, xf, yf, &w1);
                     edgeFunction(x0, y0, x1, y1, xf, yf, &w2);
+                    
+                    w0 = w0*oneOverArea;
+                    w1 = w1*oneOverArea;
+                    w2 = w2*oneOverArea;
                     
                     // printf ("\n\n pixelCnt = %d xf = %f yf = %f\n", pixelCnt++, xf, yf);
                     // if (w0 < 0)
