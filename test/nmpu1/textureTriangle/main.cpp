@@ -168,7 +168,7 @@ int main ()
     nm32s pDstTriangle [WIDTH_PTRN * HEIGHT_PTRN * TRIANGLE_AMOUNT]; 
     
     //Массив значений цветов для 
-    nm32s valueC [TRIANGLE_AMOUNT] = {0x0000ffff, 0x00ff00ff}; //0xBGRA
+    nm32s valueC [TRIANGLE_AMOUNT] = {0xffff0000, 0xff00ff00}; //0xARGB
     
     //Информация о размещении видимой части треугольников в сегменте
     Rectangle windows [TRIANGLE_AMOUNT];
@@ -380,10 +380,11 @@ int rawToImage (nm32s* triangles, Rectangle* windows, image_t* images, int count
             {
                 pixel_pos = (dstRow*width + col)*4;
                 pixel_value = triangle[srcRow*width + col];
-                ((unsigned char*)images[i].pixels)[pixel_pos] = (pixel_value & 0x0000ff00) >> 8;
-                ((unsigned char*)images[i].pixels)[pixel_pos + 1] = (pixel_value & 0x00ff0000) >> 16;
-                ((unsigned char*)images[i].pixels)[pixel_pos + 2] = (pixel_value & 0xff000000) >> 24;
-                ((unsigned char*)images[i].pixels)[pixel_pos + 3] = (pixel_value & 0x000000ff);
+				//0xARGB t0 0xRGBA
+                ((unsigned char*)images[i].pixels)[pixel_pos] = (pixel_value & 0x00ff0000) >> 16;
+                ((unsigned char*)images[i].pixels)[pixel_pos + 1] = (pixel_value & 0x0000ff00) >> 8;
+                ((unsigned char*)images[i].pixels)[pixel_pos + 2] = (pixel_value & 0x000000ff);
+                ((unsigned char*)images[i].pixels)[pixel_pos + 3] = (pixel_value & 0xff000000) >> 24;
             }
         }
         
