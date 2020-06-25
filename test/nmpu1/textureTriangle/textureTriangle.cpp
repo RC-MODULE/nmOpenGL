@@ -6,7 +6,7 @@
 #include "tex_common.h"
 #include <stdio.h>
 #include <math.h>
-#include <float.h>
+#include <float.h> //TODO: only FLT_EPSILON is used from float.h
 
 // #define USE_BARYCENTRIC
 
