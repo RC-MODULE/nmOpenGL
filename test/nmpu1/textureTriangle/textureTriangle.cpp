@@ -409,7 +409,7 @@ void textureTriangle(Pattern* patterns,
 																			   //TODO:remove magic number 2
 		winY0 = cntxt.texState.segY0 + (winOffset >> 7); //>> 7 = divide by segment width 
 														 //TODO: remove magic number 7
-		winX0 = cntxt.texState.segX0 + (winOffset & cntxt.texState.segWidth);//get reminder  of division by segment width
+		winX0 = cntxt.texState.segX0 + (winOffset & (cntxt.texState.segWidth-1));//get reminder  of division by segment width
         
 //start calculate pixel value for texturing
         
