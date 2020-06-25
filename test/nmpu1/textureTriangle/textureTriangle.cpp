@@ -10,6 +10,9 @@
 
 #define TEXTURE_TRIANGLE_SECTION ".text_demo3dExt"
 
+#define USE_BARYCENTRIC
+// #define PERSPECTIVE_CORRECT
+
 extern NMGL_Context_NM1 cntxt; 
 
 #define  TEXTURE_MIN_LOD   -1000
@@ -438,7 +441,7 @@ void textureTriangle(Pattern* patterns,
         float z1 = triangles->z[cnt];
         float z2 = triangles->z[cnt];
         
-        
+#ifdef PERSPECTIVE_CORRECT        
 		// Compute some coefficients.
 		// Used for:
 		// * something similar to linear-rational interpolation 
@@ -473,7 +476,31 @@ void textureTriangle(Pattern* patterns,
 		float D1_t = D2_12*t0 + D2_02*t1 + D2_10*t2;
         
 		/*****************************************************************/
+#else //PERSPECTIVE_CORRECT
+        float oneOverTriSquare = 1.0/((x0-x1)*(y2-y1)-(y0-y1)*(x2-x1));
+        float A0 = y2-y1;
+        float A1 = y0-y2;
+        float A2 = y1-y0;
+        
+        float B0 = x1-x2;
+        float B1 = x2-x0;
+        float B2 = x0-x1;
 
+        float D0 = x2*y1-y2*x1;
+        float D1 = y2*x0-x2*y0;
+        float D2 = x1*y0-x0*y1;
+        
+        float A_s = oneOverTriSquare*(A0*s0 + A1*s1 + A2*s2);
+		float B_s = oneOverTriSquare*(B0*s0 + B1*s1 + B2*s2);
+		float D_s = oneOverTriSquare*(D0*s0 + D1*s1 + D2*s2);
+
+        float A_t = oneOverTriSquare*(A0*t0 + A1*t1 + A2*t2);
+		float B_t = oneOverTriSquare*(B0*t0 + B1*t1 + B2*t2);
+		float D_t = oneOverTriSquare*(D0*t0 + D1*t1 + D2*t2);
+
+#endif //PERSPECTIVE_CORRECT
+
+#ifdef PERSPECTIVE_CORRECT
 		//Precompute reciprocal of vertex z-coordinate.
 		//Part of calculation perspective correct attribute values using barycentric coordinates.
 		z0 = 1 / z0;
@@ -489,7 +516,8 @@ void textureTriangle(Pattern* patterns,
         t0 *= z0;
         t1 *= z1;
         t2 *= z2;
-        
+#endif //PERSPECTIVE_CORRECT
+
         // Area of triangle.
         // Part of calculation attribute values using barycentric coordinates.
         edgeFunction(x0, y0, x1, y1, x2, y2, &area);
@@ -553,25 +581,33 @@ void textureTriangle(Pattern* patterns,
                     // {
                         // printf ("w2 < 0 w2 = %f\n", w2);
                     // }
-                    
+#ifdef PERSPECTIVE_CORRECT
                     //Part of calculation of perspective correct attribute values using barycentric coordinates.
                     float oneOverZ = z0 * w0 + z1 * w1 + z2 * w2;
                     float z = 1 / oneOverZ;
+#endif //PERSPECTIVE_CORRECT
                     
                     float s = 0.0;
                     float t = 0.0;
 #ifdef USE_BARYCENTRIC
                     s = s0 * w0 + s1 * w1 + s2 * w2;
                     t = t0 * w0 + t1 * w1 + t2 * w2;
+#ifdef PERSPECTIVE_CORRECT
                     s *= z;
                     t *= z;
-#else
+#endif //PERSPECTIVE_CORRECT
+#else //USE_BARYCENTRIC
+#ifdef PERSPECTIVE_CORRECT
                     float oneOverDenominator = 1 / (A2*xf + B2*yf + D2);
                     float rl_s = (A1_s*xf + B1_s*yf + D1_s) * oneOverDenominator;
                     float rl_t = (A1_t*xf + B1_t*yf + D1_t) * oneOverDenominator;
                     s = rl_s;
                     t = rl_t;
-#endif
+#else //PERSPECTIVE_CORRECT                    
+                    s = A_s*xf + B_s*yf + D_s;
+                    t = A_t*xf + B_t*yf + D_t;
+#endif //PERSPECTIVE_CORRECT
+#endif //USE_BARYCENTRIC
                     Vec2f st;
                     st.x = s;
                     st.y = t;
@@ -587,12 +623,18 @@ void textureTriangle(Pattern* patterns,
 
 /*Calculate partial derivative for u(x,y) and v(x,y). level 0 texture are using to calculate scale factor*/
 
-
+#ifdef PERSPECTIVE_CORRECT
 						float derivOneOverDenom = 1.0 / ((A2*x + B2*y + D2)*(A2*x + B2*y + D2));
 						float dudx = (float)boundTexObject->texImages2D[0].width*((A1_s*B2 - A2*B1_s)*y + A1_s*D2 - A2*D1_s)*derivOneOverDenom;
 						float dudy = (float)boundTexObject->texImages2D[0].width*((B1_s*A2 - B2*A1_s)*x + B1_s*D2 - B2*D1_s)*derivOneOverDenom;
 						float dvdx = (float)boundTexObject->texImages2D[0].height*((A1_t*B2 - A2*B1_t)*y + A1_t*D2 - A2*D1_t)*derivOneOverDenom;
 						float dvdy = (float)boundTexObject->texImages2D[0].height*((B1_t*A2 - B2*A1_t)*x + B1_t*D2 - B2*D1_t)*derivOneOverDenom;
+#else //PERSPECTIVE_CORRECT  
+						float dudx = (float)boundTexObject->texImages2D[0].width*A_s;
+						float dudy = (float)boundTexObject->texImages2D[0].width*B_s;
+						float dvdx = (float)boundTexObject->texImages2D[0].height*A_t;
+						float dvdy = (float)boundTexObject->texImages2D[0].height*B_t;
+#endif //PERSPECTIVE_CORRECT
 
 /*Calculate scale factor*/
 #ifdef SCALE_FACTOR_IDEAL
