@@ -3,7 +3,7 @@
 #include "nmgl_data0.h"
 
 SECTION(".text_nmgl")
-void nmglColorPointer(NMGLint size, NMGLenum type, NMGLsizei stride, const void *pointer) {
+void nmglColorPointer(NMGLint size, NMGLenum type, NMGLsizei stride, const NMGLvoid *pointer) {
 	if(size!=4){
 		cntxt.error = NMGL_INVALID_VALUE;
 		return;

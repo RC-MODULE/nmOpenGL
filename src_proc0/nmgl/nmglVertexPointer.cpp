@@ -5,7 +5,7 @@
 #pragma code_section ".text_nmgl"
 
 SECTION(".text_nmgl")
-void nmglVertexPointer(NMGLint size, NMGLenum type, NMGLsizei stride, const void *pointer) {
+void nmglVertexPointer(NMGLint size, NMGLenum type, NMGLsizei stride, const NMGLvoid *pointer) {
 	if (size < 2 || size > 4) {
 		cntxt.error = NMGL_INVALID_VALUE;
 		return;

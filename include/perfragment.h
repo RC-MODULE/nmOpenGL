@@ -18,7 +18,8 @@ extern "C" {
 	 *  \retval Return description
 	 *  \details Функция берет заданное окно из двуразрядного паттерна и умножает его на константу. Получившиеся 32-разрядные фрагменты располагаются в памяти подряд
 	 */
-	void ptrnMulC32(Pattern* patterns, Vector2* windowXY, Size* windowSize, int* valuesC, nm32s* dstFragments, int count);
+	void ptrnMulC8(Pattern* patterns, Vector2* windowXY, Size* windowSize, int* valuesC, nm8s* dstFragments, int count);
+	void ptrnMulC32(Pattern* patterns, Vector2* windowXY, Size* windowSize, int* valuesC, nm32s* dstFragments, int count);	
 	
 	/**
 	 *  \brief Функция умножение паттерна на вектор цвета
@@ -94,9 +95,18 @@ extern "C" {
 	 */
 	void copyToFrameBufferRgb8888(rgb8888** imagePoints, int imageStride, rgb8888* fragments, nm32s* fragMask, Size* fragSizes, int count);
 	
-	//void preStencilTest();
-
-	//void applyMasks(nm32s* alphaMask, nm32s* depthMask));
+	
+	void stencilComp8(nm8s** stencilPoints, int buffStride, nm8s* stencilRefFrags, Size* fragSizes, nm8s* stencilMasks, int count);	
+	void stencilComp32(nm32s** stencilPoints, int buffStride, nm32s* stencilRefFrags, Size* fragSizes, nm32s* stancilMasks, int count);
+	
+	void stencilTest8(nm8s** stencilPoints, int buffStride, nm8s* stencilMask, Size* maskSizes, int count);
+	void stencilTest32(nm32s** stencilPoints, int buffStride, nm32s* stencilMask, Size* maskSizes, int count);
+	
+	void stencilTestWithDepth8(nm8s** stencilPoints, int buffStride, nm8s* stencilMask, nm8s* depthMask, Size* maskSizes, int count);
+	void stencilTestWithDepth32(nm32s** stencilPoints, int buffStride, nm32s* stencilMask, nm32s* depthMask, Size* maskSizes, int count);
+	
+	
+	void applyMasks32(nm32s* alphaMask, nm32s* depthMask, nm32s* stencilMask, nm32s* resultMask, int totalSize);
 
 }
 

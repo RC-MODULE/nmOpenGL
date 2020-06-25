@@ -5,7 +5,7 @@
 #pragma code_section ".text_nmgl"
 
 SECTION(".text_nmgl")
-void nmglNormalPointer(NMGLenum type, NMGLsizei stride, const void *pointer) {
+void nmglNormalPointer(NMGLenum type, NMGLsizei stride, const NMGLvoid *pointer) {
 	if (type != NMGL_FLOAT) {
 		cntxt.error = NMGL_INVALID_ENUM;
 		return;
@@ -21,7 +21,7 @@ void nmglNormalPointer(NMGLenum type, NMGLsizei stride, const void *pointer) {
 }
 
 SECTION(".text_nmgl")
-void nmglNormalPointerNM(NMGLenum type, NMGLsizei stride, const void *pointer) {
+void nmglNormalPointerNM(NMGLenum type, NMGLsizei stride, const NMGLvoid *pointer) {
 	if (type != NMGL_FLOAT) {
 		cntxt.error = NMGL_INVALID_ENUM;
 		return;
