@@ -8,7 +8,7 @@
 #include <math.h>
 #include <float.h> //TODO: only FLT_EPSILON is used from float.h
 
-// #define USE_BARYCENTRIC
+#define TEXTURE_TRIANGLE_SECTION ".text_demo3dExt"
 
 extern NMGL_Context_NM1 cntxt; 
 
@@ -51,17 +51,20 @@ int textureBaseLevel = 0;
 int textureMaxLevel = 1000;
 color borderColor;
 
+SECTION(TEXTURE_TRIANGLE_SECTION)
 int max (int a, int b)
 {
     return (b > a) ? b : a;
 }
 
+SECTION(TEXTURE_TRIANGLE_SECTION)
 int min (int a, int b)
 {
     return (b < a) ? b : a;
 }
 
 /* Compare two floats, 1 if are equal, 0 - otherwise */
+SECTION(TEXTURE_TRIANGLE_SECTION)
 int equalf(float a, float b)
 {
 	if (((a < 0) && (b >= 0)) || ((a >= 0) && (b < 0)))
@@ -79,6 +82,7 @@ int equalf(float a, float b)
 	}
 }
 
+SECTION(TEXTURE_TRIANGLE_SECTION)
 int getPixelValue(unsigned int x, unsigned int y, TexImage2D image, color * pixelValue)
 {
 
@@ -185,7 +189,7 @@ int getPixelValue(unsigned int x, unsigned int y, TexImage2D image, color * pixe
     return 0;
 }
 
-
+SECTION(TEXTURE_TRIANGLE_SECTION)
 float wrapCoord (NMGLint textureWrapMode, int texAxisSize, float texCoord)
 {
 	float min_coord_val = 1 / (float)texAxisSize*0.5; //CLAMP_TO_EDGE
@@ -213,6 +217,7 @@ float wrapCoord (NMGLint textureWrapMode, int texAxisSize, float texCoord)
 	return resTexCoord;
 }
 
+SECTION(TEXTURE_TRIANGLE_SECTION)   
 color getPixelLinear(Vec2f st, NMGLint textureWrapS, NMGLint textureWrapT, TexImage2D texture)
 {
 
@@ -309,6 +314,7 @@ color getPixelLinear(Vec2f st, NMGLint textureWrapS, NMGLint textureWrapT, TexIm
 	return pixelValue;//TODO return by pointer
 }
 
+SECTION(TEXTURE_TRIANGLE_SECTION)
 color getPixelNearest(Vec2f st, TexImage2D texture)
 {
 
@@ -328,7 +334,7 @@ color getPixelNearest(Vec2f st, TexImage2D texture)
 
 }
 
-SECTION(".text_demo3d")
+SECTION(TEXTURE_TRIANGLE_SECTION)
 void textureTriangle(Pattern* patterns, 
                  Triangles* triangles,
                  nm32s** pROI,
@@ -1013,7 +1019,7 @@ void textureTriangle(Pattern* patterns,
     return;
 }
 
-
+SECTION(TEXTURE_TRIANGLE_SECTION)
 void edgeFunction(float x0, float y0, float x1, float y1, float x2, float y2, float* res)
 {
     *res = (x2 - x0) * (y1 - y0) - (y2 - y0) * (x1 - x0);
