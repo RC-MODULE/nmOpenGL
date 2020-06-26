@@ -7,11 +7,17 @@
 #include "service.h"
 #include "tests.h"
 
+// Performance testing
+#include "time.h"
+
 int triangulate_oneTriangleThreeDivisions_returnsSix();
 int triangulate_TwoTrianglesLowOutputSize_treatedCountIsOne();
 int triangulate_TwoTriangles_treatedCountIsTwo();
 int triangulate_oneTriangleThreeDivisions_outputVertexesAreCorrect();
 int triangulate_oneTriangleThreeDivisions_outputColorsAreCorrect();
+
+// Performance tests
+clock_t triangulate_oneTriangleOneDivision_returnsTwo();
 
 int main(int argc, char **argv)
 {
@@ -23,8 +29,11 @@ int main(int argc, char **argv)
 	RUN_TEST(triangulate_oneTriangleThreeDivisions_outputVertexesAreCorrect);
 	RUN_TEST(triangulate_oneTriangleThreeDivisions_outputColorsAreCorrect);
 
+	clock_t dt;
+	dt = triangulate_oneTriangleOneDivision_returnsTwo();
+
 	puts("OK");
-	return 0;
+	return dt;
 }
 
 int triangulate_oneTriangleThreeDivisions_returnsSix()
@@ -229,5 +238,40 @@ int triangulate_oneTriangleThreeDivisions_outputColorsAreCorrect()
 	TEST_VEC_ARRAYS_EQUAL(dstColor, expectedDstColor, 18);
 
 	return 0;
+}
+
+clock_t triangulate_oneTriangleOneDivision_returnsTwo()
+{
+	// Arrange
+	nm32f srcVertex[] = {
+							1,
+							1,
+							4,
+							2,
+							2,
+							7,
+							3,
+							1,
+							9
+						};
+	v4nm32f srcColor[3] = {0};
+	int srcCount = 1;
+	int maxWidth = 1;
+	int maxHeight = 1;
+	int maxDstSize = 10;
+	nm32f *dstVertex = (nm32f *)calloc(maxDstSize * 9, sizeof(nm32f));
+	v4nm32f *dstColor = (v4nm32f *) calloc(maxDstSize * 3, sizeof(v4nm32f));
+	int srcTreatedCount;
+	int res;
+
+	clock_t t1, t2, dt;
+	//Act
+	t1 = clock();
+	res = triangulate(srcVertex, srcColor, srcCount, maxWidth, maxHeight, maxDstSize, dstVertex, dstColor, &srcTreatedCount);
+	t2 = clock();
+	dt = t2 - t1;
+	(void) res;
+
+	return dt;
 }
 
