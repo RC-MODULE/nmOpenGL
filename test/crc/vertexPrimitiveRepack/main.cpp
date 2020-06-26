@@ -7,6 +7,9 @@
 #include "nmtype.h"
 #include "nmgl.h"
 
+// Performance testing
+#include "time.h"
+
 int vertexPrimitiveRepack_modeIsGL_TRIANGLES_dstVertexLengthIsCorrect();
 int vertexPrimitiveRepack_modeIsGL_TRIANGLES_dstVertexIsCorrect ();
 int vertexPrimitiveRepack_modeIsGL_TRIANGLES_dstColorLengthIsCorrect ();
@@ -54,6 +57,14 @@ int vertexPrimitiveRepack_modeIsGL_TRIANGLES_FAN90_dstColorIsCorrect();
 int vertexPrimitiveRepack_modeIsGL_TRIANGLES_FAN15Vertexes_returns13();
 int vertexPrimitiveRepack_modeIsGL_TRIANGLES_FAN45Vertexes_returns43();
 int vertexPrimitiveRepack_modeIsGL_TRIANGLES_FAN90Vertexes_returns88();
+
+// Performance tests
+clock_t vertexPrimitiveRepack_modeIsGL_TRIANGLES_192Vertices();
+clock_t vertexPrimitiveRepack_modeIsGL_TRIANGLES_48Vertices();
+clock_t vertexPrimitiveRepack_modeIsGL_TRIANGLES_STRIP_66Vertices();
+clock_t vertexPrimitiveRepack_modeIsGL_TRIANGLES_STRIP_34Vertices();
+clock_t vertexPrimitiveRepack_modeIsGL_TRIANGLES_FAN_66Vertices();
+clock_t vertexPrimitiveRepack_modeIsGL_TRIANGLES_FAN_34Vertices();
 
 int main(int argc, char **argv)
 {
@@ -105,6 +116,19 @@ int main(int argc, char **argv)
 	RUN_TEST(vertexPrimitiveRepack_modeIsGL_TRIANGLES_FAN15Vertexes_returns13);
 	RUN_TEST(vertexPrimitiveRepack_modeIsGL_TRIANGLES_FAN45Vertexes_returns43);
 	RUN_TEST(vertexPrimitiveRepack_modeIsGL_TRIANGLES_FAN90Vertexes_returns88);	
+
+	puts("");
+    puts("Performance tests: ");
+	clock_t dt[6];
+	dt[0] = vertexPrimitiveRepack_modeIsGL_TRIANGLES_192Vertices();
+	dt[1] = vertexPrimitiveRepack_modeIsGL_TRIANGLES_48Vertices();
+	dt[2] = vertexPrimitiveRepack_modeIsGL_TRIANGLES_STRIP_66Vertices();
+	dt[3] = vertexPrimitiveRepack_modeIsGL_TRIANGLES_STRIP_34Vertices();
+	dt[4] = vertexPrimitiveRepack_modeIsGL_TRIANGLES_FAN_66Vertices();	
+	dt[5] = vertexPrimitiveRepack_modeIsGL_TRIANGLES_FAN_34Vertices();
+	for (int i = 0; i < 6; ++i){
+		printf("dt[%i] = %i\n\r", i + 1, dt[i]);
+	}
 
     puts("OK");
 	return 0;
@@ -1651,3 +1675,162 @@ int vertexPrimitiveRepack_modeIsGL_TRIANGLES_FAN90Vertexes_returns88 ()
     return 0;
 }
 
+clock_t vertexPrimitiveRepack_modeIsGL_TRIANGLES_192Vertices()
+{
+	// Arrange
+	constexpr int trianglesCount = 64;							// number of output triangles
+    constexpr int vertCount = trianglesCount * 3;				// number of input vertexes
+	constexpr int outputCoordCount = 4 * 3 * trianglesCount;	// number of output vertexes
+
+    v4nm32f     srcVertex[vertCount] = {0};
+    v4nm32f     srcColor[vertCount] = {0};
+    nm32f       dstVertex[outputCoordCount] = {0};
+    v4nm32f     dstColor[3 * trianglesCount] = {0};
+
+    int mode = NMGL_TRIANGLES;
+
+	clock_t t1, t2, dt;
+	
+	// Act
+	int res;
+	t1 = clock();
+    res = vertexPrimitiveRepack(srcVertex, srcColor,dstVertex, dstColor, mode, vertCount);
+	t2 = clock();
+	dt = t2 - t1;	
+	(void) res;
+
+    return dt;
+}
+
+clock_t vertexPrimitiveRepack_modeIsGL_TRIANGLES_48Vertices()
+{
+	// Arrange
+	constexpr int trianglesCount = 16;							// number of output triangles
+    constexpr int vertCount = trianglesCount * 3;				// number of input vertexes
+	constexpr int outputCoordCount = 4 * 3 * trianglesCount;	// number of output vertexes
+
+    v4nm32f     srcVertex[vertCount] = {0};
+    v4nm32f     srcColor[vertCount] = {0};
+    nm32f       dstVertex[outputCoordCount] = {0};
+    v4nm32f     dstColor[3 * trianglesCount] = {0};
+
+    int mode = NMGL_TRIANGLES;
+
+	clock_t t1, t2, dt;
+	
+	// Act
+	int res;
+	t1 = clock();
+    res = vertexPrimitiveRepack(srcVertex, srcColor,dstVertex, dstColor, mode, vertCount);
+	t2 = clock();
+	dt = t2 - t1;	
+	(void) res;
+
+    return dt;
+}
+
+clock_t vertexPrimitiveRepack_modeIsGL_TRIANGLES_STRIP_66Vertices()
+{
+	// Arrange
+	constexpr int trianglesCount 	= 64;						// number of output triangles
+    constexpr int vertCount 		= trianglesCount + 2;		// number of input vertexes
+	constexpr int outputCoordCount 	= 4 * 3 * trianglesCount;	// number of output vertexes
+
+    v4nm32f	srcVertex[vertCount] 					= {0};
+    v4nm32f	srcColor[vertCount] 					= {0};
+    nm32f  	dstVertex[outputCoordCount] 			= {0};	
+    v4nm32f	dstColor[3 * trianglesCount] 			= {0};	
+
+    int mode = NMGL_TRIANGLE_STRIP;
+
+	clock_t t1, t2, dt;
+
+	// Act
+	int res;
+	t1 = clock();
+    res = vertexPrimitiveRepack(srcVertex, srcColor,dstVertex, dstColor, mode, vertCount);
+	t2 = clock();	
+	dt = t2 - t1;
+	(void) res;
+	
+    return dt;
+}
+
+clock_t vertexPrimitiveRepack_modeIsGL_TRIANGLES_STRIP_34Vertices()
+{
+	// Arrange
+	constexpr int trianglesCount 	= 32;						// number of output triangles
+    constexpr int vertCount 		= trianglesCount + 2;		// number of input vertexes
+	constexpr int outputCoordCount 	= 4 * 3 * trianglesCount;	// number of output vertexes
+
+    v4nm32f	srcVertex[vertCount] 					= {0};
+    v4nm32f	srcColor[vertCount] 					= {0};
+    nm32f  	dstVertex[outputCoordCount] 			= {0};	
+    v4nm32f	dstColor[3 * trianglesCount] 			= {0};	
+
+    int mode = NMGL_TRIANGLE_STRIP;
+
+	clock_t t1, t2, dt;
+
+	// Act
+	int res;
+	t1 = clock();
+    res = vertexPrimitiveRepack(srcVertex, srcColor,dstVertex, dstColor, mode, vertCount);
+	t2 = clock();	
+	dt = t2 - t1;
+	(void) res;
+	
+    return dt;
+}
+
+clock_t vertexPrimitiveRepack_modeIsGL_TRIANGLES_FAN_66Vertices()
+{
+	// Arrange
+	constexpr int trianglesCount 	= 64;						// number of output triangles
+    constexpr int vertCount 		= trianglesCount + 2;		// number of input vertexes
+	constexpr int outputCoordCount 	= 4 * 3 * trianglesCount;	// number of output vertexes
+
+    v4nm32f	srcVertex[vertCount] 					= {0};
+    v4nm32f	srcColor[vertCount] 					= {0};
+    nm32f  	dstVertex[outputCoordCount] 			= {0};	
+    v4nm32f	dstColor[3 * trianglesCount] 			= {0};	
+
+    int mode = NMGL_TRIANGLE_FAN;
+
+	clock_t t1, t2, dt;
+
+	// Act
+	int res;
+	t1 = clock();
+    res = vertexPrimitiveRepack(srcVertex, srcColor,dstVertex, dstColor, mode, vertCount);
+	t2 = clock();
+	dt = t2 - t1;
+
+    return dt;
+}
+
+clock_t vertexPrimitiveRepack_modeIsGL_TRIANGLES_FAN_34Vertices()
+{
+	// Arrange
+	constexpr int trianglesCount 	= 32;						// number of output triangles
+    constexpr int vertCount 		= trianglesCount + 2;		// number of input vertexes
+	constexpr int outputCoordCount 	= 4 * 3 * trianglesCount;	// number of output vertexes
+
+    v4nm32f	srcVertex[vertCount] 					= {0};
+    v4nm32f	srcColor[vertCount] 					= {0};
+    nm32f  	dstVertex[outputCoordCount] 			= {0};	
+    v4nm32f	dstColor[3 * trianglesCount] 			= {0};	
+
+    int mode = NMGL_TRIANGLE_FAN;
+
+	clock_t t1, t2, dt;
+
+	// Act
+	int res;
+	t1 = clock();
+    res = vertexPrimitiveRepack(srcVertex, srcColor,dstVertex, dstColor, mode, vertCount);
+	t2 = clock();
+	dt = t2 - t1;
+
+    return dt;
+}
