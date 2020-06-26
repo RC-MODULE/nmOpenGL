@@ -7,6 +7,9 @@
 #include "service.h"
 #include "tests.h"
 
+// Performance testing
+#include "time.h"
+
 #define SIZE 64
 #define DELTA 1.0
 
@@ -21,6 +24,9 @@ int nmppsCmpGteLteMirrorV_32f_halfOfTheSizeIs16AndNotMultipleOf32_16MostSignific
 int nmppsCmpGteLteMirrorV_32f_halfOfTheSizeIs32AndIsMultipleOf32_NextBitsOfFlagsAreOnesAndNotChanged();
 int nmppsCmpGteLteMirrorV_32f_halfOfTheSizeIs32AndIsMultipleOf32_NextBitsOfFlagsAreZeroesAndNotChanged();
 
+// Performance tests
+clock_t nmppsCmpGteLteMirrorV_32f_64ValuesAreInsideTheRange_allFlagsAreOnes();
+
 int main(int argc, char **argv)
 {
 	puts("nmppsCmpGteLteMirrorV_32f tests: ");
@@ -32,8 +38,12 @@ int main(int argc, char **argv)
 	RUN_TEST(nmppsCmpGteLteMirrorV_32f_halfOfTheSizeIs32AndIsMultipleOf32_NextBitsOfFlagsAreOnesAndNotChanged);
 	RUN_TEST(nmppsCmpGteLteMirrorV_32f_halfOfTheSizeIs32AndIsMultipleOf32_NextBitsOfFlagsAreZeroesAndNotChanged);
 	RUN_TEST(nmppsCmpGteLteMirrorV_32f_halfOfTheSizeIs16AndNotMultipleOf32_16MostSignificantFlagsOf32WordAreZero);
+
+	clock_t dt;
+	dt = nmppsCmpGteLteMirrorV_32f_64ValuesAreInsideTheRange_allFlagsAreOnes();
+
 	puts("OK");
-	return 0;
+	return dt;
 }
 void setFlagsRange(nm1 *pVec, int start, int n, int1b value)
 {
@@ -426,5 +436,41 @@ int nmppsCmpGteLteMirrorV_32f_halfOfTheSizeIs16AndNotMultipleOf32_16MostSignific
 		nmppsFree(expectedOddFlags);
 
 		return 0;
+}
+
+clock_t nmppsCmpGteLteMirrorV_32f_64ValuesAreInsideTheRange_allFlagsAreOnes()
+{
+		// Arrange
+		constexpr int size = 64;
+
+		nm32f wArray[size] = {0};
+		// Range is -1.0 .. 1.0
+		for (int i = 0; i < size; ++i) {
+			wArray[i] = DELTA;
+		}
+
+		nm32f src_all_are_inside_the_range[size];
+		for (int i = 0; i < size; ++i) {
+			src_all_are_inside_the_range[i] = DELTA - 0.5;
+		}
+
+		nm1 *evenFlags = nmppsMalloc_1(size/2);
+		nm1 *oddFlags = nmppsMalloc_1(size/2);
+		setFlagsRange(evenFlags, 0, size/2, 0);
+		setFlagsRange(oddFlags, 0, size/2, 0);
+
+		clock_t t1, t2, dt;
+
+		// Act 
+		t1 = clock();
+		nmppsCmpGteLteMirrorV_32f(src_all_are_inside_the_range, wArray, evenFlags, oddFlags, size);
+		t2 = clock();
+		dt = t2 - t1;
+
+		// Assert
+		nmppsFree(evenFlags);
+		nmppsFree(oddFlags);
+
+		return dt;
 }
 
