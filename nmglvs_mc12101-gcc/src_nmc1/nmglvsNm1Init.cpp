@@ -81,6 +81,8 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 		return e;
 	}
 
+	halHostSync(0x600DB00F);	// send ok to host
+
 	NMGLSynchroData* synchroData = (NMGLSynchroData*)halSyncAddr((int*)cntxt.patterns, 0);
 	cntxt.synchro.init(synchroData);
 	cntxt.polygonsData = (PolygonsArray*)halSyncAddr(0, 0);

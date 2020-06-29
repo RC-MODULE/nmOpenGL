@@ -53,6 +53,13 @@ int nmglvsHostInit()
 			return -2;
 		}
 	}
+	for (int i = 0; i < NUM_NM_CORES; i++) {
+		int ok = halSync(0, i);
+		if (ok != 0x600DB00F) {
+			printf("Interprocessor allocation error!\n", i);
+			return -3;
+		}
+	}
 //----------------init-nmc1------------------------------
 	//nmc1, sync0
 	int patternsNM = halSync(1,1);

@@ -73,11 +73,11 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 
 	}
 	catch (int& e) {
-		printf("error=%d\n", e);
 		halHostSync(0xDEADB00F);
 		return e;
 	}
-
+	halHostSync(0x600DB00F);	// send ok to host
+	
 	cntxt.patterns = (PatternsArray*)halSyncAddr(synchroData, 1);
 	halSyncAddr(cntxt.polygonsData, 1);
 
