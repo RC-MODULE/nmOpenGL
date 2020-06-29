@@ -1,7 +1,7 @@
 #ifndef __NMGLTEX_NM1_H__
 #define __NMGLTEX_NM1_H__
 
-#include "tex_common.h"
+#include "nmgltex_common.h"
 
 struct NMGL_Context_NM1_Texture {
 	
