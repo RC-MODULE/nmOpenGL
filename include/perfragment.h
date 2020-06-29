@@ -3,8 +3,52 @@
 //Функции в этом заголовочном файле пока что не имеют реализациии. Этот заголовочный файл описывает интерфейс для возможного улучшения
 //процесса растеризации
 
+//FB - framebuffer
+//fbrw - framebuffer read-write
+//fbr - framebuffer read
+//ScissorTest - тест ножниц, отрисовывает полигоны только в заданном прямоугольнике (если включен)
+//AlphaTest - тест по значению альфа-компоненты цвета (если включен)
+//StencilTest - трафаретный тест (если включен)
+//DepthTest - тест глубины (Z-буфер) (если включен)
+//Blending - смешивание цветов фрагмента с цветами изображения (если включено)
+
+//Per-Fragment Operations OpenGL
+
+//Fragment -> PixelOwnershipTest -> ScissorTest -> AlphaTest -> StencilTest(fbrw) -> DepthTest(fbrw) -> Blending(fbr) -> 
+// -> Dithering -> LogicOp(fbr) -> to FB
+
+
+
+//В этой реализации Scissor Test не выполняется, так как предполагается, что он уже сделан на более раннем этапе, 
+//а этапы Dithering и LogicOp не обязательны в реализации OpenGL SC 1.0.1, следовательно Blending 
+//можно объединить с записью в буфер цветов, поэтому получается следующий алгоритм
+
+//Fragment -> AlphaTest -> StencilTest(fbrw) -> DepthTest(fbrw) -> Blending(fbrw)
+
 #include "demo3d_nm1.h"
 extern "C" {
+	
+	/**
+	 *  \brief Общая функция операции с фрагментом
+	 *  
+	 *  \param patterns [in] Двуразрядные паттерны фигур
+	 *  \param ptrnWindowXY [in] Координаты нижнего левого угла необходимого фрагмента паттернов
+	 *  \param ptrnWindowSize [in] Размер необходимого фрагмента паттернов
+	 *  \param leftBottomPoints [in] Кординаты нижнего левого угла фрагментов в буферах
+	 *  \param valuesC [in] Значения цветов фрагментов
+	 *  \param valuesZ [in] Значения z-координат фрагментов для теста глубины
+	 *  \param count [in] Число паттернов
+	 *  \retval Return description
+	 *  \details Details
+	 */
+	void perFragmentOperate(Pattern* patterns, 
+							Vector2* ptrnWindowXY, 
+							Size* ptrnWindowSize, 
+							Vector2* leftBottomPoints,
+							rgb8888* valuesC,
+							int* valuesZ,
+							int count);
+							
 
 	/**
 	 *  \brief Функция умножения паттерна на константы
@@ -16,7 +60,7 @@ extern "C" {
 	 *  \param dstFragments [out] Выходной массив фрагментов
 	 *  \param count [in] Число паттернов
 	 *  \retval Return description
-	 *  \details Функция берет заданное окно из двуразрядного паттерна и умножает его на константу. Получившиеся 32-разрядные фрагменты располагаются в памяти подряд
+	 *  \details Функция берет заданное окно из двуразрядного паттерна и умножает его на константу. Получившиеся фрагменты располагаются в памяти подряд
 	 */
 	void ptrnMulC8(Pattern* patterns, Vector2* windowXY, Size* windowSize, int* valuesC, nm8s* dstFragments, int count);
 	void ptrnMulC32(Pattern* patterns, Vector2* windowXY, Size* windowSize, int* valuesC, nm32s* dstFragments, int count);	
@@ -82,7 +126,7 @@ extern "C" {
 	void blendRgb8888(rgb8888** imagePoints, int imageStride, rgb8888* fragments, nm32s* fragMask, Size* fragSizes, int count);
 	
 	/**
-	 *  \brief Функция копирования фрагментов цвета в буфер цвета
+	 *  \brief Функция копирования фрагментов цвета в буфер цвета (без смешивания)
 	 *  
 	 *  \param imagePoints [in] Адреса нижних левых углов окон буфера цветов соответствующих фрагменту
 	 *  \param imageStride [in] Ширина изображения
@@ -95,18 +139,43 @@ extern "C" {
 	 */
 	void copyToFrameBufferRgb8888(rgb8888** imagePoints, int imageStride, rgb8888* fragments, nm32s* fragMask, Size* fragSizes, int count);
 	
+	/**
+	 *  \brief Функции сравнения значений трафаретного буфера с референсным значением
+	 *  
+	 *  \param stencilPoints [in] Адреса нижних левых углов окон трафаретного буфера соответствующих фрагменту
+	 *  \param buffStride [in] Ширина трафаретного буфера
+	 *  \param stencilFrags [in] Входной массив фрагментов
+	 *  \param fragSizes [in] Размеры фрагментов
+	 *  \param stencilFailMasks [out] Выходная маска пикселей, не прошедших тест
+	 *  \param stencilPassMasks [out] Выходная маска пикселей, прошедших тест
+	 *  \param count [in] Число фрагментов
+	 *  \retval Return description
+	 *  \details Details
+	 */
+	void stencilComp8 (nm8s**  stencilPoints, int buffStride, nm8s*  stencilFrags, Size* fragSizes, nm8s*  stencilFailMasks, nm8s*  stencilPassMasks, int count);	
+	void stencilComp32(nm32s** stencilPoints, int buffStride, nm32s* stencilFrags, Size* fragSizes, nm32s* stencilFailMasks, nm32s* stencilPassMasks, int count);
 	
-	void stencilComp8(nm8s** stencilPoints, int buffStride, nm8s* stencilRefFrags, Size* fragSizes, nm8s* stencilMasks, int count);	
-	void stencilComp32(nm32s** stencilPoints, int buffStride, nm32s* stencilRefFrags, Size* fragSizes, nm32s* stancilMasks, int count);
+	/**
+	 *  \brief Функция трафаретного тестирования без включенного теста глубины
+	 *  
+	 *  \param stencilPoints [in] Адреса нижних левых углов окон трафаретного буфера соответствующих фрагменту
+	 *  \param buffStride [in] Ширина трафаретного буфера
+	 *  \param stencilMask [in] Трафаретная маска фрагментов
+	 *  \param maskSizes [in] Размеры фрагментов
+	 *  \param count [in] Число фрагментов
+	 *  \retval Функция модифицирует трефаретный буфер в соответств
+	 *  \details Details
+	 */
+	void stencilTest8 (nm8s**  stencilPoints, int buffStride, nm8s*  stencilFailMask, nm8s*  stencilPassMask, Size* maskSizes, int count);
+	void stencilTest32(nm32s** stencilPoints, int buffStride, nm32s* stencilFailMask, nm32s* stencilPassMask, Size* maskSizes, int count);
 	
-	void stencilTest8(nm8s** stencilPoints, int buffStride, nm8s* stencilMask, Size* maskSizes, int count);
-	void stencilTest32(nm32s** stencilPoints, int buffStride, nm32s* stencilMask, Size* maskSizes, int count);
 	
-	void stencilTestWithDepth8(nm8s** stencilPoints, int buffStride, nm8s* stencilMask, nm8s* depthMask, Size* maskSizes, int count);
-	void stencilTestWithDepth32(nm32s** stencilPoints, int buffStride, nm32s* stencilMask, nm32s* depthMask, Size* maskSizes, int count);
+	void stencilTestWithDepth8(nm8s** stencilPoints, int buffStride, nm8s*  stencilFailMask, nm8s*  stencilPassMask, nm8s* depthMask, Size* maskSizes, int count);
+	void stencilTestWithDepth32(nm32s** stencilPoints, int buffStride, nm32s* stencilFailMask, nm32s* stencilPassMask, nm32s* depthMask, Size* maskSizes, int count);
 	
 	
-	void applyMasks32(nm32s* alphaMask, nm32s* depthMask, nm32s* stencilMask, nm32s* resultMask, int totalSize);
+	void applyMasks32(nm32s* mainMask, nm32s* alphaMask, nm32s* depthMask, nm32s* stencilMask, nm32s* resultMask, int totalSize);
+	void applyMasks8(nm8s* mainMask, nm8s* alphaMask, nm8s* depthMask, nm8s* stencilMask, nm8s* resultMask, int totalSize);
 
 }
 
