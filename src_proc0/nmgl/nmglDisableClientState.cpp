@@ -15,4 +15,7 @@ void nmglDisableClientState(NMGLenum array) {
 	if (array == NMGL_NORMAL_ARRAY) {
 		cntxt.normalArray.enabled = NMGL_FALSE;
 	}
+	if (array == NMGL_TEXTURE_COORD_ARRAY) {
+		cntxt.texState.texcoordArray[cntxt.texState.clientActiveTexUnitIndex].enabled = NMGL_FALSE;
+	}
 }
