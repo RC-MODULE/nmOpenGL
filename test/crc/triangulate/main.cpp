@@ -13,7 +13,6 @@ int triangulate_TwoTriangles_treatedCountIsTwo();
 int triangulate_oneTriangleThreeDivisions_outputVertexesAreCorrect();
 int triangulate_oneTriangleThreeDivisions_outputColorsAreCorrect();
 
-
 int main(int argc, char **argv)
 {
 	puts("triangulate tests: ");
@@ -167,7 +166,7 @@ int triangulate_oneTriangleThreeDivisions_outputVertexesAreCorrect()
 	//Act
 	res = triangulate(srcVertex, srcColor, srcCount, maxWidth, maxHeight, maxDstSize, dstVertex, dstColor, &srcTreatedCount);
 	(void) res;
-
+	
 	//Assert
 	TEST_ARRAYS_EQUAL(dstVertex, expectedDstVertex, 54);
 
