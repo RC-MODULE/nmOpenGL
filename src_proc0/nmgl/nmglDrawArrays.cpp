@@ -178,6 +178,9 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			rasterizeT(&cntxt.trianInner, cntxt.segmentMasks);
 			break;
 		case NMGL_LINES:
+			pushToLines_l(vertexX, vertexY, vertexZ, colorOrNormal, cntxt.lineInner, localSize);
+			setSegmentMask(cntxt, cntxt.lineInner, cntxt.segmentMasks);
+			rasterizeL(&cntxt.lineInner, cntxt.segmentMasks);
 			break;
 		}
 	}

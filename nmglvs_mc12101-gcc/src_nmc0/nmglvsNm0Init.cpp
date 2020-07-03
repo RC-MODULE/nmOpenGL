@@ -94,6 +94,15 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 	cntxt.trianInner.maxSize = NMGL_SIZE;
 	cntxt.trianInner.size = 0;
 
+	cntxt.lineInner.x0 = x0;
+	cntxt.lineInner.y0 = y0;
+	cntxt.lineInner.x1 = x1;
+	cntxt.lineInner.y1 = y1;
+	cntxt.lineInner.z = z_int;
+	cntxt.lineInner.colors = lightsValues;
+	cntxt.lineInner.maxSize = NMGL_SIZE;
+	cntxt.lineInner.size = 0;
+
 
 	cntxt.buffer0 = nmglBuffer0;
 	cntxt.buffer1 = nmglBuffer1;

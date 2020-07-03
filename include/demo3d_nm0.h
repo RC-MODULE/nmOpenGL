@@ -142,6 +142,7 @@ struct NMGL_Context_NM0 {
 	float* buffer3;
 
 	Triangles trianInner;
+	Lines lineInner;
 	NmglBeginEndInfo beginEndInfo;
 
 	mat4nm32f modelviewMatrix[16];
@@ -1018,7 +1019,7 @@ extern "C"{
 
 
 }
-
+void pushToLines_l(const float *vertexX, const float *vertexY, const float *vertexZ, const v4nm32f* color, Lines& lines, int countVertex);
 void pushToTriangles_t(const float *vertexX, const float *vertexY, const float *vertexZ, const v4nm32f* color, Triangles& triangles, int countVertex);
 void reverseMatrix3x3in4x4(mat4nm32f* src, mat4nm32f* dst);
 void pow_32f(nm32f* srcVec, nm32f* dstVec, float powC, int size, nm32f* pTmp1);
@@ -1028,6 +1029,7 @@ void copyColorByIndices_BGRA_RGBA(v4nm32s* srcColor, int* indices, v4nm32s* dstC
 //functions that use NMGLSynchroL_ContextNM0
 void cullFaceSortTriangles(Triangles &triangles);
 void setSegmentMask(NMGL_Context_NM0 &cntxt, Triangles &triangles, BitMask* masks);
+void setSegmentMask(NMGL_Context_NM0 &cntxt, Lines &lines, BitMask* masks);
 void rasterizeT(const Triangles* triangles, const BitMask* masks);
 void rasterizeL(const Lines* lines, const BitMask* masks);
 void updatePolygonsT(Polygons* poly, Triangles* triangles, int count, int segX, int segY);
