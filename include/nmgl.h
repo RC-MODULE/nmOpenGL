@@ -62,4 +62,6 @@ void nmglViewport(NMGLint x, NMGLint y, NMGLsizei width, NMGLsizei height);
 void nmglTexImage2D(NMGLenum target, NMGLint level, 
 					NMGLint internalformat, NMGLsizei width, NMGLsizei height, 
 					NMGLint border, NMGLenum format, NMGLenum type, const void *data );
+void nmglTexCoordPointer (NMGLint size, NMGLenum type, NMGLsizei stride, const void *pointer);
+
 #endif
