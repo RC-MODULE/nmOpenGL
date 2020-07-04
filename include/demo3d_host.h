@@ -17,6 +17,7 @@ struct Models{
 	char* rcm = "../../models/out_RCM_32.stl";
 	char* nm = "../../models/NM_32.stl";
 	char* snowman = "../../models/snow_white_32.stl";
+	char* triangle = "../../models/triangle.stl";
 };
 
 extern "C"{
@@ -49,4 +50,5 @@ void hostCreatePatterns(PatternsArray* patterns);
 
 //---------------------------------------------------------------------------------------------
 
+				 
 				 

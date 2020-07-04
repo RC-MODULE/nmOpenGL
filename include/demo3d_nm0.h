@@ -84,10 +84,22 @@ struct Triangles{
 	float* x2;
 	float* y2;
 	int* z;
+#ifdef TEXTURE_ENABLED 
+	//order is important
+	float* s0;
+	float* t0;
+	float* s1;
+	float* t1;
+	float* s2;
+	float* t2;
+	float* zEye;
+#endif //TEXTURE_ENABLED 
+	
 	v4nm32s* colors;
 	int size;
 	int maxSize;
 };
+
 void copyTriangles(const Triangles &src, int offsetSrc, Triangles &dst, int offsetDst, int size);
 
 class NmglBeginEndInfo{
@@ -770,6 +782,32 @@ extern "C"{
 	 //! \{
 	void meanToInt2(float* src1, float* src2, int* result, int size);
 	 //! \}
+	 
+	/**
+	*  \defgroup meanOfThreeToFloat meanOfThreeToFloat
+	*  \brief Функция поиска среднего значения из трех элементов и сонвертирования его в вещественный тип
+	*
+	*  \param src1 [in] Входной массив первых значений
+	*  \param src2 [in] Входной массив вторых значений
+	*  \param src3 [in] Входной массив третьих значений
+	*  \param result [out] Выходной массив в вещественном формате
+	*  \param nSize [in] Число элементов массива
+	*  \retval Return description
+	*
+	*  \par
+	*  \xmlonly
+	*      <testperf>
+	*          <param> src1 </param> <values> imu0 </values>
+	*          <param> src2 </param> <values> imu0 imu1 </values>
+	*          <param> src3 </param> <values> imu0 imu1 imu2 </values>
+	*          <param> result </param> <values> imu0 imu1 imu2 imu3 </values>
+	*          <param> nSize </param> <values> 128 512 1024 </values>
+	*      </testperf>
+	*  \endxmlonly
+	*/
+	//! \{
+	void meanToFloat3(float* src1, float* src2, float* src3, float* result, int nSize);
+	//! \}
 	
 		
 	/**
@@ -1021,7 +1059,12 @@ extern "C"{
 
 }
 
+#ifdef TEXTURE_ENABLED
+void pushToTriangles_t(const float *vertexX, const float *vertexY, const float *vertexZ, const float *vertexS, const float *vertexT, const float *vertexZEye, const v4nm32f* color, Triangles& triangles, int countVertex);
+#else //TEXTURE_ENABLED
 void pushToTriangles_t(const float *vertexX, const float *vertexY, const float *vertexZ, const v4nm32f* color, Triangles& triangles, int countVertex);
+#endif //TEXTURE_ENABLED
+
 void reverseMatrix3x3in4x4(mat4nm32f* src, mat4nm32f* dst);
 void pow_32f(nm32f* srcVec, nm32f* dstVec, float powC, int size, nm32f* pTmp1);
 void copyColorByIndices_BGRA_RGBA(v4nm32s* srcColor, int* indices, v4nm32s* dstColor, int size);

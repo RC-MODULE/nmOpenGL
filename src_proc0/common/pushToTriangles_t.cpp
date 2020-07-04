@@ -12,9 +12,27 @@
 #define HEAD_Z  (triangles.z )
 #define HEAD_COLOR  (triangles.colors)
 
+#ifdef TEXTURE_ENABLED
+#define HEAD_S0 (triangles.s0)
+#define HEAD_T0 (triangles.t0)
+#define HEAD_S1 (triangles.s1)
+#define HEAD_T1 (triangles.t1)
+#define HEAD_S2 (triangles.s2)
+#define HEAD_T2 (triangles.t2)
+#define HEAD_Z_EYE  (triangles.zEye )
+#endif //TEXTURE_ENABLED
+
 
 SECTION(".text_demo3d")
-void pushToTriangles_t(const float *vertexX, const float *vertexY, const float *vertexZ, const v4nm32f* color, Triangles& triangles, int countVertex){
+#ifdef TEXTURE_ENABLED
+void pushToTriangles_t(const float *vertexX, const float *vertexY, const float *vertexZ, 
+					   const float *vertexS, const float *vertexT, const float *vertexZEye, 
+					   const v4nm32f* color, Triangles& triangles, int countVertex){
+#else //TEXTURE_ENABLED
+void pushToTriangles_t(const float *vertexX, const float *vertexY, const float *vertexZ, 
+					   const v4nm32f* color, Triangles& triangles, int countVertex){
+#endif //TEXTURE_ENABLED
+
 	int countPrim = countVertex / 3;
 	float* temp0 = cntxt.buffer0 + 3 * NMGL_SIZE;
 	float* temp1 = cntxt.buffer1 + 6 * NMGL_SIZE;
@@ -33,5 +51,18 @@ void pushToTriangles_t(const float *vertexX, const float *vertexY, const float *
 	cnv32f_v3v4(vertexZ, cntxt.buffer3, 0, countVertex);
 	split_v4nm32f((v4nm32f*)cntxt.buffer3, 1, temp0, temp1, temp2, cntxt.buffer3 + 6 * NMGL_SIZE, countPrim);
 	meanToInt3(temp0, temp1, temp2, HEAD_Z, countPrim);
+
+#ifdef TEXTURE_ENABLED
+	if (cntxt.texState.textureEnabled){
+		cnv32f_v3v4(vertexS, cntxt.buffer3, 0, countVertex);
+		split_v4nm32f((v4nm32f*)cntxt.buffer3, 1, HEAD_S0, HEAD_S1, HEAD_S2, cntxt.buffer3 + 6 * NMGL_SIZE, countPrim);
+		
+		cnv32f_v3v4(vertexT, cntxt.buffer3, 0, countVertex);
+		split_v4nm32f((v4nm32f*)cntxt.buffer3, 1, HEAD_T0, HEAD_T1, HEAD_T2, cntxt.buffer3 + 6 * NMGL_SIZE, countPrim);
+		
+    	nmblas_scopy(countPrim, vertexZEye, 1, HEAD_Z_EYE, 1);
+    }
+#endif //TEXTURE_ENABLED
+
 	triangles.size = countPrim;
 }

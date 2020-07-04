@@ -30,23 +30,36 @@ void rasterizeT(const Triangles* triangles, const BitMask* masks){
 	localTrian.colors = (v4nm32s*)cntxt.buffer3;
 	localTrian.z = (int*)cntxt.buffer3 + 4 * NMGL_SIZE;
 
-	PolygonsConnector connector(cntxt.polygonsData);
+#ifdef TEXTURE_ENABLED
+	if (cntxt.texState.textureEnabled){
+		localTrian.s0 = cntxt.buffer0 + 10 * NMGL_SIZE;
+		localTrian.t0 = cntxt.buffer0 + 11 * NMGL_SIZE;
+		localTrian.s1 = cntxt.buffer1 + 10 * NMGL_SIZE;
+		localTrian.t1 = cntxt.buffer1 + 11 * NMGL_SIZE;
+		localTrian.s2 = cntxt.buffer2 + 10 * NMGL_SIZE;
+		localTrian.t2 = cntxt.buffer2 + 11 * NMGL_SIZE;
+		localTrian.zEye = cntxt.buffer3 + 11 * NMGL_SIZE;
+	}
+#endif //TEXTURE_ENABLED
 
+	PolygonsConnector connector(cntxt.polygonsData);
 	for (int segY = 0, iSeg = 0; segY < cntxt.windowInfo.nRows; segY++) {
 		for (int segX = 0; segX < cntxt.windowInfo.nColumns; segX++, iSeg++) {
 			if (masks[iSeg].hasNotZeroBits != 0) {
 
 				int resultSize = readMask(masks[iSeg].bits, indices, count);
 				if (resultSize) {
-
 					cntxt.synchro.writeInstr(1, NMC1_COPY_SEG_FROM_IMAGE,
 						cntxt.windowInfo.x0[segX],
 						cntxt.windowInfo.y0[segY],
 						cntxt.windowInfo.x1[segX] - cntxt.windowInfo.x0[segX],
 						cntxt.windowInfo.y1[segY] - cntxt.windowInfo.y0[segY],
 						iSeg);
-
-					copyArraysByIndices((void**)triangles, indices, (void**)&localTrian, 7, resultSize);
+					if (cntxt.texState.textureEnabled){
+						copyArraysByIndices((void**)triangles, indices, (void**)&localTrian, 14, resultSize);
+					} else {
+						copyArraysByIndices((void**)triangles, indices, (void**)&localTrian, 7, resultSize);
+					}
 					copyColorByIndices_BGRA_RGBA(triangles->colors, indices, (v4nm32s*)localTrian.colors, resultSize);
 
 					//waitPolygons(connector);
@@ -54,7 +67,6 @@ void rasterizeT(const Triangles* triangles, const BitMask* masks){
 					Polygons* poly = connector.ptrHead();
 					poly->count = 0;
 					updatePolygonsT(poly, &localTrian, resultSize, segX, segY);
-
 					connector.incHead();
 					cntxt.synchro.writeInstr(1, NMC1_DRAW_TRIANGLES);
 

@@ -32,7 +32,6 @@ SECTION(".text_demo3d") int copyCounterDepth() {
 
 SECTION(".text_nmglvs") int nmglvsNm1Step()
 {	
-
 	cntxt.synchro.popInstr(&currentCommand);
 
 	switch (currentCommand.instr_nmc1) {
@@ -109,6 +108,15 @@ SECTION(".text_nmglvs") int nmglvsNm1Step()
 		int width = currentCommand.params[2];
 		int height = currentCommand.params[3];
 		int numOfSeg = currentCommand.params[4];
+        
+#ifdef TEXTURE_ENABLED
+	 	if (cntxt.texState.textureEnabled){
+			cntxt.texState.segX0 = x0;
+			cntxt.texState.segY0 = y0;
+			cntxt.texState.segWidth = width;
+		}
+#endif //TEXTURE_ENABLED
+        
 		if (cntxt.depthBuffer.enabled == NMGL_TRUE) {
 			nm32s* src = nmppsAddr_32s((int*)cntxt.depthBuffer.data, y0 * cntxt.depthBuffer.getWidth() + x0);
 			nm32s* dst = (nm32s*)cntxt.smallDepthBuff.data;

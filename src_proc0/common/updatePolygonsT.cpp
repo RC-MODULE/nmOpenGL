@@ -17,6 +17,25 @@
 
 SECTION(".text_demo3d")
 void updatePolygonsT(Polygons* poly, Triangles* triangles, int count, int segX, int segY){
+#ifdef TEXTURE_ENABLED
+	if (cntxt.texState.textureEnabled){
+		nmblas_scopy(count, (float*)triangles->x0, 1, (float*)poly->x0 + poly->count, 1);
+		nmblas_scopy(count, (float*)triangles->y0, 1, (float*)poly->y0 + poly->count, 1);
+		nmblas_scopy(count, (float*)triangles->x1, 1, (float*)poly->x1 + poly->count, 1);
+		nmblas_scopy(count, (float*)triangles->y1, 1, (float*)poly->y1 + poly->count, 1);
+		nmblas_scopy(count, (float*)triangles->x2, 1, (float*)poly->x2 + poly->count, 1);
+		nmblas_scopy(count, (float*)triangles->y2, 1, (float*)poly->y2 + poly->count, 1);
+		nmblas_scopy(count, (float*)triangles->zEye, 1, (float*)poly->zEye + poly->count, 1);
+
+		nmblas_scopy(count, (float*)triangles->s0, 1, (float*)poly->s0 + poly->count, 1);
+		nmblas_scopy(count, (float*)triangles->t0, 1, (float*)poly->t0 + poly->count, 1);
+		nmblas_scopy(count, (float*)triangles->s1, 1, (float*)poly->s1 + poly->count, 1);
+		nmblas_scopy(count, (float*)triangles->t1, 1, (float*)poly->t1 + poly->count, 1);
+		nmblas_scopy(count, (float*)triangles->s2, 1, (float*)poly->s2 + poly->count, 1);
+		nmblas_scopy(count, (float*)triangles->t2, 1, (float*)poly->t2 + poly->count, 1);
+	}
+#endif //TEXTURE_ENABLED
+
 	float* temp0 = cntxt.buffer0 + 2 * NMGL_SIZE;
 	float* temp1 = cntxt.buffer1 + 2 * NMGL_SIZE;
 	float* temp2 = cntxt.buffer2 + 2 * NMGL_SIZE;
@@ -32,6 +51,8 @@ void updatePolygonsT(Polygons* poly, Triangles* triangles, int count, int segX, 
 	float* maxX = cntxt.buffer1 + 6 * NMGL_SIZE;
 	float* minY = cntxt.buffer3 + 8 * NMGL_SIZE;	
 	int* dydx = (int*)cntxt.buffer3 + 9 * NMGL_SIZE;
+	
+    //dydx should has enough size to hold 2 * WIDTH_PTRN * (HEIGHT_PTRN + 2) = 2176 floats
 	nmblas_scopy(2 * WIDTH_PTRN * (HEIGHT_PTRN + 2), (float*)cntxt.patterns->table_dydx, 1, (float*)dydx, 1);
 	int segWidth = cntxt.windowInfo.x1[segX] - cntxt.windowInfo.x0[segX];
 

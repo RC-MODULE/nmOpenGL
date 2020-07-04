@@ -117,5 +117,26 @@ SECTION(".text_demo3d") int getAddrPtrnsT(NMGL_Context_NM1* context, Polygons* p
 		SMALL_SIZE,
 		(nm32s**)context->nSizePtrn32,
 	 size);
+
+#ifdef TEXTURE_ENABLED
+	if (context->texState.textureEnabled){
+		ADD_COPY(poly->x0, context->x0, size, 0);
+		ADD_COPY(poly->y0, context->y0, size, 1);
+		ADD_COPY(poly->x1, context->x1, size, 2);
+		ADD_COPY(poly->y1, context->y1, size, 3);
+		ADD_COPY(poly->x2, context->x2, size, 4);
+		ADD_COPY(poly->y2, context->y2, size, 5);
+
+		ADD_COPY(poly->s0, context->texS0, size, 6);
+		ADD_COPY(poly->t0, context->texT0, size, 7);
+		ADD_COPY(poly->s1, context->texS1, size, 8);
+		ADD_COPY(poly->t1, context->texT1, size, 9);
+		ADD_COPY(poly->s2, context->texS2, size, 10);
+		ADD_COPY(poly->t2, context->texT2, size, 11);
+
+		ADD_COPY(poly->zEye, context->zEye, size, 12);
+	}
+#endif //TEXTURE_ENABLED
+
 	return 0;
-}
+}	

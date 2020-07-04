@@ -25,6 +25,25 @@ SECTION(".data_imu0") nm32s heights[NMGL_SIZE];
 SECTION(".data_shmem1") nm32s valuesZ[NMGL_SIZE];
 SECTION(".data_shmem1") nm32s valuesC[NMGL_SIZE];
 
+#ifdef TEXTURE_ENABLED
+SECTION(".data_imu0") float x0[NMGL_SIZE];
+SECTION(".data_imu0") float y0[NMGL_SIZE];
+SECTION(".data_imu0") float x1[NMGL_SIZE];
+SECTION(".data_imu0") float y1[NMGL_SIZE];
+SECTION(".data_imu0") float x2[NMGL_SIZE];
+SECTION(".data_imu0") float y2[NMGL_SIZE];
+
+SECTION(".data_imu0") float texS0[NMGL_SIZE];
+SECTION(".data_imu0") float texT0[NMGL_SIZE];
+SECTION(".data_imu0") float texS1[NMGL_SIZE];
+SECTION(".data_imu0") float texT1[NMGL_SIZE];
+SECTION(".data_imu0") float texS2[NMGL_SIZE];
+SECTION(".data_imu0") float texT2[NMGL_SIZE];
+
+SECTION(".data_imu0") float zEye[NMGL_SIZE];
+#endif //TEXTURE_ENABLED
+
+
 SECTION(".data_shmem1") nm32s* ppSrcPackPtrns[3 * NMGL_SIZE];
 SECTION(".data_shmem1") nm32s* ppDstPackPtrns[3 * NMGL_SIZE];
 SECTION(".data_shmem1") nm32s nSizePtrn32[3 * NMGL_SIZE];
@@ -126,6 +145,27 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 
 	cntxt.zBuffPoints = zBuffPoints;
 	cntxt.imagePoints = imagePoints;
+
+#ifdef TEXTURE_ENABLED
+    cntxt.texState.textureEnabled = 1;
+    cntxt.x0 = x0;
+    cntxt.y0 = y0;
+    cntxt.x1 = x1;
+    cntxt.y1 = y1;
+    cntxt.x2 = x2;
+    cntxt.y2 = y2;
+
+    cntxt.texS0 = texS0;
+    cntxt.texT0 = texT0;
+    cntxt.texS1 = texS1;
+    cntxt.texT1 = texT1;
+    cntxt.texS2 = texS2;
+    cntxt.texT2 = texT2;
+
+    cntxt.zEye = zEye;
+#endif //TEXTURE_ENABLED
+
+
 
 	cntxt.t0 = clock();
 	return 0;

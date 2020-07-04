@@ -64,6 +64,7 @@ AS_FLAGS    	 = -c -mmas -x assembler -mnmc4-float
 LIBS             = -lnmpp-nmc4f -lhal-mc12101
 LINKER_FLAGS     = -Xlinker -Map=.main0.map $(LIB_DIRS) -save-temps "-Wl,-Tldscript-nmc0.ld" -Wl,--whole-archive -lmc12101 -Wl,--no-whole-archive -o$(TARGET)
 #LINKER_FLAGS    += -Wl,--section-start,.heap4=0x8000,--defsym,__HEAP_4_END=0x200000
+CC_FLAGS         += -DTEXTURE_ENABLED
 
 #=================== SOURCE & OBJECTS COLLECTION ===========================
 

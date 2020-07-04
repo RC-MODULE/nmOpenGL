@@ -13,11 +13,11 @@ solution "demo3d-host-x86"
 		links { "vshell.lib","nmpp-x86.lib","hal-virtual-x86d.lib"}
 
       configuration "Debug"
-         defines { "DEBUG", "EMULATION" }
+         defines { "DEBUG", "EMULATION", "TEXTURE_ENABLED" }
          symbols  "On" 
 
       configuration "Release"
-         defines { "NDEBUG", "EMULATION" }
+         defines { "NDEBUG", "EMULATION", "TEXTURE_ENABLED" }
          symbols  "Off" 
 		 
 		 
@@ -36,11 +36,11 @@ solution "demo3d-target0-x86"
 	  links { "nmpp-x86.lib","hal-virtual-x86d.lib"}
 	 
       configuration "Debug"
-         defines { "DEBUG" }
+         defines { "DEBUG", "TEXTURE_ENABLED" }
          symbols  "On" 
 
       configuration "Release"
-         defines { "NDEBUG" }
+         defines { "NDEBUG", "TEXTURE_ENABLED" }
          symbols  "Off" 
 		 
 solution "demo3d-target1-x86"
@@ -57,11 +57,11 @@ solution "demo3d-target1-x86"
 	  links { "nmpp-x86.lib","hal-virtual-x86d.lib", "vshell.lib"}
 	 
       configuration "Debug"
-         defines { "DEBUG" }
+         defines { "DEBUG", "TEXTURE_ENABLED" }
          symbols  "On" 
 
       configuration "Release"
-         defines { "NDEBUG" }
+         defines { "NDEBUG", "TEXTURE_ENABLED" }
          symbols  "Off" 	   
 		   
 		  

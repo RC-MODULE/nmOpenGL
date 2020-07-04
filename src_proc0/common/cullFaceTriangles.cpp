@@ -4,6 +4,7 @@
 #include "nmgl_data0.h"
 #include <nmpp.h>
 
+#ifdef TEXTURE_ENABLED
 #define COPY_TRIANGLE_IN_PLACE(iSrc, iDst) triangles.x2[iDst] = triangles.x2[iSrc];	\
 triangles.y2[iDst] = triangles.y2[iSrc];												\
 triangles.x1[iDst] = triangles.x1[iSrc];												\
@@ -14,7 +15,27 @@ triangles.z[iDst] = triangles.z[iSrc];												\
 colorVec[4 * (iDst) + 0] = colorVec[4 * (iSrc) + 0];						\
 colorVec[4 * (iDst) + 1] = colorVec[4 * (iSrc) + 1];						\
 colorVec[4 * (iDst) + 2] = colorVec[4 * (iSrc) + 2];						\
-colorVec[4 * (iDst) + 3] = colorVec[4 * (iSrc) + 3];
+colorVec[4 * (iDst) + 3] = colorVec[4 * (iSrc) + 3];						\
+triangles.s2[iDst] = triangles.s2[iSrc];									\
+triangles.t2[iDst] = triangles.t2[iSrc];									\
+triangles.s1[iDst] = triangles.s1[iSrc];									\
+triangles.t1[iDst] = triangles.t1[iSrc];									\
+triangles.s0[iDst] = triangles.s0[iSrc];									\
+triangles.t0[iDst] = triangles.t0[iSrc];                                    \
+triangles.zEye[iDst] = triangles.zEye[iSrc];
+#else //TEXTURE_ENABLED
+#define COPY_TRIANGLE_IN_PLACE(iSrc, iDst) triangles.x2[iDst] = triangles.x2[iSrc];	\
+triangles.y2[iDst] = triangles.y2[iSrc];												\
+triangles.x1[iDst] = triangles.x1[iSrc];												\
+triangles.y1[iDst] = triangles.y1[iSrc];												\
+triangles.x0[iDst] = triangles.x0[iSrc];												\
+triangles.y0[iDst] = triangles.y0[iSrc];												\
+triangles.z[iDst] = triangles.z[iSrc];												\
+colorVec[4 * (iDst) + 0] = colorVec[4 * (iSrc) + 0];						\
+colorVec[4 * (iDst) + 1] = colorVec[4 * (iSrc) + 1];						\
+colorVec[4 * (iDst) + 2] = colorVec[4 * (iSrc) + 2];						\
+colorVec[4 * (iDst) + 3] = colorVec[4 * (iSrc) + 3];					
+#endif //TEXTURE_ENABLED
 
 SECTION(".text_demo3d")
 void cullFaceSortTriangles(Triangles &triangles){

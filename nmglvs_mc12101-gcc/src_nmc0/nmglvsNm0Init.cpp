@@ -15,7 +15,11 @@
 SECTION(".data_imu1")	float nmglBuffer0[12 * NMGL_SIZE];
 SECTION(".data_imu2")	float nmglBuffer1[12 * NMGL_SIZE];
 SECTION(".data_imu3")	float nmglBuffer2[12 * NMGL_SIZE];
+#ifdef TEXTURE_ENABLED
+SECTION(".data_imu4")	float nmglBuffer3[24 * NMGL_SIZE];
+#else //TEXTURE_ENABLED
 SECTION(".data_imu4")	float nmglBuffer3[12 * NMGL_SIZE];
+#endif //TEXTURE_ENABLED
 
 
 SECTION(".data_imu1")	float x0[NMGL_SIZE];
@@ -24,6 +28,17 @@ SECTION(".data_imu3")	float x1[NMGL_SIZE];
 SECTION(".data_imu4")	float y1[NMGL_SIZE];
 SECTION(".data_imu5")	float x2[NMGL_SIZE];
 SECTION(".data_imu6")	float y2[NMGL_SIZE];
+
+#ifdef TEXTURE_ENABLED
+SECTION(".data_imu1")	float s0[NMGL_SIZE];
+SECTION(".data_imu2")	float t0[NMGL_SIZE];
+SECTION(".data_imu3")	float s1[NMGL_SIZE];
+SECTION(".data_imu4")	float t1[NMGL_SIZE];
+SECTION(".data_imu5")	float s2[NMGL_SIZE];
+SECTION(".data_imu6")	float t2[NMGL_SIZE];
+SECTION(".data_imu7")	float zEye[NMGL_SIZE];
+#endif //TEXTURE_ENABLED
+
 SECTION(".data_imu7")	int z_int[NMGL_SIZE];
 SECTION(".data_imu6")	v4nm32s lightsValues[NMGL_SIZE];
 
@@ -90,9 +105,22 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 	cntxt.trianInner.x2 = x2;
 	cntxt.trianInner.y2 = y2;
 	cntxt.trianInner.z = z_int;
+
+#ifdef TEXTURE_ENABLED
+    cntxt.trianInner.s0 = s0;
+    cntxt.trianInner.t0 = t0;
+    cntxt.trianInner.s1 = s1;
+    cntxt.trianInner.t1 = t1;
+    cntxt.trianInner.s2 = s2;
+    cntxt.trianInner.t2 = t2;
+    cntxt.trianInner.zEye = zEye;
+    cntxt.texState.textureEnabled = 1;
+#endif
+
 	cntxt.trianInner.colors = lightsValues;
 	cntxt.trianInner.maxSize = NMGL_SIZE;
 	cntxt.trianInner.size = 0;
+
 
 
 	cntxt.buffer0 = nmglBuffer0;

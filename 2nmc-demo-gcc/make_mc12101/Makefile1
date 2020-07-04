@@ -64,6 +64,7 @@ AS_FLAGS    	 = -c -mmas -x assembler -Wa,-split_sir -mnmc4-fixed
 LIBS             = -lnmpp-nmc4 -lhal-mc12101
 #LINKER_FLAGS     = -nostartfiles "$(NMC_GCC_TOOLPATH)/nmc4-ide/nmc/lib/nmc4/crti.o" "$(NMC_GCC_TOOLPATH)/nmc4-ide/nmc/lib/nmc4/crtn.o" -Xlinker -Map=.main1.map $(LIB_DIRS) "-Wl,-cmc12101brd-nmc1.cfg"  -Wl,--whole-archive -lmc12101 -Wl,--no-whole-archive -o$(TARGET)
 LINKER_FLAGS     = -Xlinker -Map=.main1.map $(LIB_DIRS) "-Wl,-Tldscript-nmc1.ld"  -Wl,--whole-archive -lmc12101 -Wl,--no-whole-archive -o$(TARGET)
+CC_FLAGS         += -DTEXTURE_ENABLED
 #=================== SOURCE & OBJECTS COLLECTION ===========================
 
 .SUFFIXES:
