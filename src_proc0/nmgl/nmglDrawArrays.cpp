@@ -340,7 +340,19 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			int currentCount = triangulate(trian3f_2.x0, (v4nm32f*)cntxt.buffer1, primCount,
 				WIDTH_PTRN, HEIGHT_PTRN,
 				NMGL_SIZE, trian3f_1.x0, (v4nm32f*)cntxt.buffer0, &srcThreated);
+
+			trian3f_1.x0 = trian3f_1.x0 + 0 * currentCount;
+			trian3f_1.y0 = trian3f_1.x0 + 1 * currentCount;
+			trian3f_1.z0 = trian3f_1.x0 + 2 * currentCount;
+			trian3f_1.x1 = trian3f_1.x0 + 3 * currentCount;
+			trian3f_1.y1 = trian3f_1.x0 + 4 * currentCount;
+			trian3f_1.z1 = trian3f_1.x0 + 5 * currentCount;
+			trian3f_1.x2 = trian3f_1.x0 + 6 * currentCount;
+			trian3f_1.y2 = trian3f_1.x0 + 7 * currentCount;
+			trian3f_1.z2 = trian3f_1.x0 + 8 * currentCount;
+
 			TrianglePrimitiveArrays3f* current = &trian3f_1;
+
 
 			//копирование каждого третьего цвета
 			nmblas_dcopy(2 * currentCount, (double*)cntxt.buffer0, 6, (double*)colorOrNormal, 2);
