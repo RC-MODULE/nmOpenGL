@@ -7,10 +7,13 @@
 #include "arraymanager.h"
 #include "stdio.h"
 #include "imagebuffer.h"
+#include "service.h"
 
 SECTION(".data_imu5")	float vertexX[3 * NMGL_SIZE];
 SECTION(".data_imu6")	float vertexY[3 * NMGL_SIZE];
 SECTION(".data_imu4")	float vertexZ[3 * NMGL_SIZE];
+SECTION(".data_imu5")	v2nm32f minXY[NMGL_SIZE];
+SECTION(".data_imu3")	v2nm32f maxXY[NMGL_SIZE];
 
 SECTION(".data_imu5")	v4nm32f vertexResult[3 * NMGL_SIZE];
 SECTION(".data_imu6")	v4nm32f colorOrNormal[3 * NMGL_SIZE];
@@ -18,6 +21,35 @@ SECTION(".data_imu6")	v4nm32f colorOrNormal[3 * NMGL_SIZE];
 SECTION(".data_imu6")	ArrayManager<float> vertexAM;
 SECTION(".data_imu6")	ArrayManager<float> normalAM;
 SECTION(".data_imu6")	ArrayManager<v4nm32f> colorAM;
+
+
+
+struct TrianglePrimitiveArrays3f {
+	float* x0;
+	float* y0;
+	float* z0;
+	float* x1;
+	float* y1;
+	float* z1;
+	float* x2;
+	float* y2;
+	float* z2;
+};
+
+struct TrianglePrimitiveArrays4f {
+	float* x0;
+	float* y0;
+	float* z0;
+	float* w0;
+	float* x1;
+	float* y1;
+	float* z1;
+	float* w1;
+	float* x2;
+	float* y2;
+	float* z2;
+	float* w2;
+};
 
 
 template < typename T >
@@ -143,29 +175,28 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 		cntxt.tmp.vec[2] = BLUE_COEFF;
 		cntxt.tmp.vec[3] = ALPHA_COEFF;
 		mulC_v4nm32f((v4nm32f*)cntxt.buffer3, &cntxt.tmp, colorOrNormal, localSize);
-		//----------------------------------
+		mul_mat4nm32f_v4nm32f(cntxt.projectionMatrixStack.top(), vertexResult, (v4nm32f*)vertexResult, localSize);
 
+		/*//----------------------------------
 		//vertex in vertexResult
 		//color in colorOrNormal
-		mul_mat4nm32f_v4nm32f(cntxt.projectionMatrixStack.top(), vertexResult, (v4nm32f*)vertexResult, localSize);
-		//------------------------------srcX-----srcY-----srcZ-----srcW--------------
-		split_v4nm32f(vertexResult, 1, cntxt.buffer0, cntxt.buffer1, cntxt.buffer2, cntxt.buffer3, localSize);
-		
-		//------------clipping-------------------
 
-		//------------perspective-division-----------------
+		split_v4nm32f(vertexResult, 1, cntxt.buffer0, cntxt.buffer1, cntxt.buffer2, cntxt.buffer3, localSize);
+
 		nmppsDiv_32f(cntxt.buffer0, cntxt.buffer3, cntxt.buffer1 + localSize, localSize);
 		nmppsDiv_32f(cntxt.buffer1, cntxt.buffer3, cntxt.buffer2 + localSize, localSize);
 		nmppsDiv_32f(cntxt.buffer2, cntxt.buffer3, cntxt.buffer0 + localSize, localSize);
-		//------------viewport------------------------
+
+		
 		nmppsMulC_AddC_32f(cntxt.buffer1 + localSize, cntxt.windowInfo.viewportMulX, cntxt.windowInfo.viewportAddX, vertexX, localSize);		//X
 		nmppsMulC_AddC_32f(cntxt.buffer2 + localSize, cntxt.windowInfo.viewportMulY, cntxt.windowInfo.viewportAddY, vertexY, localSize);		//Y
-		nmppsMulC_AddC_32f(cntxt.buffer0 + localSize, cntxt.windowInfo.viewportMulZ, cntxt.windowInfo.viewportAddZ, vertexZ, localSize);	//Z
+		nmppsMulC_AddC_32f(cntxt.buffer0 + localSize, cntxt.windowInfo.viewportMulZ, cntxt.windowInfo.viewportAddZ, vertexZ, localSize);		//Z
 
 		nmppsConvert_32f32s_rounding(vertexX, (int*)cntxt.buffer0, 0, localSize);
 		nmppsConvert_32s32f((int*)cntxt.buffer0, vertexX, localSize);
 		nmppsConvert_32f32s_rounding(vertexY, (int*)cntxt.buffer0, 0, localSize);
 		nmppsConvert_32s32f((int*)cntxt.buffer0, vertexY, localSize);
+
 
 		//---------------rasterize------------------------------------
 		switch (mode) {
@@ -174,15 +205,170 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			if (cntxt.isCullFace) {
 				cullFaceSortTriangles(cntxt.trianInner);
 			}
-			setSegmentMask(cntxt, cntxt.trianInner, cntxt.segmentMasks);
+			findMinMax3(cntxt.trianInner.x0, cntxt.trianInner.x1, cntxt.trianInner.x2,
+				cntxt.buffer0, cntxt.buffer1,
+				cntxt.trianInner.size);
+			findMinMax3(cntxt.trianInner.y0, cntxt.trianInner.y1, cntxt.trianInner.y2,
+				cntxt.buffer2, cntxt.buffer3,
+				cntxt.trianInner.size);
+			nmppsMerge_32f(cntxt.buffer0, cntxt.buffer2, (float*)minXY, cntxt.trianInner.size);
+			nmppsMerge_32f(cntxt.buffer1, cntxt.buffer3, (float*)maxXY, cntxt.trianInner.size);
+
+			setSegmentMask(cntxt, minXY, maxXY, cntxt.segmentMasks, cntxt.trianInner.size);
 			rasterizeT(&cntxt.trianInner, cntxt.segmentMasks);
 			break;
 		case NMGL_LINES:
 			pushToLines_l(vertexX, vertexY, vertexZ, colorOrNormal, cntxt.lineInner, localSize);
-			setSegmentMask(cntxt, cntxt.lineInner, cntxt.segmentMasks);
+
+			findMinMax2(cntxt.trianInner.x0, cntxt.trianInner.x1,
+				cntxt.buffer0, cntxt.buffer1,
+				cntxt.trianInner.size);
+			findMinMax2(cntxt.trianInner.y0, cntxt.trianInner.y1,
+				cntxt.buffer2, cntxt.buffer3,
+				cntxt.trianInner.size);
+			nmppsMerge_32f(cntxt.buffer0, cntxt.buffer2, (float*)minXY, cntxt.trianInner.size);
+			nmppsMerge_32f(cntxt.buffer1, cntxt.buffer3, (float*)maxXY, cntxt.trianInner.size);
+
+			setSegmentMask(cntxt, minXY, maxXY, cntxt.segmentMasks, cntxt.trianInner.size);
 			rasterizeL(&cntxt.lineInner, cntxt.segmentMasks);
 			break;
+		}*/
+
+		halLedOn(0);
+		TrianglePrimitiveArrays4f trian4f;
+		TrianglePrimitiveArrays3f trian3f_1;
+		TrianglePrimitiveArrays3f trian3f_2;
+		int primCount = vertexPrimitiveRepack(vertexResult, colorOrNormal, cntxt.buffer0, (v4nm32f*)cntxt.buffer1, mode, localSize);
+		halLedOn(1);
+
+		trian4f.x0 = cntxt.buffer0;
+		trian4f.y0 = cntxt.buffer0 + primCount;
+		trian4f.z0 = cntxt.buffer0 + 2 * primCount;
+		trian4f.w0 = cntxt.buffer0 + 3 * primCount;
+		trian4f.x1 = cntxt.buffer0 + 4 * primCount;
+		trian4f.y1 = cntxt.buffer0 + 5 * primCount;
+		trian4f.z1 = cntxt.buffer0 + 6 * primCount;
+		trian4f.w1 = cntxt.buffer0 + 7 * primCount;
+		trian4f.x2 = cntxt.buffer0 + 8 * primCount;
+		trian4f.y2 = cntxt.buffer0 + 9 * primCount;
+		trian4f.z2 = cntxt.buffer0 + 10 * primCount;
+		trian4f.w2 = cntxt.buffer0 + 11 * primCount;
+
+		trian3f_1.x0 = cntxt.buffer2;
+		trian3f_1.y0 = cntxt.buffer2 + primCount;
+		trian3f_1.z0 = cntxt.buffer2 + 2 * primCount;
+		trian3f_1.x1 = cntxt.buffer2 + 3 * primCount;
+		trian3f_1.y1 = cntxt.buffer2 + 4 * primCount;
+		trian3f_1.z1 = cntxt.buffer2 + 5 * primCount;
+		trian3f_1.x2 = cntxt.buffer2 + 6 * primCount;
+		trian3f_1.y2 = cntxt.buffer2 + 7 * primCount;
+		trian3f_1.z2 = cntxt.buffer2 + 8 * primCount;
+
+		trian3f_2.x0 = cntxt.buffer3;
+		trian3f_2.y0 = cntxt.buffer3 + primCount;
+		trian3f_2.z0 = cntxt.buffer3 + 2 * primCount;
+		trian3f_2.x1 = cntxt.buffer3 + 3 * primCount;
+		trian3f_2.y1 = cntxt.buffer3 + 4 * primCount;
+		trian3f_2.z1 = cntxt.buffer3 + 5 * primCount;
+		trian3f_2.x2 = cntxt.buffer3 + 6 * primCount;
+		trian3f_2.y2 = cntxt.buffer3 + 7 * primCount;
+		trian3f_2.z2 = cntxt.buffer3 + 8 * primCount;
+		
+		//------------clipping-------------------
+
+		//------------perspective-division-----------------
+		nmppsDiv_32f(trian4f.x0, trian4f.w0, trian3f_1.x0, primCount);
+		nmppsDiv_32f(trian4f.y0, trian4f.w0, trian3f_1.y0, primCount);
+		nmppsDiv_32f(trian4f.z0, trian4f.w0, trian3f_1.z0, primCount);
+		nmppsDiv_32f(trian4f.x1, trian4f.w1, trian3f_1.x1, primCount);
+		nmppsDiv_32f(trian4f.y1, trian4f.w1, trian3f_1.y1, primCount);
+		nmppsDiv_32f(trian4f.z1, trian4f.w1, trian3f_1.z1, primCount);
+		nmppsDiv_32f(trian4f.x2, trian4f.w2, trian3f_1.x2, primCount);
+		nmppsDiv_32f(trian4f.y2, trian4f.w2, trian3f_1.y2, primCount);
+		nmppsDiv_32f(trian4f.z2, trian4f.w2, trian3f_1.z2, primCount);
+		//------------viewport------------------------		
+		
+		nmppsMulC_AddC_32f(trian3f_1.x0, cntxt.windowInfo.viewportMulX, cntxt.windowInfo.viewportAddX, trian3f_2.x0, primCount);		//X
+		nmppsMulC_AddC_32f(trian3f_1.y0, cntxt.windowInfo.viewportMulY, cntxt.windowInfo.viewportAddY, trian3f_2.y0, primCount);		//Y
+		nmppsMulC_AddC_32f(trian3f_1.z0, cntxt.windowInfo.viewportMulZ, cntxt.windowInfo.viewportAddZ, trian3f_2.z0, primCount);		//Z		
+
+		nmppsMulC_AddC_32f(trian3f_1.x1, cntxt.windowInfo.viewportMulX, cntxt.windowInfo.viewportAddX, trian3f_2.x1, primCount);		//X
+		nmppsMulC_AddC_32f(trian3f_1.y1, cntxt.windowInfo.viewportMulY, cntxt.windowInfo.viewportAddY, trian3f_2.y1, primCount);		//Y
+		nmppsMulC_AddC_32f(trian3f_1.z1, cntxt.windowInfo.viewportMulZ, cntxt.windowInfo.viewportAddZ, trian3f_2.z1, primCount);		//Z		
+
+		nmppsMulC_AddC_32f(trian3f_1.x2, cntxt.windowInfo.viewportMulX, cntxt.windowInfo.viewportAddX, trian3f_2.x2, primCount);		//X
+		nmppsMulC_AddC_32f(trian3f_1.y2, cntxt.windowInfo.viewportMulY, cntxt.windowInfo.viewportAddY, trian3f_2.y2, primCount);		//Y
+		nmppsMulC_AddC_32f(trian3f_1.z2, cntxt.windowInfo.viewportMulZ, cntxt.windowInfo.viewportAddZ, trian3f_2.z2, primCount);		//Z			
+		
+		nmppsConvert_32f32s_rounding(trian3f_2.x0, (int*)trian3f_1.x0, 0, 9 * primCount);
+		nmppsConvert_32s32f((int*)trian3f_1.x0, trian3f_2.x0, 9 * primCount);
+
+	//without triangulation		
+		/*int currentCount = primCount;
+		TrianglePrimitiveArrays3f* current = &trian3f_2;
+			
+		nmblas_dcopy(2 * currentCount, (double*)cntxt.buffer1, 6, (double*)colorOrNormal, 2);
+		nmblas_dcopy(2 * currentCount, (double*)cntxt.buffer1 + 1, 6, (double*)colorOrNormal + 1, 2);
+
+		nmblas_scopy(currentCount, current->x0, 1, cntxt.trianInner.x0, 1);
+		nmblas_scopy(currentCount, current->y0, 1, cntxt.trianInner.y0, 1);
+		nmblas_scopy(currentCount, current->x1, 1, cntxt.trianInner.x1, 1);
+		nmblas_scopy(currentCount, current->y1, 1, cntxt.trianInner.y1, 1);
+		nmblas_scopy(currentCount, current->x2, 1, cntxt.trianInner.x2, 1);
+		nmblas_scopy(currentCount, current->y2, 1, cntxt.trianInner.y2, 1);
+		meanToInt3(current->z0, current->z1, current->z2, cntxt.trianInner.z, currentCount);
+		nmppsConvert_32f32s_rounding((float*)colorOrNormal, (int*)cntxt.trianInner.colors, 0, 4 * currentCount);
+		cntxt.trianInner.size = currentCount;
+		if (cntxt.isCullFace) {
+			cullFaceSortTriangles(cntxt.trianInner);
+		}
+
+		findMinMax3(cntxt.trianInner.x0, cntxt.trianInner.x1, cntxt.trianInner.x2,
+			cntxt.buffer0, cntxt.buffer1,
+			cntxt.trianInner.size);
+		findMinMax3(cntxt.trianInner.y0, cntxt.trianInner.y1, cntxt.trianInner.y2,
+			cntxt.buffer2, cntxt.buffer3,
+			cntxt.trianInner.size);
+		nmppsMerge_32f(cntxt.buffer0, cntxt.buffer2, (float*)minXY, cntxt.trianInner.size);
+		nmppsMerge_32f(cntxt.buffer1, cntxt.buffer3, (float*)maxXY, cntxt.trianInner.size);
+		setSegmentMask(cntxt, minXY, maxXY, cntxt.segmentMasks, cntxt.trianInner.size);
+		rasterizeT(&cntxt.trianInner, cntxt.segmentMasks);*/
+
+		//with triangulation
+		int srcThreated = 0;
+		while (srcThreated < primCount) {
+			int currentCount = triangulate(trian3f_2.x0, (v4nm32f*)cntxt.buffer1, primCount,
+				WIDTH_PTRN, HEIGHT_PTRN,
+				NMGL_SIZE, trian3f_1.x0, (v4nm32f*)cntxt.buffer0, &srcThreated);
+			TrianglePrimitiveArrays3f* current = &trian3f_1;
+
+			//копирование каждого третьего цвета
+			nmblas_dcopy(2 * currentCount, (double*)cntxt.buffer0, 6, (double*)colorOrNormal, 2);
+			nmblas_dcopy(2 * currentCount, (double*)cntxt.buffer0 + 1, 6, (double*)colorOrNormal + 1, 2);
+
+			nmblas_scopy(currentCount, current->x0, 1, cntxt.trianInner.x0, 1);
+			nmblas_scopy(currentCount, current->y0, 1, cntxt.trianInner.y0, 1);
+			nmblas_scopy(currentCount, current->x1, 1, cntxt.trianInner.x1, 1);
+			nmblas_scopy(currentCount, current->y1, 1, cntxt.trianInner.y1, 1);
+			nmblas_scopy(currentCount, current->x2, 1, cntxt.trianInner.x2, 1);
+			nmblas_scopy(currentCount, current->y2, 1, cntxt.trianInner.y2, 1);
+			meanToInt3(current->z0, current->z1, current->z2, cntxt.trianInner.z, currentCount);
+			nmppsConvert_32f32s_rounding((float*)colorOrNormal, (int*)cntxt.trianInner.colors, 0, 4 * currentCount);
+			cntxt.trianInner.size = currentCount;
+			if (cntxt.isCullFace) {
+				cullFaceSortTriangles(cntxt.trianInner);
+			}
+
+			findMinMax3(cntxt.trianInner.x0, cntxt.trianInner.x1, cntxt.trianInner.x2,
+				cntxt.buffer0, cntxt.buffer1,
+				cntxt.trianInner.size);
+			findMinMax3(cntxt.trianInner.y0, cntxt.trianInner.y1, cntxt.trianInner.y2,
+				cntxt.buffer2, cntxt.buffer3,
+				cntxt.trianInner.size);
+			nmppsMerge_32f(cntxt.buffer0, cntxt.buffer2, (float*)minXY, cntxt.trianInner.size);
+			nmppsMerge_32f(cntxt.buffer1, cntxt.buffer3, (float*)maxXY, cntxt.trianInner.size);
+			setSegmentMask(cntxt, minXY, maxXY, cntxt.segmentMasks, cntxt.trianInner.size);
+			rasterizeT(&cntxt.trianInner, cntxt.segmentMasks);
 		}
 	}
-
 }

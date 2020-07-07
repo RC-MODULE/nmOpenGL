@@ -18,28 +18,7 @@ begin ".text_demo3d"                // начало секции кода
     ar1 = [--ar5];  // delta array
     ar2 = [--ar5];  // output array of even flags (старшие слова: 0, 2, 4)
     ar3 = [--ar5];  // output array of odd flags (младшие слова: 1, 3, 5)
-
     gr4 = [--ar5];  // input array's size
-
-    // Проверить адрес входного массива значений на равенство 0
-    gr0 = ar0;
-    gr0;                // Это выражение, оно установит флаги
-    if =0 goto Error;
-
-    // Проверить адрес входного массива диапазонов на равенство 0
-    gr1 = ar1;
-    gr1;                // Это выражение, оно установит флаги
-    if =0 goto Error;
-
-    // Проверить адрес выходного массива чётных флагов на равенство 0
-    gr2 = ar2;
-    gr2;
-    if =0 goto Error;
-
-    // Проверить адрес выходного массива нечётных флагов на равенство 0
-    gr3 = ar3;
-    gr3;
-    if =0 goto Error;
 
     // Сейчас size должен быть чётным
     // Для нечётного на выходе в одной из масок будет на один флаг меньше
@@ -47,6 +26,8 @@ begin ".text_demo3d"                // начало секции кода
     gr4 >>= 1;  // Size of 64-bit values to process
 
 <Loop>    
+	gr4;
+	if <= goto Exit;
 	// Clear (zero) fp0_lmask and fp0_hmask
 	// because they should be filled with 0 when contains less than 32 flags
     sir = 0;
@@ -92,15 +73,7 @@ begin ".text_demo3d"                // начало секции кода
     [ar2++] = gr0;
     [ar3++] = gr1;
 
-    gr4 = gr4 - gr6;	// Decrease overall count by the number of processed elements
-    if > goto Loop;		// If there are any elements then continue
-    goto Exit;			// else quit		
-
-<Error>
-    // Set errno to EINVAL
-    gr1 = 22;
-    call ___errno;
-    [ar5] = gr1;
+    goto Loop with gr4 = gr4 - gr6;	// Decrease overall count by the number of processed elements
 
 <Exit>
     pop ar6,gr6;

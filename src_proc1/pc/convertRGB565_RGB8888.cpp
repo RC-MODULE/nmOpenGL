@@ -6,13 +6,6 @@
 
 void convertRGB565_RGB8888(const rgb565 *srcArray, rgb8888 *dstArray, int count)
 {
-
-	if ((srcArray == NULL) | (dstArray == NULL) | (count <= 0))
-	{
-		errno = EINVAL;
-		return;
-	}
-
 	for (int i = 0; i < count; i++)
 	{
 		nm32u val;
@@ -39,5 +32,4 @@ void convertRGB565_RGB8888(const rgb565 *srcArray, rgb8888 *dstArray, int count)
 		// 6. Записать обновлённое значение в выходной массив
 		dstArray[vecNum].vec[0] = oldVal;
 	}
-
 }

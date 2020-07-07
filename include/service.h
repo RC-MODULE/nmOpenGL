@@ -15,8 +15,7 @@ extern "C" {
 
 }
 
-#include <vector>
-
+// Declarations for the triangulate function:
 struct Point {
 	nm32f x;
 	nm32f y;
@@ -38,13 +37,44 @@ struct Triangle {
 	Edge edges[3] = {{0, 1}, {1, 2}, {0, 2}};
 	
 	Triangle() {};
-	Triangle(Point a, Point b, Point c) : points{a, b, c} {}
+	Triangle(Point a, Point b, Point c) : points{a, b, c} {};
 	
-	void print();
 	nm32f edgeSize(int i) const;
 };
 
-int triangulateOneTriangle(const Triangle &tr, nm32f xMax, nm32f yMax, int trLimit, std::vector<Triangle>& trVec);
+typedef struct Vertices 
+{
+	nm32f v[9];
+} Vertices;
+
+typedef struct Colors 
+{
+	v4nm32f c[3];
+} Colors;
+
+// Data structure to store Vertices and Colors in 
+// "data" buffer (allocated previously)
+typedef struct Buffer 
+{
+	int back;
+	int front;
+	int size;
+	void *data;
+} Buffer;
+
+static Buffer initBuf(void *data, int size);
+static int bufIsFull(Buffer *buf);
+static int bufIsEmpty(Buffer *buf);
+static int bufSize(Buffer *buf);
+static int bufSpace(Buffer *buf);
+static int pushBackVertices(Buffer *vbuf, Vertices *vert);
+static int pushFrontVertices(Buffer *vbuf, Vertices *vert);
+static int popBackVertices(Buffer *vbuf, Vertices *vert);
+static int pushBackColors(Buffer *cbuf, Colors *colors);
+static int pushFrontColors(Buffer *cbuf, Colors *colors);
+static int popBackColors(Buffer *cbuf, Colors *colors);
+
+int triangulateOneTriangle(const Triangle& tr, nm32f xMax, nm32f yMax, Buffer *verticesStack, Buffer *colorsStack);
 int triangulate(const nm32f *srcVertex, const v4nm32f *srcColor, int srcCount, int maxWidth, int maxHeight, int maxDstSize, nm32f *dstVertex, v4nm32f *dstColor, int *srcTreatedCount);
 
 #endif //__SERVICE_H__
