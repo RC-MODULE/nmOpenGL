@@ -93,11 +93,11 @@ SECTION(".text_shared0") int main()
 	ok = halHostSync((int)0x600D600D);
 #endif
 	
-	//nmglClearColor(1, 1, 1, 0.0f);
-	nmglClearColor(0.5, 0.5, 0.5, 1.0f);
+	//nmglClearColor(0.5, 0.5, 0.5, 0.0f);
+	nmglClearColor(0, 0, 0.4, 1.0f);
 
-	//nmglEnable(NMGL_DEPTH_TEST);
-	//nmglEnable(NMGL_CULL_FACE);
+	nmglEnable(NMGL_DEPTH_TEST);
+	nmglEnable(NMGL_CULL_FACE);
 
 	nmglMatrixMode(NMGL_MODELVIEW);
 	nmglLoadIdentity();
@@ -107,8 +107,8 @@ SECTION(".text_shared0") int main()
 
 	nmglViewport(0, 0, 768, 768);
 
-	//nmglEnable(NMGL_LIGHTING);
-	//nmglEnable(NMGL_LIGHT0);
+	nmglEnable(NMGL_LIGHTING);
+	nmglEnable(NMGL_LIGHT0);
 	float lightVector[4] = { 0, -0.707, 0.707, 0 };
 	nmglLightfv(NMGL_LIGHT0, NMGL_POSITION, lightVector);
 	float lightDiffuse[4] = { 1, 1, 1, 1 }; 

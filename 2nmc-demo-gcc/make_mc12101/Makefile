@@ -34,12 +34,6 @@ profile0:
 	$(MAKE) -f Makefile0 profile
 profile1:
 	$(MAKE) -f Makefile1 profile
-
-proflist: proflist0 proflist1
-proflist0:
-	$(MAKE) -f Makefile0 proflist
-proflist1:
-	$(MAKE) -f Makefile1 proflist
 	
 	
 vs2005: $(HOST).vcproj 

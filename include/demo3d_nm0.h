@@ -1028,8 +1028,7 @@ void copyColorByIndices_BGRA_RGBA(v4nm32s* srcColor, int* indices, v4nm32s* dstC
 
 //functions that use NMGLSynchroL_ContextNM0
 void cullFaceSortTriangles(Triangles &triangles);
-void setSegmentMask(NMGL_Context_NM0 &cntxt, Triangles &triangles, BitMask* masks);
-void setSegmentMask(NMGL_Context_NM0 &cntxt, Lines &lines, BitMask* masks);
+void setSegmentMask(NMGL_Context_NM0 &cntxt, v2nm32f* minXY, v2nm32f* maxXY, BitMask* masks, int size);
 void rasterizeT(const Triangles* triangles, const BitMask* masks);
 void rasterizeL(const Lines* lines, const BitMask* masks);
 void updatePolygonsT(Polygons* poly, Triangles* triangles, int count, int segX, int segY);

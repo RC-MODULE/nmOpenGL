@@ -12,6 +12,9 @@ SECTION(".data_imu5")	float vertexX[3 * NMGL_SIZE];
 SECTION(".data_imu6")	float vertexY[3 * NMGL_SIZE];
 SECTION(".data_imu4")	float vertexZ[3 * NMGL_SIZE];
 
+SECTION(".data_imu6")	v2nm32f minXY[NMGL_SIZE];
+SECTION(".data_imu4")	v2nm32f maxXY[NMGL_SIZE];
+
 SECTION(".data_imu5")	v4nm32f vertexResult[3 * NMGL_SIZE];
 SECTION(".data_imu6")	v4nm32f colorOrNormal[3 * NMGL_SIZE];
 
@@ -174,12 +177,28 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			if (cntxt.isCullFace) {
 				cullFaceSortTriangles(cntxt.trianInner);
 			}
-			setSegmentMask(cntxt, cntxt.trianInner, cntxt.segmentMasks);
+
+			findMinMax3(cntxt.trianInner.x0, cntxt.trianInner.x1, cntxt.trianInner.x2, 
+				cntxt.buffer0, cntxt.buffer1, cntxt.trianInner.size);
+			findMinMax3(cntxt.trianInner.y0, cntxt.trianInner.y1, cntxt.trianInner.y2, 
+				cntxt.buffer2, cntxt.buffer3, cntxt.trianInner.size);
+			nmppsMerge_32f(cntxt.buffer0, cntxt.buffer2, (float*)minXY, cntxt.trianInner.size);
+			nmppsMerge_32f(cntxt.buffer1, cntxt.buffer3, (float*)maxXY, cntxt.trianInner.size);
+
+			setSegmentMask(cntxt, minXY, maxXY, cntxt.segmentMasks, cntxt.trianInner.size);
 			rasterizeT(&cntxt.trianInner, cntxt.segmentMasks);
 			break;
 		case NMGL_LINES:
 			pushToLines_l(vertexX, vertexY, vertexZ, colorOrNormal, cntxt.lineInner, localSize);
-			setSegmentMask(cntxt, cntxt.lineInner, cntxt.segmentMasks);
+			findMinMax2(cntxt.lineInner.x0, cntxt.lineInner.x1,
+				cntxt.buffer0, cntxt.buffer1, 
+				cntxt.trianInner.size);
+			findMinMax2(cntxt.lineInner.y0, cntxt.lineInner.y1,
+				cntxt.buffer2, cntxt.buffer3, 
+				cntxt.trianInner.size);
+			nmppsMerge_32f(cntxt.buffer0, cntxt.buffer2, (float*)minXY, cntxt.trianInner.size);
+			nmppsMerge_32f(cntxt.buffer1, cntxt.buffer3, (float*)maxXY, cntxt.trianInner.size);
+
 			rasterizeL(&cntxt.lineInner, cntxt.segmentMasks);
 			break;
 		}
