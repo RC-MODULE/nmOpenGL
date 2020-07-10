@@ -6,13 +6,18 @@
 
 SECTION(".text_nmgl")
 void nmglDisableClientState(NMGLenum array) {
-	if (array == NMGL_VERTEX_ARRAY) {
+	switch (array)
+	{
+	case NMGL_VERTEX_ARRAY:
 		cntxt.vertexArray.enabled = NMGL_FALSE;
-	}
-	if (array == NMGL_COLOR_ARRAY) {
+		break;
+	case NMGL_COLOR_ARRAY:
 		cntxt.colorArray.enabled = NMGL_FALSE;
-	}
-	if (array == NMGL_NORMAL_ARRAY) {
+		break;
+	case NMGL_NORMAL_ARRAY:
 		cntxt.normalArray.enabled = NMGL_FALSE;
+	default:
+		cntxt.error = NMGL_INVALID_ENUM;
+		break;
 	}
 }

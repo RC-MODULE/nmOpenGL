@@ -28,6 +28,17 @@ SECTION(".text_demo3d") int copyCounterDepth() {
 	return copyImageCounterDepth++;
 }
 
+SECTION(".text_demo3d") int swapImage() {
+	cntxt.t1 = clock();
+	//cntxt.synchro.counter++;
+	//cntxt.synchro.time = cntxt.t1 - cntxt.t0;
+	cntxt.imagesData->head++;
+	cntxt.colorBuffer.mData = cntxt.imagesData->ptrHead();
+	while (cntxt.imagesData->isFull());
+	cntxt.t0 = clock();
+	return 0;
+}
+
 SECTION(".text_nmglvs") int nmglvsNm1Step()
 {	
 
@@ -163,14 +174,7 @@ SECTION(".text_nmglvs") int nmglvsNm1Step()
 	case NMC1_SWAP_BUFFER: {
 
 		msdWaitDma();
-		
-		cntxt.t1 = clock();
-		cntxt.synchro.counter++;
-		cntxt.synchro.time = cntxt.t1 - cntxt.t0;
-		cntxt.imagesData->head++;
-		cntxt.colorBuffer.mData = cntxt.imagesData->ptrHead();
-		while (cntxt.imagesData->isFull());
-		cntxt.t0 = clock();
+		swapImage();
 
 		break;
 	}
@@ -246,9 +250,6 @@ SECTION(".text_nmglvs") int nmglvsNm1Step()
 	default:
 		break;
 	}
-	//printf("synchro: head-tail=%d\n", cntxt.synchro->commandsRB.head - cntxt.synchro->commandsRB.tail);
-	//printf("poly: head-tail=%d\n", cntxt.polygonsRB->head - cntxt.polygonsRB->tail);
-	//printf("image: head-tail=%d\n\n", cntxt.colorBuffer->ringbuffer.head - cntxt.colorBuffer->ringbuffer.tail);
 	return 0;
 } 
 

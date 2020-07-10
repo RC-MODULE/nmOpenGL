@@ -10,11 +10,11 @@ void nmglvsSwapBuffer(){
 	nmglFlush();
 
 	static int time = 0;
-	static clock_t t0, t1;
-	t1 = clock();
-	cntxt.synchro.counter++;
-	cntxt.synchro.time = t1-t0;
-	t0 = clock();
-	cntxt.synchro.writeInstr(1, NMC1_SWAP_BUFFER, 0, 0, 0, 0, 0, 0);
+	//static clock_t t0, t1;
+	//t1 = clock();
+	//cntxt.synchro.counter++;
+	//cntxt.synchro.time = t1-t0;
+	//t0 = clock();
+	cntxt.synchro.writeInstr(1, NMC1_SWAP_BUFFER);
 	
 }
