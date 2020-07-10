@@ -2,7 +2,7 @@
 #include "nmpp.h"
 #include "nmblas.h"
 #include "nmgl.h"
-#include "nmgl_data0.h"
+
 #include "malloc.h"
 #include "arraymanager.h"
 #include "stdio.h"

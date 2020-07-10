@@ -14,14 +14,17 @@ struct NMGL_Context_NM1 {
 private:
 	static NMGL_Context_NM1 *context;
 public:
-	inline static void create() {
-		context = (NMGL_Context_NM1*)halMalloc32(sizeof32(NMGL_Context_NM1));
+	static void create() {
+		//context = (NMGL_Context_NM1*)halMalloc32(sizeof32(NMGL_Context_NM1));
+	}
+	static void bind(NMGL_Context_NM1* cntxt) {
+		context = cntxt;
 	}
 	inline static NMGL_Context_NM1 *getContext() {
 		return context;
 	}
-	inline static void free(NMGLSynchroData* synchroData) {
-		halFree(context);
+	static void free() {
+		//halFree(context);
 	}
 
 	Pattern polyImgTmp[SMALL_SIZE];

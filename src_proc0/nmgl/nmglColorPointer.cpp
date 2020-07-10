@@ -1,6 +1,6 @@
 #include "demo3d_nm0.h"
 #include "nmgl.h"
-#include "nmgl_data0.h"
+
 
 SECTION(".text_nmgl")
 void nmglColorPointer(NMGLint size, NMGLenum type, NMGLsizei stride, const NMGLvoid *pointer) {

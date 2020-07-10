@@ -7,7 +7,6 @@
 #include "ringbuffer.h"
 #include "nmprofiler.h"
 #include "cache.h"
-#include "nmgl_data1.h"
 #include "nmprofiler.h"
 
 #include "nmgl.h"
@@ -49,6 +48,7 @@ template<class T> T* myMallocT() {
 	return result;
 }
 
+SECTION(".data_imu0A") NMGL_Context_NM1 context;
 SECTION(".data_imu0") NMGL_Context_NM1 *NMGL_Context_NM1::context;
 
 SECTION(".text_nmglvs") int nmglvsNm1Init()
@@ -56,13 +56,15 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 	halSleep(100);
 	halSetProcessorNo(1);
 	//---------- start nm program ------------
-	NMGL_Context_NM1::create();
-	NMGL_Context_NM1 *cntxt = NMGL_Context_NM1::getContext();
+	NMGL_Context_NM1 *cntxt;
 	try {
 		int fromHost = halHostSync(0xC0DE0001);		// send handshake to host
 		if (fromHost != 0xC0DE0086) {					// get  handshake from host
 			throw -1;
 		}
+		setHeap(0);
+		NMGL_Context_NM1::bind(&context);
+		cntxt = NMGL_Context_NM1::getContext();
 		
 		setHeap(11);
 		cntxt->patterns = myMallocT<PatternsArray>();

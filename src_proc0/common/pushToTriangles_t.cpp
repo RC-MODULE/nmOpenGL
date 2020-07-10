@@ -1,7 +1,7 @@
 #include "nmpp.h"
 #include "nmblas.h"
 #include "demo3d_nm0.h"
-#include "nmgl_data0.h"
+
 
 #define HEAD_X0 (triangles.x0)
 #define HEAD_Y0 (triangles.y0)

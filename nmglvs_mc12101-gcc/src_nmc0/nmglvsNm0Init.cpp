@@ -8,7 +8,7 @@
 #include "nmprofiler.h"
 
 #include "nmgl.h"
-#include "nmgl_data0.h"
+
 
 #define CHECK_EXIT0 if(nmglSynchro->exit_nm==EXIT) {	break;	}
 
@@ -46,7 +46,7 @@ template<class T> inline T* myMallocT(int count) {
 	counter++;
 	return result;
 }
-//SECTION(".data_imu7")  NMGL_Context_NM0 cntxt;
+
 SECTION(".data_imu0") NMGL_Context_NM0 *NMGL_Context_NM0::context;
 
 SECTION(".text_nmglvs") int nmglvsNm0Init()

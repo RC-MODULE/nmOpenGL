@@ -2,7 +2,7 @@
 #include "nmpp.h"
 #include "stdio.h"
 #include "nmgl.h"
-#include "nmgl_data0.h"
+
 
 #pragma code_section ".text_nmgl"
 SECTION(".data_imu7") int viewportValues[4];

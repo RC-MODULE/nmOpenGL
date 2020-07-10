@@ -3,7 +3,7 @@
 #include "nmblas.h"
 #include "nmpp.h"
 #include "ringbuffer.h"
-#include "nmgl_data0.h"
+
 
 #pragma code_section ".text_nmgl"
 

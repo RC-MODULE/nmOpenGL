@@ -2,7 +2,7 @@
 #include "nmblas.h"
 #include "demo3d_nm0.h"
 #include "nmgl.h"
-#include "nmgl_data0.h"
+
 #include "stdio.h"
 #include "math.h"
 

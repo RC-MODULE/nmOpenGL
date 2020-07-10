@@ -137,7 +137,7 @@ public:
 	inline static NMGL_Context_NM0 *getContext() {
 		return context;
 	}
-	inline static void free(NMGLSynchroData* synchroData) {
+	inline static void free() {
 		halFree(context);
 	}
 

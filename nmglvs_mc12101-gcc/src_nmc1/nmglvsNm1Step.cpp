@@ -8,7 +8,7 @@
 #include "ringbuffer.h"
 #include "nmprofiler.h"
 #include "cache.h"
-#include "nmgl_data1.h"
+
 
 #include "nmgl.h"
 

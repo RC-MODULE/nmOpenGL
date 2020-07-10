@@ -1,6 +1,6 @@
 #include "demo3d_nm0.h"
 #include "nmpp.h"
-#include "nmgl_data0.h"
+
 #include "nmblas.h"
 
 #define sort() 	nmppsMerge_32f(lines->x0, lines->y0, temp0, count);	 \

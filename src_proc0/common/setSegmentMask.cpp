@@ -1,6 +1,6 @@
 #include "nmpp.h"
-#include "demo3d_common.h"
-#include "nmgl_data0.h"
+#include "demo3d_nm0.h"
+
 #include "nmblas.h"
 
 SECTION(".text_demo3d")
