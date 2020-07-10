@@ -6,18 +6,19 @@
 
 SECTION(".text_nmgl")
 void nmglDisableClientState(NMGLenum array) {
+	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
 	switch (array)
 	{
 	case NMGL_VERTEX_ARRAY:
-		cntxt.vertexArray.enabled = NMGL_FALSE;
+		cntxt->vertexArray.enabled = NMGL_FALSE;
 		break;
 	case NMGL_COLOR_ARRAY:
-		cntxt.colorArray.enabled = NMGL_FALSE;
+		cntxt->colorArray.enabled = NMGL_FALSE;
 		break;
 	case NMGL_NORMAL_ARRAY:
-		cntxt.normalArray.enabled = NMGL_FALSE;
+		cntxt->normalArray.enabled = NMGL_FALSE;
 	default:
-		cntxt.error = NMGL_INVALID_ENUM;
+		cntxt->error = NMGL_INVALID_ENUM;
 		break;
 	}
 }

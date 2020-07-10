@@ -11,29 +11,30 @@ Lines localLine;
 
 SECTION(".text_demo3d")
 void rasterizeL(const Lines* lines, const BitMask* masks){
+	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
 
 	int count = lines->size;
-	localLine.x0 = cntxt.buffer0;
-	localLine.y0 = cntxt.buffer0 + NMGL_SIZE;
-	localLine.x1 = cntxt.buffer1;
-	localLine.y1 = cntxt.buffer1 + NMGL_SIZE;
-	localLine.colors = (v4nm32s*)cntxt.buffer3;
-	localLine.z = (int*)cntxt.buffer3 + 4 * NMGL_SIZE;
+	localLine.x0 = cntxt->buffer0;
+	localLine.y0 = cntxt->buffer0 + NMGL_SIZE;
+	localLine.x1 = cntxt->buffer1;
+	localLine.y1 = cntxt->buffer1 + NMGL_SIZE;
+	localLine.colors = (v4nm32s*)cntxt->buffer3;
+	localLine.z = (int*)cntxt->buffer3 + 4 * NMGL_SIZE;
 
-	PolygonsConnector connector(cntxt.polygonsData);
+	PolygonsConnector connector(cntxt->polygonsData);
 
-	for (int segY = 0, iSeg = 0; segY < cntxt.windowInfo.nRows; segY++) {
-		for (int segX = 0; segX < cntxt.windowInfo.nColumns; segX++, iSeg++) {
+	for (int segY = 0, iSeg = 0; segY < cntxt->windowInfo.nRows; segY++) {
+		for (int segX = 0; segX < cntxt->windowInfo.nColumns; segX++, iSeg++) {
 			if (masks[iSeg].hasNotZeroBits != 0) {
 
 				int resultSize = readMask(masks[iSeg].bits, indices, count);
 				if (resultSize) {
 
-					cntxt.synchro.writeInstr(1, NMC1_COPY_SEG_FROM_IMAGE,
-						cntxt.windowInfo.x0[segX],
-						cntxt.windowInfo.y0[segY],
-						cntxt.windowInfo.x1[segX] - cntxt.windowInfo.x0[segX],
-						cntxt.windowInfo.y1[segY] - cntxt.windowInfo.y0[segY],
+					cntxt->synchro.writeInstr(1, NMC1_COPY_SEG_FROM_IMAGE,
+						cntxt->windowInfo.x0[segX],
+						cntxt->windowInfo.y0[segY],
+						cntxt->windowInfo.x1[segX] - cntxt->windowInfo.x0[segX],
+						cntxt->windowInfo.y1[segY] - cntxt->windowInfo.y0[segY],
 						iSeg);
 
 					copyArraysByIndices((void**)lines, indices, (void**)&localLine, 5, resultSize);
@@ -53,14 +54,14 @@ void rasterizeL(const Lines* lines, const BitMask* masks){
 					updatePolygonsL(poly, &localLine, resultSize, segX, segY);
 
 					connector.incHead();
-					cntxt.synchro.writeInstr(1, NMC1_DRAW_LINES);
+					cntxt->synchro.writeInstr(1, NMC1_DRAW_LINES);
 
-					cntxt.synchro.writeInstr(1,
+					cntxt->synchro.writeInstr(1,
 						NMC1_COPY_SEG_TO_IMAGE,
-						cntxt.windowInfo.x0[segX],
-						cntxt.windowInfo.y0[segY],
-						cntxt.windowInfo.x1[segX] - cntxt.windowInfo.x0[segX],
-						cntxt.windowInfo.y1[segY] - cntxt.windowInfo.y0[segY]);
+						cntxt->windowInfo.x0[segX],
+						cntxt->windowInfo.y0[segY],
+						cntxt->windowInfo.x1[segX] - cntxt->windowInfo.x0[segX],
+						cntxt->windowInfo.y1[segY] - cntxt->windowInfo.y0[segY]);
 				}
 			}
 		}

@@ -5,5 +5,5 @@
 #include "ringbuffer.h"
 #include <time.h>
 
-extern NMGL_Context_NM0 cntxt;
+//extern NMGL_Context_NM0 cntxt;
 #endif

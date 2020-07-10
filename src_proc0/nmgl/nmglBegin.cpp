@@ -7,16 +7,17 @@
 SECTION(".text_nmgl")
 void nmglBegin(NMGLenum mode)
 {
-	if(cntxt.beginEndInfo.inBeginEnd){
-		cntxt.error = NMGL_INVALID_OPERATION;
+	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
+	if(cntxt->beginEndInfo.inBeginEnd){
+		cntxt->error = NMGL_INVALID_OPERATION;
 		return;
 	}
 
-	cntxt.beginEndInfo.inBeginEnd = true;
-	cntxt.beginEndInfo.mode = mode;
-	cntxt.beginEndInfo.vertexCounter = 0;
-	cntxt.beginEndInfo.normalCounter = 0;
-	cntxt.beginEndInfo.colorCounter = 0;
+	cntxt->beginEndInfo.inBeginEnd = true;
+	cntxt->beginEndInfo.mode = mode;
+	cntxt->beginEndInfo.vertexCounter = 0;
+	cntxt->beginEndInfo.normalCounter = 0;
+	cntxt->beginEndInfo.colorCounter = 0;
 	//printf("begin\n");
 	
 }

@@ -6,5 +6,6 @@
 
 SECTION(".text_nmgl")
 void nmglFinish (){
-	while (!cntxt.synchro.isEmpty());
+	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
+	while (!cntxt->synchro.isEmpty());
 }

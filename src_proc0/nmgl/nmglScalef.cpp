@@ -13,6 +13,7 @@ void nmglScalef(NMGLfloat scaleX, NMGLfloat scaleY, NMGLfloat scaleZ) {
 					 0,0,scaleZ,0,
 					 0,0,0,1};
 	
-	mat4nm32f* current = cntxt.currentMatrixStack->top();
+	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
+	mat4nm32f* current = cntxt->currentMatrixStack->top();
 	mul_mat4nm32f_v4nm32f(current, (v4nm32f*)&temp, (v4nm32f*)current, 4);
 }

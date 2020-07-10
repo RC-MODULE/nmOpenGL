@@ -6,6 +6,7 @@
 
 SECTION(".text_nmgl")
 void nmglMultMatrixf(const NMGLfloat * m) {
-	mat4nm32f* current = cntxt.currentMatrixStack->top();
+	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
+	mat4nm32f* current = cntxt->currentMatrixStack->top();
 	mul_mat4nm32f_v4nm32f(current, (v4nm32f*)m, (v4nm32f*)current, 4);
 }

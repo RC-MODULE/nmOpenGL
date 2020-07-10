@@ -6,5 +6,6 @@
 
 SECTION(".text_nmgl")
 NMGLenum nmglGetError() {
-	return cntxt.error;
+	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
+	return cntxt->error;
 }

@@ -126,7 +126,22 @@ struct MatrixStack {
 };
 
 
-struct NMGL_Context_NM0 {
+class NMGL_Context_NM0 {
+private:
+	static NMGL_Context_NM0 *context;
+public:	
+	inline static void create(NMGLSynchroData* synchroData) {
+		context = (NMGL_Context_NM0*)halMalloc32(sizeof32(NMGL_Context_NM0));
+		context->init(synchroData);
+	}
+	inline static NMGL_Context_NM0 *getContext() {
+		return context;
+	}
+	inline static void free(NMGLSynchroData* synchroData) {
+		halFree(context);
+	}
+
+
 	NMGLSynchro synchro;
 	PolygonsArray* polygonsData;
 	NMGLenum error;
@@ -1028,7 +1043,7 @@ void copyColorByIndices_BGRA_RGBA(v4nm32s* srcColor, int* indices, v4nm32s* dstC
 
 //functions that use NMGLSynchroL_ContextNM0
 void cullFaceSortTriangles(Triangles &triangles);
-void setSegmentMask(NMGL_Context_NM0 &cntxt, v2nm32f* minXY, v2nm32f* maxXY, BitMask* masks, int size);
+void setSegmentMask(v2nm32f* minXY, v2nm32f* maxXY, BitMask* masks, int size);
 void rasterizeT(const Triangles* triangles, const BitMask* masks);
 void rasterizeL(const Lines* lines, const BitMask* masks);
 void updatePolygonsT(Polygons* poly, Triangles* triangles, int count, int segX, int segY);

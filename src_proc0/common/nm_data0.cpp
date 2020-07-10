@@ -5,5 +5,5 @@
 #include "ringbuffer.h"
 #include <time.h>
 
-SECTION(".data_imu7")  NMGL_Context_NM0 cntxt;
+//SECTION(".data_imu7")  NMGL_Context_NM0 cntxt;
 #endif

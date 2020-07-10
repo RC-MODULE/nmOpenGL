@@ -9,6 +9,7 @@
 
 SECTION(".text_nmgl")
 void nmglDisable(NMGLenum cap) {
+	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
 	switch (cap) {
 
 	case NMGL_ALPHA_TEST:
@@ -28,11 +29,11 @@ void nmglDisable(NMGLenum cap) {
 		break;		
 		
 	case NMGL_CULL_FACE:
-		cntxt.isCullFace = NMGL_FALSE;
+		cntxt->isCullFace = NMGL_FALSE;
 		break;	
 
 	case NMGL_DEPTH_TEST:
-		cntxt.synchro.writeInstr(1, NMC1_DEPTH, NMGL_FALSE);
+		cntxt->synchro.writeInstr(1, NMC1_DEPTH, NMGL_FALSE);
 		break;
 	
 	case NMGL_DITHER:
@@ -52,7 +53,7 @@ void nmglDisable(NMGLenum cap) {
 		break;
 		
 	case NMGL_NORMALIZE:
-		cntxt.normalizeEnabled = NMGL_FALSE;
+		cntxt->normalizeEnabled = NMGL_FALSE;
 		break;
 		
 	case NMGL_POINT_SMOOTH:
@@ -100,33 +101,33 @@ void nmglDisable(NMGLenum cap) {
 		break;
 
 	case NMGL_LIGHTING:
-		cntxt.isLighting = NMGL_FALSE;
+		cntxt->isLighting = NMGL_FALSE;
 		break;
 
 	case NMGL_LIGHT0:
-		cntxt.isEnabledLight[0] = 0;
+		cntxt->isEnabledLight[0] = 0;
 		break;
 
 	case NMGL_LIGHT1:
-		cntxt.isEnabledLight[1] = 0;
+		cntxt->isEnabledLight[1] = 0;
 		break;
 	case NMGL_LIGHT2:
-		cntxt.isEnabledLight[2] = 0;
+		cntxt->isEnabledLight[2] = 0;
 		break;
 	case NMGL_LIGHT3:
-		cntxt.isEnabledLight[3] = 0;
+		cntxt->isEnabledLight[3] = 0;
 		break;
 	case NMGL_LIGHT4:
-		cntxt.isEnabledLight[4] = 0;
+		cntxt->isEnabledLight[4] = 0;
 		break;
 	case NMGL_LIGHT5:
-		cntxt.isEnabledLight[5] = 0;
+		cntxt->isEnabledLight[5] = 0;
 		break;
 	case NMGL_LIGHT6:
-		cntxt.isEnabledLight[6] = 0;
+		cntxt->isEnabledLight[6] = 0;
 		break;
 	case NMGL_LIGHT7:
-		cntxt.isEnabledLight[7] = 0;
+		cntxt->isEnabledLight[7] = 0;
 		break;
 	}
 }

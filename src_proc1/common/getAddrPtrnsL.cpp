@@ -19,7 +19,8 @@ inline void ADD_COPY(const void* src, void* dst, int size, int i) {
 	points[i] = msdAdd(task, 0);
 }
 
-SECTION(".text_demo3d") int getAddrPtrnsL(NMGL_Context_NM1* context, Polygons* poly) {
+SECTION(".text_demo3d") int getAddrPtrnsL(Polygons* poly) {
+	NMGL_Context_NM1 *context = NMGL_Context_NM1::getContext();
 	PatternsArray* patterns = context->patterns;
 	int size = poly->count;
 
