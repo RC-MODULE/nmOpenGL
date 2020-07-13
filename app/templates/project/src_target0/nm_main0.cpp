@@ -30,7 +30,7 @@ int main()
 	nmglClearColor(0, 0, 0.4f, 1.0f);
 
 	nmglMatrixMode(NMGL_PROJECTION);
-	nmglOrthof(-WIDTH_IMAGE/2, WIDTH_IMAGE / 2, -HEIGHT_IMAGE / 2, HEIGHT_IMAGE / 2, 0, 100);
+	nmglOrthof(-768/2, 768 / 2, -768 / 2, 768 / 2, 0, 100);
 	
 
 	nmglVertexPointer(2, NMGL_FLOAT, 0, triangles);
