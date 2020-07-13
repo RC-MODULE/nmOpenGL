@@ -32,38 +32,24 @@
 
 struct CommandNm1{
 	int instr_nmc1;
-	int priority;
-	int params[6];
+	int params[7];
 };
 
-#define PRIORITY0_SIZE 16
-#define PRIORITY1_SIZE 256
+#define PRIORITY_SIZE 256
 
-struct NMGLSynchroData {
-
-	HalRingBufferData<CommandNm1, PRIORITY0_SIZE> priority0;
-	HalRingBufferData<CommandNm1, PRIORITY1_SIZE> priority1;
-
-	void init() {
-		priority0.init();
-		priority1.init();
-	}
-};
+typedef HalRingBufferData<CommandNm1, PRIORITY_SIZE> NMGLSynchroData;
 
 class NMGLSynchro {
 private:
-	NMGLSynchroData* mSynchroData;
+	HalRingBufferConnector<CommandNm1, PRIORITY_SIZE> connector;
 	int dummy;
-	HalRingBufferConnector<CommandNm1, PRIORITY0_SIZE> connector0;
-	HalRingBufferConnector<CommandNm1, PRIORITY1_SIZE> connector1;
 public:
 	int time;
 	int counter;
 
-	void init(NMGLSynchroData* synchroData) {
-		mSynchroData = synchroData;
-		connector0.init(&synchroData->priority0);
-		connector1.init(&synchroData->priority1);
+	void init(NMGLSynchroData* synchroData, int core) {
+		connector.init(synchroData);
+		counter = 0;
 	}
 
 	void writeInstr(int priority, 
@@ -74,90 +60,26 @@ public:
 		int param3 = 0, 
 		int param4 = 0, 
 		int param5 = 0) {
-		
-		CommandNm1* command;
-		switch (priority)
-		{
-		case 0:
-			while (connector0.isFull());
-			command = connector0.ptrHead();
-			break;
-		case 1:
-			while (connector1.isFull());
-			command = connector1.ptrHead();
-			break;
-		default:
-			return;
-			break;
-		}
+
+		while (connector.isFull());
+		CommandNm1* command = connector.ptrHead();
 		command->instr_nmc1 = instr;
-		command->priority = priority;
 		command->params[0] = param0;
 		command->params[1] = param1;
 		command->params[2] = param2;
 		command->params[3] = param3;
 		command->params[4] = param4;
 		command->params[5] = param5;
-		switch (priority)
-		{
-		case 0:
-			(*connector0.pHead)++;
-			break;
-		case 1:
-			(*connector1.pHead)++;
-			break;
-		}
-
+		(*connector.pHead)++;
 	}
 
 	inline bool isEmpty() {
-		return isEmpty(1) && isEmpty(0);
+		return connector.isEmpty();
 	}
 
-	bool isEmpty(int priority) {
-		switch (priority)
-		{
-		case 0: {
-			return connector0.isEmpty();
-		}
-		case 1: {
-			return connector1.isEmpty();
-		}
-		}
-	}
-
-	void popInstr(CommandNm1 *command) {
-		while (isEmpty());
-		if (isEmpty(0)) {
-			connector1.pop(command, 1);
-		}
-		else {
-			connector0.pop(command, 1);
-		}
-	}
-	
-	unsigned int &getHead(int priority) {
-		switch (priority)
-		{
-		case 0: {
-			return *connector0.pHead;
-		}
-		case 1: {
-			return *connector1.pHead;
-		}
-		}
-	}
-
-	unsigned int &getTail(int priority) {
-		switch (priority)
-		{
-		case 0: {
-			return *connector0.pTail;
-		}
-		case 1: {
-			return *connector1.pTail;
-		}
-		}
+	inline void popInstr(CommandNm1 *command) {
+		isEmpty();
+		connector.pop(command, 1);
 	}
 };
 
