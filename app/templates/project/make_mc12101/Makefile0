@@ -62,9 +62,8 @@ CC 				 = nmc-g++
 AS               = nmc-gcc 				 
 AS_FLAGS    	 = -c -mmas -x assembler -mnmc4-float
 LIBS             = -lnmopengl-nmc4f -lnmpp-nmc4f -lhal-mc12101 
-LINKER_FLAGS     =   -Xlinker -Map=.main0.map $(LIB_DIRS) -save-temps "-Wl,-Tldscript-nmc0.ld" -Wl,--whole-archive -lmc12101 -Wl,--no-whole-archive -o$(TARGET) 
-#LINKER_FLAGS    += -Wl,--section-start,.heap2=0x14000,--defsym,__HEAP_2_END=0x60000
-#LINKER_FLAGS    += -Wl,--section-start,.heap3=0x1C000,--defsym,__HEAP_3_END=0x80000 
+MAP		         = $(PROJECT).map
+LINKER_FLAGS     = -Xlinker -Map=$(MAP) $(LIB_DIRS) "-Wl,-Tldscript-nmc0.ld" -Wl,--whole-archive -lmc12101 -Wl,--no-whole-archive -o$(TARGET) 
 
 #=================== SOURCE & OBJECTS COLLECTION ===========================
 
