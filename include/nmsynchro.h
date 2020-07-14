@@ -42,11 +42,12 @@ typedef HalRingBufferData<CommandNm1, PRIORITY_SIZE> NMGLSynchroData;
 class NMGLSynchro {
 private:
 	HalRingBufferConnector<CommandNm1, PRIORITY_SIZE> connector;
+	int dummy;
 public:
 	int time;
 	int counter;
 
-	void init(NMGLSynchroData* synchroData, int core) {
+	void init(NMGLSynchroData* synchroData) {
 		connector.init(synchroData);
 		counter = 0;
 	}

@@ -31,7 +31,9 @@ void updatePolygonsL(Polygons* poly, Lines* lines, int count, int segX, int segY
 		}
 		int dx = (int)(x1 - x0 + 0.5f);
 		int dy = (int)(y1 - y0 + 0.5f);
-		poly->numbersPattrns01[i] = cntxt->patterns->table_dydx[dy * 2 * WIDTH_PTRN + dx + WIDTH_PTRN];
+		int offsetPtrn = x0 - MIN(x0, x1);
+		poly->numbersPattrns01[i] = cntxt->patterns->table_dydx[dy * 2 * WIDTH_PTRN + dx + WIDTH_PTRN] + offsetPtrn;
+		poly->numbersPattrns02[i] = cntxt->patterns->table_dydx[dy * 2 * WIDTH_PTRN + dx + WIDTH_PTRN] + offsetPtrn + NPATTERNS / 2;
 		poly->ptrnSizesOf32_01[i] = dy * WIDTH_PTRN / 16;
 
 		int minX, minY;
@@ -64,6 +66,9 @@ void updatePolygonsL(Polygons* poly, Lines* lines, int count, int segX, int segY
 		}
 		else {
 			poly->heights[i] = y1 - y0;
+		}
+		if (ABS(dx) > ABS(dy)) {
+			poly->offsetsY[i]++;
 		}
 		
 		poly->pointInImage[i] = minY * WIDTH_SEG + minX;

@@ -68,6 +68,8 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 		
 		setHeap(11);
 		cntxt->patterns = myMallocT<PatternsArray>();
+		//printf("size patterns = %d\n", sizeof32(cntxt->patterns->ptrns));
+		//printf("size patterns table = %d\n", sizeof32(cntxt->patterns->table_dydx));
 
 		setHeap(13);
 		cntxt->imagesData = myMallocT<ImageData>();
