@@ -1,7 +1,7 @@
 #include "nmgl.h"
 #include "demo3d_common.h"
 #include "demo3d_nm0.h"
-#include "nmgl_data0.h"
+
 #include <nmpp.h>
 
 #define COPY_TRIANGLE_IN_PLACE(iSrc, iDst) triangles.x2[iDst] = triangles.x2[iSrc];	\
@@ -18,13 +18,15 @@ colorVec[4 * (iDst) + 3] = colorVec[4 * (iSrc) + 3];
 
 SECTION(".text_demo3d")
 void cullFaceSortTriangles(Triangles &triangles){
+	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
+
 	int count = triangles.size;
 	int* colorVec = (int*)triangles.colors;
-	float* walkDirection = cntxt.buffer2 + 6 * NMGL_SIZE;
-	float* temp0 = cntxt.buffer0 + 6 * NMGL_SIZE;
-	float* temp1 = cntxt.buffer3;
-	int* evenMaskVec = cntxt.dividedMasks[0].even.bits;
-	int* oddMaskVec= cntxt.dividedMasks[0].odd.bits;
+	float* walkDirection = cntxt->buffer2 + 6 * NMGL_SIZE;
+	float* temp0 = cntxt->buffer0 + 6 * NMGL_SIZE;
+	float* temp1 = cntxt->buffer3;
+	int* evenMaskVec = cntxt->dividedMasks[0].even.bits;
+	int* oddMaskVec= cntxt->dividedMasks[0].odd.bits;
 
 	nmppsMul_Mul_Sub_32f(triangles.x0, triangles.y1, triangles.x1, triangles.y0, walkDirection, count);
 	nmppsMul_Mul_Sub_32f(triangles.x1, triangles.y2, triangles.x2, triangles.y1, temp1, count);
@@ -32,16 +34,16 @@ void cullFaceSortTriangles(Triangles &triangles){
 	nmppsMul_Mul_Sub_32f(triangles.x2, triangles.y0, triangles.x0, triangles.y2, temp1, count);
 	nmppsAdd_32f(temp0, temp1, walkDirection, count);
 
-	if (cntxt.frontFaceOrientation == NMGL_CW) {
+	if (cntxt->frontFaceOrientation == NMGL_CW) {
 		nmppsSubCRev_32f(walkDirection, walkDirection, 0, count);
 	}
 
-	cntxt.tmp.vec[0] = cntxt.tmp.vec[1] = 0;
-	if (cntxt.cullFaceType == NMGL_BACK) {
-		nmppsCmpLtC_v2nm32f((v2nm32f*)walkDirection, (v2nm32f*)&cntxt.tmp, evenMaskVec, oddMaskVec, 1, count / 2);
+	cntxt->tmp.vec[0] = cntxt->tmp.vec[1] = 0;
+	if (cntxt->cullFaceType == NMGL_BACK) {
+		nmppsCmpLtC_v2nm32f((v2nm32f*)walkDirection, (v2nm32f*)&cntxt->tmp, evenMaskVec, oddMaskVec, 1, count / 2);
 	}
 	else {
-		nmppsCmpGtC_v2nm32f((v2nm32f*)walkDirection, (v2nm32f*)&cntxt.tmp, evenMaskVec, oddMaskVec, 1, count / 2);
+		nmppsCmpGtC_v2nm32f((v2nm32f*)walkDirection, (v2nm32f*)&cntxt->tmp, evenMaskVec, oddMaskVec, 1, count / 2);
 	}
 
 	int resultCounter = 0;

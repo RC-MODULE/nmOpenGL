@@ -14,7 +14,7 @@
 #include "dma.h"
 
 #ifndef __OPEN_GL__
-#include "nmgl_data0.h"
+
 #endif
 
 

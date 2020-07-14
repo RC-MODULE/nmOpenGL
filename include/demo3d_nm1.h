@@ -11,6 +11,22 @@
 void selectPatterns(nm32s* dydxTable, nm32s* dX, nm32s* dY, nm32s* x0, nm32s* pPtrnPaintSide, nm32s** pSrcPack, int nSize, int* pTmp);
 
 struct NMGL_Context_NM1 {
+private:
+	static NMGL_Context_NM1 *context;
+public:
+	static void create() {
+		//context = (NMGL_Context_NM1*)halMalloc32(sizeof32(NMGL_Context_NM1));
+	}
+	static void bind(NMGL_Context_NM1* cntxt) {
+		context = cntxt;
+	}
+	inline static NMGL_Context_NM1 *getContext() {
+		return context;
+	}
+	static void free() {
+		//halFree(context);
+	}
+
 	Pattern polyImgTmp[SMALL_SIZE];
 	
 	PatternsArray* patterns;
@@ -145,9 +161,9 @@ extern "C" {
 	
 }
 
-void drawTriangles(NMGL_Context_NM1* context);
-void drawLines(NMGL_Context_NM1* context);
-int getAddrPtrnsT(NMGL_Context_NM1* context, Polygons* poly);
-int getAddrPtrnsL(NMGL_Context_NM1* context, Polygons* poly);
+void drawTriangles();
+void drawLines();
+int getAddrPtrnsT(Polygons* poly);
+int getAddrPtrnsL(Polygons* poly);
 
 #endif

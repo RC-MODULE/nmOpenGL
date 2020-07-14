@@ -1,6 +1,6 @@
 #include "demo3d_nm0.h"
 #include "nmpp.h"
-#include "nmgl_data0.h"
+
 
 #include "stdio.h"
 #include "nmblas.h"
@@ -17,23 +17,24 @@
 
 SECTION(".text_demo3d")
 void updatePolygonsT(Polygons* poly, Triangles* triangles, int count, int segX, int segY){
-	float* temp0 = cntxt.buffer0 + 2 * NMGL_SIZE;
-	float* temp1 = cntxt.buffer1 + 2 * NMGL_SIZE;
-	float* temp2 = cntxt.buffer2 + 2 * NMGL_SIZE;
-	float* temp3 = cntxt.buffer3 + 6 * NMGL_SIZE;
-	float* dy12 = cntxt.buffer1 + 4 * NMGL_SIZE;
-	float* dy02 = cntxt.buffer2 + 4 * NMGL_SIZE;
-	float* dy01 = cntxt.buffer0 + 4 * NMGL_SIZE;
-	float* dx12 = cntxt.buffer2 + 5 * NMGL_SIZE;
-	float* dx02 = cntxt.buffer0 + 5 * NMGL_SIZE;
-	float* dx01 = cntxt.buffer1 + 5 * NMGL_SIZE;
-	float* crossProducts = cntxt.buffer3 + 7 * NMGL_SIZE;
-	float* minX = cntxt.buffer0 + 6 * NMGL_SIZE;
-	float* maxX = cntxt.buffer1 + 6 * NMGL_SIZE;
-	float* minY = cntxt.buffer3 + 8 * NMGL_SIZE;	
-	int* dydx = (int*)cntxt.buffer3 + 9 * NMGL_SIZE;
-	nmblas_scopy(2 * WIDTH_PTRN * (HEIGHT_PTRN + 2), (float*)cntxt.patterns->table_dydx, 1, (float*)dydx, 1);
-	int segWidth = cntxt.windowInfo.x1[segX] - cntxt.windowInfo.x0[segX];
+	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
+	float* temp0 = cntxt->buffer0 + 2 * NMGL_SIZE;
+	float* temp1 = cntxt->buffer1 + 2 * NMGL_SIZE;
+	float* temp2 = cntxt->buffer2 + 2 * NMGL_SIZE;
+	float* temp3 = cntxt->buffer3 + 6 * NMGL_SIZE;
+	float* dy12 = cntxt->buffer1 + 4 * NMGL_SIZE;
+	float* dy02 = cntxt->buffer2 + 4 * NMGL_SIZE;
+	float* dy01 = cntxt->buffer0 + 4 * NMGL_SIZE;
+	float* dx12 = cntxt->buffer2 + 5 * NMGL_SIZE;
+	float* dx02 = cntxt->buffer0 + 5 * NMGL_SIZE;
+	float* dx01 = cntxt->buffer1 + 5 * NMGL_SIZE;
+	float* crossProducts = cntxt->buffer3 + 7 * NMGL_SIZE;
+	float* minX = cntxt->buffer0 + 6 * NMGL_SIZE;
+	float* maxX = cntxt->buffer1 + 6 * NMGL_SIZE;
+	float* minY = cntxt->buffer3 + 8 * NMGL_SIZE;	
+	int* dydx = (int*)cntxt->buffer3 + 9 * NMGL_SIZE;
+	nmblas_scopy(2 * WIDTH_PTRN * (HEIGHT_PTRN + 2), (float*)cntxt->patterns->table_dydx, 1, (float*)dydx, 1);
+	int segWidth = cntxt->windowInfo.x1[segX] - cntxt->windowInfo.x0[segX];
 
 	sort();
 	doubleSub_32f(triangles->y2, triangles->y2, triangles->y1, triangles->y0, dy12, dy02, count);
@@ -77,22 +78,22 @@ void updatePolygonsT(Polygons* poly, Triangles* triangles, int count, int segX, 
 	ternaryLt0_AddC_AddC_32f(crossProducts, temp1 + NMGL_SIZE, 0, NPATTERNS / 2, temp3, count);
 	nmppsConvert_32f32s_rounding(temp3, poly->numbersPattrns02 + poly->count, 0, count);
 
-	doubleSubC_32f(triangles->y0, minX, cntxt.windowInfo.y0_f[segY], cntxt.windowInfo.x0_f[segX], temp0, temp1, count);
+	doubleSubC_32f(triangles->y0, minX, cntxt->windowInfo.y0_f[segY], cntxt->windowInfo.x0_f[segX], temp0, temp1, count);
 	doubleAbsIfNegElse0_32f(temp0, temp1, temp2, temp3, count);
 	nmppsConvert_32f32s_rounding(temp2, poly->offsetsY + poly->count, 0, count);
 	nmppsConvert_32f32s_rounding(temp3, poly->offsetsX + poly->count, 0, count);
 
 	doubleClamp_32f(minX, maxX,
-		cntxt.windowInfo.x0_f[segX], cntxt.windowInfo.x1_f[segX],
+		cntxt->windowInfo.x0_f[segX], cntxt->windowInfo.x1_f[segX],
 		minX, temp0, count);	
 	doubleClamp_32f(triangles->y0, triangles->y2,
-		cntxt.windowInfo.y0_f[segY], cntxt.windowInfo.y1_f[segY],
+		cntxt->windowInfo.y0_f[segY], cntxt->windowInfo.y1_f[segY],
 		minY, temp1, count);
 	doubleSub_32f(temp0, temp1, minX, minY, temp2, temp3, count);
 	nmppsConvert_32f32s_rounding(temp2, poly->widths + poly->count, 0, count);
 	nmppsConvert_32f32s_rounding(temp3, poly->heights + poly->count, 0, count);
 
-	doubleSubC_32f(minX, minY, cntxt.windowInfo.x0_f[segX], cntxt.windowInfo.y0_f[segY], temp0, temp1, count);
+	doubleSubC_32f(minX, minY, cntxt->windowInfo.x0_f[segX], cntxt->windowInfo.y0_f[segY], temp0, temp1, count);
 
 	nmppsMulC_AddV_32f(temp1, temp0, temp2, segWidth, count);
 	nmppsConvert_32f32s_rounding(temp2, poly->pointInImage + poly->count, 0, count);
