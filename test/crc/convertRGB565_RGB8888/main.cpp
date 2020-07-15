@@ -267,9 +267,9 @@ clock_t convertRGB565_RGB8888_fourInputValues_fourOutputValues()
 	clock_t t1, t2, dt;
 
     //Act
-	t1 = clock_t();
+	t1 = clock();
     convertRGB565_RGB8888(srcArray, dstArray, count);
-	t2 = clock_t();
+	t2 = clock();
 	dt = t2 - t1;
 
 	nmppsFree(srcArray);
