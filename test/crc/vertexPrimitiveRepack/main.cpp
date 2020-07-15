@@ -127,7 +127,7 @@ int main(int argc, char **argv)
 	dt[4] = vertexPrimitiveRepack_modeIsGL_TRIANGLES_FAN_66Vertices();	
 	dt[5] = vertexPrimitiveRepack_modeIsGL_TRIANGLES_FAN_34Vertices();
 	for (int i = 0; i < 6; ++i){
-		printf("dt[%i] = %i\n\r", i + 1, dt[i]);
+		printf("dt[%i] = %i\n\r", i + 1, (int)dt[i]);
 	}
 
     puts("OK");
