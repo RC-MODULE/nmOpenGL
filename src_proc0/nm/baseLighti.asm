@@ -1,5 +1,6 @@
 
 //	void baseLighti(v4nm32f* ambient, v2nm32f* n_dot_vp, v4nm32f* diffuse, v2nm32f* n_dot_h_in_srm, v4nm32f* specular, v4nm32f* dst, int count){
+// ambient + n_dot_vp * diffuse + n_dot_h_in_srm * specular
 
 data ".data_demo3d"
 	one_one: word[2] = (float(1), float(1));
@@ -49,7 +50,7 @@ global _baseLighti: label;
 	fpu 0 rep 32 vreg1 = [ar0++];	//nvp
 	fpu 1 vreg1 = fpu 0 vreg1;
 	fpu 2 rep 32 vreg3 = [ar1++];	//nh
-	fpu 3 vreg3 = fpu 0 vreg3;
+	fpu 3 vreg3 = fpu 2 vreg3;
 	fpu 1 .float vreg1 + vreg1, set mask if <>0;
 	fpu 0 .float vreg6 = vreg1 * .retrive(vreg2) + .retrive(vreg0);		//a + nvp * d
 	fpu 1 .float vreg6 = vreg1 * .retrive(vreg2) + .retrive(vreg0);
@@ -76,9 +77,9 @@ global _baseLighti: label;
 	
 	fpu 0 rep vlen vreg1 = [ar0++];	//nvp
 	fpu 1 vreg1 = fpu 0 vreg1;
-	fpu 0 rep vlen vreg3 = [ar1++];	//nh
-	fpu 1 vreg3 = fpu 0 vreg3;
-	fpu 0 .float vreg1 + vreg1, set mask if <>0;
+	fpu 2 rep vlen vreg3 = [ar1++];	//nh
+	fpu 3 vreg3 = fpu 2 vreg3;
+	fpu 1 .float vreg1 + vreg1, set mask if <>0;
 	fpu 0 .float vreg6 = vreg1 * .retrive(vreg2) + .retrive(vreg0);		//a + nvp * d
 	fpu 1 .float vreg6 = vreg1 * .retrive(vreg2) + .retrive(vreg0);
 	fpu 2 .float vreg7 = vreg3 * .retrive(vreg4);						//nh * s

@@ -34,8 +34,8 @@ global _readMask: label;
 	if < delayed goto NextBit;
 		gr7 = [ar0++] with gr2 = gr1 << 5;
 		gr7;
-	//gr1 = 1; 	//для RGB8888
-	gr1 = 3;	//для RGB565
+	gr1 = 1; 	//для RGB8888
+	//gr1 = 3;	//для RGB565
 <End>
 	gr6 and gr1;
 //дублирование последнего элемента до тех пор, пока число элементов не будет кратно числу пикселей в long

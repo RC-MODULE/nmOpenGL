@@ -208,6 +208,9 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			if (cntxt->isCullFace) {
 				cullFaceSortTriangles(cntxt->trianInner);
 			}
+			if(cntxt->trianInner.size == 0){
+				break;
+			}
 
 			findMinMax3(cntxt->trianInner.x0, cntxt->trianInner.x1, cntxt->trianInner.x2, 
 				cntxt->buffer0, cntxt->buffer1, cntxt->trianInner.size);
