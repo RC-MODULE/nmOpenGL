@@ -146,15 +146,14 @@ public:
 	PolygonsArray* polygonsData;
 	NMGLenum error;
 	PatternsArray* patterns;
-	int dummy;
-
-	BitMask segmentMasks[36];
-	BitDividedMask dividedMasks[2];
-
 	float* buffer0;
 	float* buffer1;
 	float* buffer2;
 	float* buffer3;
+	float* buffer4;
+
+	BitMask segmentMasks[36];
+	BitDividedMask dividedMasks[2];	
 
 	Triangles trianInner;
 	Lines lineInner;

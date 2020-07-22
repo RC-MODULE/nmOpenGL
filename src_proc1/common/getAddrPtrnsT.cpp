@@ -26,7 +26,9 @@ SECTION(".text_demo3d") int getAddrPtrnsT(Polygons* poly){
 	PatternsArray* patterns = context->patterns;
 	int size = poly->count;
 	nm32s* temp0 = nmppsAddr_32s(context->buffer0, sizeof32(Polygons));
-	nm32s* dydx = nmppsAddr_32s(temp0, NMGL_SIZE);
+	nm32s* dydx = nmppsAddr_32s(temp0, POLYGONS_SIZE);
+	nm32s* temp1 = context->buffer1;
+	nm32s* temp2 = nmppsAddr_32s(context->buffer1, POLYGONS_SIZE);
 	task.type = MSD_DMA;
 	task.callback = 0;
 	ADD_COPY(poly->ptrnSizesOf32_01, polyTmp->ptrnSizesOf32_01, size, 0);
@@ -42,8 +44,6 @@ SECTION(".text_demo3d") int getAddrPtrnsT(Polygons* poly){
 	ADD_COPY(poly->ptrnSizesOf32_02, polyTmp->ptrnSizesOf32_02, size, 10);
 	ADD_COPY(poly->z, context->valuesZ, size, 11);
 
-	nm32s* temp1 = context->buffer1;
-	nm32s* temp2 = nmppsAddr_32s(context->buffer1, NMGL_SIZE);
 
 	int height = size / SMALL_SIZE;
 	int tail = size % SMALL_SIZE;

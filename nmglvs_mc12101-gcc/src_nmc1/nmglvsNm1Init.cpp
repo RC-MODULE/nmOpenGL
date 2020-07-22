@@ -17,16 +17,16 @@ SECTION(".data_imu3")	int pool1[SIZE_BANK];
 SECTION(".data_imu2")	int segImage[WIDTH_SEG * HEIGHT_SEG];
 SECTION(".data_imu2")	int segZBuff[WIDTH_SEG * HEIGHT_SEG];
 
-SECTION(".data_imu0") Vector2 ptrnInnPoints[NMGL_SIZE];
-SECTION(".data_imu0") Size ptrnSizes[NMGL_SIZE];
-SECTION(".data_shmem1") nm32s valuesZ[NMGL_SIZE];
-SECTION(".data_shmem1") nm32s valuesC[NMGL_SIZE];
+SECTION(".data_imu0") Vector2 ptrnInnPoints[POLYGONS_SIZE];
+SECTION(".data_imu0") Size ptrnSizes[POLYGONS_SIZE];
+SECTION(".data_shmem1") nm32s valuesZ[POLYGONS_SIZE];
+SECTION(".data_shmem1") nm32s valuesC[POLYGONS_SIZE];
 
-SECTION(".data_shmem1") nm32s* ppSrcPackPtrns[3 * NMGL_SIZE];
-SECTION(".data_shmem1") nm32s* ppDstPackPtrns[3 * NMGL_SIZE];
-SECTION(".data_shmem1") nm32s nSizePtrn32[3 * NMGL_SIZE];
-SECTION(".data_shmem1") nm32s* zBuffPoints[NMGL_SIZE];
-SECTION(".data_shmem1") nm32s* imagePoints[NMGL_SIZE];
+SECTION(".data_shmem1") nm32s* ppSrcPackPtrns[3 * POLYGONS_SIZE];
+SECTION(".data_shmem1") nm32s* ppDstPackPtrns[3 * POLYGONS_SIZE];
+SECTION(".data_shmem1") nm32s nSizePtrn32[3 * POLYGONS_SIZE];
+SECTION(".data_shmem1") nm32s* zBuffPoints[POLYGONS_SIZE];
+SECTION(".data_shmem1") nm32s* imagePoints[POLYGONS_SIZE];
 
 
 SECTION(".data_shmem1") nm32s colorClearBuff[WIDTH_SEG * HEIGHT_SEG];

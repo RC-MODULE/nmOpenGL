@@ -12,8 +12,8 @@ SECTION(".data_imu5")	float vertexX[3 * NMGL_SIZE];
 SECTION(".data_imu6")	float vertexY[3 * NMGL_SIZE];
 SECTION(".data_imu4")	float vertexZ[3 * NMGL_SIZE];
 
-SECTION(".data_imu6")	v2nm32f minXY[NMGL_SIZE];
-SECTION(".data_imu4")	v2nm32f maxXY[NMGL_SIZE];
+//SECTION(".data_imu6")	v2nm32f minXY[NMGL_SIZE];
+//SECTION(".data_imu4")	v2nm32f maxXY[NMGL_SIZE];
 
 SECTION(".data_imu5")	v4nm32f vertexResult[3 * NMGL_SIZE];
 SECTION(".data_imu6")	v4nm32f colorOrNormal[3 * NMGL_SIZE];
@@ -172,6 +172,8 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 		nmppsConvert_32s32f((int*)cntxt->buffer0, vertexY, localSize);
 
 		//---------------rasterize------------------------------------
+		v2nm32f *minXY = (v2nm32f*)cntxt->buffer4;
+		v2nm32f *maxXY = (v2nm32f*)cntxt->buffer4 + NMGL_SIZE;
 		switch (mode) {
 		case NMGL_TRIANGLES:
 			pushToTriangles_t(vertexX, vertexY, vertexZ, colorOrNormal, cntxt->trianInner, localSize);

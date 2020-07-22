@@ -6,7 +6,7 @@
 #include "stdio.h"
 #include "nmprofiler.h"
 
-SECTION(".data_imu7")   int indices[NMGL_SIZE];
+//SECTION(".data_imu7")   int indices[NMGL_SIZE];
 SECTION(".data_imu7")   Triangles localTrian2;
 SECTION(".data_imu7")   Triangles localTrian;
 
@@ -31,6 +31,7 @@ void rasterizeT(const Triangles* triangles, const BitMask* masks){
 	localTrian.y2 = cntxt->buffer2 + NMGL_SIZE;
 	localTrian.colors = (v4nm32s*)cntxt->buffer3;
 	localTrian.z = (int*)cntxt->buffer3 + 4 * NMGL_SIZE;
+	int* indices = (int*)cntxt->buffer4;
 
 	PolygonsConnector connector(cntxt->polygonsData);
 
@@ -63,7 +64,6 @@ void rasterizeT(const Triangles* triangles, const BitMask* masks){
 					Polygons* poly = connector.ptrHead();
 					poly->count = 0;
 					updatePolygonsT(poly, &localTrian, resultSize, segX, segY);
-
 					connector.incHead();
 					cntxt->synchro.writeInstr(1, NMC1_DRAW_TRIANGLES);
 

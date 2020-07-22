@@ -6,7 +6,7 @@
 #include "stdio.h"
 #include "nmprofiler.h"
 
-extern  int indices[NMGL_SIZE];
+//extern  int indices[NMGL_SIZE];
 Lines localLine;
 
 SECTION(".text_demo3d")
@@ -20,6 +20,7 @@ void rasterizeL(const Lines* lines, const BitMask* masks){
 	localLine.y1 = cntxt->buffer1 + NMGL_SIZE;
 	localLine.colors = (v4nm32s*)cntxt->buffer3;
 	localLine.z = (int*)cntxt->buffer3 + 4 * NMGL_SIZE;
+	int* indices = (int*)cntxt->buffer4;
 
 	PolygonsConnector connector(cntxt->polygonsData);
 

@@ -16,14 +16,15 @@ SECTION(".data_imu1")	float nmglBuffer0[12 * NMGL_SIZE];
 SECTION(".data_imu2")	float nmglBuffer1[12 * NMGL_SIZE];
 SECTION(".data_imu3")	float nmglBuffer2[12 * NMGL_SIZE];
 SECTION(".data_imu4")	float nmglBuffer3[12 * NMGL_SIZE];
+SECTION(".data_imu5")	float nmglBuffer4[12 * NMGL_SIZE];
 
 
-SECTION(".data_imu1")	float x0[NMGL_SIZE];
+SECTION(".data_imu2")	float x0[NMGL_SIZE];
 SECTION(".data_imu2")	float y0[NMGL_SIZE];
-SECTION(".data_imu3")	float x1[NMGL_SIZE];
-SECTION(".data_imu4")	float y1[NMGL_SIZE];
-SECTION(".data_imu5")	float x2[NMGL_SIZE];
-SECTION(".data_imu6")	float y2[NMGL_SIZE];
+SECTION(".data_imu2")	float x1[NMGL_SIZE];
+SECTION(".data_imu3")	float y1[NMGL_SIZE];
+SECTION(".data_imu3")	float x2[NMGL_SIZE];
+SECTION(".data_imu3")	float y2[NMGL_SIZE];
 SECTION(".data_imu7")	int z_int[NMGL_SIZE];
 SECTION(".data_imu6")	v4nm32s lightsValues[NMGL_SIZE];
 
@@ -116,6 +117,7 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 	cntxt->buffer1 = nmglBuffer1;
 	cntxt->buffer2 = nmglBuffer2;
 	cntxt->buffer3 = nmglBuffer3;
+	cntxt->buffer4 = nmglBuffer4;
 
 	cntxt->dividedMasks[0].init((nm1*)dividedMasksMemory[0], (nm1*)dividedMasksMemory[1]);
 	cntxt->dividedMasks[1].init((nm1*)dividedMasksMemory[2], (nm1*)dividedMasksMemory[3]);

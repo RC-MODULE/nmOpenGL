@@ -32,8 +32,7 @@ void updatePolygonsT(Polygons* poly, Triangles* triangles, int count, int segX, 
 	float* minX = cntxt->buffer0 + 6 * NMGL_SIZE;
 	float* maxX = cntxt->buffer1 + 6 * NMGL_SIZE;
 	float* minY = cntxt->buffer3 + 8 * NMGL_SIZE;	
-	int* dydx = (int*)cntxt->buffer3 + 9 * NMGL_SIZE;
-	nmblas_scopy(2 * WIDTH_PTRN * (HEIGHT_PTRN + 2), (float*)cntxt->patterns->table_dydx, 1, (float*)dydx, 1);
+	int* dydx = cntxt->patterns->table_dydx;
 	int segWidth = cntxt->windowInfo.x1[segX] - cntxt->windowInfo.x0[segX];
 
 	sort();
