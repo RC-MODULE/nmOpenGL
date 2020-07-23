@@ -25,12 +25,17 @@ SECTION(".data_imu2")	float x1[NMGL_SIZE];
 SECTION(".data_imu3")	float y1[NMGL_SIZE];
 SECTION(".data_imu3")	float x2[NMGL_SIZE];
 SECTION(".data_imu3")	float y2[NMGL_SIZE];
-SECTION(".data_imu7")	int z_int[NMGL_SIZE];
+SECTION(".data_imu4")	int z_int[NMGL_SIZE];
 SECTION(".data_imu6")	v4nm32s lightsValues[NMGL_SIZE];
 
-SECTION(".data_imu7") int dividedMasksMemory[4][NMGL_SIZE / 32];
+SECTION(".data_imu6") int dividedMasksMemory[4][NMGL_SIZE / 32];
 
 SECTION(".data_imu6") int masksBits[36][NMGL_SIZE / 32];
+
+#ifdef USED_POLYGONS_BUFFER
+SECTION(".data_shared0")	Polygons polygons[36];
+//SECTION(".data_imu7")	Polygons polygons[36];
+#endif
 
 int counter = 0;
 

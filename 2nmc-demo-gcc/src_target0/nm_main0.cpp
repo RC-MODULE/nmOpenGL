@@ -137,7 +137,6 @@ SECTION(".text_shared0") int main()
 		nmglEnableClientState(NMGL_NORMAL_ARRAY);
 
 		nmglClear(NMGL_COLOR_BUFFER_BIT | NMGL_DEPTH_BUFFER_BIT);
-		
 
 		nmglVertexPointer(4, NMGL_FLOAT, 0, vertices_DDR);
 		nmglNormalPointer(NMGL_FLOAT, 0, normal_DDR);

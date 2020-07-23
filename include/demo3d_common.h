@@ -4,6 +4,7 @@
 #include "nmgltype.h"
 #include "nmsynchro.h"
 #include "ringbuffer.h"
+#include "testsize.h"
 
 #ifdef __GNUC__
 	#define setHeap(n) nmc_malloc_set_heap(n) 
@@ -11,7 +12,8 @@
 	#define setHeap(n)
 #endif
 
-//#define PROFILER0
+//#define USED_POLYGONS_BUFFER
+//#define PROFILER1
 //#define PROFILER1
 
 #ifdef __GNUC__
@@ -42,6 +44,7 @@ typedef v4nm8s rgb8888;
 
 #define COUNT_POLYGONS_BUFFER 128
 #define COUNT_IMAGE_BUFFER 8
+//#define COUNT_IMAGE_BUFFER 2
 
 #define MAX_SIDE_POLYGON 32
 #define HEIGHT_PTRN   MAX_SIDE_POLYGON
