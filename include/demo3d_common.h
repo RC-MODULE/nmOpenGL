@@ -4,7 +4,7 @@
 #include "nmgltype.h"
 #include "nmsynchro.h"
 #include "ringbuffer.h"
-#include "testsize.h"
+//#include "testsize.h"
 
 #ifdef __GNUC__
 	#define setHeap(n) nmc_malloc_set_heap(n) 
