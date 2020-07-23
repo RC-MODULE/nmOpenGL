@@ -20,10 +20,6 @@ int nmppsCmpGteLteMirrorV_32f_valuesAreInsideTheRange_allFlagsAreOnes();
 int nmppsCmpGteLteMirrorV_32f_halfOfTheSizeIs16AndNotMultipleOf32_16MostSignificantFlagsOf32WordAreZero();
 int nmppsCmpGteLteMirrorV_32f_halfOfTheSizeIs32AndIsMultipleOf32_NextBitsOfFlagsAreOnesAndNotChanged();
 int nmppsCmpGteLteMirrorV_32f_halfOfTheSizeIs32AndIsMultipleOf32_NextBitsOfFlagsAreZeroesAndNotChanged();
-int nmppsCmpGteLteMirrorV_32f_srcArrayIsNull_errorIsEINVAL();
-int nmppsCmpGteLteMirrorV_32f_wArrayIsNull_errorIsEINVAL();
-int nmppsCmpGteLteMirrorV_32f_evenFlagsIsNull_errorIsEINVAL();
-int nmppsCmpGteLteMirrorV_32f_oddFlagsIsNull_errorIsEINVAL();
 
 int main(int argc, char **argv)
 {
@@ -36,10 +32,6 @@ int main(int argc, char **argv)
 	RUN_TEST(nmppsCmpGteLteMirrorV_32f_halfOfTheSizeIs32AndIsMultipleOf32_NextBitsOfFlagsAreOnesAndNotChanged);
 	RUN_TEST(nmppsCmpGteLteMirrorV_32f_halfOfTheSizeIs32AndIsMultipleOf32_NextBitsOfFlagsAreZeroesAndNotChanged);
 	RUN_TEST(nmppsCmpGteLteMirrorV_32f_halfOfTheSizeIs16AndNotMultipleOf32_16MostSignificantFlagsOf32WordAreZero);
-	RUN_TEST(nmppsCmpGteLteMirrorV_32f_srcArrayIsNull_errorIsEINVAL);
-	RUN_TEST(nmppsCmpGteLteMirrorV_32f_wArrayIsNull_errorIsEINVAL);
-	RUN_TEST(nmppsCmpGteLteMirrorV_32f_evenFlagsIsNull_errorIsEINVAL);
-	RUN_TEST(nmppsCmpGteLteMirrorV_32f_oddFlagsIsNull_errorIsEINVAL);
 	puts("OK");
 	return 0;
 }
@@ -436,98 +428,3 @@ int nmppsCmpGteLteMirrorV_32f_halfOfTheSizeIs16AndNotMultipleOf32_16MostSignific
 		return 0;
 }
 
-int nmppsCmpGteLteMirrorV_32f_srcArrayIsNull_errorIsEINVAL()
-{
-		// Arrange
-		errno = 0;
-
-		constexpr int size = 64;
-		nm32f wArray[size] = {0};
-
-		nm32f *srcArray = NULL;
-
-		nm1 *evenFlags = nmppsMalloc_1(size);
-		nm1 *oddFlags = nmppsMalloc_1(size);
-
-		// Act 
-		nmppsCmpGteLteMirrorV_32f(srcArray, wArray, evenFlags, oddFlags, size);
-
-		// Assert
-		TEST_ASSERT(EINVAL == errno);	
-
-		nmppsFree(evenFlags);
-		nmppsFree(oddFlags);
-
-		return 0;
-}
-
-int nmppsCmpGteLteMirrorV_32f_wArrayIsNull_errorIsEINVAL()
-{
-		// Arrange
-		errno = 0;
-
-		constexpr int size = 64;
-		nm32f *wArray = NULL;
-
-		nm32f srcArray[size];
-
-		nm1 *evenFlags = nmppsMalloc_1(size);
-		nm1 *oddFlags = nmppsMalloc_1(size);
-
-		// Act 
-		nmppsCmpGteLteMirrorV_32f(srcArray, wArray, evenFlags, oddFlags, size);
-
-		// Assert
-		TEST_ASSERT(EINVAL == errno);	
-
-		nmppsFree(evenFlags);
-		nmppsFree(oddFlags);
-
-		return 0;
-}
-
-int nmppsCmpGteLteMirrorV_32f_evenFlagsIsNull_errorIsEINVAL()
-{
-		// Arrange
-		errno = 0;
-
-		constexpr int size = 64;
-		nm32f wArray[size];
-		nm32f srcArray[size];
-
-		nm1 *evenFlags = NULL;
-		nm1 *oddFlags = nmppsMalloc_1(size);
-
-		// Act 
-		nmppsCmpGteLteMirrorV_32f(srcArray, wArray, evenFlags, oddFlags, size);
-
-		// Assert
-		TEST_ASSERT(EINVAL == errno);	
-
-		nmppsFree(oddFlags);
-
-		return 0;
-}
-
-int nmppsCmpGteLteMirrorV_32f_oddFlagsIsNull_errorIsEINVAL()
-{
-		// Arrange
-		errno = 0;
-
-		constexpr int size = 64;
-		nm32f wArray[size];
-		nm32f srcArray[size];
-
-		nm1 *evenFlags = nmppsMalloc_1(size);
-		nm1 *oddFlags = NULL;
-
-		// Act 
-		nmppsCmpGteLteMirrorV_32f(srcArray, wArray, evenFlags, oddFlags, size);
-
-		// Assert
-		TEST_ASSERT(EINVAL == errno);	
-
-		nmppsFree(evenFlags);
-
-		return 0;
-}

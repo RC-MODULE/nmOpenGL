@@ -93,8 +93,8 @@ SECTION(".text_shared0") int main()
 	ok = halHostSync((int)0x600D600D);
 #endif
 	
-	//nmglClearColor(0.5, 0.5, 0.5, 0.0f);
-	nmglClearColor(0, 0, 0.4, 1.0f);
+	nmglClearColor(0, 0, 0.4f, 0.0f);
+	//nmglClearColor(0.5, 0.5, 0.5, 1.0f);
 
 	nmglEnable(NMGL_DEPTH_TEST);
 	nmglEnable(NMGL_CULL_FACE);

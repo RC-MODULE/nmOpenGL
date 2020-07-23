@@ -12,12 +12,6 @@ int triangulate_TwoTrianglesLowOutputSize_treatedCountIsOne();
 int triangulate_TwoTriangles_treatedCountIsTwo();
 int triangulate_oneTriangleThreeDivisions_outputVertexesAreCorrect();
 int triangulate_oneTriangleThreeDivisions_outputColorsAreCorrect();
-int triangulate_inputVertexPointerIsNull_errorIsEINVAL();
-int triangulate_inputColorPointerIsNull_errorIsEINVAL();
-int triangulate_outputVertexPointerIsNull_errorIsEINVAL();
-int triangulate_outputColorPointerIsNull_errorIsEINVAL();
-int triangulate_srcTreatedCountPointerIsNull_errorIsEINVAL();
-
 
 int main(int argc, char **argv)
 {
@@ -28,12 +22,6 @@ int main(int argc, char **argv)
 	RUN_TEST(triangulate_TwoTriangles_treatedCountIsTwo);
 	RUN_TEST(triangulate_oneTriangleThreeDivisions_outputVertexesAreCorrect);
 	RUN_TEST(triangulate_oneTriangleThreeDivisions_outputColorsAreCorrect);
-
-	RUN_TEST(triangulate_inputVertexPointerIsNull_errorIsEINVAL);
-	RUN_TEST(triangulate_inputColorPointerIsNull_errorIsEINVAL);
-	RUN_TEST(triangulate_outputVertexPointerIsNull_errorIsEINVAL);
-	RUN_TEST(triangulate_outputColorPointerIsNull_errorIsEINVAL);
-	RUN_TEST(triangulate_srcTreatedCountPointerIsNull_errorIsEINVAL);
 
 	puts("OK");
 	return 0;
@@ -178,7 +166,7 @@ int triangulate_oneTriangleThreeDivisions_outputVertexesAreCorrect()
 	//Act
 	res = triangulate(srcVertex, srcColor, srcCount, maxWidth, maxHeight, maxDstSize, dstVertex, dstColor, &srcTreatedCount);
 	(void) res;
-
+	
 	//Assert
 	TEST_ARRAYS_EQUAL(dstVertex, expectedDstVertex, 54);
 
@@ -243,131 +231,3 @@ int triangulate_oneTriangleThreeDivisions_outputColorsAreCorrect()
 	return 0;
 }
 
-int triangulate_inputVertexPointerIsNull_errorIsEINVAL()
-{
-	// Arrange
-	errno = 0;
-	nm32f *srcVertex = NULL;
-	v4nm32f srcColor[3] =	{
-								{124, 124, 124, 10},
-								{68, 68, 68, 50},
-								{70, 70, 70, 80}
-							};
-	int srcCount = 1;
-	int maxWidth = 1;
-	int maxHeight = 1;
-	int maxDstSize = 6;
-	nm32f *dstVertex = (nm32f *)calloc(maxDstSize * 9, sizeof(nm32f));
-	v4nm32f *dstColor = (v4nm32f *)calloc(maxDstSize * 3, sizeof(v4nm32f));
-	int srcTreatedCount;
-	int res;
-
-	// Act
-	res = triangulate(srcVertex, srcColor, srcCount, maxWidth, maxHeight, maxDstSize, dstVertex, dstColor, &srcTreatedCount);
-	(void) res;
-
-	// Assert
-	TEST_ASSERT(EINVAL == errno);
-
-	return 0;
-}
-
-int triangulate_inputColorPointerIsNull_errorIsEINVAL()
-{
-	// Arrange
-	errno = 0;
-	nm32f srcVertex[] = {0};
-	v4nm32f *srcColor = NULL;
-	int srcCount = 1;
-	int maxWidth = 1;
-	int maxHeight = 1;
-	int maxDstSize = 6;
-	nm32f *dstVertex = (nm32f *)calloc(maxDstSize * 9, sizeof(nm32f));
-	v4nm32f *dstColor = (v4nm32f *)calloc(maxDstSize * 3, sizeof(v4nm32f));
-	int srcTreatedCount;
-	int res;
-
-	// Act
-	res = triangulate(srcVertex, srcColor, srcCount, maxWidth, maxHeight, maxDstSize, dstVertex, dstColor, &srcTreatedCount);
-	(void) res;
-
-	// Assert
-	TEST_ASSERT(EINVAL == errno);
-
-	return 0;
-}
-
-int triangulate_outputVertexPointerIsNull_errorIsEINVAL()
-{
-	// Arrange
-	errno = 0;
-	nm32f srcVertex[] = {0};
-	v4nm32f srcColor[] = {0};
-	int srcCount = 1;
-	int maxWidth = 1;
-	int maxHeight = 1;
-	int maxDstSize = 6;
-	nm32f *dstVertex = NULL;
-	v4nm32f *dstColor = (v4nm32f *)calloc(maxDstSize * 3, sizeof(v4nm32f));
-	int srcTreatedCount;
-	int res;
-
-	// Act
-	res = triangulate(srcVertex, srcColor, srcCount, maxWidth, maxHeight, maxDstSize, dstVertex, dstColor, &srcTreatedCount);
-	(void) res;
-
-	// Assert
-	TEST_ASSERT(EINVAL == errno);
-
-	return 0;
-}
-
-int triangulate_outputColorPointerIsNull_errorIsEINVAL()
-{
-	// Arrange
-	errno = 0;
-	nm32f srcVertex[] = {0};
-	v4nm32f srcColor[] = {0};
-	int srcCount = 1;
-	int maxWidth = 1;
-	int maxHeight = 1;
-	int maxDstSize = 6;
-	nm32f *dstVertex = (nm32f *)calloc(maxDstSize * 9, sizeof(nm32f));
-	v4nm32f *dstColor = NULL;
-	int srcTreatedCount;
-	int res;
-
-	// Act
-	res = triangulate(srcVertex, srcColor, srcCount, maxWidth, maxHeight, maxDstSize, dstVertex, dstColor, &srcTreatedCount);
-	(void) res;
-
-	// Assert
-	TEST_ASSERT(EINVAL == errno);
-
-	return 0;
-}
-
-int triangulate_srcTreatedCountPointerIsNull_errorIsEINVAL()
-{
-	// Arrange
-	errno = 0;
-	nm32f srcVertex[] = {0};
-	v4nm32f srcColor[] = {0};
-	int srcCount = 1;
-	int maxWidth = 1;
-	int maxHeight = 1;
-	int maxDstSize = 6;
-	nm32f *dstVertex = (nm32f *)calloc(maxDstSize * 9, sizeof(nm32f));
-	v4nm32f *dstColor = (v4nm32f *)calloc(maxDstSize * 3, sizeof(v4nm32f));
-	int *srcTreatedCountPtr = NULL;
-	int res;
-
-	// Act
-	res = triangulate(srcVertex, srcColor, srcCount, maxWidth, maxHeight, maxDstSize, dstVertex, dstColor, srcTreatedCountPtr);
-	(void) res;
-
-	// Assert
-	TEST_ASSERT(EINVAL == errno);
-	
-	return 0;
-}

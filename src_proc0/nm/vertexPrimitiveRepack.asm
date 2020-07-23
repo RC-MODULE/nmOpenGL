@@ -176,25 +176,10 @@ begin ".text_demo3d"			// начало секции кода
     gr6 = [--ar5];  // intput: count of input vertexes 
     [vertCount] = gr6;	// Used in GL_TRIANGLES
 
-    // Проверить адрес входного массива вершин на равенство 0
-    gr0 = ar0;
-    gr0;                // Это выражение, оно установит флаги
-    if =0 goto Error;
-
-    // Проверить адрес входного массива цветов на равенство 0
-    gr1 = ar1;
-    gr1;
-    if =0 goto Error;
-
-    // Проверить адрес выходного массива вершин на равенство 0
-    gr2 = ar2;
-    gr2;
-    if =0 goto Error;
-
-    // Проверить адрес выходного массива цветов на равенство 0
-    gr3 = ar3;
-    gr3;
-    if =0 goto Error;
+	gr0 = 0;
+	[retVal] = gr0;
+	gr6;
+	if =0 goto Exit;
 
 	gr0 = 4;	//NMGL_TRIANGLES 4 (nmgldef.h)
 	gr4 - gr0;	
@@ -383,13 +368,6 @@ begin ".text_demo3d"			// начало секции кода
 	copyCol(ar1, ar3, 0, 12, gr1);
 	copyCol(ar1 + 4, ar3 + 4, 4, 12, gr1);
 	copyCol(ar1 + 8, ar3 + 8, 4, 12, gr1);
-	goto Exit;
-
-<Error>
-    // Set errno to EINVAL
-    gr1 = 22;
-    call ___errno;
-    [ar5] = gr1;
 
 <Exit>
 	gr7 = [retVal];

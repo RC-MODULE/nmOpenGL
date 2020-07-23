@@ -6,9 +6,9 @@
 #include "stdio.h"
 #include "nmprofiler.h"
 
-//SECTION(".data_imu7")   int indices[NMGL_SIZE];
 SECTION(".data_imu7")   Triangles localTrian2;
 SECTION(".data_imu7")   Triangles localTrian;
+
 
 SECTION(".text_demo3d") int waitPolygons(PolygonsConnector &connector) {
 	int a = 0;

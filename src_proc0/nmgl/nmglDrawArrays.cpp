@@ -7,6 +7,7 @@
 #include "arraymanager.h"
 #include "stdio.h"
 #include "imagebuffer.h"
+#include "service.h"
 
 SECTION(".data_imu5")	float vertexX[3 * NMGL_SIZE];
 SECTION(".data_imu6")	float vertexY[3 * NMGL_SIZE];
@@ -21,6 +22,35 @@ SECTION(".data_imu6")	v4nm32f colorOrNormal[3 * NMGL_SIZE];
 SECTION(".data_imu6")	ArrayManager<float> vertexAM;
 SECTION(".data_imu6")	ArrayManager<float> normalAM;
 SECTION(".data_imu6")	ArrayManager<v4nm32f> colorAM;
+
+
+
+struct TrianglePrimitiveArrays3f {
+	float* x0;
+	float* y0;
+	float* z0;
+	float* x1;
+	float* y1;
+	float* z1;
+	float* x2;
+	float* y2;
+	float* z2;
+};
+
+struct TrianglePrimitiveArrays4f {
+	float* x0;
+	float* y0;
+	float* z0;
+	float* w0;
+	float* x1;
+	float* y1;
+	float* z1;
+	float* w1;
+	float* x2;
+	float* y2;
+	float* z2;
+	float* w2;
+};
 
 
 template < typename T >
@@ -147,11 +177,11 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 		cntxt->tmp.vec[2] = BLUE_COEFF;
 		cntxt->tmp.vec[3] = ALPHA_COEFF;
 		mulC_v4nm32f((v4nm32f*)cntxt->buffer3, &cntxt->tmp, colorOrNormal, localSize);
-		//----------------------------------
+		mul_mat4nm32f_v4nm32f(cntxt->projectionMatrixStack.top(), vertexResult, (v4nm32f*)vertexResult, localSize);
 
+		//----------------------------------
 		//vertex in vertexResult
 		//color in colorOrNormal
-		mul_mat4nm32f_v4nm32f(cntxt->projectionMatrixStack.top(), vertexResult, (v4nm32f*)vertexResult, localSize);
 		//------------------------------srcX-----srcY-----srcZ-----srcW--------------
 		split_v4nm32f(vertexResult, 1, cntxt->buffer0, cntxt->buffer1, cntxt->buffer2, cntxt->buffer3, localSize);
 		
@@ -171,6 +201,7 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 		nmppsConvert_32f32s_rounding(vertexY, (int*)cntxt->buffer0, 0, localSize);
 		nmppsConvert_32s32f((int*)cntxt->buffer0, vertexY, localSize);
 
+
 		//---------------rasterize------------------------------------
 		v2nm32f *minXY = (v2nm32f*)cntxt->buffer4;
 		v2nm32f *maxXY = (v2nm32f*)cntxt->buffer4 + NMGL_SIZE;
@@ -179,6 +210,9 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			pushToTriangles_t(vertexX, vertexY, vertexZ, colorOrNormal, cntxt->trianInner, localSize);
 			if (cntxt->isCullFace) {
 				cullFaceSortTriangles(cntxt->trianInner);
+			}
+			if(cntxt->trianInner.size == 0){
+				break;
 			}
 
 			findMinMax3(cntxt->trianInner.x0, cntxt->trianInner.x1, cntxt->trianInner.x2, 
@@ -206,6 +240,7 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			rasterizeL(&cntxt->lineInner, cntxt->segmentMasks);
 			break;
 		}
-	}
 
+		
+	}
 }
