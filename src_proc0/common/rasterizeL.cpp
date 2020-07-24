@@ -12,6 +12,7 @@ Lines localLine;
 SECTION(".text_demo3d")
 void rasterizeL(const Lines* lines, const BitMask* masks){
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
+	PolygonsConnector *connector = &cntxt->polygonsConnectors;
 
 	int count = lines->size;
 	localLine.x0 = cntxt->buffer0;
@@ -21,8 +22,6 @@ void rasterizeL(const Lines* lines, const BitMask* masks){
 	localLine.colors = (v4nm32s*)cntxt->buffer3;
 	localLine.z = (int*)cntxt->buffer3 + 4 * NMGL_SIZE;
 	int* indices = (int*)cntxt->buffer4;
-
-	PolygonsConnector connector(cntxt->polygonsData);
 
 	for (int segY = 0, iSeg = 0; segY < cntxt->windowInfo.nRows; segY++) {
 		for (int segX = 0; segX < cntxt->windowInfo.nColumns; segX++, iSeg++) {
@@ -49,12 +48,12 @@ void rasterizeL(const Lines* lines, const BitMask* masks){
 
 
 					//waitPolygons(connector);
-					while (connector.isFull());
-					Polygons* poly = connector.ptrHead();
+					while (connector->isFull());
+					Polygons* poly = connector->ptrHead();
 					poly->count = 0;
 					updatePolygonsL(poly, &localLine, resultSize, segX, segY);
 
-					connector.incHead();
+					connector->incHead();
 					cntxt->synchro.writeInstr(1, NMC1_DRAW_LINES);
 
 					cntxt->synchro.writeInstr(1,

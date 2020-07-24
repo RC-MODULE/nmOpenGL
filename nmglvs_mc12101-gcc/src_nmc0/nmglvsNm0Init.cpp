@@ -32,11 +32,6 @@ SECTION(".data_imu6") int dividedMasksMemory[4][NMGL_SIZE / 32];
 
 SECTION(".data_imu6") int masksBits[36][NMGL_SIZE / 32];
 
-#ifdef USED_POLYGONS_BUFFER
-SECTION(".data_shared0")	Polygons polygons[36];
-//SECTION(".data_imu7")	Polygons polygons[36];
-#endif
-
 int counter = 0;
 
 template<class T> inline T* myMallocT() {
@@ -61,6 +56,7 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 	halSleep(100);
 	NMGLSynchroData* synchroData;
 	NMGL_Context_NM0 *cntxt;
+	PolygonsArray* polygonsData;
 	try {
 		int fromHost = halHostSync(0xC0DE0000);		// send handshake to host
 		if (fromHost != 0xC0DE0086) {					// get  handshake from host
@@ -77,8 +73,9 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 		cntxt = NMGL_Context_NM0::getContext();
 
 		setHeap(10);
-		cntxt->polygonsData = myMallocT<PolygonsArray>();
-		cntxt->polygonsData->init();
+		polygonsData = myMallocT<PolygonsArray>();
+		polygonsData->init();
+		cntxt->polygonsConnectors.init(polygonsData);
 		cntxt->init(synchroData);
 
 		cntxt->beginEndInfo.vertex = myMallocT<v4nm32f>(BIG_NMGL_SIZE);
@@ -93,7 +90,7 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 	halHostSync(0x600DB00F);	// send ok to host
 	
 	cntxt->patterns = (PatternsArray*)halSyncAddr(synchroData, 1);
-	halSyncAddr(cntxt->polygonsData, 1);
+	halSyncAddr(polygonsData, 1);
 
 	halHostSync(0x600DB00F);	// send ok to host
 

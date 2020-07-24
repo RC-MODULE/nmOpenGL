@@ -143,7 +143,8 @@ public:
 
 
 	NMGLSynchro synchro;
-	PolygonsArray* polygonsData;
+	//PolygonsConnector polygonsConnectors[36];
+	PolygonsConnector polygonsConnectors;
 	NMGLenum error;
 	PatternsArray* patterns;
 	float* buffer0;

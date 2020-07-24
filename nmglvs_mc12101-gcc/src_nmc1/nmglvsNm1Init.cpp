@@ -92,7 +92,8 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 
 	NMGLSynchroData* synchroData = (NMGLSynchroData*)halSyncAddr((int*)cntxt->patterns, 0);
 	cntxt->synchro.init(synchroData);
-	cntxt->polygonsData = (PolygonsArray*)halSyncAddr(0, 0);
+	PolygonsArray* polygonsData = (PolygonsArray*)halSyncAddr(0, 0);
+	cntxt->polygonsConnectors.init(polygonsData);
 
 	halHostSync(0x600DB00F);	// send ok to host
 

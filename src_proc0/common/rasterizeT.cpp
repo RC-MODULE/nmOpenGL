@@ -20,7 +20,7 @@ SECTION(".text_demo3d") void triangleOffset(Triangles &src, Triangles &dst, int 
 	dst.colors = src.colors + offset;
 }
 
-SECTION(".text_demo3d") void pushPoly(Polygons &innerPoly, PolygonsConnector &connector) {
+/*SECTION(".text_demo3d") void pushPoly(Polygons &innerPoly, PolygonsConnector &connector) {
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
 
 	while (connector.isFull());
@@ -43,12 +43,12 @@ SECTION(".text_demo3d") void recursiveUpdate(Triangles& triangles, Polygons &pol
 		tmpTrian.size = triangles.size - count;
 		recursiveUpdate(tmpTrian, polygons, connector, segX, segY);
 	}
-}
+}*/
 
 SECTION(".text_demo3d")
 void rasterizeT(const Triangles* triangles, const BitMask* masks){
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
-	PolygonsConnector connector(cntxt->polygonsData);
+	PolygonsConnector *connector = &cntxt->polygonsConnectors;
 
 	int count = triangles->size;
 
@@ -87,29 +87,7 @@ void rasterizeT(const Triangles* triangles, const BitMask* masks){
 #endif // OUTPUT_IMAGE_RGB565
 
 					localTrian.size = resultSize;
-#ifdef USED_POLYGONS_BUFFER
-					bool overflowFlag = (resultSize + polygons[iSeg].count) >= POLYGONS_SIZE;
-					if (overflowFlag) {
-						cntxt->synchro.writeInstr(1, NMC1_COPY_SEG_FROM_IMAGE,
-							cntxt->windowInfo.x0[segX],
-							cntxt->windowInfo.y0[segY],
-							cntxt->windowInfo.x1[segX] - cntxt->windowInfo.x0[segX],
-							cntxt->windowInfo.y1[segY] - cntxt->windowInfo.y0[segY],
-							iSeg);
-					}
-					
-					recursiveUpdate(localTrian, polygons[iSeg], connector, segX, segY);
 
-					if (overflowFlag) {
-					cntxt->synchro.writeInstr(1,
-						NMC1_COPY_SEG_TO_IMAGE,
-						cntxt->windowInfo.x0[segX],
-						cntxt->windowInfo.y0[segY],
-						cntxt->windowInfo.x1[segX] - cntxt->windowInfo.x0[segX],
-						cntxt->windowInfo.y1[segY] - cntxt->windowInfo.y0[segY]);
-					}
-
-#else
 					cntxt->synchro.writeInstr(1, NMC1_COPY_SEG_FROM_IMAGE,
 						cntxt->windowInfo.x0[segX],
 						cntxt->windowInfo.y0[segY],
@@ -123,12 +101,12 @@ void rasterizeT(const Triangles* triangles, const BitMask* masks){
 						int localSize = MIN(resultSize - offset, POLYGONS_SIZE);
 						triangleOffset(localTrian, localTrian2, offset);
 						offset += POLYGONS_SIZE;
-						while (connector.isFull());
-						Polygons* poly = connector.ptrHead();
+						while (connector[0].isFull());
+						Polygons* poly = connector[0].ptrHead();
 						poly->count = 0;
 						updatePolygonsT(poly, &localTrian2, localSize, segX, segY);
-						connector.incHead();
-						cntxt->synchro.writeInstr(1, NMC1_DRAW_TRIANGLES);
+						connector[0].incHead();
+						cntxt->synchro.writeInstr(1, NMC1_DRAW_TRIANGLES, iSeg);
 					}	
 
 					cntxt->synchro.writeInstr(1,
@@ -137,7 +115,6 @@ void rasterizeT(const Triangles* triangles, const BitMask* masks){
 						cntxt->windowInfo.y0[segY],
 						cntxt->windowInfo.x1[segX] - cntxt->windowInfo.x0[segX],
 						cntxt->windowInfo.y1[segY] - cntxt->windowInfo.y0[segY]);
-#endif
 					
 				}				
 			}

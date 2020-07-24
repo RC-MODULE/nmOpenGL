@@ -73,7 +73,7 @@ int main()
 #if defined(PROFILER0) || defined(PROFILER1)
 		if (counter>=256 && flag) {
 #ifdef PROFILER0
-			halProfilerPrint2xml("main0.map", 0, XML_NAME);
+			halProfilerPrint2xml("main0.map", 0, "../perf0.xml");
 			//return 0;
 #endif // PROFILER0
 #ifdef PROFILER1

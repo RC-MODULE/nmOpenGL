@@ -41,7 +41,8 @@ public:
 
 	NMGLSynchro synchro;
 	ImageData* imagesData;
-	PolygonsArray* polygonsData;
+	//PolygonsArray* polygonsData;
+	PolygonsConnector polygonsConnectors;
 
 	DepthBuffer depthBuffer;
 	IMAGE_BUFFER_CLASS colorBuffer;

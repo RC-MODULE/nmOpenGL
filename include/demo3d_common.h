@@ -13,7 +13,7 @@
 #endif
 
 //#define USED_POLYGONS_BUFFER
-//#define PROFILER1
+//#define PROFILER0
 //#define PROFILER1
 
 #ifdef __GNUC__
@@ -42,7 +42,7 @@ typedef v4nm8s rgb8888;
 #define LIGHT_GRAY 0xCCCCCCCC
 #define WHITE 0xFFFFFFFF
 
-#define COUNT_POLYGONS_BUFFER 128
+#define COUNT_POLYGONS_BUFFER 256
 #define COUNT_IMAGE_BUFFER 8
 //#define COUNT_IMAGE_BUFFER 2
 
@@ -79,6 +79,18 @@ struct Rectangle {
 	int height;
 };
 
+struct DataForNmpu1 {
+	int x0[POLYGONS_SIZE];
+	int y0[POLYGONS_SIZE];
+	int x1[POLYGONS_SIZE];
+	int y1[POLYGONS_SIZE];
+	int x2[POLYGONS_SIZE];
+	int y2[POLYGONS_SIZE];
+	int z[POLYGONS_SIZE];
+
+	int color[4 * POLYGONS_SIZE];
+};
+
 
 /**
  *  Структура для передачи полигонов от nmpu0 к nmpu1.
@@ -103,7 +115,8 @@ struct Polygons {
 	int z[POLYGONS_SIZE];
 
 	int count;
-	int dummy[15];
+	int iSeg;
+	int dummy[14];
 
 	Polygons() : count(0) {
 		
