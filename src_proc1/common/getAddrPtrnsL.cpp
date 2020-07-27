@@ -6,9 +6,8 @@
 #include "service.h"
 #include "imagebuffer.h"
 
-extern unsigned int points[14];
-
-extern MyDmaTask task;
+SECTION(".data_demo3d") static unsigned int points[14];
+SECTION(".data_demo3d") static MyDmaTask task;
 
 #define CHECK_STATUS(a) while (!msdGetStatusCopy(points[a], 0))
 
@@ -19,7 +18,7 @@ inline void ADD_COPY(const void* src, void* dst, int size, int i) {
 	points[i] = msdAdd(task, 0);
 }
 
-SECTION(".text_demo3d") int getAddrPtrnsL(Polygons* poly) {
+SECTION(".text_demo3d") int getAddrPtrnsL(PolygonsOld* poly) {
 	NMGL_Context_NM1 *context = NMGL_Context_NM1::getContext();
 	PatternsArray* patterns = context->patterns;
 	int size = poly->count;

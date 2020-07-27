@@ -8,9 +8,9 @@
 SECTION(".text_demo3d") void drawLines() {
 	NMGL_Context_NM1 *context = NMGL_Context_NM1::getContext();
 
-	Polygons* poly = context->polygonsConnectors.ptrTail();
+	Polygons* poly = context->polygonsConnectors[0].ptrTail();
 
-	getAddrPtrnsL(poly);
+	//getAddrPtrnsL(poly);
 	COMMON_DRAW_TYPE* mulZ = (COMMON_DRAW_TYPE*)context->buffer0;
 	COMMON_DRAW_TYPE* mulC = (COMMON_DRAW_TYPE*)context->buffer0;
 	COMMON_DRAW_TYPE* zMaskBuffer = (COMMON_DRAW_TYPE*)context->buffer1;
@@ -22,7 +22,7 @@ SECTION(".text_demo3d") void drawLines() {
 
 	msdWaitDma(1);
 
-	context->polygonsConnectors.incTail();
+	context->polygonsConnectors[0].incTail();
 
 	while (countTrangles > 0) {
 		int localSize = MIN(countTrangles, SMALL_SIZE);

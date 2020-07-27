@@ -129,6 +129,8 @@ struct MatrixStack {
 class NMGL_Context_NM0 {
 private:
 	static NMGL_Context_NM0 *context;
+	NMGL_Context_NM0() {};		// недоступный конструктор
+	~NMGL_Context_NM0() {};		// и деструктор
 public:	
 	inline static void create(NMGLSynchroData* synchroData) {
 		context = (NMGL_Context_NM0*)halMalloc32(sizeof32(NMGL_Context_NM0));
@@ -143,8 +145,7 @@ public:
 
 
 	NMGLSynchro synchro;
-	//PolygonsConnector polygonsConnectors[36];
-	PolygonsConnector polygonsConnectors;
+	PolygonsConnector* polygonsConnectors;
 	NMGLenum error;
 	PatternsArray* patterns;
 	float* buffer0;
@@ -1045,8 +1046,9 @@ void cullFaceSortTriangles(Triangles &triangles);
 void setSegmentMask(v2nm32f* minXY, v2nm32f* maxXY, BitMask* masks, int size);
 void rasterizeT(const Triangles* triangles, const BitMask* masks);
 void rasterizeL(const Lines* lines, const BitMask* masks);
-void updatePolygonsT(Polygons* poly, Triangles* triangles, int count, int segX, int segY);
-void updatePolygonsL(Polygons* poly, Lines* lines, int count, int segX, int segY);
+void updatePolygonsT(PolygonsOld* poly, Triangles* triangles, int count, int segX, int segY);
+void updatePolygonsL(PolygonsOld* poly, Lines* lines, int count, int segX, int segY);
+void updatePolygonsT(DataForNmpu1* data, Triangles* triangles, int count, int segX, int segY);
 
 /**
  *  \defgroup color Light

@@ -71,12 +71,15 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 		setHeap(7);
 		NMGL_Context_NM0::create(synchroData);	
 		cntxt = NMGL_Context_NM0::getContext();
+		cntxt->init(synchroData);
+
+		setHeap(1);
+		cntxt->polygonsConnectors = myMallocT<PolygonsConnector>();
 
 		setHeap(10);
 		polygonsData = myMallocT<PolygonsArray>();
 		polygonsData->init();
-		cntxt->polygonsConnectors.init(polygonsData);
-		cntxt->init(synchroData);
+		cntxt->polygonsConnectors[0].init(polygonsData);
 
 		cntxt->beginEndInfo.vertex = myMallocT<v4nm32f>(BIG_NMGL_SIZE);
 		cntxt->beginEndInfo.normal = myMallocT<v4nm32f>(BIG_NMGL_SIZE);

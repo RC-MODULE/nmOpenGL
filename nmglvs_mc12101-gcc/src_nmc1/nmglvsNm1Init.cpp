@@ -17,8 +17,8 @@ SECTION(".data_imu3")	int pool1[SIZE_BANK];
 SECTION(".data_imu2")	int segImage[WIDTH_SEG * HEIGHT_SEG];
 SECTION(".data_imu2")	int segZBuff[WIDTH_SEG * HEIGHT_SEG];
 
-SECTION(".data_imu0") Vector2 ptrnInnPoints[POLYGONS_SIZE];
-SECTION(".data_imu0") Size ptrnSizes[POLYGONS_SIZE];
+SECTION(".data_shmem1") Vector2 ptrnInnPoints[POLYGONS_SIZE];
+SECTION(".data_shmem1") Size ptrnSizes[POLYGONS_SIZE];
 SECTION(".data_shmem1") nm32s valuesZ[POLYGONS_SIZE];
 SECTION(".data_shmem1") nm32s valuesC[POLYGONS_SIZE];
 
@@ -65,12 +65,11 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 		setHeap(0);
 		NMGL_Context_NM1::bind(&context);
 		cntxt = NMGL_Context_NM1::getContext();
+		cntxt->polygonsConnectors = myMallocT<PolygonsConnector>();
 		
 		setHeap(11);
 		cntxt->patterns = myMallocT<PatternsArray>();
-		//printf("size patterns = %d\n", sizeof32(cntxt->patterns->ptrns));
-		//printf("size patterns table = %d\n", sizeof32(cntxt->patterns->table_dydx));
-
+		
 		setHeap(13);
 		cntxt->imagesData = myMallocT<ImageData>();
 		cntxt->imagesData->init();
@@ -93,7 +92,7 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 	NMGLSynchroData* synchroData = (NMGLSynchroData*)halSyncAddr((int*)cntxt->patterns, 0);
 	cntxt->synchro.init(synchroData);
 	PolygonsArray* polygonsData = (PolygonsArray*)halSyncAddr(0, 0);
-	cntxt->polygonsConnectors.init(polygonsData);
+	cntxt->polygonsConnectors[0].init(polygonsData);
 
 	halHostSync(0x600DB00F);	// send ok to host
 

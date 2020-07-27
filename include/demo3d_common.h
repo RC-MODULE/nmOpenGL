@@ -87,8 +87,12 @@ struct DataForNmpu1 {
 	int x2[POLYGONS_SIZE];
 	int y2[POLYGONS_SIZE];
 	int z[POLYGONS_SIZE];
+	int crossProducts[POLYGONS_SIZE];
 
 	int color[4 * POLYGONS_SIZE];
+
+	int count;
+	int dummy[15];
 };
 
 
@@ -98,7 +102,7 @@ struct DataForNmpu1 {
  *  т.е. точка (x0, y0) обладает наименьшим y
  *  Полигон должен вписываться в квадрат 32*32 пикселей
  */
-struct Polygons {
+struct PolygonsOld {
 	int numbersPattrns01[POLYGONS_SIZE];
 	int numbersPattrns12[POLYGONS_SIZE];
 	int numbersPattrns02[POLYGONS_SIZE];
@@ -118,10 +122,13 @@ struct Polygons {
 	int iSeg;
 	int dummy[14];
 
-	Polygons() : count(0) {
+	PolygonsOld() : count(0) {
 		
 	}
 };
+
+//typedef DataForNmpu1 Polygons;
+typedef PolygonsOld Polygons;
 
 typedef HalRingBufferData<Polygons, COUNT_POLYGONS_BUFFER> PolygonsArray;
 typedef HalRingBufferConnector<Polygons, COUNT_POLYGONS_BUFFER> PolygonsConnector;

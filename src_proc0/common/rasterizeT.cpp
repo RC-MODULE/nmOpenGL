@@ -48,7 +48,7 @@ SECTION(".text_demo3d") void recursiveUpdate(Triangles& triangles, Polygons &pol
 SECTION(".text_demo3d")
 void rasterizeT(const Triangles* triangles, const BitMask* masks){
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
-	PolygonsConnector *connector = &cntxt->polygonsConnectors;
+	PolygonsConnector *connector = cntxt->polygonsConnectors;
 
 	int count = triangles->size;
 
@@ -106,7 +106,7 @@ void rasterizeT(const Triangles* triangles, const BitMask* masks){
 						poly->count = 0;
 						updatePolygonsT(poly, &localTrian2, localSize, segX, segY);
 						connector[0].incHead();
-						cntxt->synchro.writeInstr(1, NMC1_DRAW_TRIANGLES, iSeg);
+						cntxt->synchro.writeInstr(1, NMC1_DRAW_TRIANGLES);
 					}	
 
 					cntxt->synchro.writeInstr(1,
