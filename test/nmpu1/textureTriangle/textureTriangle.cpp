@@ -420,7 +420,11 @@ void textureTriangle(Pattern* patterns,
             width += windows[cnt].x;
         }
         
-        int winOffset = ((int)(pROI[cnt]) - (int)cntxt.smallColorBuff.data)>>2;//>> 2 = divide by sizeof int = 4 bytes
+#ifdef __NM__
+		int winOffset = ((int)(pROI[cnt]) - (int)cntxt.smallColorBuff.data) /*>> 2*/;//>> 2 = divide by sizeof int = 4 bytes
+#else //__NM__
+		int winOffset = ((int)(pROI[cnt]) - (int)cntxt.smallColorBuff.data) >> 2;//>> 2 = divide by sizeof int = 4 bytes
+#endif //__NM__
 																			   //TODO:remove magic number 2
 		winY0 = cntxt.texState.segY0 + (winOffset >> 7); //>> 7 = divide by segment width 
 														 //TODO: remove magic number 7
