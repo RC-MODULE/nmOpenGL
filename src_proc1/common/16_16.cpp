@@ -1,3 +1,4 @@
+#ifdef TEXTURE_ENABLED
 #include "nmgldef.h"
 #include "nmgltex_common.h"
 #include "texture_config.h"
@@ -62,3 +63,4 @@ TexImage2D teximage_16_16 = {
 #ifdef __cplusplus
 }
 #endif
+#endif //TEXTURE_ENABLED
