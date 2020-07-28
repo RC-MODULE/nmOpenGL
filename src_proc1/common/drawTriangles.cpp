@@ -20,6 +20,9 @@ extern "C" TexImage2D teximage_8_8;
 extern "C" TexImage2D teximage_4_4;
 extern "C" TexImage2D teximage_2_2;
 extern "C" TexImage2D teximage_1_1;
+
+SECTION (".data_shmem1") TrianglesInfo triangles;
+
 #endif //TEXTURE_ENABLED
 
 
@@ -149,7 +152,6 @@ SECTION(".text_demo3d") void drawTriangles(NMGL_Context_NM1* context) {
 
 #ifdef TEXTURE_ENABLED //for test
         //ћассив данных о треугольниках (координаты вершин, текстурные координаты и т.д.)
-        Triangles triangles;
         
         context->texState.activeTexUnitIndex = 0;
         unsigned int activeTexUnitIndex = context->texState.activeTexUnitIndex;
