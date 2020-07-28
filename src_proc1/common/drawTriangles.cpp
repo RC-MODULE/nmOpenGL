@@ -159,8 +159,8 @@ SECTION(".text_demo3dExt") void drawTriangles(NMGL_Context_NM1* context) {
         context->texState.texUnits[activeTexUnitIndex].boundTexObject = &context->texState.texObjects[0];
         TexObject* boundTexObject = context->texState.texUnits[activeTexUnitIndex].boundTexObject;
         
-        // boundTexObject->texImages2D[0] = teximage_256_256;
-        boundTexObject->texImages2D[0] = teximage_mytexture;
+        boundTexObject->texImages2D[0] = teximage_256_256;
+        //boundTexObject->texImages2D[0] = teximage_mytexture;
         boundTexObject->texImages2D[1] = teximage_128_128;
         boundTexObject->texImages2D[2] = teximage_64_64;
         boundTexObject->texImages2D[3] = teximage_32_32;
