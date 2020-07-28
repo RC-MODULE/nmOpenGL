@@ -93,11 +93,13 @@ struct Triangles{
 	float* s2;
 	float* t2;
 	float* zEye;
+	int dummy;
 #endif //TEXTURE_ENABLED 
 	
 	v4nm32s* colors;
 	int size;
 	int maxSize;
+
 };
 
 void copyTriangles(const Triangles &src, int offsetSrc, Triangles &dst, int offsetDst, int size);
