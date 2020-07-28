@@ -55,11 +55,15 @@ void rasterizeT(const Triangles* triangles, const BitMask* masks){
 						cntxt.windowInfo.x1[segX] - cntxt.windowInfo.x0[segX],
 						cntxt.windowInfo.y1[segY] - cntxt.windowInfo.y0[segY],
 						iSeg);
+#ifdef TEXTURE_ENABLED
 					if (cntxt.texState.textureEnabled){
 						copyArraysByIndices((void**)triangles, indices, (void**)&localTrian, 14, resultSize);
 					} else {
 						copyArraysByIndices((void**)triangles, indices, (void**)&localTrian, 7, resultSize);
 					}
+#else //TEXTURE_ENABLED
+					copyArraysByIndices((void**)triangles, indices, (void**)&localTrian, 7, resultSize);
+#endif //TEXTURE_ENABLED
 					copyColorByIndices_BGRA_RGBA(triangles->colors, indices, (v4nm32s*)localTrian.colors, resultSize);
 
 					//waitPolygons(connector);
