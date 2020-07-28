@@ -2,8 +2,8 @@
 #include "nmgldef.h"
 #include "textureTriangle.h"
 #include <cstdio>
-#include "tex_common.h"
-#include "image.h"
+#include "nmgltex_common.h"
+
 #include "nmgltex_nm1.h"
 #include "demo3d_nm1.h"
 #include <cstdlib>
@@ -12,6 +12,7 @@
 
 #ifndef __NM__
 #include "bmp.h"
+#include "image.h"
 #endif
 
 #ifdef __GNUC__
@@ -25,41 +26,21 @@
 //Массив текстур в виде структур типа image_t
 #define TEXTURE_AMOUNT 9
 
-extern "C" image_t image_256_256;
-extern "C" image_t image_128_128;
-extern "C" image_t image_64_64;
-extern "C" image_t image_32_32;
-extern "C" image_t image_16_16;
-extern "C" image_t image_8_8;
-extern "C" image_t image_4_4;
-extern "C" image_t image_2_2;
-extern "C" image_t image_1_1;
+extern "C" TexImage2D teximage_256_256;
+extern "C" TexImage2D teximage_mytexture;
+extern "C" TexImage2D teximage_128_128;
+extern "C" TexImage2D teximage_64_64;
+extern "C" TexImage2D teximage_32_32;
+extern "C" TexImage2D teximage_16_16;
+extern "C" TexImage2D teximage_8_8;
+extern "C" TexImage2D teximage_4_4;
+extern "C" TexImage2D teximage_2_2;
+extern "C" TexImage2D teximage_1_1;
 
-image_t textures [TEXTURE_AMOUNT] = {
-    image_256_256,
-    image_128_128,
-    image_64_64,
-    image_32_32,
-    image_16_16,
-    image_8_8,
-    image_4_4,
-    image_2_2,
-    image_1_1
-};
-
+#ifndef __NM__
 //массив изображений после текстурирования
 image_t result_images [TRIANGLE_AMOUNT]; 
 
-//Глобальный контекст nm1
-NMGL_Context_NM1 cntxt; 
-
-/**
-Функция imageToTexImage выполняет копирование данных из структуры типа image_t в структуру типа TexImage2D. Функция заполняет поля internalFormat, pixels, width, height.
-
-\param image [in] Структура типа image_t.
-\param texImage [in] Структура типа TexImage2D, которая должна быть заполнена данными из image.
-*/
-int imageToTexImage(image_t* image, TexImage2D* texImage);
 
 /**
 Функция rawToImage выполняет преобразование массива цветов пикселей в структуру типа image_t.
@@ -71,6 +52,10 @@ int imageToTexImage(image_t* image, TexImage2D* texImage);
 */
 int rawToImage (nm32s* triangles, Rectangle* windows, image_t* images, int count);
 
+#endif
+
+//Глобальный контекст nm1
+NMGL_Context_NM1 cntxt; 
 
 /**
 Функция printPattern выполняет вывод на экран паттерны для треугольников в виде псевдографики.
@@ -82,7 +67,7 @@ int rawToImage (nm32s* triangles, Rectangle* windows, image_t* images, int count
 void printPattern(Pattern* patterns, int count);
 
 //Массив данных о треугольниках (координаты вершин, текстурные координаты и т.д.)
-TrianglesInfo triangles;
+SECTION(".data_imu0") TrianglesInfo triangles;
 
 // Паттерны треугольников. Паттерн представляет собой массив элементов из WIDTH_PTRN=32 строк и HEIGHT_PTRN=32 столбцов.
 // Одна строка матрицы состоит из 32 элементов по 2 бита на элемент => каждая строка занимает 64 бита.
@@ -92,7 +77,7 @@ TrianglesInfo triangles;
 // 2-ой int - младшая половина 64-битной 1-ой строки паттерна
 // 3-ой int - младшая половина 64-битной 2-ой строки паттерна
 // 0-ая строка паттерна - верхняя строка
-Pattern patterns [TRIANGLE_AMOUNT] = { 
+SECTION(".data_imu0") Pattern patterns [TRIANGLE_AMOUNT] = { 
     {0x50000000, 0x00000000, 
     0x54000000, 0x00000000, 
     0x54000000, 0x00000001, 
@@ -163,8 +148,6 @@ Pattern patterns [TRIANGLE_AMOUNT] = {
 SECTION(".text_demo3d") 
 int main ()
 {
-    //Массив данных о треугольниках (координаты вершин, текстурные координаты и т.д.)
-    Triangles triangles;
     
     //Массивы растеризованных и закрашенных треугольников
     nm32s pSrcTriangle [WIDTH_PTRN * HEIGHT_PTRN * TRIANGLE_AMOUNT]; //
@@ -179,6 +162,8 @@ int main ()
     int count = TRIANGLE_AMOUNT;
     int i = 0;
     int j = 0;
+
+	printf ("Start textureTriangle test...\n");
 
     windows[0].x = -1;
     windows[0].y = 0;
@@ -229,6 +214,9 @@ int main ()
    
     float z[TRIANGLE_AMOUNT] = {1.0f, 1.0f}; //minus (z in camera space)
     
+	for (int counter = 0; counter < 3; counter++)
+	{
+		printf ("%d\n", counter);
     triangles.x0 = x0;
     triangles.y0 = y0;
     triangles.x1 = x1;
@@ -246,8 +234,6 @@ int main ()
     triangles.z = z;
     triangles.size = TRIANGLE_AMOUNT;
  
-    printf ("Start textureTriangle test...\n");
-
     //Активный текстурный модуль
     cntxt.texState.activeTexUnitIndex = 0;
     unsigned int activeTexUnitIndex = cntxt.texState.activeTexUnitIndex;
@@ -256,12 +242,16 @@ int main ()
     cntxt.texState.texUnits[activeTexUnitIndex].boundTexObject = &cntxt.texState.texObjects[0];
     TexObject* boundTexObject = cntxt.texState.texUnits[activeTexUnitIndex].boundTexObject;
 
-    //fill TexImages in texture context
-    for (i = 0; i < TEXTURE_AMOUNT; i++)
-    {
-       imageToTexImage(&textures[i], &boundTexObject->texImages2D[i]);
-    }
-    
+	boundTexObject->texImages2D[0] = teximage_mytexture;
+	boundTexObject->texImages2D[1] = teximage_128_128;
+	boundTexObject->texImages2D[2] = teximage_64_64;
+	boundTexObject->texImages2D[3] = teximage_32_32;
+	boundTexObject->texImages2D[4] = teximage_16_16;
+	boundTexObject->texImages2D[5] = teximage_8_8;
+	boundTexObject->texImages2D[6] = teximage_4_4;
+	boundTexObject->texImages2D[7] = teximage_2_2;
+	boundTexObject->texImages2D[8] = teximage_1_1;
+	
     boundTexObject->texMinFilter = NMGL_NEAREST; //default NEAREST_MIPMAP_LINEAR
     boundTexObject->texMagFilter = NMGL_NEAREST; //default LINEAR
     boundTexObject->texWrapS = NMGL_REPEAT; // default REPEAT
@@ -275,7 +265,7 @@ int main ()
     cntxt.texState.texUnits[activeTexUnitIndex].texEnvColor[2] = 0.0f;
     cntxt.texState.texUnits[activeTexUnitIndex].texEnvColor[3] = 0.0f;
 
-    cntxt.texState.unpackAlignment = textures[0].alignment;
+    cntxt.texState.unpackAlignment = 4;
     // printPattern(patterns, pSrcTriangle, TRIANGLE_AMOUNT);
     
     
@@ -284,13 +274,15 @@ int main ()
     
     //texture triangles
     textureTriangle(patterns, &triangles, PROI, windows, pSrcTriangle, pDstTriangle, count);
+}
+
+    
+
+
+#ifndef __NM__
 
     //convert result to image_t to compare with etalon    
     rawToImage(pDstTriangle, windows, result_images, count);
-    
-    //compare with etalon
-
-#ifndef __NM__
 
     char* fileNames [TRIANGLE_AMOUNT] = {"./result_1.bmp", "./result_2.bmp"};
 
@@ -299,58 +291,12 @@ int main ()
         saveToBmp (32, result_images[i], fileNames[i]);
     }
 #endif //__NM__        
-    
-    
+
+	printf ("End textureTriangle test...\n");
     return 0;
 }
 
-int imageToTexImage(image_t* image, TexImage2D* texImage)
-{
-    
-    if (image->type != UNSIGNED_BYTE)
-    {
-        printf ("%s %s %d: Unsupported texture pixel type",__FILE__, __func__, __LINE__);
-        return -1;
-    }
-    
-    switch (image->format)
-    {
-        case RGB:
-            texImage->internalformat = NMGL_RGB;
-            break;
-        
-        case RGBA:
-            texImage->internalformat = NMGL_RGBA;
-            break;
-            
-        case ARGB:
-            printf ("%s %s %d: Unsupported NMGL pixel format type (ARGB)\n", __FILE__, __func__, __LINE__);
-            return -1;
-
-        case ALPHA:
-            texImage->internalformat = NMGL_ALPHA;
-            break;
-
-        case LUMINANCE:
-            texImage->internalformat = NMGL_LUMINANCE;
-            break;
-
-        case LUMINANCE_ALPHA:
-            texImage->internalformat = NMGL_LUMINANCE_ALPHA;
-            break;
-
-        default:
-            printf ("%s %s %d: Unsupported NMGL pixel format type (unknown code)\n\n",  __FILE__, __func__, __LINE__);
-            return -1;
-    }
-    
-    texImage->pixels = (void*)image->pixels;
-    texImage->width = image->width;
-    texImage->height = image->height;
-    
-    return 0;
-}
-
+#ifndef __NM__
 int rawToImage (nm32s* triangles, Rectangle* windows, image_t* images, int count)
 {
     
@@ -431,3 +377,4 @@ void printPattern(Pattern* patterns, int count)
     }
 }
 
+#endif //__NM__
