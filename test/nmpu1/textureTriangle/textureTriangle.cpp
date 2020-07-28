@@ -341,7 +341,7 @@ color getPixelNearest(Vec2f st, TexImage2D texture)
 
 SECTION(TEXTURE_TRIANGLE_SECTION)
 void textureTriangle(Pattern* patterns, 
-                 Triangles* triangles,
+                 TrianglesInfo* triangles,
                  nm32s** pROI,
                  Rectangle* windows, 
                  nm32s* pSrcTriangle, 

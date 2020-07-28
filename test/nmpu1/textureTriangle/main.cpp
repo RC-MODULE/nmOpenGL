@@ -81,6 +81,9 @@ int rawToImage (nm32s* triangles, Rectangle* windows, image_t* images, int count
 */
 void printPattern(Pattern* patterns, int count);
 
+//Массив данных о треугольниках (координаты вершин, текстурные координаты и т.д.)
+TrianglesInfo triangles;
+
 // Паттерны треугольников. Паттерн представляет собой массив элементов из WIDTH_PTRN=32 строк и HEIGHT_PTRN=32 столбцов.
 // Одна строка матрицы состоит из 32 элементов по 2 бита на элемент => каждая строка занимает 64 бита.
 // Всего паттерн (WIDTH_PTRN * HEIGHT_PTRN / 16) intов на один треугольник
