@@ -528,12 +528,13 @@ void textureTriangle(Pattern* patterns,
         t2 *= z2;
 #endif //PERSPECTIVE_CORRECT
 
+#ifdef USE_BARYCENTRIC
         // Area of triangle.
         // Part of calculation attribute values using barycentric coordinates.
         edgeFunction(x0, y0, x1, y1, x2, y2, &area);
         float oneOverArea = 1.0/area;
         int pixelCnt = 0;
-        
+#endif //USE_BARYCENTRIC
         
         for(int y = 0; y < windows[cnt].height; y++){
             temp = pattern[y];
@@ -564,6 +565,9 @@ void textureTriangle(Pattern* patterns,
                                                //Но так как они растеризованы, то для них вычисляются неверные барицентрические
 											   //координаты и неправильные значения текстурных координат
                                                //Нужно как-то соотнести алгоритм растеризации и вычисление текстурных координат
+                    float s = 0.0;
+                    float t = 0.0;
+#ifdef USE_BARYCENTRIC
                     float w0 = 0;
                     float w1 = 0;
                     float w2 = 0;
@@ -596,10 +600,6 @@ void textureTriangle(Pattern* patterns,
                     float oneOverZ = z0 * w0 + z1 * w1 + z2 * w2;
                     float z = 1 / oneOverZ;
 #endif //PERSPECTIVE_CORRECT
-                    
-                    float s = 0.0;
-                    float t = 0.0;
-#ifdef USE_BARYCENTRIC
                     s = s0 * w0 + s1 * w1 + s2 * w2;
                     t = t0 * w0 + t1 * w1 + t2 * w2;
 #ifdef PERSPECTIVE_CORRECT
