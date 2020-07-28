@@ -28,7 +28,7 @@ SECTION (".data_shmem1") TrianglesInfo triangles;
 
 SECTION(".data_imu0") Rectangle windows[NMGL_SIZE];
 
-SECTION(".text_demo3d") void drawTriangles(NMGL_Context_NM1* context) {
+SECTION(".text_demo3dExt") void drawTriangles(NMGL_Context_NM1* context) {
 	PolygonsConnector connector(context->polygonsData);
 	Polygons* poly = connector.ptrTail();
 	getAddrPtrnsT(context, poly);
