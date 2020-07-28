@@ -3,7 +3,7 @@
 #include "demo3d_nm1.h"
 #include "nmgltex_nm1.h"
 #include "textureTriangle.h"
-#include "tex_common.h"
+#include "nmgltex_common.h"
 #include <stdio.h>
 #include <math.h>
 #include <float.h> //TODO: only FLT_EPSILON is used from float.h
@@ -634,7 +634,7 @@ void textureTriangle(Pattern* patterns,
 /*Calculate partial derivative for u(x,y) and v(x,y). level 0 texture are using to calculate scale factor*/
 
 #ifdef PERSPECTIVE_CORRECT
-						float derivOneOverDenom = 1.0 / ((A2*x + B2*y + D2)*(A2*x + B2*y + D2));
+						float derivOneOverDenom = 1.0 / ((A2*x + B2*y + D2)*(A2*x + B2*y + D2));//TODO: may be xf, yf should be used
 						float dudx = (float)boundTexObject->texImages2D[0].width*((A1_s*B2 - A2*B1_s)*y + A1_s*D2 - A2*D1_s)*derivOneOverDenom;
 						float dudy = (float)boundTexObject->texImages2D[0].width*((B1_s*A2 - B2*A1_s)*x + B1_s*D2 - B2*D1_s)*derivOneOverDenom;
 						float dvdx = (float)boundTexObject->texImages2D[0].height*((A1_t*B2 - A2*B1_t)*y + A1_t*D2 - A2*D1_t)*derivOneOverDenom;
