@@ -14,17 +14,16 @@ struct CopyPatternInfo {
 	nm32s* point[3];
 };
 
-
 struct PerFragment {
 	CopyPatternInfo srcPoints[POLYGONS_SIZE];
-	CopyPatternInfo srcPoints[SMALL_SIZE];
+	CopyPatternInfo dstPoints[SMALL_SIZE];
 };
 
 struct NMGL_Context_NM1 {
 private:
 	static NMGL_Context_NM1 *context;
-	NMGL_Context_NM1() {};		// недоступный конструктор
-	~NMGL_Context_NM1() {};		// и деструктор
+	//NMGL_Context_NM1() {};		// недоступный конструктор
+	//~NMGL_Context_NM1() {};		// и деструктор
 public:
 	static void create() {
 		//context = (NMGL_Context_NM1*)halMalloc32(sizeof32(NMGL_Context_NM1));
@@ -177,5 +176,6 @@ void drawTriangles();
 void drawLines();
 int getAddrPtrnsT(PolygonsOld* poly);
 int getAddrPtrnsL(PolygonsOld* poly);
+void readPolygonsT(DataForNmpu1* data);
 
 #endif

@@ -127,8 +127,8 @@ struct PolygonsOld {
 	}
 };
 
-//typedef DataForNmpu1 Polygons;
-typedef PolygonsOld Polygons;
+typedef DataForNmpu1 Polygons;
+//typedef PolygonsOld Polygons;
 
 typedef HalRingBufferData<Polygons, COUNT_POLYGONS_BUFFER> PolygonsArray;
 typedef HalRingBufferConnector<Polygons, COUNT_POLYGONS_BUFFER> PolygonsConnector;

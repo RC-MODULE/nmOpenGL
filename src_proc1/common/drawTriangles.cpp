@@ -10,7 +10,8 @@ SECTION(".text_demo3d") void drawTriangles() {
 
 	Polygons* poly = context->polygonsConnectors[0].ptrTail();
 	
-	getAddrPtrnsT(context->polygonsConnectors->ptrTail());
+	//getAddrPtrnsT(context->polygonsConnectors->ptrTail());
+	readPolygonsT(context->polygonsConnectors->ptrTail());
 	COMMON_DRAW_TYPE* mulZ = (COMMON_DRAW_TYPE*)context->buffer0;
 	COMMON_DRAW_TYPE* mulC = (COMMON_DRAW_TYPE*)context->buffer0;
 	COMMON_DRAW_TYPE* zMaskBuffer = (COMMON_DRAW_TYPE*)context->buffer1;
@@ -37,7 +38,7 @@ SECTION(".text_demo3d") void drawTriangles() {
 		//объединение паттернов сторон в паттерн треугольника
 		//объединение происходит не полностью (только значимой части) для
 		//оптимизации
-		mAndVxN_32u((nm32u**)context->ppPtrns1_2s, 
+		mAndVxN_32u((nm32u**)context->ppPtrns2_2s, 
 			(nm32u**)context->ppPtrns2_2s, 
 			(nm32u**)context->ppPtrnsCombined_2s, 
 			context->nSizePtrn32 + point_x3, localSize);

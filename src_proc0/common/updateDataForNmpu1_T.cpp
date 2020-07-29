@@ -17,7 +17,7 @@
 
 SECTION(".text_demo3d")
 //void updateDataForNmpu1_T(DataForNmpu1* data, Triangles* triangles, int count, int segX, int segY){
-	void updatePolygonsT(DataForNmpu1* data, Triangles* triangles, int count, int segX, int segY){
+void updatePolygonsT(DataForNmpu1* data, Triangles* triangles, int count, int segX, int segY){
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
 
 	float* temp0 = cntxt->buffer0 + 2 * NMGL_SIZE;
@@ -26,12 +26,18 @@ SECTION(".text_demo3d")
 	float* temp3 = cntxt->buffer3 + 6 * NMGL_SIZE;
 
 	sort();
-	nmppsConvert_32f32s_rounding(triangles->x0, data->x0, 0, count);
-	nmppsConvert_32f32s_rounding(triangles->y0, data->y0, 0, count);
-	nmppsConvert_32f32s_rounding(triangles->x1, data->x1, 0, count);
-	nmppsConvert_32f32s_rounding(triangles->y1, data->y1, 0, count);
-	nmppsConvert_32f32s_rounding(triangles->x2, data->x2, 0, count);
-	nmppsConvert_32f32s_rounding(triangles->y2, data->y2, 0, count);
+	nmppsSubC_32f(triangles->x0, temp0, cntxt->windowInfo.x0_f[segX], count);
+	nmppsSubC_32f(triangles->y0, temp1, cntxt->windowInfo.y0_f[segY], count);
+	nmppsConvert_32f32s_rounding(temp0, data->x0, 0, count);
+	nmppsConvert_32f32s_rounding(temp1, data->y0, 0, count);
+	nmppsSubC_32f(triangles->x1, temp0, cntxt->windowInfo.x0_f[segX], count);
+	nmppsSubC_32f(triangles->y1, temp1, cntxt->windowInfo.y0_f[segY], count);
+	nmppsConvert_32f32s_rounding(temp0, data->x1, 0, count);
+	nmppsConvert_32f32s_rounding(temp1, data->y1, 0, count);
+	nmppsSubC_32f(triangles->x2, temp0, cntxt->windowInfo.x0_f[segX], count);
+	nmppsSubC_32f(triangles->y2, temp1, cntxt->windowInfo.y0_f[segY], count);
+	nmppsConvert_32f32s_rounding(temp0, data->x2, 0, count);
+	nmppsConvert_32f32s_rounding(temp1, data->y2, 0, count);
 	nmppsSub_32f(triangles->x1, triangles->x0, temp0, count);
 	nmppsSub_32f(triangles->x2, triangles->x0, temp1, count);
 	nmppsSub_32f(triangles->y1, triangles->y0, temp2, count);
@@ -40,5 +46,6 @@ SECTION(".text_demo3d")
 	nmblas_scopy (count, (float*)triangles->z, 1, (float*)data->z, 1);
 	nmblas_scopy(4 * count, (float*)triangles->colors, 1, (float*)data->color, 1);
 	
+	data->count = count;
 	
 }
