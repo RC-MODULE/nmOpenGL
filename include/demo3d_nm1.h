@@ -8,12 +8,25 @@
 #include "myserverdma.h"
 #include "nmgltex_nm1.h"
 
-typedef void DepthCore(nm32s &buffZ, nm32s &trianSrcZ, nm32s &trianDstZ);
-
-
 void selectPatterns(nm32s* dydxTable, nm32s* dX, nm32s* dY, nm32s* x0, nm32s* pPtrnPaintSide, nm32s** pSrcPack, int nSize, int* pTmp);
 
 struct NMGL_Context_NM1 {
+private:
+	static NMGL_Context_NM1 *context;
+public:
+	static void create() {
+		//context = (NMGL_Context_NM1*)halMalloc32(sizeof32(NMGL_Context_NM1));
+	}
+	static void bind(NMGL_Context_NM1* cntxt) {
+		context = cntxt;
+	}
+	inline static NMGL_Context_NM1 *getContext() {
+		return context;
+	}
+	static void free() {
+		//halFree(context);
+	}
+
 	Pattern polyImgTmp[SMALL_SIZE];
 	
 	PatternsArray* patterns;
@@ -31,9 +44,12 @@ struct NMGL_Context_NM1 {
 	PolygonsArray* polygonsData;
 
 	DepthBuffer depthBuffer;
-	ImageBuffer colorBuffer;
-	ImageBuffer smallColorBuff;
-	ImageBuffer smallDepthBuff;
+	IMAGE_BUFFER_CLASS colorBuffer;
+	IMAGE_BUFFER_CLASS smallColorBuff;
+	IMAGE_BUFFER_CLASS smallDepthBuff;
+
+	IMAGE_BUFFER_CLASS smallClearColorBuff;
+	IMAGE_BUFFER_CLASS smallClearDepthBuff;
 
 	nm32s** zBuffPoints;
 	nm32s** imagePoints;
@@ -43,10 +59,8 @@ struct NMGL_Context_NM1 {
 	Pattern* ppPtrnsCombined_2s[SMALL_SIZE];
 	nm32s minusOne[SMALL_SIZE];
 
-	nm32s* offsetTrX;
-	nm32s* offsetTrY;
-	nm32s* widths;
-	nm32s* heights;
+	Vector2* ptrnInnPoints;
+	Size* ptrnSizes;
 	nm32s* valuesZ;
 	nm32s* valuesC;
 	
@@ -84,20 +98,28 @@ extern "C" {
 	 *  \endxmlonly
 	 */
 	 //! \{
-	void mMaskVxN_32s(nm32s* pTriangles, nm32s* pMask, nm32s** pROI, int imageStride, int* pTriangsHeight, int* pTriangsWidth, int count);
+	void mMaskVxN_32s(nm32s* pTriangles, nm32s* pMask, nm32s** pROI, int imageStride, Size* ptrnSizes, int count);
 	 //! \}
 	
-	void depthTest(nm32s** pROI, int imageStride, nm32s* pTriangles, nm32s* pDstMask, int* pTriangsHeight, int* pTriangsWidth, int count);
-	
+
+	void mMaskVxN_16s(nm16s* pTriangles, nm16s* pMask, nm16s** pROI, int imageStride, Size* ptrnSizes, int count);
+
+	void depthTest32(nm32s** pROI, int imageStride, nm32s* pTriangles, nm32s* pDstMask, Size* pTriangSizes, int count);
+	void depthTest16(nm16s** pROI, int imageStride, nm16s* pTriangles, nm16s* pDstMask, Size* pTriangSizes, int count);
+
 
 	void selectPaintSide(nm32s* pSrc, int X, int Y, nm32s* pDst, int nSize);
 	
-	void mMulCVxN_2s32s(Pattern* ppSrcTreangle_2s, Rectangle* window, int* valueC, nm32s* pDstTreangle_32s, int count);
-	void mMulCVxN_2s_RGB8888(Pattern* ppSrcTreangle_2s, Rectangle* window, v4nm8s* valueC, nm32s* pDstTreangle_32s, int count);
-	void mMulCVxN_2s16s(Pattern* ppSrcTreangle_2s, Rectangle* window, int* valueC, nm16s* pDstTreangle_32s, int count);
-	void mMulCVxN_2s_RGB565(Pattern* ppSrcTreangle_2s, Rectangle* window, int* valueC, nm16s* pDstTreangle_32s, int count);
+	void mMulCVxN_2s32s(Pattern* patterns, Vector2* innerPoint, Size* sizes, int* valueC, nm32s* pDstTreangle, int count);
+	void mMulCVxN_2s_RGB8888(Pattern* patterns, Vector2* innerPoint, Size* sizes, int* valueC, nm32s* pDstTreangle_32s, int count);
+	void mMulCVxN_2s16s(Pattern* patterns, Vector2* innerPoint, Size* sizes, int* valueC, nm16s* pDstTreangle_32s, int count);
+	void mMulCVxN_2s_RGB565(Pattern* patterns, Vector2* innerPoint, Size* sizes, int* valueC, nm16s* pDstTreangle_32s, int count);	
 	
-	
+	void baseAddrOffs_32s(nm32s* baseAddr, int* offsets, nm32s** ppDst, int size);
+	void baseAddrOffs_32u(nm32u* baseAddr, int* offsets, nm32u** ppDst, int size);
+	void baseAddrOffs_16s(nm16s* baseAddr, int* offsets, nm16s** ppDst, int size);
+	void baseAddrOffs_16u(nm16u* baseAddr, int* offsets, nm16u** ppDst, int size);
+
 	void mAndVxN_32u(nm32u** pSrc1, nm32u** pSrc2, nm32u** pDst, int* size, int count);
 	
 	void copyPacket_32s(nm32s** ppSrc, nm32s** ppDst, int* size, int count);
@@ -132,12 +154,16 @@ extern "C" {
 	int totalSum(nm32s* pVec, int size);
 
 	void merge_v4nm32s(nm32s* src1, nm32s* src2, nm32s* src3, nm32s* src4, v4nm32s* dst, int size);
+
+	void duplicate_16s(const nm16s *srcArray, nm32s *dstArray, int count);
+
+	void inverse_v4nm8u(const v4nm8u *srcArray, v4nm8u *dstArray, int count);
 	
 }
 
-void drawTriangles(NMGL_Context_NM1* context);
-void drawLines(NMGL_Context_NM1* context);
-int getAddrPtrnsT(NMGL_Context_NM1* context, Polygons* poly);
-int getAddrPtrnsL(NMGL_Context_NM1* context, Polygons* poly);
+void drawTriangles();
+void drawLines();
+int getAddrPtrnsT(Polygons* poly);
+int getAddrPtrnsL(Polygons* poly);
 
 #endif

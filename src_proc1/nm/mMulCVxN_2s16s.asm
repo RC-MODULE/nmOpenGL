@@ -51,7 +51,7 @@ data ".data_demo3d"
 		global _addC4DepthTest_15s: word = 07FFF7FFFh;
 end ".data_demo3d";
 global _mMulCVxN_2s16s: label;
-global _mMulCVxN_2s_v4nm8s: label;
+global _mMulCVxN_2s_RGB565: label;
 
 macro mainLoopRepN(N)
 	own Next:label;
@@ -91,13 +91,14 @@ begin ".text_demo3d"
 	ar5 = ar7-2;
 	push ar0,gr0;
 	push ar1,gr1;
-	push ar2,gr2	with gr1 = false;
-	push ar3,gr3	with gr1++;
-	push ar4,gr4	with gr1<<=2;
+	push ar2,gr2;
+	push ar3,gr3;
+	push ar4,gr4;
 	push ar5,gr5;
 	push ar6,gr6;
 	gr0 = [--ar5];		//Patterns* triangles
-	ar1 = [--ar5];		//Rectangle windows
+	gr1 = [--ar5];		//Point* point
+	ar1 = [--ar5];		//Size size
 	ar2 = [--ar5];		//int* valueC
 	nb1 = 84108410h;	//5-6-5
 	gr5 = false;
@@ -109,13 +110,14 @@ begin ".text_demo3d"
 	ar5 = ar7-2;
 	push ar0,gr0;
 	push ar1,gr1;
-	push ar2,gr2	with gr1 = false;
-	push ar3,gr3	with gr1++;
-	push ar4,gr4	with gr1<<=2;
+	push ar2,gr2;
+	push ar3,gr3;
+	push ar4,gr4;
 	push ar5,gr5;
 	push ar6,gr6;
 	gr0 = [--ar5];		//Patterns* triangles
-	ar1 = [--ar5];		//Rectangle windows
+	gr1 = [--ar5];		//Point* point
+	ar1 = [--ar5];		//Size size
 	ar2 = [--ar5];		//int* valueC
 	ar6 = [--ar5];		//nm32s* pDstTreangle_32s	
 	gr7 = [--ar5];		//int count
@@ -125,41 +127,40 @@ begin ".text_demo3d"
 <NextTreangle>	
 	//write mulC to matrix
 	repNHeightStart: label;
-	gr5 = [ar2++];
-	ar5 = matr;
-	[matr+10] = gr5;
-	[matr+15] = gr5	with gr5 <<= 16;
-	[matr+12] = gr5;
-	[matr+17] = gr5;
+	gr5 = [ar2++]	with gr3 = true;
+	gr3 >>= 16;
+	gr5 = gr3 and gr5;	
+	[matr+10] = gr5		with gr3 = false;
+	[matr+15] = gr5		with gr5 <<= 16;
+	[matr+12] = gr5		with gr3++;
+	[matr+17] = gr5		with gr3 <<= 6;  //!ВАЖНО - величина gr3 равна размеру паттерна в int;
 	
-	//
-	ar0 = gr0	with gr3 = gr1 << 4;	//gr3=64	//ВАЖНО: значение gr3 равно размеру паттерна в int
-	gr0+=gr3;
+	ar5 = gr0	with gr0+=gr3;	//Pattern
 	
-	gr3 = [ar1 + 1];	//y
-	ar3 = ar0		with gr3 <<= 1;			//!ВАЖНО - величина сдвига зависит от ширины паттерна. gr3 умножается на ширину паттера в int
-	ar0 = ar3 + gr3;
+	gr3 = [gr1]	with gr1++;		//x
+	gr5 = [gr1]	with gr1++;		//y
+	with gr5 <<= 1;			//!ВАЖНО - умножение на ширину паттерна в int
+	ar0 = ar5 + gr5;
 	
 	//computing addr first matrix and sb
 	gr5 = 3;		//величина gr5 зависит от от возможных отрицательных значений x
-	gr3 = [ar1];		//x
-	ar3 = addr_matr	with gr3+=gr5;	
-	ar3+=gr3	with gr5 = gr3 << 1;
-	ar5 = sb_array;
+	ar3 = addr_matr	with gr3 += gr5;	
+	ar3+=gr3		with gr5 = gr3 << 1;
+	ar5 = sb_array	with gr3 = false;
 	ar5+=gr5;
+		
 	
-	
-	ar4 = [ar3]	with gr3 = gr1 >> 1;	//gr3 = 2
-	sb = [ar5];
+	ar4 = [ar3]	with gr3++;
+	sb = [ar5] 	with gr3++;		//gr3 = 2;
 	rep 6 wfifo = [ar4++], ftw,wtw;
 	
-	gr2 = [ar1 + 2];		//width
-	gr4 = [ar1 + 3];		//height
+	gr2 = [ar1++];		//width
+	gr4 = [ar1++];		//height
 	ar4 = repNHeightStart	with gr4 <<= 5;
 	delayed goto ar4+gr4;
-		ar1 += gr1;
 		gr2 >>= 2;			//ширина в 64-битных словах
 		gr6 = gr2 << 1;
+		nul;
 <repNHeightStart>
 	mainLoopRepN(1 );
 	

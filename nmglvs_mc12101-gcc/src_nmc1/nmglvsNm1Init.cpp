@@ -7,7 +7,6 @@
 #include "ringbuffer.h"
 #include "nmprofiler.h"
 #include "cache.h"
-#include "nmgl_data1.h"
 #include "nmprofiler.h"
 
 #include "nmgl.h"
@@ -18,10 +17,8 @@ SECTION(".data_imu3")	int pool1[SIZE_BANK];
 SECTION(".data_imu2")	int segImage[WIDTH_SEG * HEIGHT_SEG];
 SECTION(".data_imu2")	int segZBuff[WIDTH_SEG * HEIGHT_SEG];
 
-SECTION(".data_imu0") nm32s offsetTrX[NMGL_SIZE];
-SECTION(".data_imu0") nm32s offsetTrY[NMGL_SIZE];
-SECTION(".data_imu0") nm32s widths[NMGL_SIZE];
-SECTION(".data_imu0") nm32s heights[NMGL_SIZE];
+SECTION(".data_imu0") Vector2 ptrnInnPoints[NMGL_SIZE];
+SECTION(".data_imu0") Size ptrnSizes[NMGL_SIZE];
 SECTION(".data_shmem1") nm32s valuesZ[NMGL_SIZE];
 SECTION(".data_shmem1") nm32s valuesC[NMGL_SIZE];
 
@@ -30,6 +27,10 @@ SECTION(".data_shmem1") nm32s* ppDstPackPtrns[3 * NMGL_SIZE];
 SECTION(".data_shmem1") nm32s nSizePtrn32[3 * NMGL_SIZE];
 SECTION(".data_shmem1") nm32s* zBuffPoints[NMGL_SIZE];
 SECTION(".data_shmem1") nm32s* imagePoints[NMGL_SIZE];
+
+
+SECTION(".data_shmem1") nm32s colorClearBuff[WIDTH_SEG * HEIGHT_SEG];
+SECTION(".data_shmem1") nm32s depthClearBuff[WIDTH_SEG * HEIGHT_SEG];
 
 
 int exitNM1 = 0;
@@ -47,29 +48,38 @@ template<class T> T* myMallocT() {
 	return result;
 }
 
+SECTION(".data_imu0A") NMGL_Context_NM1 context;
+SECTION(".data_imu0") NMGL_Context_NM1 *NMGL_Context_NM1::context;
+
 SECTION(".text_nmglvs") int nmglvsNm1Init()
 {
 	halSleep(100);
 	halSetProcessorNo(1);
 	//---------- start nm program ------------
-
+	NMGL_Context_NM1 *cntxt;
 	try {
 		int fromHost = halHostSync(0xC0DE0001);		// send handshake to host
 		if (fromHost != 0xC0DE0086) {					// get  handshake from host
 			throw -1;
 		}
+		setHeap(0);
+		NMGL_Context_NM1::bind(&context);
+		cntxt = NMGL_Context_NM1::getContext();
+		
 		setHeap(11);
-		cntxt.patterns = myMallocT<PatternsArray>();
+		cntxt->patterns = myMallocT<PatternsArray>();
+		//printf("size patterns = %d\n", sizeof32(cntxt->patterns->ptrns));
+		//printf("size patterns table = %d\n", sizeof32(cntxt->patterns->table_dydx));
 
 		setHeap(13);
-		cntxt.imagesData = myMallocT<ImageData>();
-		cntxt.imagesData->init();
+		cntxt->imagesData = myMallocT<ImageData>();
+		cntxt->imagesData->init();
 
 		setHeap(11);
-		DepthImage32* depthImage = myMallocT<DepthImage32>();
+		DepthImage* depthImage = myMallocT<DepthImage>();
 
-		cntxt.colorBuffer.init(cntxt.imagesData->ptrHead(), WIDTH_IMAGE, HEIGHT_IMAGE);
-		cntxt.depthBuffer.init(depthImage, WIDTH_IMAGE, HEIGHT_IMAGE);
+		cntxt->colorBuffer.init(cntxt->imagesData->ptrHead(), WIDTH_IMAGE, HEIGHT_IMAGE);
+		cntxt->depthBuffer.init(depthImage, WIDTH_IMAGE, HEIGHT_IMAGE);
 	}
 	catch (int &e){
 		if (e == -2) {
@@ -78,9 +88,11 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 		return e;
 	}
 
-	NMGLSynchroData* synchroData = (NMGLSynchroData*)halSyncAddr((int*)cntxt.patterns, 0);
-	cntxt.synchro.init(synchroData);
-	cntxt.polygonsData = (PolygonsArray*)halSyncAddr(0, 0);
+	halHostSync(0x600DB00F);	// send ok to host
+
+	NMGLSynchroData* synchroData = (NMGLSynchroData*)halSyncAddr((int*)cntxt->patterns, 0);
+	cntxt->synchro.init(synchroData);
+	cntxt->polygonsData = (PolygonsArray*)halSyncAddr(0, 0);
 
 	halHostSync(0x600DB00F);	// send ok to host
 
@@ -92,42 +104,43 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 	PROFILER_START();
 #endif // PROFILER1	
 #endif // __GNUC__
-	cntxt.smallColorBuff.init(segImage, WIDTH_SEG, HEIGHT_SEG);
-	cntxt.smallDepthBuff.init(segZBuff, WIDTH_SEG, HEIGHT_SEG);
+	cntxt->smallColorBuff.init(segImage, WIDTH_SEG, HEIGHT_SEG);
+	cntxt->smallDepthBuff.init(segZBuff, WIDTH_SEG, HEIGHT_SEG);
+
+	cntxt->smallClearColorBuff.init(colorClearBuff, WIDTH_SEG, HEIGHT_SEG);
+	cntxt->smallClearDepthBuff.init(depthClearBuff, WIDTH_SEG, HEIGHT_SEG);
 	
 	halSleep(10);
 
 	//sync0
-	halHostSync((int)cntxt.patterns);
+	halHostSync((int)cntxt->patterns);
 
-	cntxt.buffer0 = pool0;
-	cntxt.buffer1 = pool1;
+	cntxt->buffer0 = pool0;
+	cntxt->buffer1 = pool1;
 
 	for (int j = 0; j < SMALL_SIZE; j++) {
-		int off = j * WIDTH_PTRN*HEIGHT_PTRN / 16;
-		cntxt.ppPtrns1_2s[j] = (Pattern*)nmppsAddr_32s((nm32s*)pool0, off);
-		cntxt.ppPtrns2_2s[j] = (Pattern*)nmppsAddr_32s((nm32s*)pool1, off);
-		cntxt.ppPtrnsCombined_2s[j] = cntxt.polyImgTmp + j;
-		cntxt.minusOne[j] = -1;
+		int off = j * sizeof32(Pattern);
+		cntxt->ppPtrns1_2s[j] = (Pattern*)nmppsAddr_32s((nm32s*)pool0, off);
+		cntxt->ppPtrns2_2s[j] = (Pattern*)nmppsAddr_32s((nm32s*)pool1, off);
+		cntxt->ppPtrnsCombined_2s[j] = cntxt->polyImgTmp + j;
+		cntxt->minusOne[j] = -1;
 	}
 	//sync3
-	halHostSync((int)cntxt.imagesData);
+	halHostSync((int)cntxt->imagesData);
 
-	cntxt.offsetTrX = offsetTrX;
-	cntxt.offsetTrY = offsetTrY;
-	cntxt.widths = widths;
-	cntxt.heights = heights;
-	cntxt.valuesZ = valuesZ;
-	cntxt.valuesC = valuesC;
+	cntxt->ptrnInnPoints = ptrnInnPoints;
+	cntxt->ptrnSizes = ptrnSizes;
+	cntxt->valuesZ = valuesZ;
+	cntxt->valuesC = valuesC;
 
-	cntxt.ppSrcPackPtrns = ppSrcPackPtrns;
-	cntxt.ppDstPackPtrns = ppDstPackPtrns;
-	cntxt.nSizePtrn32 = nSizePtrn32;
+	cntxt->ppSrcPackPtrns = ppSrcPackPtrns;
+	cntxt->ppDstPackPtrns = ppDstPackPtrns;
+	cntxt->nSizePtrn32 = nSizePtrn32;
 
-	cntxt.zBuffPoints = zBuffPoints;
-	cntxt.imagePoints = imagePoints;
+	cntxt->zBuffPoints = zBuffPoints;
+	cntxt->imagePoints = imagePoints;
 
-	cntxt.t0 = clock();
+	cntxt->t0 = clock();
 	return 0;
 } 
 

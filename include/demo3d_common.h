@@ -17,7 +17,7 @@
 #ifdef __GNUC__
 #define SECTION(sec) __attribute__((section(sec)))
 #else
-#define SECTION(sec)
+#define SECTION(sec) 
 #endif // __GNUC__
 
 typedef nm16s rgb565;
@@ -43,10 +43,6 @@ typedef v4nm8s rgb8888;
 #define COUNT_POLYGONS_BUFFER 128
 #define COUNT_IMAGE_BUFFER 8
 
-#define ZBUFF_MAX 0x7FFFFFFF
-#define ZBUFF_MAX_15s 0x7FFF
-#define ZBUFF_INIT_VALUE ZBUFF_MAX
-
 #define MAX_SIDE_POLYGON 32
 #define HEIGHT_PTRN   MAX_SIDE_POLYGON
 #define WIDTH_PTRN    MAX_SIDE_POLYGON
@@ -63,6 +59,15 @@ struct PatternsArray {
 	int table_dydx[(2 * WIDTH_PTRN) * (HEIGHT_PTRN + 2)];
 };
 
+struct Vector2 {
+	int x;
+	int y;
+};
+
+struct Size {
+	int width;
+	int height;
+};
 
 struct Rectangle {
 	int x;
@@ -70,6 +75,7 @@ struct Rectangle {
 	int width;
 	int height;
 };
+
 
 /**
  *  Структура для передачи полигонов от nmpu0 к nmpu1.
@@ -93,7 +99,6 @@ struct Polygons {
 
 	int z[POLYGONS_SIZE];
 
-	//Rectangle ptrnsWindow[POLYGONS_SIZE];
 	int count;
 	int dummy[15];
 
@@ -104,12 +109,6 @@ struct Polygons {
 
 typedef HalRingBufferData<Polygons, COUNT_POLYGONS_BUFFER> PolygonsArray;
 typedef HalRingBufferConnector<Polygons, COUNT_POLYGONS_BUFFER> PolygonsConnector;
-
-typedef int ImageRGB8888[WIDTH_IMAGE * HEIGHT_IMAGE];
-typedef int DepthImage32[WIDTH_IMAGE * HEIGHT_IMAGE];
-typedef HalRingBufferData<ImageRGB8888, COUNT_IMAGE_BUFFER> ImageData;
-typedef HalRingBufferConnector<ImageRGB8888, COUNT_IMAGE_BUFFER> ImageConnector;
-
 
 //typedef int matrix[16];
 typedef struct s_mat4nm32f{

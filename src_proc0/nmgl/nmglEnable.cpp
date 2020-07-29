@@ -3,12 +3,13 @@
 #include "nmblas.h"
 #include "nmpp.h"
 #include "ringbuffer.h"
-#include "nmgl_data0.h"
+
 
 #pragma code_section ".text_nmgl"
 
 SECTION(".text_nmgl")
 void nmglEnable(NMGLenum cap) {
+	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
 	switch (cap) {
 
 	case NMGL_ALPHA_TEST:
@@ -28,11 +29,11 @@ void nmglEnable(NMGLenum cap) {
 		break;		
 		
 	case NMGL_CULL_FACE:
-		cntxt.isCullFace = NMGL_TRUE;
+		cntxt->isCullFace = NMGL_TRUE;
 		break;	
 
 	case NMGL_DEPTH_TEST:
-		cntxt.synchro.writeInstr(1, NMC1_DEPTH, NMGL_TRUE);
+		cntxt->synchro.writeInstr(1, NMC1_DEPTH, NMGL_TRUE);
 		break;
 	
 	case NMGL_DITHER:
@@ -52,7 +53,7 @@ void nmglEnable(NMGLenum cap) {
 		break;
 		
 	case NMGL_NORMALIZE:
-		cntxt.normalizeEnabled = NMGL_TRUE;
+		cntxt->normalizeEnabled = NMGL_TRUE;
 		break;
 		
 	case NMGL_POINT_SMOOTH:
@@ -100,33 +101,33 @@ void nmglEnable(NMGLenum cap) {
 		break;
 
 	case NMGL_LIGHTING:
-		cntxt.isLighting = NMGL_TRUE;
+		cntxt->isLighting = NMGL_TRUE;
 		break;
 
 	case NMGL_LIGHT0:
-		cntxt.isEnabledLight[0] = true;
+		cntxt->isEnabledLight[0] = true;
 		break;
 
 	case NMGL_LIGHT1:
-		cntxt.isEnabledLight[1] = true;
+		cntxt->isEnabledLight[1] = true;
 		break;
 	case NMGL_LIGHT2:
-		cntxt.isEnabledLight[2] = true;
+		cntxt->isEnabledLight[2] = true;
 		break;
 	case NMGL_LIGHT3:
-		cntxt.isEnabledLight[3] = true;
+		cntxt->isEnabledLight[3] = true;
 		break;
 	case NMGL_LIGHT4:
-		cntxt.isEnabledLight[4] = true;
+		cntxt->isEnabledLight[4] = true;
 		break;
 	case NMGL_LIGHT5:
-		cntxt.isEnabledLight[5] = true;
+		cntxt->isEnabledLight[5] = true;
 		break;
 	case NMGL_LIGHT6:
-		cntxt.isEnabledLight[6] = true;
+		cntxt->isEnabledLight[6] = true;
 		break;
 	case NMGL_LIGHT7:
-		cntxt.isEnabledLight[7] = true;
+		cntxt->isEnabledLight[7] = true;
 		break;
 	}
 }

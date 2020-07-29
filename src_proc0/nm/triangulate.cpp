@@ -480,4 +480,3 @@ int checkAndSplitLargestEdge(	const Triangle& tr,
 		return 0;
 	}
 }
-
