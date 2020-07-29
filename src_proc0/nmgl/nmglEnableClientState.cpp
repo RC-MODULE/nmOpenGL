@@ -23,6 +23,6 @@ void nmglEnableClientState(NMGLenum array) {
 		break;
 	}
 	if (array == NMGL_TEXTURE_COORD_ARRAY) {
-		cntxt.texState.texcoordArray[cntxt.texState.clientActiveTexUnitIndex].enabled = NMGL_TRUE;
+		cntxt->texState.texcoordArray[cntxt->texState.clientActiveTexUnitIndex].enabled = NMGL_TRUE;
 	}
 }
