@@ -334,5 +334,9 @@
 #define NMGL_SRC2_ALPHA                     0x858A
 #define NMGL_DOT3_RGB                       0x86AE
 #define NMGL_DOT3_RGBA                      0x86AF
+
+//custom
+
+#define NMGL_MAX_TEX_SIDE                   128 //square only
 	
 #endif
