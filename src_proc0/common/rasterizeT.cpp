@@ -87,14 +87,7 @@ void rasterizeT(const Triangles* triangles, const BitMask* masks){
 #endif // OUTPUT_IMAGE_RGB565
 
 					localTrian.size = resultSize;
-
-					cntxt->synchro.writeInstr(1, NMC1_COPY_SEG_FROM_IMAGE,
-						cntxt->windowInfo.x0[segX],
-						cntxt->windowInfo.y0[segY],
-						cntxt->windowInfo.x1[segX] - cntxt->windowInfo.x0[segX],
-						cntxt->windowInfo.y1[segY] - cntxt->windowInfo.y0[segY],
-						iSeg);
-
+					
 					int offset = 0;
 					Triangles localTrian2;
 					while (offset < resultSize) {
