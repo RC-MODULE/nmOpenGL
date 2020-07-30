@@ -34,7 +34,7 @@ typedef v4nm8s rgb8888;
 #define WIDTH_SEG 128
 #define HEIGHT_SEG 128
 #define NMGL_SIZE 1024
-#define POLYGONS_SIZE NMGL_SIZE
+#define POLYGONS_SIZE 256
 
 #define BLACK 0x00000000
 #define DARK_GRAY 0x44444444
