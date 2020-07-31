@@ -22,12 +22,19 @@ inline void ADD_COPY(const void* src, void* dst, int size, int i) {
 }
 
 
-SECTION(".text_demo3d") void readPolygonsT(DataForNmpu1* data){
+//SECTION(".text_demo3d") void readPolygonsT(DataForNmpu1* data){
+SECTION(".text_demo3d") int getAddrPtrnsT(DataForNmpu1* data) {
 	NMGL_Context_NM1 *cntxt = NMGL_Context_NM1::getContext();
 	int size = data->count;
-	int offset0 = 0;
-	int offset1 = 0;
-
+	int** srcPackTmp02 = (int**)(cntxt->buffer0 + 0 * POLYGONS_SIZE);
+	int** srcPackTmp01 = (int**)(cntxt->buffer0 + 1 * POLYGONS_SIZE);
+	int** srcPackTmp12 = (int**)(cntxt->buffer0 + 2 * POLYGONS_SIZE);
+	int** dstPackTmp02 = (int**)(cntxt->buffer0 + 3 * POLYGONS_SIZE);
+	int** dstPackTmp01 = (int**)(cntxt->buffer0 + 4 * POLYGONS_SIZE);
+	int** dstPackTmp12 = (int**)(cntxt->buffer0 + 5 * POLYGONS_SIZE);
+	int* sizePackTmp02 = (int*)(cntxt->buffer1 + 0 * POLYGONS_SIZE);
+	int* sizePackTmp01 = (int*)(cntxt->buffer1 + 1 * POLYGONS_SIZE);
+	int* sizePackTmp12 = (int*)(cntxt->buffer1 + 2 * POLYGONS_SIZE);
 
 	for (int i = 0; i < size; i++) {
 		int minX = MIN(data->x0[i], data->x1[i]);
@@ -62,19 +69,20 @@ SECTION(".text_demo3d") void readPolygonsT(DataForNmpu1* data){
 			ptrnNo12 = cntxt->patterns->table_dydx[dy12 * 2 * WIDTH_PTRN + dx12 + WIDTH_PTRN];
 			ptrnNo12 += data->x1[i] - minX;
 		}
+		
 
-		cntxt->ppSrcPackPtrns[3 * i + 0] = cntxt->patterns->ptrns[ptrnNo02];
-		cntxt->ppSrcPackPtrns[3 * i + 1] = cntxt->patterns->ptrns[ptrnNo01];
-		cntxt->ppSrcPackPtrns[3 * i + 2] = cntxt->patterns->ptrns[ptrnNo12];
+		srcPackTmp02[i] = (nm32s*)cntxt->patterns->ptrns[ptrnNo02];
+		srcPackTmp01[i] = (nm32s*)cntxt->patterns->ptrns[ptrnNo01];
+		srcPackTmp12[i] = (nm32s*)cntxt->patterns->ptrns[ptrnNo12];
 
-		cntxt->nSizePtrn32[3 * i + 0] = dy02 * WIDTH_PTRN / 16;
-		cntxt->nSizePtrn32[3 * i + 1] = dy01 * WIDTH_PTRN / 16;
-		cntxt->nSizePtrn32[3 * i + 2] = dy12 * WIDTH_PTRN / 16;
+		sizePackTmp02[i] = dy02 * WIDTH_PTRN / 16;
+		sizePackTmp01[i] = dy01 * WIDTH_PTRN / 16;
+		sizePackTmp12[i] = dy12 * WIDTH_PTRN / 16;
 
-		cntxt->ppDstPackPtrns[3 * i + 0] = (nm32s*)cntxt->ppPtrns1_2s[i % SMALL_SIZE];
-		cntxt->ppDstPackPtrns[3 * i + 1] = (nm32s*)cntxt->ppPtrns2_2s[i % SMALL_SIZE];
-		cntxt->ppDstPackPtrns[3 * i + 2] = (nm32s*)cntxt->ppPtrns2_2s[i % SMALL_SIZE] + 
-			+ dy01 * WIDTH_PTRN / 16;
+		dstPackTmp02[i] = (nm32s*)cntxt->ppPtrns1_2s[i % SMALL_SIZE];
+		dstPackTmp01[i] = (nm32s*)cntxt->ppPtrns2_2s[i % SMALL_SIZE];
+		dstPackTmp12[i] = (nm32s*)cntxt->ppPtrns2_2s[i % SMALL_SIZE] +
+			+ dy01 * WIDTH_PTRN / 16; // + cntxt->nSizePtrn32[3 * i + 1]
 
 		if (minX < 0) {
 			cntxt->ptrnInnPoints[i].x = -minX;
@@ -83,7 +91,7 @@ SECTION(".text_demo3d") void readPolygonsT(DataForNmpu1* data){
 		else {
 			cntxt->ptrnInnPoints[i].x = 0;
 		}
-		int minY = data->y0[0];
+		int minY = data->y0[i];
 		if (minY < 0) {
 			cntxt->ptrnInnPoints[i].y = -minY;
 			minY = 0;
@@ -116,7 +124,9 @@ SECTION(".text_demo3d") void readPolygonsT(DataForNmpu1* data){
 
 		cntxt->valuesZ[i] = data->z[i];
 	}
-
+	mergePtrnsAddr3(srcPackTmp02, srcPackTmp01, srcPackTmp12, SMALL_SIZE, cntxt->ppSrcPackPtrns, size);
+	mergePtrnsAddr3(dstPackTmp02, dstPackTmp01, dstPackTmp12, SMALL_SIZE, cntxt->ppDstPackPtrns, size);
+	mergePtrnsAddr3((nm32s**)sizePackTmp02, (nm32s**)sizePackTmp01, (nm32s**)sizePackTmp12, SMALL_SIZE, (nm32s**)cntxt->nSizePtrn32, size);
 	/*DataForNmpu1* dataTmp = (DataForNmpu1*)cntxt->buffer0;
 	offset0 += sizeof32(DataForNmpu1);	
 	nm32s* temp0 = nmppsAddr_32s(cntxt->buffer0, offset0);
@@ -150,5 +160,5 @@ SECTION(".text_demo3d") void readPolygonsT(DataForNmpu1* data){
 	nmppsMinEvery_32s(dataTmp->y0, dataTmp->y1, temp1, size);
 	nmppsMinEvery_32s(temp1, dataTmp->y2, minY, size);*/
 
-	return;
+	return 0;
 }

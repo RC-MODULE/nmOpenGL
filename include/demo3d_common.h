@@ -12,7 +12,7 @@
 	#define setHeap(n)
 #endif
 
-//#define USED_POLYGONS_BUFFER
+//#define USED_OLD_POLYGONS
 //#define PROFILER0
 //#define PROFILER1
 
@@ -127,8 +127,11 @@ struct PolygonsOld {
 	}
 };
 
+#ifdef USED_OLD_POLYGONS
+typedef PolygonsOld Polygons;
+#else
 typedef DataForNmpu1 Polygons;
-//typedef PolygonsOld Polygons;
+#endif // USED_OLD_POLYGONS
 
 typedef HalRingBufferData<Polygons, COUNT_POLYGONS_BUFFER> PolygonsArray;
 typedef HalRingBufferConnector<Polygons, COUNT_POLYGONS_BUFFER> PolygonsConnector;

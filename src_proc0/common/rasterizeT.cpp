@@ -68,48 +68,46 @@ void rasterizeT(const Triangles* triangles, const BitMask* masks){
 			if (masks[iSeg].hasNotZeroBits != 0) {
 
 				int resultSize = readMask(masks[iSeg].bits, indices, count);
-				if (resultSize) {
 
-					cntxt->synchro.writeInstr(1, NMC1_COPY_SEG_FROM_IMAGE,
-						cntxt->windowInfo.x0[segX],
-						cntxt->windowInfo.y0[segY],
-						cntxt->windowInfo.x1[segX] - cntxt->windowInfo.x0[segX],
-						cntxt->windowInfo.y1[segY] - cntxt->windowInfo.y0[segY],
-						iSeg);
+				cntxt->synchro.writeInstr(1, NMC1_COPY_SEG_FROM_IMAGE,
+					cntxt->windowInfo.x0[segX],
+					cntxt->windowInfo.y0[segY],
+					cntxt->windowInfo.x1[segX] - cntxt->windowInfo.x0[segX],
+					cntxt->windowInfo.y1[segY] - cntxt->windowInfo.y0[segY],
+					iSeg);
 
-					copyArraysByIndices((void**)triangles, indices, (void**)&localTrian, 7, resultSize);
+				copyArraysByIndices((void**)triangles, indices, (void**)&localTrian, 7, resultSize);
 
 #ifdef OUTPUT_IMAGE_RGB8888
-					copyColorByIndices_BGRA_RGBA(triangles->colors, indices, (v4nm32s*)localTrian.colors, resultSize);
+				copyColorByIndices_BGRA_RGBA(triangles->colors, indices, (v4nm32s*)localTrian.colors, resultSize);
 #endif // OUTPUT_IMAGE_RGB8888
 #ifdef OUTPUT_IMAGE_RGB565
-					copyColorByIndices(triangles->colors, indices, (v4nm32s*)localTrian.colors, resultSize);
+				copyColorByIndices(triangles->colors, indices, (v4nm32s*)localTrian.colors, resultSize);
 #endif // OUTPUT_IMAGE_RGB565
 
-					localTrian.size = resultSize;
+				localTrian.size = resultSize;
 					
-					int offset = 0;
-					Triangles localTrian2;
-					while (offset < resultSize) {
-						int localSize = MIN(resultSize - offset, POLYGONS_SIZE);
-						triangleOffset(localTrian, localTrian2, offset);
-						offset += POLYGONS_SIZE;
-						while (connector[0].isFull());
-						Polygons* poly = connector[0].ptrHead();
-						poly->count = 0;
-						updatePolygonsT(poly, &localTrian2, localSize, segX, segY);
-						connector[0].incHead();
-						cntxt->synchro.writeInstr(1, NMC1_DRAW_TRIANGLES);
-					}	
+				int offset = 0;
+				Triangles localTrian2;
+				while (offset < resultSize) {
+					int localSize = MIN(resultSize - offset, POLYGONS_SIZE);
+					triangleOffset(localTrian, localTrian2, offset);
+					offset += POLYGONS_SIZE;
+					while (connector[0].isFull());
+					Polygons* poly = connector[0].ptrHead();
+					poly->count = 0;
+					updatePolygonsT(poly, &localTrian2, localSize, segX, segY);
+					connector[0].incHead();
+					cntxt->synchro.writeInstr(1, NMC1_DRAW_TRIANGLES);
+				}	
 
-					cntxt->synchro.writeInstr(1,
-						NMC1_COPY_SEG_TO_IMAGE,
-						cntxt->windowInfo.x0[segX],
-						cntxt->windowInfo.y0[segY],
-						cntxt->windowInfo.x1[segX] - cntxt->windowInfo.x0[segX],
-						cntxt->windowInfo.y1[segY] - cntxt->windowInfo.y0[segY]);
+				cntxt->synchro.writeInstr(1,
+					NMC1_COPY_SEG_TO_IMAGE,
+					cntxt->windowInfo.x0[segX],
+					cntxt->windowInfo.y0[segY],
+					cntxt->windowInfo.x1[segX] - cntxt->windowInfo.x0[segX],
+					cntxt->windowInfo.y1[segY] - cntxt->windowInfo.y0[segY]);
 					
-				}				
 			}
 		}
 	}

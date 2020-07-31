@@ -38,6 +38,7 @@ void updatePolygonsT(DataForNmpu1* data, Triangles* triangles, int count, int se
 	nmppsSubC_32f(triangles->y2, temp1, cntxt->windowInfo.y0_f[segY], count);
 	nmppsConvert_32f32s_rounding(temp0, data->x2, 0, count);
 	nmppsConvert_32f32s_rounding(temp1, data->y2, 0, count);
+
 	nmppsSub_32f(triangles->x1, triangles->x0, temp0, count);
 	nmppsSub_32f(triangles->x2, triangles->x0, temp1, count);
 	nmppsSub_32f(triangles->y1, triangles->y0, temp2, count);

@@ -10,15 +10,6 @@
 
 void selectPatterns(nm32s* dydxTable, nm32s* dX, nm32s* dY, nm32s* x0, nm32s* pPtrnPaintSide, nm32s** pSrcPack, int nSize, int* pTmp);
 
-struct CopyPatternInfo {
-	nm32s* point[3];
-};
-
-struct PerFragment {
-	CopyPatternInfo srcPoints[POLYGONS_SIZE];
-	CopyPatternInfo dstPoints[SMALL_SIZE];
-};
-
 struct NMGL_Context_NM1 {
 private:
 	static NMGL_Context_NM1 *context;
@@ -176,6 +167,7 @@ void drawTriangles();
 void drawLines();
 int getAddrPtrnsT(PolygonsOld* poly);
 int getAddrPtrnsL(PolygonsOld* poly);
+int getAddrPtrnsT(DataForNmpu1* data);
 void readPolygonsT(DataForNmpu1* data);
 
 #endif
