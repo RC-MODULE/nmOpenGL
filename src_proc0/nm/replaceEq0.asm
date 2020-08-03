@@ -20,8 +20,8 @@ begin ".text_demo3d"
 	ar5 = replNum;
 	[ar5] = ar2,gr2;
 	fpu 0 rep 32 vreg4 = [ar5];
-	gr2 = gr5<<27;
-	gr5>>=5;
+	gr2 = gr5<<26;
+	gr5>>=6;
 	if =0 delayed goto AfterRep32;
 		gr2>>=27;
 		gr5--;

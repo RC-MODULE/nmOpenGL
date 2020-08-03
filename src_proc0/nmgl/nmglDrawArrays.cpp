@@ -237,6 +237,9 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			if (cntxt.isCullFace) {
 				cullFaceSortTriangles(cntxt.trianInner);
 			}
+			if(cntxt.trianInner.size == 0){
+				break;
+			}
 			setSegmentMask(cntxt, cntxt.trianInner, cntxt.segmentMasks);
 			rasterizeT(&cntxt.trianInner, cntxt.segmentMasks);
 			break;
