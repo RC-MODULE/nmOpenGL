@@ -5,7 +5,8 @@
 #include "malloc.h" //func malloc
 #include "nmtype.h" //func malloc32
 //#define DEBUG
-__attribute__ ((section(".textures_mipmap_mem"))) volatile NMGLubyte mipmap[MIPMAP_MEM_SIZE];
+SECTION(".textures_mipmap_mem") volatile NMGLubyte mipmap[MIPMAP_MEM_SIZE];
+
 //Alternative: #pragma data_section ".data_imu1"
 //     double x1[SIZE];
 
@@ -81,7 +82,7 @@ int copyPixels(const void* pfrom,NMGLint format,NMGLint width,NMGLint height,voi
     //size=4;//32bit word
    if(*pto==NULL)
    {
-	   DEBUG_PRINT("nmglTexImage2D:copypixels:bad pto pointer!\n");
+	   DEBUG_PRINT(("nmglTexImage2D:copypixels:bad pto pointer!\n"));
 	   return -1;
    }
     xlen=xw*xh*size;

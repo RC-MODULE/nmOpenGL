@@ -9,9 +9,9 @@ solution "demo3d-mc12101"
    project "mc12101-x86"
 		kind "ConsoleApp"
 		language "C++"
-		files { "../../include/*.h","../src_host/*.cpp", "../../nmglvs_mc12101-gcc/src_host/*.cpp"}
+		files { "../../../../include/*.h","../src_host/*.cpp", "../../../../nmglvs_mc12101-gcc/src_host/*.cpp"}
 		libdirs { "$(MC12101)/lib","$(VSHELL)/lib","$(NMPP)/lib","$(HAL)/lib"}
-		includedirs { "$(MC12101)/include","$(HAL)/include","$(VSHELL)/include","$(NMPP)/include","../../include", "../include"}
+		includedirs { "$(MC12101)/include","$(HAL)/include","$(VSHELL)/include","$(NMPP)/include","../../../../include", "../include"}
 		links { "mc12101load.lib","vshell.lib","nmpp-x86.lib","hal-mc12101-x86d.lib","mc12101-nmc4-0","mc12101-nmc4-1"}
 
       configuration "Debug"
@@ -25,8 +25,8 @@ solution "demo3d-mc12101"
 		 
 	project "mc12101-nmc4-0"
       kind "Makefile"
-      files { "../../include/*.h","../src_target0/*.*", "../../nmglvs_mc12101-gcc/src_nmc0/*.*", "mc12101brd-nmc0.cfg", "Makefile0" }
-	  includedirs { "$(MC12101)/include","$(HAL)/include","$(NMPP)/include","../../include","../include"}
+      files { "../../../../include/*.h","../src_target0/*.*", "../../../../nmglvs_mc12101-gcc/src_nmc0/*.*", "mc12101brd-nmc0.cfg", "Makefile0" }
+	  includedirs { "$(MC12101)/include","$(HAL)/include","$(NMPP)/include","../../../../include","../include"}
 	 
 	  configuration "Debug"
 		   buildcommands {"make DEBUG=y -f Makefile0"}
@@ -40,8 +40,8 @@ solution "demo3d-mc12101"
 		   
 	project "mc12101-nmc4-1"
       kind "Makefile"
-      files { "../../include/*.h","../src_target1/*.*", "../../nmglvs_mc12101-gcc/src_nmc1/*.*","mc12101brd-nmc1.cfg", "Makefile1" }
-	  includedirs { "$(MC12101)/include","$(HAL)/include","$(NMPP)/include","../../include"}
+      files { "../../../../include/*.h","../src_target1/*.*", "../../../../nmglvs_mc12101-gcc/src_nmc1/*.*","mc12101brd-nmc1.cfg", "Makefile1" }
+	  includedirs { "$(MC12101)/include","$(HAL)/include","$(NMPP)/include","../../../../include"}
 	 
 	  configuration "Debug"
 		   buildcommands {"make DEBUG=y -f Makefile1"}
