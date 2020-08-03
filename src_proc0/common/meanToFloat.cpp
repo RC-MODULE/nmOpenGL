@@ -1,3 +1,4 @@
+#ifdef TEXTURE_ENABLED
 extern "C" {
 	void meanToFloat3(
 		float* src1,
@@ -13,3 +14,4 @@ extern "C" {
 
 	}
 }
+#endif //TEXTURE_ENABLED

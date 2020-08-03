@@ -784,7 +784,8 @@ extern "C"{
 	 //! \{
 	void meanToInt2(float* src1, float* src2, int* result, int size);
 	 //! \}
-	 
+
+#ifdef TEXTURE_ENABLED
 	/**
 	*  \defgroup meanOfThreeToFloat meanOfThreeToFloat
 	*  \brief Функция поиска среднего значения из трех элементов и сонвертирования его в вещественный тип
@@ -810,6 +811,7 @@ extern "C"{
 	//! \{
 	void meanToFloat3(float* src1, float* src2, float* src3, float* result, int nSize);
 	//! \}
+#endif //TEXTURE_ENABLED
 	
 		
 	/**
