@@ -98,7 +98,7 @@ struct TexObject{
     NMGLuint name;
 
     /**
-    *   Тип текстуры (может принимать значение только NMGL_TEXTURE_2D) TODO:возможно, стоит убрать
+    *   Тип текстуры (может принимать значение только NMGL_TEXTURE_2D) TODOma:возможно, стоит убрать
     */
     NMGLenum target;
 

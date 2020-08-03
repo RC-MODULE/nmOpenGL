@@ -6,7 +6,7 @@
 #include "nmgldef.h"
 
 #include "demo3d_common.h"
-#define ActiveTexObject cntxt.texUnits[cntxt.activeTexUnitIndex].boundTexObject
+#define ActiveTexObjectP cntxt->texState.texUnits[cntxt->texState.activeTexUnitIndex].boundTexObject
 
 void nmglActiveTexture (NMGLenum texture);
 void nmglAlphaFunc (NMGLenum func, NMGLclampf ref);

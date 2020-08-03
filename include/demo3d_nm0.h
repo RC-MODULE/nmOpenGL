@@ -202,9 +202,9 @@ public:
 	bool isEnabledLight[MAX_LIGHTS];
 	int isLighting;
 	float specularExp;
-	
-	NMGL_Context_NM0_Texture texState;
 
+	NMGL_Context_NM0_Texture texState; //textures data
+	
 	void init(NMGLSynchroData* syncroData){
 		synchro.init(syncroData);
 

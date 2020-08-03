@@ -55,7 +55,7 @@ SECTIONS
   .data_demo3d : ALIGN(0x8)
   {
     *(.data_demo3d);
-  } > C1_IMU0
+  } > EMI1
   .bss : ALIGN(0x8)
   {
     *(.bss);
