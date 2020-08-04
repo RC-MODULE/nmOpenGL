@@ -5,6 +5,8 @@
 #include "nmpp.h"
 #include "nmgl.h"
 #include "nmglvs_nmc0.h"
+
+#include "nmgladapter.h"
 	
 //SECTION(".data_shared0") float vertices_DDR[2000 * 12];
 //SECTION(".data_shared0") float normal_DDR[2000 * 9];
@@ -150,7 +152,7 @@ SECTION(".text_shared0") int main()
 		materialSpec[1] = 0.6;
 		materialSpec[2] = 0.6;
 		nmglMaterialfv(NMGL_FRONT_AND_BACK, NMGL_SPECULAR, materialSpec);
-		nmglDrawArrays(NMGL_TRIANGLES, 0, 3 * amountPolygons);
+		glDrawArrays(GL_TRIANGLES, 0, 3 * amountPolygons);
 
 		nmglVertexPointer(4, NMGL_FLOAT, 0, vertices_DDR2);
 		nmglNormalPointer(NMGL_FLOAT, 0, normal_DDR2);

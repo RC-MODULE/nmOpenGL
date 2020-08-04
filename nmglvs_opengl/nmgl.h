@@ -19,7 +19,7 @@
 #define setHeap(a)
 
 
-struct Models {
+/*struct Models {
 	char* sphere = "../../models/sphere_31.stl";
 	char* test = "../../models/test.stl";
 	char* cube = "../../models/small_cube.stl";
@@ -27,9 +27,9 @@ struct Models {
 	char* rcm = "../../models/out_RCM_32.stl";
 	char* nm = "../../models/NM_32.stl";
 	char* snowman = "../../models/snow_white_32.stl";
-};
+};*/
 
-extern "C" {
+/*extern "C" {
 	int get_amm_poligone(FILE *fp);
 	void createArrayVec4(
 		FILE *fmodel,
@@ -37,7 +37,7 @@ extern "C" {
 		float* normalVec4,
 		float scale
 	);
-};
+};*/
 
 
 #define nmglActiveTexture                              glActiveTexture 

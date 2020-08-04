@@ -24,12 +24,12 @@ void convertRGB565_RGB8888(const rgb565 *srcArray, rgb8888 *dstArray, int count)
 		// 2. Определить смещение внутри слова
 		int vecOffset = 32 * (i & 1); // vec[0].high or vec[0].low
 		// 3. Прочитать старое значение
-		nm64u oldVal = dstArray[vecNum].vec[0];
+		nm64u oldVal = dstArray[vecNum];
 		// 4. Обнулить часть слова для нового значения
 		oldVal &= ~(((unsigned long long) 0xFFFFFFFF) << vecOffset);
 		// 5. Записать новое значение в слово
 		oldVal |= tempRes << vecOffset;
 		// 6. Записать обновлённое значение в выходной массив
-		dstArray[vecNum].vec[0] = oldVal;
+		dstArray[vecNum] = oldVal;
 	}
 }

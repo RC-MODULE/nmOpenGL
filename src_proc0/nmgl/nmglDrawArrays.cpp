@@ -83,15 +83,18 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 
 
 	int maxInnerCount;
-	int nAllPrimitives;
 	switch (mode) {
 	case NMGL_TRIANGLES:
 		maxInnerCount = 3 * NMGL_SIZE;
-		nAllPrimitives = count / 3;
+		break;
+	case NMGL_TRIANGLE_FAN:
+		maxInnerCount = NMGL_SIZE + 2;
+		break;
+	case NMGL_TRIANGLE_STRIP:
+		maxInnerCount = NMGL_SIZE + 2;
 		break;
 	case NMGL_LINES:
 		maxInnerCount = 2 * NMGL_SIZE;
-		nAllPrimitives = count - 2;
 		break;
 	default:
 		cntxt->error = NMGL_INVALID_ENUM;
@@ -178,7 +181,7 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 		mulC_v4nm32f((v4nm32f*)cntxt->buffer3, &cntxt->tmp, colorOrNormal, localSize);
 		mul_mat4nm32f_v4nm32f(cntxt->projectionMatrixStack.top(), vertexResult, (v4nm32f*)vertexResult, localSize);
 
-		//----------------------------------
+		/*//----------------------------------
 		//vertex in vertexResult
 		//color in colorOrNormal
 		//------------------------------srcX-----srcY-----srcZ-----srcW--------------
@@ -236,9 +239,9 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			setSegmentMask(minXY, maxXY, cntxt->segmentMasks, cntxt->lineInner.size);
 			rasterizeL(&cntxt->lineInner, cntxt->segmentMasks);
 			break;
-		}
+		}*/
 
-		/*TrianglePrimitiveArrays4f trian4f;
+		TrianglePrimitiveArrays4f trian4f;
 		TrianglePrimitiveArrays3f trian3f_1;
 		TrianglePrimitiveArrays3f trian3f_2;
 		int primCount = vertexPrimitiveRepack(vertexResult, colorOrNormal, cntxt->buffer0, (v4nm32f*)cntxt->buffer1, mode, localSize);
@@ -308,19 +311,23 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 		//with triangulation
 		int srcThreated = 0;
 		while (srcThreated < primCount) {
+			static int counter = 0;
+			if (counter++ == 17) {
+				counter = counter;
+			}
 			int currentCount = triangulate(trian3f_2.x0, (v4nm32f*)cntxt->buffer1, primCount,
 				WIDTH_PTRN, HEIGHT_PTRN,
 				NMGL_SIZE, trian3f_1.x0, (v4nm32f*)cntxt->buffer0, &srcThreated);
 
-			trian3f_1.x0 = trian3f_1.x0 + 0 * currentCount;
-			trian3f_1.y0 = trian3f_1.x0 + 1 * currentCount;
-			trian3f_1.z0 = trian3f_1.x0 + 2 * currentCount;
-			trian3f_1.x1 = trian3f_1.x0 + 3 * currentCount;
-			trian3f_1.y1 = trian3f_1.x0 + 4 * currentCount;
-			trian3f_1.z1 = trian3f_1.x0 + 5 * currentCount;
-			trian3f_1.x2 = trian3f_1.x0 + 6 * currentCount;
-			trian3f_1.y2 = trian3f_1.x0 + 7 * currentCount;
-			trian3f_1.z2 = trian3f_1.x0 + 8 * currentCount;
+			trian3f_1.x0 = trian3f_1.x0 + 0 * NMGL_SIZE;
+			trian3f_1.y0 = trian3f_1.x0 + 1 * NMGL_SIZE;
+			trian3f_1.z0 = trian3f_1.x0 + 2 * NMGL_SIZE;
+			trian3f_1.x1 = trian3f_1.x0 + 3 * NMGL_SIZE;
+			trian3f_1.y1 = trian3f_1.x0 + 4 * NMGL_SIZE;
+			trian3f_1.z1 = trian3f_1.x0 + 5 * NMGL_SIZE;
+			trian3f_1.x2 = trian3f_1.x0 + 6 * NMGL_SIZE;
+			trian3f_1.y2 = trian3f_1.x0 + 7 * NMGL_SIZE;
+			trian3f_1.z2 = trian3f_1.x0 + 8 * NMGL_SIZE;
 
 			TrianglePrimitiveArrays3f* current = &trian3f_1;
 
@@ -352,6 +359,6 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			nmppsMerge_32f(cntxt->buffer1, cntxt->buffer3, (float*)maxXY, cntxt->trianInner.size);
 			setSegmentMask(minXY, maxXY, cntxt->segmentMasks, cntxt->trianInner.size);
 			rasterizeT(&cntxt->trianInner, cntxt->segmentMasks);
-		}*/
+		}
 	}
 }

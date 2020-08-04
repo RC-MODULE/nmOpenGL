@@ -41,6 +41,11 @@ void rasterizeT(const Triangles* triangles, const BitMask* masks){
 				int resultSize = readMask(masks[iSeg].bits, indices, count);
 				if (resultSize) {
 
+					static int counter = 0;
+					if (counter++ == 27) {
+						counter = counter;
+					}
+
 					cntxt->synchro.writeInstr(1, NMC1_COPY_SEG_FROM_IMAGE,
 						cntxt->windowInfo.x0[segX],
 						cntxt->windowInfo.y0[segY],
