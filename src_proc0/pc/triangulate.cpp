@@ -17,6 +17,18 @@ nm32f Triangle::edgeSize(int i) const
 	return size;
 }
 
+edgeProjection Triangle::edgeGetProjection(int i) const
+{
+	Point p1 = points[edges[i].p1];
+	Point p2 = points[edges[i].p2];
+	struct edgeProjection res;
+
+	res.dx = fabs(p1.x - p2.x);
+	res.dy = fabs(p1.y - p2.y);
+
+	return res;
+}
+
 static Buffer initBuf(void *data, int size)
 {
 	Buffer buf;
@@ -444,7 +456,6 @@ int checkAndSplitLargestEdge(	const Triangle& tr,
 								Triangle &trOut1, 
 								Triangle& trOut2)
 {
-	nm32f edgeSizeLimit = sqrt(pow(xMax, 2) + pow(yMax, 2));
 	nm32f largestEdgeSize = 0;
 	int largestEdgeID = 0;
 	// Find the largest edge
@@ -456,7 +467,8 @@ int checkAndSplitLargestEdge(	const Triangle& tr,
 		}
 	}
 	// If the largest edge is too large then division is necessary 
-	if (largestEdgeSize > edgeSizeLimit) {
+	edgeProjection largestEdgeProjection = tr.edgeGetProjection(largestEdgeID);
+	if (largestEdgeProjection.dx > xMax || largestEdgeProjection.dy > yMax) {
 		Point a = tr.points[tr.edges[largestEdgeID].p1];
 		Point b = tr.points[tr.edges[largestEdgeID].p2];
 		// Compute the other point of the triangle
