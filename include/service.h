@@ -32,6 +32,11 @@ struct Edge {
 	Edge(int pp1, int pp2): p1(pp1), p2(pp2) {};
 };
 
+struct edgeProjection{
+	nm32f dx;
+	nm32f dy;
+};
+
 struct Triangle {
 	Point points[3];
 	Edge edges[3] = {{0, 1}, {1, 2}, {0, 2}};
@@ -40,6 +45,7 @@ struct Triangle {
 	Triangle(Point a, Point b, Point c) : points{a, b, c} {};
 	
 	nm32f edgeSize(int i) const;
+	edgeProjection edgeGetProjection(int i) const;
 };
 
 typedef struct Vertices 
