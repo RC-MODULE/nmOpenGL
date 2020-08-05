@@ -321,8 +321,11 @@ int32_t RodDrawFragmentv1(t_RodDciFragment * pFragment)
   for (i = 0; i < pFragment->primitiveCount; ++i)
   {
     pPrimitive = pFragment->pPrimitives + i;
-	if (pPrimitive->glWhich != GL_TRIANGLES) {
+	if (pPrimitive->glWhich != GL_TRIANGLES && 
+		pPrimitive->glWhich != GL_TRIANGLE_FAN &&
+		pPrimitive->glWhich != GL_TRIANGLE_STRIP) {
 		pointOffset += pPrimitive->count;
+		continue;
 	}
 
     if (pPrimitive->isStipple)

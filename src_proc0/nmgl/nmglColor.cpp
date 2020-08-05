@@ -29,10 +29,10 @@ void nmglColor4ub(NMGLubyte red, NMGLubyte green, NMGLubyte blue, NMGLubyte alph
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
 	CHECK_SIZE();
 	int i = cntxt->beginEndInfo.colorCounter;
-	cntxt->beginEndInfo.color[i].vec[0] = (float)red;
-	cntxt->beginEndInfo.color[i].vec[1] = (float)green;
-	cntxt->beginEndInfo.color[i].vec[2] = (float)blue;
-	cntxt->beginEndInfo.color[i].vec[3] = (float)alpha;
+	cntxt->beginEndInfo.color[i].vec[0] = (float)red/RED_COEFF;
+	cntxt->beginEndInfo.color[i].vec[1] = (float)green/ GREEN_COEFF;
+	cntxt->beginEndInfo.color[i].vec[2] = (float)blue/BLUE_COEFF;
+	cntxt->beginEndInfo.color[i].vec[3] = (float)alpha/ALPHA_COEFF;
 	cntxt->beginEndInfo.colorCounter++;
 }
 

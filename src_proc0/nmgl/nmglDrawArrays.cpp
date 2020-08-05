@@ -180,8 +180,8 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 		cntxt->tmp.vec[3] = ALPHA_COEFF;
 		mulC_v4nm32f((v4nm32f*)cntxt->buffer3, &cntxt->tmp, colorOrNormal, localSize);
 		mul_mat4nm32f_v4nm32f(cntxt->projectionMatrixStack.top(), vertexResult, (v4nm32f*)vertexResult, localSize);
-
-		/*//----------------------------------
+#ifndef TRIANGULATION_ENABLED
+		//----------------------------------
 		//vertex in vertexResult
 		//color in colorOrNormal
 		//------------------------------srcX-----srcY-----srcZ-----srcW--------------
@@ -239,8 +239,8 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			setSegmentMask(minXY, maxXY, cntxt->segmentMasks, cntxt->lineInner.size);
 			rasterizeL(&cntxt->lineInner, cntxt->segmentMasks);
 			break;
-		}*/
-
+		}
+#else
 		TrianglePrimitiveArrays4f trian4f;
 		TrianglePrimitiveArrays3f trian3f_1;
 		TrianglePrimitiveArrays3f trian3f_2;
@@ -307,18 +307,13 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 		
 		nmppsConvert_32f32s_rounding(trian3f_2.x0, (int*)trian3f_1.x0, 0, 9 * primCount);
 		nmppsConvert_32s32f((int*)trian3f_1.x0, trian3f_2.x0, 9 * primCount);
-
+		
 		//with triangulation
 		int srcThreated = 0;
 		while (srcThreated < primCount) {
-			static int counter = 0;
-			if (counter++ == 17) {
-				counter = counter;
-			}
 			int currentCount = triangulate(trian3f_2.x0, (v4nm32f*)cntxt->buffer1, primCount,
 				WIDTH_PTRN, HEIGHT_PTRN,
 				NMGL_SIZE, trian3f_1.x0, (v4nm32f*)cntxt->buffer0, &srcThreated);
-
 			trian3f_1.x0 = trian3f_1.x0 + 0 * NMGL_SIZE;
 			trian3f_1.y0 = trian3f_1.x0 + 1 * NMGL_SIZE;
 			trian3f_1.z0 = trian3f_1.x0 + 2 * NMGL_SIZE;
@@ -328,9 +323,7 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			trian3f_1.x2 = trian3f_1.x0 + 6 * NMGL_SIZE;
 			trian3f_1.y2 = trian3f_1.x0 + 7 * NMGL_SIZE;
 			trian3f_1.z2 = trian3f_1.x0 + 8 * NMGL_SIZE;
-
 			TrianglePrimitiveArrays3f* current = &trian3f_1;
-
 
 			//копирование каждого третьего цвета
 			nmblas_dcopy(2 * currentCount, (double*)cntxt->buffer0, 6, (double*)colorOrNormal, 2);
@@ -348,7 +341,9 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			if (cntxt->isCullFace) {
 				cullFaceSortTriangles(cntxt->trianInner);
 			}
-
+			if (cntxt->trianInner.size == 0) {
+				continue;
+			}
 			findMinMax3(cntxt->trianInner.x0, cntxt->trianInner.x1, cntxt->trianInner.x2,
 				cntxt->buffer0, cntxt->buffer1,
 				cntxt->trianInner.size);
@@ -360,5 +355,6 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			setSegmentMask(minXY, maxXY, cntxt->segmentMasks, cntxt->trianInner.size);
 			rasterizeT(&cntxt->trianInner, cntxt->segmentMasks);
 		}
+#endif
 	}
 }

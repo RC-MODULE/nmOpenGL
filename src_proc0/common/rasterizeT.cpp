@@ -42,7 +42,7 @@ void rasterizeT(const Triangles* triangles, const BitMask* masks){
 				if (resultSize) {
 
 					static int counter = 0;
-					if (counter++ == 27) {
+					if (counter++ == 3) {
 						counter = counter;
 					}
 

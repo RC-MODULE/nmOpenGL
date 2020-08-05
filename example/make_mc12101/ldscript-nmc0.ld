@@ -123,7 +123,7 @@ SECTIONS
   .data : ALIGN(0x8)
   {
     *(.data);
-  } > C0_IMU0
+  } > EMI0
   .bss : ALIGN(0x8)
   {
     *(.bss);

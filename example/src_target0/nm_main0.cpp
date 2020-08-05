@@ -47,7 +47,8 @@ int main()
 
 	nmglClearColor(0, 0, 0.4f, 1.0f);
 	nmglMatrixMode(NMGL_PROJECTION);
-	//nmglOrthof(-768/2, 768 / 2, -768 / 2, 768 / 2, 0, 100);
+	//nmglOrthof(0, 0.5, 0, 0.5, 0, 100);
+	nmglOrthof(-2, 2, -2, 2, 0, 100);
 
 	nmglMatrixMode(NMGL_MODELVIEW);
 	

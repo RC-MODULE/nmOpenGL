@@ -12,6 +12,7 @@
 	#define setHeap(n)
 #endif
 
+//#define TRIANGULATION_ENABLED
 //#define PROFILER0
 //#define PROFILER1
 
