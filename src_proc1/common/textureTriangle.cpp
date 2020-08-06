@@ -2,7 +2,6 @@
 #include "demo3d_common.h"
 #include "demo3d_nm1.h"
 #include "nmgltex_nm1.h"
-#include "textureTriangle.h"
 #include "nmgltex_common.h"
 #include <stdio.h>
 #include <math.h>

@@ -1,9 +1,7 @@
 #include "nmtype.h"
 #include "nmgldef.h"
-#include "textureTriangle.h"
 #include <cstdio>
 #include "nmgltex_common.h"
-
 #include "nmgltex_nm1.h"
 #include "demo3d_nm1.h"
 #include <cstdlib>
@@ -55,7 +53,7 @@ int rawToImage (nm32s* triangles, Rectangle* windows, image_t* images, int count
 #endif
 
 //Глобальный контекст nm1
-NMGL_Context_NM1 cntxt; 
+NMGL_Context_NM1 test_cntxt; 
 
 /**
 Функция printPattern выполняет вывод на экран паттерны для треугольников в виде псевдографики.
@@ -191,18 +189,18 @@ int main ()
     float x2[TRIANGLE_AMOUNT] = {410.0f, 410.0f};
     float y2[TRIANGLE_AMOUNT] = {379.0f, 379.0f};
     
-    cntxt.texState.segX0 = 384;
-    cntxt.texState.segY0 = 256;
-    cntxt.texState.segWidth = 128;
+    test_cntxt.texState.segX0 = 384;
+    test_cntxt.texState.segY0 = 256;
+    test_cntxt.texState.segWidth = 128;
     
-    cntxt.smallColorBuff.data = 0x0;
+    test_cntxt.smallColorBuff.data = 0x0;
     nm32s* PROI[TRIANGLE_AMOUNT] = {0,0};
     int pointInImage[TRIANGLE_AMOUNT] = {0,0};
     
     for (i = 0; i < TRIANGLE_AMOUNT; i++)
     {
         pointInImage[i] = 12544;
-        PROI[i] = (int*)cntxt.smallColorBuff.data + pointInImage[i];
+        PROI[i] = (int*)test_cntxt.smallColorBuff.data + pointInImage[i];
     }
     
     float s0[TRIANGLE_AMOUNT] = {0.0f, 0.0f};
@@ -235,12 +233,12 @@ int main ()
     triangles.size = TRIANGLE_AMOUNT;
  
     //Активный текстурный модуль
-    cntxt.texState.activeTexUnitIndex = 0;
-    unsigned int activeTexUnitIndex = cntxt.texState.activeTexUnitIndex;
+    test_cntxt.texState.activeTexUnitIndex = 0;
+    unsigned int activeTexUnitIndex = test_cntxt.texState.activeTexUnitIndex;
     
     //Текстурный объект, привязанный к активному текстурному модулю
-    cntxt.texState.texUnits[activeTexUnitIndex].boundTexObject = &cntxt.texState.texObjects[0];
-    TexObject* boundTexObject = cntxt.texState.texUnits[activeTexUnitIndex].boundTexObject;
+    test_cntxt.texState.texUnits[activeTexUnitIndex].boundTexObject = &test_cntxt.texState.texObjects[0];
+    TexObject* boundTexObject = test_cntxt.texState.texUnits[activeTexUnitIndex].boundTexObject;
 
 	boundTexObject->texImages2D[0] = teximage_mytexture;
 	boundTexObject->texImages2D[1] = teximage_128_128;
@@ -257,15 +255,15 @@ int main ()
     boundTexObject->texWrapS = NMGL_REPEAT; // default REPEAT
     boundTexObject->texWrapT = NMGL_REPEAT;// default REPEAT
 
-    cntxt.texState.texUnits[activeTexUnitIndex].texFunctionName = NMGL_REPLACE; //default = NMGL_MODULATE
+    test_cntxt.texState.texUnits[activeTexUnitIndex].texFunctionName = NMGL_REPLACE; //default = NMGL_MODULATE
     
     //default texEnvColor = (0.0f, 0.0f, 0.0f, 0.0f)
-    cntxt.texState.texUnits[activeTexUnitIndex].texEnvColor[0] = 0.0f;
-    cntxt.texState.texUnits[activeTexUnitIndex].texEnvColor[1] = 0.0f;
-    cntxt.texState.texUnits[activeTexUnitIndex].texEnvColor[2] = 0.0f;
-    cntxt.texState.texUnits[activeTexUnitIndex].texEnvColor[3] = 0.0f;
+    test_cntxt.texState.texUnits[activeTexUnitIndex].texEnvColor[0] = 0.0f;
+    test_cntxt.texState.texUnits[activeTexUnitIndex].texEnvColor[1] = 0.0f;
+    test_cntxt.texState.texUnits[activeTexUnitIndex].texEnvColor[2] = 0.0f;
+    test_cntxt.texState.texUnits[activeTexUnitIndex].texEnvColor[3] = 0.0f;
 
-    cntxt.texState.unpackAlignment = 4;
+    test_cntxt.texState.unpackAlignment = 4;
     // printPattern(patterns, pSrcTriangle, TRIANGLE_AMOUNT);
     
     
