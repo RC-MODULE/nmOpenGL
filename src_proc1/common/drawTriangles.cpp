@@ -8,7 +8,6 @@
 
 #include "nmgltex_nm1.h"
 #include "nmgltex_common.h"
-#include "textureTriangle.h"
 
 extern "C" TexImage2D teximage_256_256;
 extern "C" TexImage2D teximage_mytexture;
