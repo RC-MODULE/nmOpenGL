@@ -2,8 +2,7 @@
 #include "demo3d_common.h"
 #include "demo3d_nm1.h"
 #include "nmgltex_nm1.h"
-#include "textureTriangle.h"
-#include "tex_common.h"
+#include "nmgltex_common.h"
 #include <stdio.h>
 #include <math.h>
 #include <float.h> //TODO: only FLT_EPSILON is used from float.h
@@ -15,11 +14,6 @@
 // #define PERSPECTIVE_CORRECT
 
 extern NMGL_Context_NM1 cntxt; 
-
-#define  TEXTURE_MIN_LOD   -1000
-#define  TEXTURE_MAX_LOD    1000
-#define  TEXTURE_BASE_LEVEL 0
-#define  TEXTURE_MAX_LEVEL  1000	
 
 // typedef enum { NEAREST, LINEAR, NEAREST_MIPMAP_NEAREST, NEAREST_MIPMAP_LINEAR, LINEAR_MIPMAP_NEAREST, LINEAR_MIPMAP_LINEAR } filter_mode_t;
 // typedef enum { REPEAT, CLAMP_TO_EDGE } wrap_mode_t;
@@ -341,7 +335,7 @@ color getPixelNearest(Vec2f st, TexImage2D texture)
 
 SECTION(TEXTURE_TRIANGLE_SECTION)
 void textureTriangle(Pattern* patterns, 
-                 Triangles* triangles,
+                 TrianglesInfo* triangles,
                  nm32s** pROI,
                  Rectangle* windows, 
                  nm32s* pSrcTriangle, 
@@ -401,8 +395,8 @@ void textureTriangle(Pattern* patterns,
 	//Calculate some parameters from OpenGL 1.3 spec
 	int n = log2(boundTexObject->texImages2D[0].width);
 	int m = log2(boundTexObject->texImages2D[0].height);
-	int p = max(n,m) + TEXTURE_BASE_LEVEL; //p = max{n,m,l} + TEXTURE_BASE_LEVEL
-	int q = min(p,TEXTURE_MAX_LEVEL);//min{p,TEXTURE_MAX_LEVEL} page 140, glspec 1.3
+	int p = max(n,m) + NMGL_TEX_BASE_LEVEL; //p = max{n,m,l} + NMGL_TEX_BASE_LEVEL
+	int q = min(p,NMGL_TEX_MAX_LEVEL);//min{p,NMGL_TEX_MAX_LEVEL} page 140, glspec 1.3
     
     long long int temp;
     nm32s* dst = pDstTriangle;
@@ -420,7 +414,11 @@ void textureTriangle(Pattern* patterns,
             width += windows[cnt].x;
         }
         
-        int winOffset = ((int)(pROI[cnt]) - (int)cntxt.smallColorBuff.data)>>2;//>> 2 = divide by sizeof int = 4 bytes
+#ifdef __NM__
+		int winOffset = ((int)(pROI[cnt]) - (int)cntxt.smallColorBuff.data) /*>> 2*/;//>> 2 = divide by sizeof int = 4 bytes
+#else //__NM__
+		int winOffset = ((int)(pROI[cnt]) - (int)cntxt.smallColorBuff.data) >> 2;//>> 2 = divide by sizeof int = 4 bytes
+#endif //__NM__
 																			   //TODO:remove magic number 2
 		winY0 = cntxt.texState.segY0 + (winOffset >> 7); //>> 7 = divide by segment width 
 														 //TODO: remove magic number 7
@@ -524,12 +522,13 @@ void textureTriangle(Pattern* patterns,
         t2 *= z2;
 #endif //PERSPECTIVE_CORRECT
 
+#ifdef USE_BARYCENTRIC
         // Area of triangle.
         // Part of calculation attribute values using barycentric coordinates.
         edgeFunction(x0, y0, x1, y1, x2, y2, &area);
         float oneOverArea = 1.0/area;
         int pixelCnt = 0;
-        
+#endif //USE_BARYCENTRIC
         
         for(int y = 0; y < windows[cnt].height; y++){
             temp = pattern[y];
@@ -560,6 +559,9 @@ void textureTriangle(Pattern* patterns,
                                                //Но так как они растеризованы, то для них вычисляются неверные барицентрические
 											   //координаты и неправильные значения текстурных координат
                                                //Нужно как-то соотнести алгоритм растеризации и вычисление текстурных координат
+                    float s = 0.0;
+                    float t = 0.0;
+#ifdef USE_BARYCENTRIC
                     float w0 = 0;
                     float w1 = 0;
                     float w2 = 0;
@@ -592,10 +594,6 @@ void textureTriangle(Pattern* patterns,
                     float oneOverZ = z0 * w0 + z1 * w1 + z2 * w2;
                     float z = 1 / oneOverZ;
 #endif //PERSPECTIVE_CORRECT
-                    
-                    float s = 0.0;
-                    float t = 0.0;
-#ifdef USE_BARYCENTRIC
                     s = s0 * w0 + s1 * w1 + s2 * w2;
                     t = t0 * w0 + t1 * w1 + t2 * w2;
 #ifdef PERSPECTIVE_CORRECT
@@ -630,7 +628,7 @@ void textureTriangle(Pattern* patterns,
 /*Calculate partial derivative for u(x,y) and v(x,y). level 0 texture are using to calculate scale factor*/
 
 #ifdef PERSPECTIVE_CORRECT
-						float derivOneOverDenom = 1.0 / ((A2*x + B2*y + D2)*(A2*x + B2*y + D2));
+						float derivOneOverDenom = 1.0 / ((A2*x + B2*y + D2)*(A2*x + B2*y + D2));//TODO: may be xf, yf should be used
 						float dudx = (float)boundTexObject->texImages2D[0].width*((A1_s*B2 - A2*B1_s)*y + A1_s*D2 - A2*D1_s)*derivOneOverDenom;
 						float dudy = (float)boundTexObject->texImages2D[0].width*((B1_s*A2 - B2*A1_s)*x + B1_s*D2 - B2*D1_s)*derivOneOverDenom;
 						float dvdx = (float)boundTexObject->texImages2D[0].height*((A1_t*B2 - A2*B1_t)*y + A1_t*D2 - A2*D1_t)*derivOneOverDenom;
@@ -657,15 +655,15 @@ void textureTriangle(Pattern* patterns,
 						float lod = 0.0;
 						float lod_ = log2f(scaleFactor);
 
-						if (TEXTURE_MIN_LOD > TEXTURE_MAX_LOD)
+						if (NMGL_TEX_MIN_LOD > NMGL_TEX_MAX_LOD)
 						{
-							printf("Error. TEXTURE_MIN_LOD > TEXTURE_MAX_LOD. LOD is undefined. Exit\n");
+							printf("Error. NMGL_TEX_MIN_LOD > NMGL_TEX_MAX_LOD. LOD is undefined. Exit\n");
 							return;
 						}
-						else if (lod_ > TEXTURE_MAX_LOD)
-							lod = TEXTURE_MAX_LOD;
-						else if (lod_ < TEXTURE_MIN_LOD)
-							lod = TEXTURE_MIN_LOD;
+						else if (lod_ > NMGL_TEX_MAX_LOD)
+							lod = NMGL_TEX_MAX_LOD;
+						else if (lod_ < NMGL_TEX_MIN_LOD)
+							lod = NMGL_TEX_MIN_LOD;
 						else
 							lod = lod_;
 
@@ -714,10 +712,10 @@ void textureTriangle(Pattern* patterns,
 						{
 							d = 0;
 							if (lod < 0.5f || (equalf(lod,0.5f) == 1))
-								d = TEXTURE_BASE_LEVEL;
-							else if ((TEXTURE_BASE_LEVEL + lod) <= ((float)q + 0.5f))
-								d = ceil(TEXTURE_BASE_LEVEL + lod + 0.5f) - 1.0f;
-							else if ((TEXTURE_BASE_LEVEL + lod) > ((float)q + 0.5f))
+								d = NMGL_TEX_BASE_LEVEL;
+							else if ((NMGL_TEX_BASE_LEVEL + lod) <= ((float)q + 0.5f))
+								d = ceil(NMGL_TEX_BASE_LEVEL + lod + 0.5f) - 1.0f;
+							else if ((NMGL_TEX_BASE_LEVEL + lod) > ((float)q + 0.5f))
 								d = q;
 							else
 							{

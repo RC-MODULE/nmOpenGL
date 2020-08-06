@@ -1,4 +1,5 @@
-#include "image.h"
+#include "nmgldef.h"
+#include "nmgltex_common.h"
 #include "texture_config.h"
 
 #ifdef __GNUC__
@@ -11,6 +12,9 @@
 extern "C"
 {
 #endif
+
+
+//alignment = 4
 
 SECTION(TEXTURE_SECTION)
 unsigned char pixels_8_8[192] = {  
@@ -25,13 +29,24 @@ unsigned char pixels_8_8[192] = {
 };  
 
 SECTION(TEXTURE_SECTION)
-image_t image_8_8 = { 
+TexImage2D teximage_8_8 = { 
+    //internal format
+    NMGL_RGB,
+
+    //level
+    0,
+
+    //pixels
+    pixels_8_8,
+
+    //width
     8,
+
+    //height
     8,
-    RGB,
-    UNSIGNED_BYTE,
-    1,
-    pixels_8_8
+
+    //border
+    0
 };  
 
 
