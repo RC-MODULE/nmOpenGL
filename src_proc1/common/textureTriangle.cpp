@@ -308,6 +308,7 @@ color getPixelLinear(Vec2f st, NMGLint textureWrapS, NMGLint textureWrapT, TexIm
 	pixelValue.r = one_a_one_b*pixel_i0j0.r + a_one_b*pixel_i1j0.r + one_a_b*pixel_i0j1.r + a_b*pixel_i1j1.r;
 	pixelValue.g = one_a_one_b*pixel_i0j0.g + a_one_b*pixel_i1j0.g + one_a_b*pixel_i0j1.g + a_b*pixel_i1j1.g;
 	pixelValue.b = one_a_one_b*pixel_i0j0.b + a_one_b*pixel_i1j0.b + one_a_b*pixel_i0j1.b + a_b*pixel_i1j1.b;
+	pixelValue.a = one_a_one_b*pixel_i0j0.a + a_one_b*pixel_i1j0.a + one_a_b*pixel_i0j1.a + a_b*pixel_i1j1.a;
 
 	return pixelValue;//TODO return by pointer
 }
@@ -789,6 +790,7 @@ void textureTriangle(Pattern* patterns,
 							pixelValue.r = (1.0 - frac_lod)*t1.r + frac_lod*t2.r;
 							pixelValue.g = (1.0 - frac_lod)*t1.g + frac_lod*t2.g;
 							pixelValue.b = (1.0 - frac_lod)*t1.b + frac_lod*t2.b;
+							pixelValue.a = (1.0 - frac_lod)*t1.a + frac_lod*t2.a;
 						}
 						else
 						{
