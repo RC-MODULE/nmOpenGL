@@ -23,49 +23,49 @@ SECTIONS
   {
     *(.fini);
   } > C0_IMU0
-  .data_imu0 : ALIGN(0x8)
+  .mem_bank0 : ALIGN(0x8)
   {
-    *(.data_imu0);
+    *(.mem_bank0);
   } > C0_IMU0
-  .data_imu1 : ALIGN(0x8)
+  .mem_bank1 : ALIGN(0x8)
   {
-    *(.data_imu1);
+    *(.mem_bank1);
   } > C0_IMU1
-  .data_imu2 : ALIGN(0x8)
+  .mem_bank2 : ALIGN(0x8)
   {
-    *(.data_imu2);
+    *(.mem_bank2);
   } > C0_IMU2
-  .data_imu3 : ALIGN(0x8)
+  .mem_bank3 : ALIGN(0x8)
   {
-    *(.data_imu3);
+    *(.mem_bank3);
   } > C0_IMU3
 
 
   .data_DDR : ALIGN(0x8)
   {
-    *(.data_ddr);
+    *(.data_DDR);
   } > EMI
-  .data_imu0.bss : ALIGN(0x8)
+  .mem_bank0.bss : ALIGN(0x8)
   {
-    *(.data_imu0.bss);
+    *(.mem_bank0.bss);
   } > C0_IMU0
-  .data_imu1.bss : ALIGN(0x8)
+  .mem_bank1.bss : ALIGN(0x8)
   {
-    *(.data_imu1.bss);
+    *(.mem_bank1.bss);
   } > C0_IMU1
-  .data_imu2.bss : ALIGN(0x8)
+  .mem_bank2.bss : ALIGN(0x8)
   {
-    *(.data_imu2.bss);
+    *(.mem_bank2.bss);
   } > C0_IMU2
-  .data_imu3.bss : ALIGN(0x8)
+  .mem_bank3.bss : ALIGN(0x8)
   {
-    *(.data_imu3.bss);
+    *(.mem_bank3.bss);
   } > C0_IMU3
 
 
-  .data_ddr.bss : ALIGN(0x8)
+  .data_DDR.bss : ALIGN(0x8)
   {
-    *(.data_ddr.bss);
+    *(.data_DDR.bss);
   } > EMI
   .data : ALIGN(0x8)
   {

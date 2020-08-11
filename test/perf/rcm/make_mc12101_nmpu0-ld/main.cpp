@@ -14,7 +14,7 @@ __attribute__((section(".mem_bank5"))) long long im5[2048];
 //__attribute__((section(".mem_bank6"))) long long im6[2048];
 //__attribute__((section(".mem_bank7"))) long long im7[2048];
 
-__attribute__((section(".data_ddr"))) long long emi[4096];
+__attribute__((section(".data_DDR"))) long long emi[4096];
 
 
 int main()
