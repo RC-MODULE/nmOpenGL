@@ -28,7 +28,7 @@ begin ".text_demo3d"
 	gr7 = gr5<<27;
 	gr5>>=5;
 	if =0 delayed goto After32;
-		nul;
+		with gr7>>=27;
 		gr5--;
 <Next32>
 	fpu 0 rep 32 vreg4 = [ar2++gr2];
@@ -45,10 +45,10 @@ begin ".text_demo3d"
 		fpu 1 .matrix vreg7 = vreg5 * .retrive(vreg2,vreg3) + vreg6;
 		fpu 1 rep 32 [ar4++gr4] = vreg7;
 <After32>
-	with gr7>>=27;
-	if =0 delayed goto end_program;
-		gr7--;
+	gr7--;
+	if < delayed goto end_program;
 		vlen = gr7;
+		nul;
 	fpu 0 rep vlen vreg4 = [ar2++gr2];
 	fpu 1 rep vlen vreg5 = [ar3++gr3];
 	

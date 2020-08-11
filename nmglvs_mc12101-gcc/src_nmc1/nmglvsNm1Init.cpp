@@ -17,8 +17,8 @@ SECTION(".data_imu3")	int pool1[SIZE_BANK];
 SECTION(".data_imu2")	int segImage[WIDTH_SEG * HEIGHT_SEG];
 SECTION(".data_imu2")	int segZBuff[WIDTH_SEG * HEIGHT_SEG];
 
-SECTION(".data_shmem1") Vector2 ptrnInnPoints[POLYGONS_SIZE];
-SECTION(".data_shmem1") Size ptrnSizes[POLYGONS_SIZE];
+SECTION(".data_imu0") Vector2 ptrnInnPoints[POLYGONS_SIZE];
+SECTION(".data_imu0") Size ptrnSizes[POLYGONS_SIZE];
 SECTION(".data_shmem1") nm32s valuesZ[POLYGONS_SIZE];
 SECTION(".data_shmem1") nm32s valuesC[POLYGONS_SIZE];
 

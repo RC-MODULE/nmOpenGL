@@ -21,9 +21,10 @@ global _fastInvSqrt: label;
 	ar6 = [--ar5];
 	gr5 = [--ar5];
 	
-	gr0 = ar0;
-	gr6 = ar6;
-	ar5 = gr5;
+	gr0 = ar0	with gr5;
+	if =0 delayed goto EndTail;
+		gr6 = ar6;
+		ar5 = gr5;
 
 	gr7 = 05F3759DFh;
 	
@@ -40,16 +41,12 @@ global _fastInvSqrt: label;
 
 	ar0 = gr0;
 	ar6 = gr6;
-	gr5 = ar5;
-	gr5>>=1;
+	gr5 = ar5;	
 	
-	
-	gr7 = gr5 << 27;
-	gr5 >>= 5;
-	ar1 = half;
+	ar1 = half	with gr7 = gr5 << 26;
 	fpu 0 rep 1 vreg2 = [ar1];
-	ar1 = threehalf;
-	fpu 3 rep 1 vreg2 = [ar1];
+	ar1 = threehalf	with gr5 >>= 6;
+	fpu 2 rep 1 vreg2 = [ar1];
 	if =0 delayed goto Tail;
 		gr7 >>= 27;
 		ar5 = ar6;
@@ -64,13 +61,12 @@ global _fastInvSqrt: label;
 	fpu 1 .float vreg4 = vreg1 * vreg1;					//y0 * y0
 	fpu 2 vreg0 = fpu 0 vreg4;
 	fpu 2 vreg1 = fpu 1 vreg4;
-	fpu 2 .float vreg4 = vreg0 * vreg1;					//0.5 * x * y0 * y0
-	fpu 3 vreg0 = fpu 2 vreg4;
-	fpu 3 .float vreg4 = vreg0 + .retrive(vreg2);						//(1.5 - 0.5 * x * y0 * y0)
+	fpu 2 .float vreg4 = vreg0 * vreg1 + .retrive(vreg2);					//-0.5 * x * y0 * y0 + 1.5
 	
-	fpu 1 vreg0 = fpu 3 vreg4;
-	fpu 1 .float vreg4 = vreg0 * vreg1;
-	fpu 1 rep 32 [ar5++] = vreg4;
+	fpu 3 vreg0 = fpu 2 vreg4;
+	fpu 3 vreg1 = fpu 1 vreg1;
+	fpu 3 .float vreg4 = vreg0 * vreg1;
+	fpu 3 rep 32 [ar5++] = vreg4;
 	
 <Tail>
 	gr7--;
@@ -84,13 +80,12 @@ global _fastInvSqrt: label;
 	fpu 1 .float vreg4 = vreg1 * vreg1;					//y0 * y0
 	fpu 2 vreg0 = fpu 0 vreg4;
 	fpu 2 vreg1 = fpu 1 vreg4;
-	fpu 2 .float vreg4 = vreg0 * vreg1;					//-0.5 * x * y0 * y0
-	fpu 3 vreg0 = fpu 2 vreg4;
-	fpu 3 .float vreg4 = vreg0 + .retrive(vreg2);		//(1.5 - 0.5 * x * y0 * y0)
+	fpu 2 .float vreg4 = vreg0 * vreg1 + .retrive(vreg2);					//-0.5 * x * y0 * y0 + 1.5
 	
-	fpu 1 vreg0 = fpu 3 vreg4;
-	fpu 1 .float vreg4 = vreg0 * vreg1;
-	fpu 1 rep vlen [ar5++] = vreg4;
+	fpu 3 vreg0 = fpu 2 vreg4;
+	fpu 3 vreg1 = fpu 1 vreg1;
+	fpu 3 .float vreg4 = vreg0 * vreg1;
+	fpu 3 rep vlen [ar5++] = vreg4;
 	
 <EndTail>
 	pop ar6, gr6;

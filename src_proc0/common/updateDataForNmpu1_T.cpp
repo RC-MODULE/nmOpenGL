@@ -43,7 +43,7 @@ void updatePolygonsT(DataForNmpu1* data, Triangles* triangles, int count, int se
 	nmppsSub_32f(triangles->x2, triangles->x0, temp1, count);
 	nmppsSub_32f(triangles->y1, triangles->y0, temp2, count);
 	nmppsSub_32f(triangles->y2, triangles->y0, temp3, count);
-	nmppsMul_Mul_Sub_32f(temp1, temp2, temp3, temp1, (float*)data->crossProducts, count);
+	nmppsMul_Mul_Sub_32f(temp1, temp2, temp3, temp0, (float*)data->crossProducts, count);
 	nmblas_scopy (count, (float*)triangles->z, 1, (float*)data->z, 1);
 	nmblas_scopy(4 * count, (float*)triangles->colors, 1, (float*)data->color, 1);
 	
