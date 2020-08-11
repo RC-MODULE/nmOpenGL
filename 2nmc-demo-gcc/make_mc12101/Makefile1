@@ -60,7 +60,7 @@ LIB_DIRS         = -L "$(NMC_GCC_TOOLPATH)/nmc4-ide/lib" -L"$(NMPP)/lib" -L"$(HA
 TMP_DIR          = Release
 #-------------- RELEASE/ALL config -------------------
 CC 				 = nmc-g++
-CC_FLAGS		 = -O0 -fno-builtin-printf -std=c++11
+CC_FLAGS		 = -O1 -fno-builtin-printf -std=c++11
 AS               = nmc-gcc 				 
 AS_FLAGS    	 = -c -mmas -x assembler -Wa,-split_sir -mnmc4-fixed
 LIBS             = -lnmpp-nmc4 -lhal-mc12101

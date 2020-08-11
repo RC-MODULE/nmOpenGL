@@ -229,11 +229,22 @@ public:
 		projectionMatrixStack.size = 2;
 		projectionMatrixStack.type = NMGL_PROJECTION_MATRIX;
 
-		materialAmbient.vec[2] = materialAmbient.vec[1] = materialAmbient.vec[0] = 0.2;
-		materialDiffuse.vec[2] = materialDiffuse.vec[1] = materialDiffuse.vec[0] = 0.8;
-		materialSpecular.vec[2] = materialSpecular.vec[1] = materialSpecular.vec[0] = 0;
-		materialEmissive.vec[2] = materialEmissive.vec[1] = materialEmissive.vec[0] = 0;
-		materialAmbient.vec[3] = materialDiffuse.vec[3] = materialSpecular.vec[3] = materialEmissive.vec[3] = 1;
+		materialAmbient.vec[0] = 0.2;
+		materialAmbient.vec[1] = 0.2;
+		materialAmbient.vec[2] = 0.2;
+		materialDiffuse.vec[0] = 0.8;
+		materialDiffuse.vec[1] = 0.8;
+		materialDiffuse.vec[2] = 0.8;
+		materialSpecular.vec[0] = 0;
+		materialSpecular.vec[1] = 0;
+		materialSpecular.vec[2] = 0;
+		materialEmissive.vec[0] = 0;
+		materialEmissive.vec[1] = 0;
+		materialEmissive.vec[2] = 0;
+		materialAmbient.vec[3] = 1;
+		materialDiffuse.vec[3] = 1;
+		materialSpecular.vec[3] = 1;
+		materialEmissive.vec[3] = 1;
 
 		for (int i = 0; i < MAX_LIGHTS; i++) {
 			if (i == 0) {
@@ -259,7 +270,9 @@ public:
 				lightSpecular[i].vec[3] = 1;
 			}
 
-			lightAmbient[i].vec[2] = lightAmbient[i].vec[1] = lightAmbient[i].vec[1] = 0;
+			lightAmbient[i].vec[0] = 0;
+			lightAmbient[i].vec[1] = 0;
+			lightAmbient[i].vec[2] = 0;
 			lightAmbient[i].vec[3] = 1;
 
 			lightPosition[i].vec[0] = 0;
