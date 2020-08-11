@@ -6,14 +6,29 @@
 
 typedef v4nm32u abgr32;
 
-extern "C" {
+/**
+\defgroup convertABGR32_RGB565_f convertABGR32_RGB565
+\brief Преобразование формата ABGR32-32-32-32 в формат RGB565 
+\param srcArray [in] Входной массив элементов в формате ABGR32
+\param dstArray [in] Выходной массив элементов в формате RGB565
+\param count [in] Количество элементов во входном массиве для обработки 
+\return Через параметр возвращает преобразованные элементы в формате RGB565
+\par
+\xmlonly
+	<testperf>
+ 		<param name=" srcArray "> im0 im1 </param>
+ 		<param name=" dstArray "> im2 im3 </param>
+ 		<param name=" count "> 4 </param>
+	</testperf>
+\endxmlonly
+*/
+//! \{
+extern "C" void convertABGR32_RGB565(const abgr32  *srcArray, rgb565 *dstArray, int count);
+//! \}
 
-	void convertABGR32_RGB565(const abgr32  *srcArray, rgb565 *dstArray, int count);
-	void convertRGB565_RGB8888(const rgb565 *srcArray, rgb8888 *dstArray, int count);
-	void nmppsCmpGteLteMirrorV_32f(const nm32f *srcArray, const nm32f *wArray, nm1* evenFlags, nm1* oddFlags, int size);
-	int vertexPrimitiveRepack(const v4nm32f *srcVertex, const v4nm32f *srcColor, nm32f *dstVertex, v4nm32f *dstColor, int mode, int vertCount);
-
-}
+extern "C" void convertRGB565_RGB8888(const rgb565 *srcArray, rgb8888 *dstArray, int count);
+extern "C" void nmppsCmpGteLteMirrorV_32f(const nm32f *srcArray, const nm32f *wArray, nm1* evenFlags, nm1* oddFlags, int size);
+extern "C" int vertexPrimitiveRepack(const v4nm32f *srcVertex, const v4nm32f *srcColor, nm32f *dstVertex, v4nm32f *dstColor, int mode, int vertCount);
 
 // Declarations for the triangulate function:
 struct Point {
