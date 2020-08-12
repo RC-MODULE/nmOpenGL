@@ -46,8 +46,50 @@ extern "C" void convertABGR32_RGB565(const abgr32  *srcArray, rgb565 *dstArray, 
 extern "C" void convertRGB565_RGB8888(const rgb565 *srcArray, rgb8888 *dstArray, int count);
 //! \}
 
-extern "C" void nmppsCmpGteLteMirrorV_32f(const nm32f *srcArray, const nm32f *wArray, nm1* evenFlags, nm1* oddFlags, int size);
+/**
+\defgroup vertexPrimitiveRepack_f vertexPrimitiveRepack
+\brief Переупаковка вершин в формат GL_TRIANGLES 
+\param srcVertex [in] Входной массив вершин
+\param srcColor [in] Входной массив цветов 
+\param dstVertex [out] Выходной массив вершин
+\param dstColor [out] Выходной массив цветов 
+\param mode [in] Входной формат треугольных примитивов
+\param vertCount [in] Количество вершин во входных массивах для обработки 
+\return Возвращает количество треугольников в выходных массивах
+\par
+\xmlonly
+	<testperf>
+ 		<param name=" srcVertex "> im0 </param>
+ 		<param name=" srcColor "> im0 </param>
+ 		<param name=" dstVertex "> im0 </param>
+ 		<param name=" dstColor "> im0 </param>
+ 		<param name=" mode "> NMGL_TRIANGLES </param>
+ 		<param name=" vertCount "> 192 48 </param>
+	</testperf>
+	<testperf>
+ 		<param name=" srcVertex "> im0 </param>
+ 		<param name=" srcColor "> im0 </param>
+ 		<param name=" dstVertex "> im0 </param>
+ 		<param name=" dstColor "> im0 </param>
+ 		<param name=" mode "> NMGL_TRIANGLE_STRIP </param>
+ 		<param name=" vertCount "> 66 34 </param>
+	</testperf>
+	<testperf>
+ 		<param name=" srcVertex "> im0 </param>
+ 		<param name=" srcColor "> im0 </param>
+ 		<param name=" dstVertex "> im0 </param>
+ 		<param name=" dstColor "> im0 </param>
+ 		<param name=" mode "> NMGL_TRIANGLE_FAN </param>
+ 		<param name=" vertCount "> 66 34 </param>
+	</testperf>
+\endxmlonly
+*/
+//! \{
 extern "C" int vertexPrimitiveRepack(const v4nm32f *srcVertex, const v4nm32f *srcColor, nm32f *dstVertex, v4nm32f *dstColor, int mode, int vertCount);
+//! \}
+
+extern "C" void nmppsCmpGteLteMirrorV_32f(const nm32f *srcArray, const nm32f *wArray, nm1* evenFlags, nm1* oddFlags, int size);
+
 // Declarations for the triangulate function:
 struct Point {
 	nm32f x;
