@@ -7,9 +7,9 @@ include $(ROOT)/global.mk
 .SUFFIXES:
 
 
-TARGET0   = demo3d-target0-x86
-TARGET1   = demo3d-target1-x86
-HOST      = demo3d-host-x86
+TARGET0   = demo3d-target0
+TARGET1   = demo3d-target1
+HOST      = demo3d-host
 
 VS ?=vs2015
 ALL: $(VS)

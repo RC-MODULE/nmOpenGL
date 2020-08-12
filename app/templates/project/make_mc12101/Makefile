@@ -12,7 +12,7 @@ $(warning *** WARNING: 'MC12101' environment variable is not defined! Board SDK 
 endif 
 
 BOARD    = mc12101
-HOST     = $(BOARD)-x86
+HOST     = $(BOARD)-host
 
 TARGET0  = main0.abs
 TARGET1  = main1.abs
@@ -29,6 +29,12 @@ nm1 $(TARGET1):
 	
 host $(HOST): $(VS)
 
+profile: profile0 profile1
+profile0:
+	$(MAKE) -f Makefile0 profile
+profile1:
+	$(MAKE) -f Makefile1 profile
+	
 	
 vs2005: $(HOST).vcproj 
 	"$(VS80COMNTOOLS)vsvars32" && vcbuild $(HOST).vcproj

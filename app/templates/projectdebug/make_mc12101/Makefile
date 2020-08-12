@@ -12,7 +12,7 @@ $(warning *** WARNING: 'MC12101' environment variable is not defined! Board SDK 
 endif 
 
 BOARD    = mc12101
-HOST     = $(BOARD)-x86
+HOST     = $(BOARD)-host
 
 TARGET0  = main0.abs
 TARGET1  = main1.abs
