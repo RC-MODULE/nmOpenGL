@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include "imagebuffer.h"
 
-SECTION(".text_demo3d") void drawLines(DataForNmpu1* data) {
+SECTION(".text_demo3d") void drawLines() {
 	NMGL_Context_NM1 *context = NMGL_Context_NM1::getContext();
 
 	Polygons* poly = context->polygonsConnectors[0].ptrTail();

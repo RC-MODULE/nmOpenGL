@@ -137,15 +137,12 @@ SECTION(".text_nmglvs") int nmglvsNm1Step()
 	}
 
 	case NMC1_DRAW_TRIANGLES: {
-
-		Polygons* poly = cntxt->polygonsConnectors[0].ptrTail();
-		drawTriangles(poly);
+		drawTriangles();
 		break;
 	}
 
 	case NMC1_DRAW_LINES: {
-		Polygons* poly = cntxt->polygonsConnectors[0].ptrTail();
-		drawLines(poly);
+		drawLines();
 		break;
 	}
 

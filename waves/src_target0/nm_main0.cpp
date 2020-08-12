@@ -334,7 +334,7 @@ int main()
 		timeClock = t1 - t0;
 		printf("computeNormal=%d\n", timeClock);
 		int error = nmglGetError();
-		printf("%d\n", COUNT_TRIANGLES);
+
 		t0 = clock();
 		nmglDrawArrays(NMGL_TRIANGLES, 0, COUNT_TRIANGLES*3);
 		t1 = clock();

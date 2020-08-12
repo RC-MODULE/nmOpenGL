@@ -80,7 +80,6 @@ nmglVertexPointer, nmglNormalPointer, nmglColorPointer
 SECTION(".text_nmgl")
 void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
-
 	if (cntxt->vertexArray.enabled == NMGL_FALSE) {
 		return;
 	}
@@ -171,6 +170,7 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 				dotMulV_v4nm32f((v2nm32f*)cntxt->buffer1, (v4nm32f*)cntxt->buffer2, colorOrNormal, localSize);
 			}
 		}
+
 		//vertex in vertexResult
 		//normal in colorOrNormal
 		//Освещение или наложение цветов
@@ -217,7 +217,6 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 		//---------------rasterize------------------------------------
 		v2nm32f *minXY = (v2nm32f*)cntxt->buffer4;
 		v2nm32f *maxXY = (v2nm32f*)cntxt->buffer4 + NMGL_SIZE;
-
 		switch (mode) {
 		case NMGL_TRIANGLES: {
 			pushToTriangles_t(vertexX, vertexY, vertexZ, colorOrNormal, cntxt->trianInner, localSize);

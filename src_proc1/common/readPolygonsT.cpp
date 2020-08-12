@@ -66,9 +66,7 @@ SECTION(".text_demo3d") int getAddrPtrnsT(DataForNmpu1* data) {
 	offset0 += POLYGONS_SIZE;
 	int* temp1 = cntxt->buffer1 + offset1;
 	offset1 += POLYGONS_SIZE;
-	int* temp2 = cntxt->buffer0 + offset0;
-	offset0 += POLYGONS_SIZE;
-	int* temp3 = cntxt->buffer1 + offset1;
+	int* temp2 = cntxt->buffer1 + offset1;
 	offset1 += POLYGONS_SIZE;
 	int* imageOffset = cntxt->buffer0 + offset0;
 	offset0 += POLYGONS_SIZE;
@@ -91,13 +89,10 @@ SECTION(".text_demo3d") int getAddrPtrnsT(DataForNmpu1* data) {
 	offset1 += POLYGONS_SIZE;
 	int* sizePackTmp12 = (int*)cntxt->buffer1 + offset1;
 	offset1 += POLYGONS_SIZE;
-#ifdef DEBUG
 	if (offset0 > SIZE_BANK || offset1 > SIZE_BANK) {
 		printf("error!!\n");
-		printf("drawTriangles - временные массивы не должны вылезать за пределы банка\n");
 		return 0;
 	}
-#endif // DEBUG
 	nmppsSub_32s(dataTmp->x2, dataTmp->x0, dx02, size);
 	nmppsSub_32s(dataTmp->x1, dataTmp->x0, dx01, size);
 	nmppsSub_32s(dataTmp->x2, dataTmp->x1, dx12, size);
@@ -145,24 +140,32 @@ SECTION(".text_demo3d") int getAddrPtrnsT(DataForNmpu1* data) {
 
 	// get imageOffset
 	nmppsClipCC_32s(minX, 0, cntxt->smallColorBuff.getWidth(), temp0, size);
-	nmppsClipCC_32s(maxX, 0, cntxt->smallColorBuff.getWidth(), temp1, size);
-	nmppsClipCC_32s(dataTmp->y0, 0, cntxt->smallColorBuff.getHeight(), temp2, size);
-	nmppsClipCC_32s(dataTmp->y2, 0, cntxt->smallColorBuff.getHeight(), temp3, size);
-	nmppsMulC_AddV_AddC_32s(temp2, cntxt->smallColorBuff.getWidth(), temp0, 0, imageOffset, size);
-	nmppsSub_32s(temp1, temp0, temp0, size);
-	nmppsSub_32s(temp3, temp2, temp1, size);
-	nmppsAndC_32u((nm32u*)imageOffset, PIXELS_IN_LONG_MINUS_ONE, (nm32u*)temp2, size);
-	nmppsAndC_32u((nm32u*)imageOffset, ~PIXELS_IN_LONG_MINUS_ONE, (nm32u*)imageOffset, size);
-	nmppsAdd_32s(temp0, temp2, temp0, size);
-	nmppsAddC_32s(temp0, PIXELS_IN_LONG_MINUS_ONE, temp3, size);
-	nmppsAndC_32u((nm32u*)temp3, ~PIXELS_IN_LONG_MINUS_ONE, (nm32u*)temp0, size);
-	nmppsMerge_32s(temp0, temp1, (nm32s*)cntxt->ptrnSizes, size);
+	nmppsClipCC_32s(dataTmp->y0, 0, cntxt->smallColorBuff.getHeight(), temp1, size);
+	nmppsMulC_AddV_AddC_32s(temp1, cntxt->smallColorBuff.getWidth(), temp0, 0, imageOffset, size);
 
 	absIfNegElse0(minX, temp0, size);
 	absIfNegElse0(dataTmp->y0, temp1, size);
+	nmppsMerge_32s(temp0, temp1, (nm32s*)cntxt->ptrnInnPoints, size);
+	nmppsClipCC_32s(minX, 0, cntxt->smallColorBuff.getWidth(), temp0, size);
+	nmppsClipCC_32s(maxX, 0, cntxt->smallColorBuff.getWidth(), temp1, size);	
+	nmppsSub_32s(temp1, temp0, temp2, size);
+	nmppsClipCC_32s(dataTmp->y0, 0, cntxt->smallColorBuff.getHeight(), temp1, size);
+	nmppsMulC_AddV_AddC_32s(temp1, cntxt->smallColorBuff.getWidth(), temp0, 0, imageOffset, size);
+	nmppsClipCC_32s(dataTmp->y2, 0, cntxt->smallColorBuff.getHeight(), temp0, size);
+	nmppsSub_32s(temp0, temp1, temp1, size);
+	nmppsMerge_32s(temp2, temp1, (nm32s*)cntxt->ptrnSizes, size);
+
+	nmppsAndC_32u((nm32u*)imageOffset, 1, (nm32u*)temp2, size);
+	nmppsAndC_32u((nm32u*)imageOffset, 0xFFFFFFFE, (nm32u*)imageOffset, size);
+	nmppsSplit_32s((nm32s*)cntxt->ptrnInnPoints, temp0, temp1, 2 * size);
 	nmppsSub_32s(temp0, temp2, temp0, size);
 	nmppsMerge_32s(temp0, temp1, (nm32s*)cntxt->ptrnInnPoints, size);
 
+	nmppsSplit_32s((nm32s*)cntxt->ptrnSizes, temp0, temp1, 2 *size);
+	nmppsAdd_32s(temp0, temp2, temp0, size);
+	nmppsAndC_32u((nm32u*)temp0, 1, (nm32u*)temp2, size);
+	nmppsAdd_32s(temp0, temp2, temp0, size);
+	nmppsMerge_32s(temp0, temp1, (nm32s*)cntxt->ptrnSizes, size);
 
 	int height = size / SMALL_SIZE;
 	nmppmCopy_32s((nm32s*)cntxt->ppPtrns1_2s, 0, (nm32s*)dstPackTmp02, SMALL_SIZE, height, SMALL_SIZE);

@@ -5,16 +5,17 @@
 #include <stdio.h>
 #include "imagebuffer.h"
 
-SECTION(".text_demo3d") void drawTriangles(DataForNmpu1* data) {
+SECTION(".text_demo3d") void drawTriangles() {
 	NMGL_Context_NM1 *context = NMGL_Context_NM1::getContext();
 
-	getAddrPtrnsT(data);
-	//readPolygonsT(data);
+	Polygons* poly = context->polygonsConnectors[0].ptrTail();
+	getAddrPtrnsT(context->polygonsConnectors->ptrTail());
+	//readPolygonsT(context->polygonsConnectors->ptrTail());
 
 	COMMON_DRAW_TYPE* mulZ = (COMMON_DRAW_TYPE*)context->buffer0;
 	COMMON_DRAW_TYPE* mulC = (COMMON_DRAW_TYPE*)context->buffer0;
 	COMMON_DRAW_TYPE* zMaskBuffer = (COMMON_DRAW_TYPE*)context->buffer1;
-	int countTrangles = data->count;
+	int countTrangles = poly->count;
 
 	msdWaitDma(0);
 	int point = 0;
