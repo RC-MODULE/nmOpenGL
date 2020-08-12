@@ -77,13 +77,13 @@ void light(v4nm32f* vertex, v4nm32f* srcNormalDstColor, int countVertex) {
 			cntxt->diffuseMul + light,
 			n_dot_h_in_srm,
 			cntxt->specularMul + light,
-			(v4nm32f*)srcNormalDstColor,
+			(v4nm32f*)cntxt->buffer2,
 			countVertex);
 
-		//nmppsAdd_32f(cntxt->buffer2, (float*)resultColor, (float*)resultColor, 4 * countVertex);
+		nmppsAdd_32f(cntxt->buffer2, (float*)resultColor, (float*)resultColor, 4 * countVertex);
 	}
-	//addC_v4nm32f((v4nm32f*)resultColor, &cntxt->ambientMul[MAX_LIGHTS],
-	//	(v4nm32f*)srcNormalDstColor, countVertex);
+	addC_v4nm32f((v4nm32f*)resultColor, &cntxt->ambientMul[MAX_LIGHTS],
+		(v4nm32f*)srcNormalDstColor, countVertex);
 
 	
 }
