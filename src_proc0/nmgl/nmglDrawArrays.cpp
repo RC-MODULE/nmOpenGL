@@ -49,7 +49,8 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 	float* srcDDR_vertex = (float*)cntxt.vertexArray.pointer + cntxt.vertexArray.size * first;
 	float* srcDDR_normal = (float*)cntxt.normalArray.pointer + cntxt.normalArray.size * first;
 #ifdef TEXTURE_ENABLED
-	float* srcDDR_texcoords = (float*)cntxt.texState.texcoordArray[0].pointer + cntxt.texState.texcoordArray[0].size * first;
+	unsigned int clientActiveTexUnitIndex = cntxt.texState.clientActiveTexUnitIndex;
+	float* srcDDR_texcoords = (float*)cntxt.texState.texcoordArray[clientActiveTexUnitIndex].pointer + cntxt.texState.texcoordArray[clientActiveTexUnitIndex].size * first;
 #endif //TEXTURE_ENABLED
 	v4nm32f* srcDDR_color = (v4nm32f*)cntxt.colorArray.pointer + first;
 
@@ -74,7 +75,7 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 	normalAM.set(srcDDR_normal, cntxt.normalArray.size * count, cntxt.normalArray.size * maxInnerCount, copyVec<float>);
 #ifdef TEXTURE_ENABLED
 	if (cntxt.texState.textureEnabled){
-		texcoordAM.set(srcDDR_texcoords, cntxt.texState.texcoordArray[0].size * count, cntxt.texState.texcoordArray[0].size * maxInnerCount, copyVec<float>);
+		texcoordAM.set(srcDDR_texcoords, cntxt.texState.texcoordArray[clientActiveTexUnitIndex].size * count, cntxt.texState.texcoordArray[clientActiveTexUnitIndex].size * maxInnerCount, copyVec<float>);
 	}
 #endif //TEXTURE_ENABLED
 	colorAM.set(srcDDR_color, count, maxInnerCount, copyVec<v4nm32f>);
@@ -116,9 +117,9 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 #ifdef TEXTURE_ENABLED
 	if (cntxt.texState.textureEnabled){
 		//texture coordinates
-		if (cntxt.texState.texcoordArray[0].enabled) {
+		if (cntxt.texState.texcoordArray[clientActiveTexUnitIndex].enabled) {
 			texcoordAM.pop(cntxt.buffer0);
-			switch (cntxt.texState.texcoordArray[0].size) //Must be equal to 2
+			switch (cntxt.texState.texcoordArray[clientActiveTexUnitIndex].size) //Must be equal to 2
 			{
 				case 2:
 					nmblas_dcopy(localSize, (double*)cntxt.buffer0, 1, (double*)cntxt.buffer1, 2);
