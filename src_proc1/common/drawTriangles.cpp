@@ -18,15 +18,12 @@ SECTION(".text_demo3d") void drawTriangles() {
 	int countTrangles = poly->count;
 
 	msdWaitDma(0);
-	halLed(4);
 	int point = 0;
 
 	msdWaitDma(1);
 	
 	context->polygonsConnectors[0].incTail();
-	halLed(1);
 	while (countTrangles > 0) {
-		halLed(2);
 		int localSize = MIN(countTrangles, SMALL_SIZE);
 		int point_x3 = point * 3;
 
@@ -39,7 +36,6 @@ SECTION(".text_demo3d") void drawTriangles() {
 		//объединение паттернов сторон в паттерн треугольника
 		//объединение происходит не полностью (только значимой части) для
 		//оптимизации
-		halLed(4);
 		mAndVxN_32u((nm32u**)context->ppPtrns1_2s, 
 			(nm32u**)context->ppPtrns2_2s, 
 			(nm32u**)context->ppPtrnsCombined_2s, 
@@ -57,7 +53,6 @@ SECTION(".text_demo3d") void drawTriangles() {
 		}
 		else {
 			//умножение бинарных масок на Z
-			halLed(8);
 			MUL_Z_FUNC(
 				context->polyImgTmp,
 				context->ptrnInnPoints + point,
@@ -70,7 +65,6 @@ SECTION(".text_demo3d") void drawTriangles() {
 			//mulZ теперь хранит z-треугольники
 
 			//функция теста глубины
-			halLed(16);
 			DEPTH_FUNC((COMMON_DRAW_TYPE**)(context->zBuffPoints + point),
 				WIDTH_SEG,
 				mulZ,
@@ -80,7 +74,6 @@ SECTION(".text_demo3d") void drawTriangles() {
 		}
 
 		//color v4nm8s in imgOffset
-		halLed(32);
 		MUL_C_FUNC(
 			context->polyImgTmp,
 			context->ptrnInnPoints + point,

@@ -1,137 +1,180 @@
 <?xml version='1.0' ?>
 <?xml-stylesheet type='text/xsl' href='profile.xsl'?>
 <profiling version="1.0">
-  <prof summary="0           "	calls="0           "	average="0           "	addr="220003C0"	name="N11DepthBuffer6u"/>
-  <prof summary="50114102    "	calls="22052       "	average="2272        "	addr="220004C8"	name="halCopyRISC     "/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="2200137E"	name="LShift32        "/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="2200140A"	name="LShift64        "/>
-  <prof summary="18977627    "	calls="76662       "	average="247         "	addr="22001610"	name="Mul32           "/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="2200162A"	name="Mul32Ex         "/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="22001646"	name="Mul64           "/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="22000D98"	name="ARShift32       "/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="22000E24"	name="DAdd            "/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="22000EE4"	name="DFrExp          "/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="22001036"	name="DCmp            "/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="22001088"	name="DDiv            "/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="2200114C"	name="UDiv32          "/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="2200115E"	name="IDiv32          "/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="220011CC"	name="IDiv64          "/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="22001232"	name="UDiv64          "/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="22001250"	name="DMul            "/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="22001302"	name="ConvDtoI32      "/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="22001362"	name="ConvI32toD      "/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="22001526"	name="UMod32          "/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="22001552"	name="IMod32          "/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="22001588"	name="UMod64          "/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="220015C4"	name="IMod64          "/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="2200166A"	name="RShift32        "/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="220016F6"	name="RShift64        "/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="22001812"	name="ConvU32toD      "/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="22001D4C"	name="duplicate_16s   "/>
-  <prof summary="1170912     "	calls="9396        "	average="124         "	addr="00000200"	name="copyCounterColor"/>
-  <prof summary="1166210     "	calls="9396        "	average="124         "	addr="00000212"	name="copyCounterDepth"/>
-  <prof summary="100017      "	calls="260         "	average="384         "	addr="00000224"	name="swapImagev      "/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="22000016"	name="hw_init_hook    "/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="220003C6"	name="N11DepthBuffer6u"/>
+  <prof summary="35095496    "	calls="17785       "	average="1973        "	addr="220004CE"	name="halCopyRISC     "/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="22001384"	name="LShift32        "/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="22001410"	name="LShift64        "/>
+  <prof summary="18122814    "	calls="62639       "	average="289         "	addr="22001616"	name="Mul32           "/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="22001630"	name="Mul32Ex         "/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="2200164C"	name="Mul64           "/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="22000D9E"	name="ARShift32       "/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="22000E2A"	name="DAdd            "/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="22000EEA"	name="DFrExp          "/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="2200103C"	name="DCmp            "/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="2200108E"	name="DDiv            "/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="22001152"	name="UDiv32          "/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="22001164"	name="IDiv32          "/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="220011D2"	name="IDiv64          "/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="22001238"	name="UDiv64          "/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="22001256"	name="DMul            "/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="22001308"	name="ConvDtoI32      "/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="22001368"	name="ConvI32toD      "/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="2200152C"	name="UMod32          "/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="22001558"	name="IMod32          "/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="2200158E"	name="UMod64          "/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="220015CA"	name="IMod64          "/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="22001670"	name="RShift32        "/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="220016FC"	name="RShift64        "/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="22001818"	name="ConvU32toD      "/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="22001D52"	name="duplicate_16s   "/>
+  <prof summary="1196342     "	calls="9324        "	average="128         "	addr="00000200"	name="copyCounterColor"/>
+  <prof summary="1188093     "	calls="9324        "	average="127         "	addr="00000212"	name="copyCounterDepth"/>
+  <prof summary="97009       "	calls="258         "	average="376         "	addr="00000224"	name="swapImagev      "/>
   <prof summary="0           "	calls="0           "	average="0           "	addr="00000270"	name="drawLinesv      "/>
-  <prof summary="1178223483  "	calls="5384        "	average="218837      "	addr="0000046E"	name="drawTrianglesv  "/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="00000686"	name="getAddrPtrnsLP8P"/>
-  <prof summary="280368001   "	calls="5385        "	average="52064       "	addr="000007CC"	name="getAddrPtrnsTP8P"/>
-  <prof summary="127250726   "	calls="115723      "	average="1099        "	addr="00000C4E"	name="cbUpdatev       "/>
+  <prof summary="1325230288  "	calls="5725        "	average="231481      "	addr="00000466"	name="drawTrianglesv  "/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="00000686"	name="getAddrPtrnsLP11"/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="000007CC"	name="getAddrPtrnsTP11"/>
+  <prof summary="66551989    "	calls="47476       "	average="1401        "	addr="00000C4E"	name="cbUpdatev       "/>
   <prof summary="0           "	calls="0           "	average="0           "	addr="00000D94"	name="msdInitv        "/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="00000F9E"	name="msdAdd          "/>
+  <prof summary="5999108     "	calls="5726        "	average="1047        "	addr="00000F9E"	name="msdAdd          "/>
   <prof summary="0           "	calls="0           "	average="0           "	addr="00001180"	name="msdAdd2D        "/>
-  <prof summary="173207773   "	calls="115756      "	average="1496        "	addr="0000137C"	name="msdAddR9MyDmaTas"/>
-  <prof summary="20886195    "	calls="53683       "	average="389         "	addr="0000166C"	name="msdGetStatusCopy"/>
-  <prof summary="5930767     "	calls="521         "	average="11383       "	addr="00001690"	name="msdWaitDmav     "/>
-  <prof summary="301902499   "	calls="10774       "	average="28021       "	addr="00001760"	name="msdWaitDmai     "/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="00001810"	name="selectPatternsPi"/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="0000188C"	name="absIfNegElse0   "/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="0000192A"	name="baseAddrOffs_16u"/>
-  <prof summary="3280717     "	calls="10776       "	average="304         "	addr="000019DA"	name="baseAddrOffs_32u"/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="000019F6"	name="convertABGR32_RG"/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="00001A92"	name="convertRGB565_RG"/>
-  <prof summary="137796027   "	calls="33547       "	average="4107        "	addr="00001B40"	name="copyPacket_32u  "/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="00001BDE"	name="depthTest16     "/>
-  <prof summary="136472545   "	calls="33550       "	average="4067        "	addr="00001C10"	name="depthTest32     "/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="00001C42"	name="totalSum        "/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="00001C54"	name="inverse_8u      "/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="00001CFE"	name="inverse_v4nm8u  "/>
-  <prof summary="21630284    "	calls="33555       "	average="644         "	addr="00001D1C"	name="mAndVxN_32u     "/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="00001DC6"	name="merge_v4nm32s   "/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="00001E14"	name="mergePtrnsAddr2 "/>
-  <prof summary="5351895     "	calls="10778       "	average="496         "	addr="00001F06"	name="mergePtrnsAddr3 "/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="0000203A"	name="mMaskVxN_16s    "/>
-  <prof summary="77571591    "	calls="33561       "	average="2311        "	addr="00002488"	name="mMaskVxN_32s    "/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="000028D6"	name="mMulCVxN_2s_RGB5"/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="000028EE"	name="mMulCVxN_2s16s  "/>
-  <prof summary="79781470    "	calls="33563       "	average="2377        "	addr="00002D56"	name="mMulCVxN_2s_RGB8"/>
-  <prof summary="79552694    "	calls="33566       "	average="2370        "	addr="00002D6E"	name="mMulCVxN_2s32s  "/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="000031D0"	name="selectPaintSide "/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="2201028E"	name="nmglvsNm1Initv  "/>
-  <prof summary="5920659     "	calls="22088       "	average="268         "	addr="220107F2"	name="nmglvsNm1Runv   "/>
-  <prof summary="1715961993  "	calls="22087       "	average="77691       "	addr="22010804"	name="nmglvsNm1Stepv  "/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="22011330"	name="halSetProcessorN"/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="2201133C"	name="halHandshake    "/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="220113B8"	name="halSync         "/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="2201149A"	name="halSyncAddr     "/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="220114C2"	name="halSyncArray    "/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="2201152C"	name="halInstrCacheEna"/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="22011532"	name="halInstrCacheDis"/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="22011580"	name="halDma2D_IsCompl"/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="2201158C"	name="halDma2D_Start  "/>
-  <prof summary="15611997    "	calls="51148       "	average="305         "	addr="2201160A"	name="halDma2D_StartA "/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="2201165C"	name="halDma2D_StartM "/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="220116CE"	name="halDma2D_StartMA"/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="22011714"	name="halDma2D_StartC "/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="220117C6"	name="halDma2D_StartCA"/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="2201184C"	name="halDma2D_StartCM"/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="220118F2"	name="halDma2D_StartCM"/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="22011970"	name="TEST            "/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="22011A04"	name="halSetCallbackDM"/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="22011A0A"	name="halGetCallbackDM"/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="22011A0E"	name="halEnbExtInt    "/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="22011A14"	name="halDisExtInt    "/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="22011A1A"	name="halOpenDMA      "/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="22011A1A"	name="halDmaInit      "/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="22011A58"	name="halDmaInitC     "/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="22011A62"	name="halStatusDMA    "/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="22011A74"	name="halDmaIsComplete"/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="22011A7A"	name="halMaskIntContMd"/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="22011A82"	name="GetPswr         "/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="22011A8E"	name="halLockDMA      "/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="22011A96"	name="halUnlockDMA    "/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="22011A9C"	name="halIsBusyDMA    "/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="22011AA2"	name="halWhereMirror  "/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="22011AAE"	name="halGetCoreId    "/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="22011AB4"	name="halReadCoreID   "/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="22011ABA"	name="halSetMirror    "/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="22011ACA"	name="halOpenStatusDMA"/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="22011ADC"	name="SOS             "/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="22011B30"	name="halInitSingleDMA"/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="22011BBC"	name="halDmaStart     "/>
-  <prof summary="11199641    "	calls="64836       "	average="172         "	addr="22011C14"	name="halDmaStartA    "/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="22011C56"	name="halDmaStartM    "/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="22011CA2"	name="halDmaStartMA   "/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="22011CD8"	name="halDmaStartC    "/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="22011D64"	name="halDmaStartCA   "/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="22011DDA"	name="halDmaStartCM   "/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="22011E5A"	name="halDmaStartCMA  "/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="22011EC4"	name="halMapAddr      "/>
-  <prof summary="219981537   "	calls="39          "	average="5640552     "	addr="22011EE4"	name="halSleep        "/>
-  <prof summary="219989229   "	calls="39          "	average="5640749     "	addr="22011EFC"	name="halSleep        "/>
-  <prof summary="1514787     "	calls="5404        "	average="280         "	addr="00004F56"	name="nmppsAddC_32s   "/>
-  <prof summary="3778562     "	calls="10810       "	average="349         "	addr="00004F78"	name="nmppsAdd_32s    "/>
-  <prof summary="5060615     "	calls="16215       "	average="312         "	addr="00004F92"	name="nmppsMulC_AddC32"/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="00004FBA"	name="nmppsMulC_AddV_A"/>
-  <prof summary="4892786     "	calls="16215       "	average="301         "	addr="00004FE8"	name="nmppsSub_32s    "/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="00005002"	name="nmppsAnd_32u    "/>
-  <prof summary="2843344     "	calls="10812       "	average="262         "	addr="00005018"	name="nmppsAndC_32u   "/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="00005030"	name="nmppsOr_32u     "/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="00005046"	name="nmppsAnd4V_64u  "/>
-  <prof summary="5435177     "	calls="524         "	average="10372       "	addr="00005062"	name="nmppsSet_32s    "/>
-  <prof summary="6616749     "	calls="10812       "	average="611         "	addr="00005076"	name="nmppsMerge_32s  "/>
-  <prof summary="2737097     "	calls="5406        "	average="506         "	addr="000050AE"	name="nmppsConvert_32s"/>
-  <prof summary="35816243    "	calls="137816      "	average="259         "	addr="000050DE"	name="nmppsCopy_32s   "/>
-  <prof summary="0           "	calls="0           "	average="0           "	addr="000050EE"	name="nmppsRemap_32u  "/>
-  <prof summary="33285074    "	calls="21628       "	average="1538        "	addr="0000513A"	name="nmppmCopy_32u   "/>
-  <prof summary="13590049    "	calls="21628       "	average="628         "	addr="00005112"	name="mtr_CpyCore_nm64"/>
+  <prof summary="88916070    "	calls="41754       "	average="2129        "	addr="0000137C"	name="msdAddR9MyDmaTas"/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="0000166C"	name="msdGetStatusCopy"/>
+  <prof summary="11357553    "	calls="517         "	average="21968       "	addr="00001690"	name="msdWaitDmav     "/>
+  <prof summary="224918327   "	calls="17181       "	average="13091       "	addr="00001760"	name="msdWaitDmai     "/>
+  <prof summary="492191792   "	calls="5727        "	average="85942       "	addr="00001810"	name="getAddrPtrnsTP12"/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="00001E22"	name="selectPatternsPi"/>
+  <prof summary="2555913     "	calls="11454       "	average="223         "	addr="00001E9E"	name="absIfNegElse0   "/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="00001F3C"	name="baseAddrOffs_16u"/>
+  <prof summary="18325146    "	calls="28635       "	average="639         "	addr="00001FEC"	name="baseAddrOffs_32u"/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="00002008"	name="convertABGR32_RG"/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="000020A4"	name="convertRGB565_RG"/>
+  <prof summary="136704159   "	calls="33332       "	average="4101        "	addr="00002152"	name="copyPacket_32u  "/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="000021F0"	name="depthTest16     "/>
+  <prof summary="226740994   "	calls="33332       "	average="6802        "	addr="00002222"	name="depthTest32     "/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="00002254"	name="totalSum        "/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="00002266"	name="inverse_8u      "/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="00002310"	name="inverse_v4nm8u  "/>
+  <prof summary="21089671    "	calls="33334       "	average="632         "	addr="0000232E"	name="mAndVxN_32u     "/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="000023D8"	name="merge_v4nm32s   "/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="00002426"	name="mergePtrnsAddr2 "/>
+  <prof summary="6133767     "	calls="17187       "	average="356         "	addr="00002518"	name="mergePtrnsAddr3 "/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="0000264C"	name="mMaskVxN_16s    "/>
+  <prof summary="76681549    "	calls="33335       "	average="2300        "	addr="00002A9A"	name="mMaskVxN_32s    "/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="00002EE8"	name="mMulCVxN_2s_RGB5"/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="00002F00"	name="mMulCVxN_2s16s  "/>
+  <prof summary="71669578    "	calls="33339       "	average="2149        "	addr="00003368"	name="mMulCVxN_2s_RGB8"/>
+  <prof summary="71647160    "	calls="33342       "	average="2148        "	addr="00003380"	name="mMulCVxN_2s32s  "/>
+  <prof summary="3882390     "	calls="11460       "	average="338         "	addr="000037E2"	name="selectPaintSide "/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="2200FC6E"	name="nmglvsNm1Initv  "/>
+  <prof summary="5399148     "	calls="17813       "	average="303         "	addr="220101D2"	name="nmglvsNm1Runv   "/>
+  <prof summary="1829201985  "	calls="17812       "	average="102694      "	addr="220101E4"	name="nmglvsNm1Stepv  "/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="22010D10"	name="halSetProcessorN"/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="22010D1C"	name="halHandshake    "/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="22010D98"	name="halSync         "/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="22010E7A"	name="halSyncAddr     "/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="22010EA2"	name="halSyncArray    "/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="22010F0C"	name="halInstrCacheEna"/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="22010F12"	name="halInstrCacheDis"/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="22010FFA"	name="halDma2D_IsCompl"/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="22011006"	name="halDma2D_Start  "/>
+  <prof summary="13036141    "	calls="41783       "	average="311         "	addr="22011084"	name="halDma2D_StartA "/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="220110D6"	name="halDma2D_StartM "/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="22011148"	name="halDma2D_StartMA"/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="2201118E"	name="halDma2D_StartC "/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="22011240"	name="halDma2D_StartCA"/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="220112C6"	name="halDma2D_StartCM"/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="2201136C"	name="halDma2D_StartCM"/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="220113EA"	name="TEST            "/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="2201147E"	name="halSetCallbackDM"/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="22011484"	name="halGetCallbackDM"/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="22011488"	name="halEnbExtInt    "/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="2201148E"	name="halDisExtInt    "/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="22011494"	name="halOpenDMA      "/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="220114D2"	name="halDmaInitC     "/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="220114DC"	name="halStatusDMA    "/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="220114EE"	name="halDmaIsComplete"/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="220114F4"	name="halMaskIntContMd"/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="220114FC"	name="GetPswr         "/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="22011500"	name="SetFlagDMA      "/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="22011508"	name="halLockDMA      "/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="22011510"	name="halUnlockDMA    "/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="22011516"	name="halIsBusyDMA    "/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="2201151C"	name="halWhereMirror  "/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="22011528"	name="halGetCoreId    "/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="2201152E"	name="halReadCoreID   "/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="22011534"	name="halSetMirror    "/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="22011544"	name="halOpenStatusDMA"/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="22011556"	name="SOS             "/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="220115AA"	name="halInitSingleDMA"/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="22011636"	name="halDmaStart     "/>
+  <prof summary="1957303     "	calls="5735        "	average="341         "	addr="2201168E"	name="halDmaStartA    "/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="220116D0"	name="halDmaStartM    "/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="2201171C"	name="halDmaStartMA   "/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="22011752"	name="halDmaStartC    "/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="220117DE"	name="halDmaStartCA   "/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="22011854"	name="halDmaStartCM   "/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="220118D4"	name="halDmaStartCMA  "/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="2201193E"	name="halMapAddr      "/>
+  <prof summary="214333669   "	calls="38          "	average="5640359     "	addr="2201195E"	name="halSleep        "/>
+  <prof summary="5304419     "	calls="33376       "	average="158         "	addr="22011982"	name="halLed          "/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="22011992"	name="halLedOn        "/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="220119AC"	name="halLedOff       "/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="220119C6"	name="halLedSwitch    "/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="220119E0"	name="halLed4Hi       "/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="220119F8"	name="halLed4Lo       "/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="22010F18"	name="halEnterCritical"/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="22010F54"	name="halExitCriticalS"/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="22010F64"	name="halEnterCritical"/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="22010FA0"	name="halExitCriticalS"/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="22011A10"	name="depthTestCore32_"/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="22011E3E"	name="depthTestCore32_"/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="2201226C"	name="depthTestCore16_"/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="2201269A"	name="depthTestCore16_"/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="22012AC8"	name="depthTestCore16_"/>
+  <prof summary="152508393   "	calls="495250      "	average="307         "	addr="22012EF6"	name="depthTestCore16_"/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="22013324"	name="depthTestCore16_"/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="22013752"	name="depthTestCore32_"/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="0000598C"	name="nmppsAddC_32s   "/>
+  <prof summary="28926576    "	calls="51624       "	average="560         "	addr="000059AE"	name="nmppsAdd_32s    "/>
+  <prof summary="20477721    "	calls="34416       "	average="595         "	addr="000059C8"	name="nmppsMulC_32s   "/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="000059EC"	name="nmppsMulC_AddC32"/>
+  <prof summary="20238180    "	calls="28680       "	average="705         "	addr="00005A14"	name="nmppsMulC_AddV_A"/>
+  <prof summary="34689160    "	calls="63096       "	average="549         "	addr="00005A42"	name="nmppsSub_32s    "/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="00005A5C"	name="nmppsAnd_32u    "/>
+  <prof summary="8373935     "	calls="17208       "	average="486         "	addr="00005A72"	name="nmppsAndC_32u   "/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="00005A8A"	name="nmppsOr_32u     "/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="00005AA0"	name="nmppsAnd4V_64u  "/>
+  <prof summary="5522086     "	calls="520         "	average="10619       "	addr="00005ABC"	name="nmppsSet_32s    "/>
+  <prof summary="22602628    "	calls="22944       "	average="985         "	addr="00005AD0"	name="nmppsMerge_32s  "/>
+  <prof summary="9274900     "	calls="11472       "	average="808         "	addr="00005B0A"	name="nmppsSplit_32s  "/>
+  <prof summary="4012546     "	calls="5736        "	average="699         "	addr="00005B40"	name="nmppsConvert_32s"/>
+  <prof summary="40815924    "	calls="64822       "	average="629         "	addr="00005B70"	name="nmppsCopy_32s   "/>
+  <prof summary="5227378     "	calls="5737        "	average="911         "	addr="00005B80"	name="nmppsMinMaxEvery"/>
+  <prof summary="19970927    "	calls="34422       "	average="580         "	addr="00005BA4"	name="nmppsClipCC_32s "/>
+  <prof summary="4625357     "	calls="5737        "	average="806         "	addr="00005BD4"	name="nmppsMaxEvery_32"/>
+  <prof summary="4748844     "	calls="5737        "	average="827         "	addr="00005BF4"	name="nmppsMinEvery_32"/>
+  <prof summary="61463109    "	calls="17211       "	average="3571        "	addr="00005C14"	name="nmppsRemap_32u  "/>
+  <prof summary="23134660    "	calls="17211       "	average="1344        "	addr="00005C60"	name="nmppmCopy_32u   "/>
+  <prof summary="18459279    "	calls="17211       "	average="1072        "	addr="00005C38"	name="mtr_CpyCore_nm64"/>
+  <prof summary="10111095    "	calls="51642       "	average="195         "	addr="00005CD4"	name="vec_Add         "/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="00005D68"	name="vec_And         "/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="00005DFC"	name="vec_And4V       "/>
+  <prof summary="9156628     "	calls="34428       "	average="265         "	addr="00005F12"	name="vec_ClipExt     "/>
+  <prof summary="1749597     "	calls="5739        "	average="304         "	addr="00006024"	name="vec_CompareMax  "/>
+  <prof summary="2298785     "	calls="5739        "	average="400         "	addr="00006138"	name="vec_CompareMinMa"/>
+  <prof summary="1823120     "	calls="5739        "	average="317         "	addr="0000624E"	name="vec_CompareMin  "/>
+  <prof summary="22286620    "	calls="135316      "	average="164         "	addr="00006362"	name="vec_data        "/>
+  <prof summary="6171383     "	calls="28695       "	average="215         "	addr="000063F4"	name="vec_data_add_ram"/>
+  <prof summary="2906551     "	calls="17217       "	average="168         "	addr="00006488"	name="vec_data_and_ram"/>
+  <prof summary="15903193    "	calls="68868       "	average="230         "	addr="0000651C"	name="vec_Mul2D2W2_Add"/>
+  <prof summary="1835433     "	calls="5739        "	average="319         "	addr="000065B6"	name="vec_Mul4D4W2_Add"/>
+  <prof summary="6702009     "	calls="28695       "	average="233         "	addr="000066CE"	name="vec_MulVN_AddVN "/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="00006762"	name="vec_Or          "/>
+  <prof summary="5380655     "	calls="520         "	average="10347       "	addr="000067F6"	name="vec_ram         "/>
+  <prof summary="13128249    "	calls="63140       "	average="207         "	addr="0000688A"	name="vec_Sub         "/>
+  <prof summary="6551752     "	calls="34440       "	average="190         "	addr="0000691E"	name="vec_vsum_data_0 "/>
+  <prof summary="0           "	calls="0           "	average="0           "	addr="000069B0"	name="vec_vsum_data_vr"/>
 </profiling>

@@ -23,7 +23,7 @@ SECTIONS
   .text_demo3d : ALIGN(0x8)
   {
     *(.text_demo3d);
-  } > EMI1
+  } > C1_IMU0
   .text_nmglvs : ALIGN(0x8)
   {
     *(text_nmglvs);

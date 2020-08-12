@@ -107,6 +107,7 @@ SECTION(".text_demo3d") int getAddrPtrnsT(DataForNmpu1* data) {
 	nmppsSub_32s(dataTmp->x0, minX, localX0, size);
 	nmppsSub_32s(dataTmp->x1, minX, localX1, size);
 	
+	// get ptrnNumbers
 	selectPaintSide(dataTmp->crossProducts, 0, NPATTERNS / 2, temp2, size);
 	nmppsMulC_AddV_AddC_32s(dy02, 2 * WIDTH_PTRN, dx02, WIDTH_PTRN, temp0, size);
 	nmppsRemap_32u((nm32u*)cntxt->patterns->table_dydx, (nm32u*)temp1, temp0, size);
@@ -124,7 +125,7 @@ SECTION(".text_demo3d") int getAddrPtrnsT(DataForNmpu1* data) {
 	nmppsMulC_32s(temp1, sizeof32(Pattern), temp0, size);
 	baseAddrOffs_32s((nm32s*)cntxt->patterns->ptrns, temp0, srcPackTmp01, size);
 	
-	
+
 	nmppsMulC_AddV_AddC_32s(dy12, 2 * WIDTH_PTRN, dx12, WIDTH_PTRN, temp0, size);
 	nmppsRemap_32u((nm32u*)cntxt->patterns->table_dydx, (nm32u*)temp1, temp0, size);
 	nmppsAdd_32s(temp1, localX1, temp0, size);
@@ -132,27 +133,22 @@ SECTION(".text_demo3d") int getAddrPtrnsT(DataForNmpu1* data) {
 	nmppsMulC_32s(temp1, sizeof32(Pattern), temp0, size);
 	baseAddrOffs_32s((nm32s*)cntxt->patterns->ptrns, temp0, srcPackTmp12, size);
 	
+	// get ptrn sizes of int
 	nmppsMulC_32s(dy02, WIDTH_PTRN / 16, sizePackTmp02, size);
 	nmppsMulC_32s(dy12, WIDTH_PTRN / 16, sizePackTmp12, size);
 	nmppsMulC_32s(dy01, WIDTH_PTRN / 16, sizePackTmp01, size);
 
+	// get imageOffset
 	nmppsClipCC_32s(minX, 0, cntxt->smallColorBuff.getWidth(), temp0, size);
 	nmppsClipCC_32s(dataTmp->y0, 0, cntxt->smallColorBuff.getHeight(), temp1, size);
 	nmppsMulC_AddV_AddC_32s(temp1, cntxt->smallColorBuff.getWidth(), temp0, 0, imageOffset, size);
 
-	nmppsClipCC_32s(maxX, 0, cntxt->smallColorBuff.getWidth(), temp1, size);
-	nmppsClipCC_32s(dataTmp->y2, 0, cntxt->smallColorBuff.getHeight(), temp0, size);
-
-
 	absIfNegElse0(minX, temp0, size);
 	absIfNegElse0(dataTmp->y0, temp1, size);
 	nmppsMerge_32s(temp0, temp1, (nm32s*)cntxt->ptrnInnPoints, size);
-	/*nmppsSubC_32s(minX, 127, temp2, size);
-	nmppsClipPowC_32s(temp2, 7, temp1, size);
-	nmppsAddC_32s(temp1, 127, temp0, size);*/
 	nmppsClipCC_32s(minX, 0, cntxt->smallColorBuff.getWidth(), temp0, size);
-	//nmppsClipCC_32s(maxX, 0, cntxt->smallColorBuff.getWidth(), temp1, size);	
-	/*nmppsSub_32s(temp1, temp0, temp2, size);
+	nmppsClipCC_32s(maxX, 0, cntxt->smallColorBuff.getWidth(), temp1, size);	
+	nmppsSub_32s(temp1, temp0, temp2, size);
 	nmppsClipCC_32s(dataTmp->y0, 0, cntxt->smallColorBuff.getHeight(), temp1, size);
 	nmppsMulC_AddV_AddC_32s(temp1, cntxt->smallColorBuff.getWidth(), temp0, 0, imageOffset, size);
 	nmppsClipCC_32s(dataTmp->y2, 0, cntxt->smallColorBuff.getHeight(), temp0, size);
@@ -172,18 +168,34 @@ SECTION(".text_demo3d") int getAddrPtrnsT(DataForNmpu1* data) {
 	nmppsMerge_32s(temp0, temp1, (nm32s*)cntxt->ptrnSizes, size);
 
 	int height = size / SMALL_SIZE;
-	int width = SMALL_SIZE;
-	if (size % SMALL_SIZE) {
-		height++;
-	}
-	nmppmCopy_32s((nm32s*)cntxt->ppPtrns1_2s, 0, (nm32s*)dstPackTmp02, SMALL_SIZE, height, width);
-	nmppmCopy_32s((nm32s*)cntxt->ppPtrns2_2s, 0, (nm32s*)dstPackTmp01, SMALL_SIZE, height, width);
-	nmppmCopy_32s((nm32s*)cntxt->ppPtrns2_2s, 0, (nm32s*)temp0, SMALL_SIZE, height, width);
-	nmppsAdd_32s(temp0, sizePackTmp01, (int*)dstPackTmp12, size);*/
+	nmppmCopy_32s((nm32s*)cntxt->ppPtrns1_2s, 0, (nm32s*)dstPackTmp02, SMALL_SIZE, height, SMALL_SIZE);
+	nmppsCopy_32s((nm32s*)cntxt->ppPtrns1_2s, (nm32s*)(dstPackTmp02 + height * SMALL_SIZE), size % SMALL_SIZE);
 
+	nmppmCopy_32s((nm32s*)cntxt->ppPtrns2_2s, 0, (nm32s*)dstPackTmp01, SMALL_SIZE, height, SMALL_SIZE);
+	nmppsCopy_32s((nm32s*)cntxt->ppPtrns2_2s, (nm32s*)(dstPackTmp01 + height * SMALL_SIZE), size % SMALL_SIZE);
+
+	nmppmCopy_32s((nm32s*)cntxt->ppPtrns2_2s, 0, (nm32s*)temp0, SMALL_SIZE, height, SMALL_SIZE);
+	nmppsCopy_32s((nm32s*)cntxt->ppPtrns2_2s, (nm32s*)(temp0 + height * SMALL_SIZE), size % SMALL_SIZE);
+#ifdef __NM__
+	nmppsAdd_32s(temp0, sizePackTmp01, (int*)dstPackTmp12, size);
+#else 
 	for (int i = 0; i < size; i++) {
+		dstPackTmp12[i] = (nm32s*)temp0[i] + sizePackTmp01[i];
+	}
+#endif
+	baseAddrOffs_32s((nm32s*)cntxt->smallColorBuff.mData, imageOffset, cntxt->imagePoints, size);
+	baseAddrOffs_32s((nm32s*)cntxt->smallDepthBuff.mData, imageOffset, cntxt->zBuffPoints, size);
+	nmppsConvert_32s8s(dataTmp->color, (nm8s*)cntxt->valuesC, 4 * size);
+	nmppsCopy_32s(dataTmp->z, cntxt->valuesZ, size);
+	mergePtrnsAddr3(srcPackTmp02, srcPackTmp01, srcPackTmp12, SMALL_SIZE, cntxt->ppSrcPackPtrns, size);
+	mergePtrnsAddr3(dstPackTmp02, dstPackTmp01, dstPackTmp12, SMALL_SIZE, cntxt->ppDstPackPtrns, size);
+	mergePtrnsAddr3((nm32s**)sizePackTmp02, (nm32s**)sizePackTmp01, (nm32s**)sizePackTmp12, SMALL_SIZE, (nm32s**)cntxt->nSizePtrn32, size);
 
-		/*int ptrnNo01, ptrnNo02, ptrnNo12;
+
+	//этот кусок кода является си-реализацией этой функции и является более наглядным	
+	/*for (int i = 0; i < size; i++) {
+
+		int ptrnNo01, ptrnNo02, ptrnNo12;
 		if (data->crossProducts[i] < 0) {
 			ptrnNo01 = cntxt->patterns->table_dydx[dy01[i] * 2 * WIDTH_PTRN + dx01[i] + WIDTH_PTRN];
 			ptrnNo01 += data->x0[i] - minX[i];
@@ -205,13 +217,13 @@ SECTION(".text_demo3d") int getAddrPtrnsT(DataForNmpu1* data) {
 		}
 		
 
-		//srcPackTmp02[i] = (nm32s*)cntxt->patterns->ptrns[ptrnNo02];
+		srcPackTmp02[i] = (nm32s*)cntxt->patterns->ptrns[ptrnNo02];
 		srcPackTmp01[i] = (nm32s*)cntxt->patterns->ptrns[ptrnNo01];
-		srcPackTmp12[i] = (nm32s*)cntxt->patterns->ptrns[ptrnNo12];*/
+		srcPackTmp12[i] = (nm32s*)cntxt->patterns->ptrns[ptrnNo12];
 
-		//sizePackTmp02[i] = dy02[i] * WIDTH_PTRN / 16;
-		//sizePackTmp01[i] = dy01[i] * WIDTH_PTRN / 16;
-		//sizePackTmp12[i] = dy12[i] * WIDTH_PTRN / 16;
+		sizePackTmp02[i] = dy02[i] * WIDTH_PTRN / 16;
+		sizePackTmp01[i] = dy01[i] * WIDTH_PTRN / 16;
+		sizePackTmp12[i] = dy12[i] * WIDTH_PTRN / 16;
 
 		dstPackTmp02[i] = (nm32s*)cntxt->ppPtrns1_2s[i % SMALL_SIZE];
 		dstPackTmp01[i] = (nm32s*)cntxt->ppPtrns2_2s[i % SMALL_SIZE];
@@ -238,7 +250,7 @@ SECTION(".text_demo3d") int getAddrPtrnsT(DataForNmpu1* data) {
 		cntxt->ptrnSizes[i].width = maxX[i] - minX[i];
 		cntxt->ptrnSizes[i].height = maxY - minY;
 		
-		//imageOffset[i] = data->y0[i] * cntxt->smallDepthBuff.getWidth() + minX[i];
+		imageOffset[i] = data->y0[i] * cntxt->smallDepthBuff.getWidth() + minX[i];
 		if (imageOffset[i] % 2) {
 			imageOffset[i]--;
 			cntxt->ptrnInnPoints[i].x--;
@@ -248,7 +260,7 @@ SECTION(".text_demo3d") int getAddrPtrnsT(DataForNmpu1* data) {
 			cntxt->ptrnSizes[i].width++;
 		}
 
-		/*cntxt->imagePoints[i] = nmppsAddr_32s((nm32s*)cntxt->smallColorBuff.mData, imageOffset[i]);
+		cntxt->imagePoints[i] = nmppsAddr_32s((nm32s*)cntxt->smallColorBuff.mData, imageOffset[i]);
 		cntxt->zBuffPoints[i] = nmppsAddr_32s((nm32s*)cntxt->smallDepthBuff.mData, imageOffset[i]);
 
 		cntxt->valuesC[i]  = (data->color[4 * i + 0] & 0xFF);
@@ -256,14 +268,8 @@ SECTION(".text_demo3d") int getAddrPtrnsT(DataForNmpu1* data) {
 		cntxt->valuesC[i] |= (data->color[4 * i + 2] & 0xFF) << 16;
 		cntxt->valuesC[i] |= (data->color[4 * i + 3] & 0xFF) << 24;
 
-		cntxt->valuesZ[i] = data->z[i];*/
-	}
-	baseAddrOffs_32s((nm32s*)cntxt->smallColorBuff.mData, imageOffset, cntxt->imagePoints, size);
-	baseAddrOffs_32s((nm32s*)cntxt->smallDepthBuff.mData, imageOffset, cntxt->zBuffPoints, size);
-	nmppsConvert_32s8s(dataTmp->color, (nm8s*)cntxt->valuesC, 4 * size);
-	nmppsCopy_32s(dataTmp->z, cntxt->valuesZ, size);
-	mergePtrnsAddr3(srcPackTmp02, srcPackTmp01, srcPackTmp12, SMALL_SIZE, cntxt->ppSrcPackPtrns, size);
-	mergePtrnsAddr3(dstPackTmp02, dstPackTmp01, dstPackTmp12, SMALL_SIZE, cntxt->ppDstPackPtrns, size);
-	mergePtrnsAddr3((nm32s**)sizePackTmp02, (nm32s**)sizePackTmp01, (nm32s**)sizePackTmp12, SMALL_SIZE, (nm32s**)cntxt->nSizePtrn32, size);
+		cntxt->valuesZ[i] = data->z[i];
+	}*/
+	
 	return 0;
 }

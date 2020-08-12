@@ -67,7 +67,7 @@ nmglVertexPointer, nmglNormalPointer, nmglColorPointer
 */
 
 
-void printCrc(void* src, int size32, char* s = 0) {
+/*void printCrc(void* src, int size32, char* s = 0) {
 	unsigned crc = 0;
 	static unsigned counter = 0;
 	halCrcAcc_32f((float *)src, size32, &crc);
@@ -75,7 +75,7 @@ void printCrc(void* src, int size32, char* s = 0) {
 		printf("%d 0x%x\n", counter++, crc);
 	else
 		printf("%d %s 0x%x\n", counter++, s, crc);
-}
+}*/
 
 SECTION(".text_nmgl")
 void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
@@ -176,12 +176,6 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 		//Освещение или наложение цветов
 		if (cntxt->isLighting) {
 			light(vertexResult, colorOrNormal, localSize);
-		}
-
-		for (int i = 0; i < localSize; i++) {
-			//colorOrNormal[i].vec[0] = 0;
-			//colorOrNormal[i].vec[1] = 0;
-			//colorOrNormal[i].vec[2] = 0;
 		}
 
 		clamp_32f((float*)colorOrNormal, 0, 1, (float*)cntxt->buffer3, 4 * localSize);

@@ -109,8 +109,6 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 
 	cntxt->smallClearColorBuff.init(colorClearBuff, WIDTH_SEG, HEIGHT_SEG);
 	cntxt->smallClearDepthBuff.init(depthClearBuff, WIDTH_SEG, HEIGHT_SEG);
-	
-	halSleep(10);
 
 	//sync0
 	halHostSync((int)cntxt->patterns);
