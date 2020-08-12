@@ -163,8 +163,8 @@ extern "C" {
 	
 }
 
-void drawTriangles();
-void drawLines();
+void drawTriangles(DataForNmpu1* data);
+void drawLines(DataForNmpu1* data);
 int getAddrPtrnsT(PolygonsOld* poly);
 int getAddrPtrnsL(PolygonsOld* poly);
 int getAddrPtrnsT(DataForNmpu1* data);
