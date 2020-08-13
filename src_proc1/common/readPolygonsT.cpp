@@ -66,7 +66,9 @@ SECTION(".text_demo3d") int getAddrPtrnsT(DataForNmpu1* data) {
 	offset0 += POLYGONS_SIZE;
 	int* temp1 = cntxt->buffer1 + offset1;
 	offset1 += POLYGONS_SIZE;
-	int* temp2 = cntxt->buffer1 + offset1;
+	int* temp2 = cntxt->buffer0 + offset0;
+	offset0 += POLYGONS_SIZE;
+	int* temp3 = cntxt->buffer1 + offset1;
 	offset1 += POLYGONS_SIZE;
 	int* imageOffset = cntxt->buffer0 + offset0;
 	offset0 += POLYGONS_SIZE;
@@ -89,10 +91,13 @@ SECTION(".text_demo3d") int getAddrPtrnsT(DataForNmpu1* data) {
 	offset1 += POLYGONS_SIZE;
 	int* sizePackTmp12 = (int*)cntxt->buffer1 + offset1;
 	offset1 += POLYGONS_SIZE;
+#ifdef DEBUG
 	if (offset0 > SIZE_BANK || offset1 > SIZE_BANK) {
-		printf("error!!\n");
+		printf("error!! \n");
+		printf("readPolygonsT - over size of bank\n");
 		return 0;
 	}
+#endif // DEBUG	
 	nmppsSub_32s(dataTmp->x2, dataTmp->x0, dx02, size);
 	nmppsSub_32s(dataTmp->x1, dataTmp->x0, dx01, size);
 	nmppsSub_32s(dataTmp->x2, dataTmp->x1, dx12, size);
@@ -140,8 +145,13 @@ SECTION(".text_demo3d") int getAddrPtrnsT(DataForNmpu1* data) {
 
 	// get imageOffset
 	nmppsClipCC_32s(minX, 0, cntxt->smallColorBuff.getWidth(), temp0, size);
-	nmppsClipCC_32s(dataTmp->y0, 0, cntxt->smallColorBuff.getHeight(), temp1, size);
-	nmppsMulC_AddV_AddC_32s(temp1, cntxt->smallColorBuff.getWidth(), temp0, 0, imageOffset, size);
+	//nmppsClipCC_32s(maxX, 0, cntxt->smallColorBuff.getWidth(), temp1, size);
+	nmppsClipCC_32s(dataTmp->y0, 0, cntxt->smallColorBuff.getHeight(), temp2, size);
+	//nmppsClipCC_32s(dataTmp->y2, 0, cntxt->smallColorBuff.getHeight(), temp3, size);
+	nmppsMulC_AddV_AddC_32s(temp2, cntxt->smallColorBuff.getWidth(), temp0, 0, imageOffset, size);
+	//nmppsSub_32s(temp1, temp0, temp0, size);
+	//nmppsSub_32s(temp3, temp2, temp1, size);
+	//nmppsMerge_32s(temp2, temp3, (nm32s*)cntxt->ptrnSizes, 2);
 
 	absIfNegElse0(minX, temp0, size);
 	absIfNegElse0(dataTmp->y0, temp1, size);
