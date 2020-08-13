@@ -250,6 +250,7 @@ SECTION(".text_nmglvs") int nmglvsNm1Step()
 		cntxt->texState.activeTexUnitIndex = currentCommand.params[0];
 		break;
 	}
+	
 	case NMC1_SET_MIPMAP_LVL_POINTER: {
 		//use DDR only as addresses are sent directly
 		cntxt->texState.texObjects[currentCommand.params[0]].texImages2D[currentCommand.params[1]].pixels=(void*)currentCommand.params[2];
@@ -262,6 +263,44 @@ SECTION(".text_nmglvs") int nmglvsNm1Step()
         ActiveTexObjectP=&cntxt->texState.texObjects[texture];
 		break;
 	}
+	
+	case NMC1_SET_TEX_ENV_COLOR: {
+		for (int i = 0; i < 4; i++) {
+			cntxt->texState.texUnits[cntxt->texState.activeTexUnitIndex].texEnvColor[i] = currentCommand.params[i]/255.0f;
+		}
+		break;
+	}
+	
+	case NMC1_SET_TEX_ENV_MODE: {
+		cntxt->texState.texUnits[cntxt->texState.activeTexUnitIndex].texFunctionName = currentCommand.params[0];
+		break;
+	}
+
+	case NMC1_SET_TEX_PARAMI: {
+		switch ((NMGLenum)currentCommand.params[0])
+		{
+			case NMGL_TEXTURE_WRAP_S: 
+				cntxt->texState.texUnits[cntxt->texState.activeTexUnitIndex].boundTexObject->texWrapS = (NMGLint)currentCommand.params[1];
+				break;
+				
+			case NMGL_TEXTURE_WRAP_T: 
+				cntxt->texState.texUnits[cntxt->texState.activeTexUnitIndex].boundTexObject->texWrapT = (NMGLint)currentCommand.params[1];
+				break;
+			
+			case NMGL_TEXTURE_MIN_FILTER: 
+				cntxt->texState.texUnits[cntxt->texState.activeTexUnitIndex].boundTexObject->texMinFilter = (NMGLint)currentCommand.params[1];
+				break;
+			
+			case NMGL_TEXTURE_MAG_FILTER: 
+				cntxt->texState.texUnits[cntxt->texState.activeTexUnitIndex].boundTexObject->texMagFilter = (NMGLint)currentCommand.params[1];
+				break;
+				
+			default: 
+				break;
+		}
+		break;
+	}
+
 	default:
 		break;
 	}
