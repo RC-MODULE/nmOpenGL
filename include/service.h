@@ -88,7 +88,30 @@ extern "C" void convertRGB565_RGB8888(const rgb565 *srcArray, rgb8888 *dstArray,
 extern "C" int vertexPrimitiveRepack(const v4nm32f *srcVertex, const v4nm32f *srcColor, nm32f *dstVertex, v4nm32f *dstColor, int mode, int vertCount);
 //! \}
 
+/**
+\defgroup nmppsCmpGteLteMirrorV_32f_f nmppsCmpGteLteMirrorV_32f
+\brief Проверка принадлежности элементов одного массива соответствующим  
+\ диапазонам, заданным вторым массивом
+\param srcArray [in] Входной массив элементов
+\param wArray [in] Входной массив, задающий диапазоны
+\param evenFlags [out] Выходной массив флагов принадлежности чётных элементов
+\param oddFlags [out] Выходной массив флагов принадлежности нечётных элементов
+\param size [in] Количество элементов во входном массиве 
+\return Через параметры возвращает флаги принадлежности диапазонам
+\par
+\xmlonly
+	<testperf>
+ 		<param name=" srcArray "> im0 im1 im2 im3 im4 im5 </param>
+ 		<param name=" wArray "> im1 im2 im3 im4 im5 </param>
+ 		<param name=" evenFlags "> im1 im2 im3 im4 im5 </param>
+ 		<param name=" oddFlags "> im1 im2 im3 im4 im5 </param>
+ 		<param name=" size "> 64 </param>
+	</testperf>
+\endxmlonly
+*/
+//! \{
 extern "C" void nmppsCmpGteLteMirrorV_32f(const nm32f *srcArray, const nm32f *wArray, nm1* evenFlags, nm1* oddFlags, int size);
+//! \}
 
 // Declarations for the triangulate function:
 struct Point {
