@@ -1,13 +1,7 @@
 
 default: config_nmpu0
 	
-
-all: config_mc12101_0_gcc config_mc12101_1_gcc run outdir
-	
-
-
 run:
-
 
 all_mc12101: configure0 configure1
 	testperf run
@@ -22,7 +16,7 @@ run:
 	testperf run
 
 kill:
-	testperf kill
+	testperf del 
 
 outdir:
 	testperf outdir
