@@ -103,14 +103,14 @@ struct NMGL_Context_NM0_Texture {
 			texObjects[i].texMinFilter=NMGL_NEAREST_MIPMAP_LINEAR;
 			texObjects[i].texMagFilter=NMGL_LINEAR;
 			texObjects[i].imageIsSet=0;
-			for(int j=0;j<NMGL_MAX_MIPMAP_LEVEL;j++)
+			for(int j=0;j<=NMGL_MAX_MIPMAP_LVL;j++)
 			{
 				texObjects[i].texImages2D[j].pixels=NULL;
-				texObjects[i].texImages2D[j].internalformat=NMGL_TEXTURE_2D;
-				texObjects[i].texImages2D[j].level=j;
+				texObjects[i].texImages2D[j].internalformat=NMGL_RGBA;
+				//texObjects[i].texImages2D[j].level=j;
 				texObjects[i].texImages2D[j].width=0;
 				texObjects[i].texImages2D[j].height=0;
-				texObjects[i].texImages2D[j].border=0;
+				//texObjects[i].texImages2D[j].border=0;
 			}
 			
 		}

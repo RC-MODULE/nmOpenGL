@@ -335,21 +335,6 @@
 #define NMGL_DOT3_RGB                       0x86AE
 #define NMGL_DOT3_RGBA                      0x86AF
 
-//custom
-//------------------------CUSTOMIZE-THIS-ONLY-----------------------------------------------------------------
-#define NMGL_MAX_MIPMAP_LVL                 10  //square textures only; 1024 width/height
-#define BYTES_IN_CHAR                       4
-//------------------------------------------------------------------------------------------------------------
-#define RGBA_TEXEL_SIZE_UBYTE              4
-#define RGB_TEXEL_SIZE_UBYTE               3
-#define LUMINANCE_ALPHA_TEXEL_SIZE_UBYTE   2
-#define LUMINANCE_TEXEL_SIZE_UBYTE         1
-#define ALPHA_TEXEL_SIZE_UBYTE             1
-
-#define NMGL_MAX_TEX_SIDE (0x1<<(NMGL_MAX_MIPMAP_LVL))
-#define UBYTES_PER_TEXEL RGBA_TEXEL_SIZE_UBYTE   //each byte of texel is placed in 4-byte var (because char is 4-byte variable)
-#define MIPMAP_OBJ_SIZE ((((0x1<<(2*(NMGL_MAX_MIPMAP_LVL+1)))-1)/3)*UBYTES_PER_TEXEL) //mipmap mem size in 4byte words	
-#define MIPMAP_MEM_SIZE ((MIPMAP_OBJ_SIZE)*NMGL_MAX_TEX_OBJECTS) //mipmap mem size in NMGLubyte	
 
 #ifdef DEBUG 
 #define DEBUG_PRINT(x) printf x  

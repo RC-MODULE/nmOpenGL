@@ -1,5 +1,6 @@
+
 #include "demo3d_nm0.h"
-#include "nmgl.h"
+//#include "nmgl.h"
 
 
 #pragma code_section ".text_nmgl"
@@ -24,10 +25,7 @@ TexObject* texObjCreate(NMGLenum target,NMGLuint texture,NMGL_Context_NM0 *cntxt
 {
     TexObject* cptr=NULL;
     if(texture>NMGL_MAX_TEX_OBJECTS) return NULL;
-    cptr=texObjExist(texture,cntxt);
-    if(cptr!= NULL) return cptr;
-	//dynmem
-    return &cntxt->texState.texObjects[texture];    
+    return ( TexObject*) texObjExist(texture,cntxt);
 }
 
 void nmglBindTexture (NMGLenum target, NMGLuint texture)

@@ -247,7 +247,11 @@ SECTION(".text_nmglvs") int nmglvsNm1Step()
 		cntxt->texState.activeTexUnitIndex = currentCommand.params[0];
 		break;
 	}
-
+	case NMC1_SET_MIPMAP_LVL_POINTER: {
+		//use DDR only as addresses are sent directly
+		cntxt->texState.texObjects[currentCommand.params[0]].texImages2D[currentCommand.params[1]].pixels=(void*)currentCommand.params[2];
+		break;
+	}
 	default:
 		break;
 	}

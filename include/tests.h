@@ -29,7 +29,7 @@ if (!(x)) \
 }
 
 #define TEST_ASSERT_ACCUM(x) \
-if (!x) \
+if (!(x)) \
 	_accum++;\
 
 
