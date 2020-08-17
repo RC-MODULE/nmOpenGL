@@ -1,160 +1,75 @@
-#include "nmpp.h"
-#include <cmath>
-#include "demo3d_nm1.h"
+#include "pattern.h"
 
 #define PI 3.14159265359
 
-enum FillMode {
-	RIGHT,
-	LEFT,
-	LINE
-};
+#define abs(a) (((a) < 0) ? -(a) : (a))
 
-struct Point {
-	int x;
-	int y;
-};
+static void setPixel(unsigned char* dst, int x, int y, int color) {
+	if(x < 0 || x >= WIDTH_PTRN ||
+		y < 0 || y >= HEIGHT_PTRN){
+		return;
+	}
+	dst[y * WIDTH_PTRN + x] = color;
+}
 
-struct Line {
-	Point p0;
-	Point p1;
-};
 
-void fill(nm8s* dst, int startX, int width, int y, int fillColor, FillMode fillMode) {
-	int xst;
-	switch (fillMode)
+static void drawLine(unsigned char* dst, int x1, int y1, int x2, int y2, int color) {
+	const int deltaX = abs(x2 - x1);
+	const int deltaY = abs(y2 - y1);
+	const int signX = x1 < x2 ? 1 : -1;
+	const int signY = y1 < y2 ? 1 : -1;
+	//
+	int error = deltaX - deltaY;
+	//
+	setPixel(dst, x2, y2, color);
+	while (x1 != x2 || y1 != y2)
 	{
-	case RIGHT:
-		xst = MAX(startX, 0);
-		for (int xTmp = xst; xTmp<width; xTmp++)
-			dst[y*width + xTmp] = fillColor;
-		break;
-	case LEFT:
-		xst = MIN(startX + 1, width);
-		for (int xTmp = 0; xTmp < xst; xTmp++)
-			dst[y*width + xTmp] = fillColor;
-		break;
-	case LINE:
-		xst = MAX(startX, 0);
-		xst = MIN(xst, width);
-		dst[y*width + xst] = fillColor;
-		break;
-	default:
-		break;
-	}
-}
-
-//Bresenham's line algorithm
-void drawPattern(Line* line,
-	nm8s* dst,
-	int width,
-	int height,	
-	int fillColor,
-	FillMode fillMode) 
-{
-	int deltaX = line->p1.x - line->p0.x;
-	int deltaY = line->p1.y - line->p0.y;
-	int dx = (deltaX > 0) ? 1 : -1;
-	int dy = (deltaY > 0) ? 1 : -1;
-	double k, err;
-	if (abs(deltaX) >= abs(deltaY)) {
-		k = 2 * (double)ABS(deltaY) / ABS(deltaX);
-		err = 0;
-		int y = line->p0.y;
-		for (int x = line->p0.x; x != line->p1.x; x += dx) {
-			if (err > 1) {
-				y += dy;
-				err -= 2;
-			}
-			err += k;
-			fill(dst, x, width, y, fillColor, fillMode);
+		setPixel(dst, x1, y1, color);
+		const int error2 = error * 2;
+		//
+		if (error2 > -deltaY)
+		{
+			error -= deltaY;
+			x1 += signX;
 		}
-	}
-	else {
-		k = 2 * (double)ABS(deltaX) / ABS(deltaY);
-		err = 0;
-		int x = line->p0.x;
-		for (int y = line->p0.y; y != line->p1.y; y += dy) {
-			if (err > 1) {
-				x += dx;
-				err -= 2;
-			}
-			err += k;
-			fill(dst, x, width, y, fillColor, fillMode);
+		if (error2 < deltaX)
+		{
+			error += deltaX;
+			y1 += signY;
 		}
 	}
 }
 
-void fillPattern(nm8s* pDstSource,int width, int height)
-{
-	int x=0;
-	int y=0;
-	int size = width*height;		//size of one pattern
-	int nOffSets_X = OFFSETS;
-	int color = 1;
-	int cnt = 0;
-	Line line;
-	//Point point;
-	FillMode mode[2] = { RIGHT, LEFT };
-		 
-	for (int m = 0; m < 2; m++) {
-		cnt = m * NPATTERNS / 2;
-		//step on the left side (180..135 degrees)
-		for (y = 0; y < height; y++)
-		{
-			for (int i = 0; i < OFFSETS; i++, cnt++)
-			{
-				nm8s* dsti = nmppsAddr_8s(pDstSource, cnt * size);
-				line.p0.x = i;
-				line.p0.y = 0;
-				line.p1.x = i - width;
-				line.p1.y = y;
-				drawPattern(&line, (nm8s*)dsti, width, height, color, mode[m]);
-				for (int i = y * width; i < size; i++) {
-					dsti[i] = color;
-				}
-			}
-		}
-		//step on the up side (135..90 degrees)
-		for (x = width - 1; x >= 0; x--)
-		{
-			for (int i = 0; i < OFFSETS; i++, cnt++)
-			{
-				nm8s* dsti = nmppsAddr_8s(pDstSource, cnt * size);
-				line.p0.x = i;
-				line.p0.y = 0;
-				line.p1.x = i - x;
-				line.p1.y = height;
-				drawPattern(&line, (nm8s*)dsti, width, height, color, mode[m]);
-			}
-		}
-		//(90..45 degrees)
-		for (x = 0; x < width; x++)
-		{
-			for (int i = 0; i < OFFSETS; i++, cnt++)
-			{
-				nm8s* dsti = nmppsAddr_8s(pDstSource, cnt * size);
-				line.p0.x = i;
-				line.p0.y = 0;
-				line.p1.x = x + i;
-				line.p1.y = height;
-				drawPattern(&line, (nm8s*)dsti, width, height, color, mode[m]);
-			}
-		}
-		//step on the right side (45..0 degrees)
-		for (y = height - 1; y >=0 ; y--)
-		{
-			for (int i = 0; i < OFFSETS; i++, cnt++)
-			{
-				nm8s* dsti = nmppsAddr_8s(pDstSource, cnt * size);
-				line.p0.x = i;
-				line.p0.y = 0;
-				line.p1.x = x + i;
-				line.p1.y = y;
-				drawPattern(&line, (nm8s*)dsti, width, height, color, mode[m]);
-			}
-		}
-		//------------------------------------
+
+void fillPtrnsInit(unsigned char* dst, int color) {
+	
+}
+
+void linePtrnsInit(unsigned char* dst, int color) {
+	int counter = 0;
+	const int size = WIDTH_PTRN * HEIGHT_PTRN;
+
+	for (int i = 0; i < LINE_PATTERNS_AMOUNT * size; i++) {
+		dst[i] = 0;
 	}
+
+	for (int x = 0; x < WIDTH_PTRN; x++) {
+		drawLine(dst + counter++ * size, 0, 0, x, HEIGHT_PTRN - 1, color);
+	}
+	for (int y = HEIGHT_PTRN - 1; y >= 0; y--) {
+		drawLine(dst + counter++ * size, 0, 0, WIDTH_PTRN - 1, y, color);
+	}
+
+	for (int x = 0; x < WIDTH_PTRN; x++) {
+		drawLine(dst + counter++ * size, 0, HEIGHT_PTRN - 1, x, 0, color);
+	}
+	for (int y = 0; y < HEIGHT_PTRN; y++) {
+		drawLine(dst + counter++ * size, 0, HEIGHT_PTRN - 1, WIDTH_PTRN - 1, y, color);
+	}
+
+	
+}
+
+void pointPtrnsInit(unsigned char* dst, int color) {
 
 }

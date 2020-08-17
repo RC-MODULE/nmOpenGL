@@ -4,6 +4,7 @@
 #include "nmgltype.h"
 #include "nmsynchro.h"
 #include "ringbuffer.h"
+#include "pattern.h"
 //#include "testsize.h"
 
 #ifdef __GNUC__
@@ -46,21 +47,6 @@ typedef v4nm8s rgb8888;
 #define COUNT_IMAGE_BUFFER 8
 //#define COUNT_IMAGE_BUFFER 2
 
-#define MAX_SIDE_POLYGON 32
-#define HEIGHT_PTRN   MAX_SIDE_POLYGON
-#define WIDTH_PTRN    MAX_SIDE_POLYGON
-#define SMALL_SIZE 	  16
-#define SIZE_BANK	0x8000
-#define OFFSETS 	  WIDTH_PTRN
-#define AMOUNT_ANGLES (2*WIDTH_PTRN + 2*HEIGHT_PTRN)
-#define NPATTERNS 	  AMOUNT_ANGLES * OFFSETS * 2
-
-typedef int Pattern[WIDTH_PTRN * HEIGHT_PTRN / 16];
-
-struct PatternsArray {
-	Pattern ptrns[NPATTERNS];
-	int table_dydx[(2 * WIDTH_PTRN) * (HEIGHT_PTRN + 2)];
-};
 
 struct Vector2 {
 	int x;
@@ -161,7 +147,7 @@ struct Array {
 	NMGLint stride;
 	NMGLenum type;
 	NMGLboolean enabled;
-	int dummy;
+	int offset;
 };
 
 struct WindowInfo {

@@ -168,6 +168,6 @@ void drawLines();
 int getAddrPtrnsT(PolygonsOld* poly);
 int getAddrPtrnsL(PolygonsOld* poly);
 int getAddrPtrnsT(DataForNmpu1* data);
-void readPolygonsT(DataForNmpu1* data);
+int getAddrPtrnsL(DataForNmpu1* data);
 
 #endif

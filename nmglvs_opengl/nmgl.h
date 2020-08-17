@@ -37,6 +37,7 @@ extern "C" {
 		float* normalVec4,
 		float scale
 	);
+	void cnvTrianglesToLines(float* srcVertices, float* dstVertices, int size);
 };
 
 

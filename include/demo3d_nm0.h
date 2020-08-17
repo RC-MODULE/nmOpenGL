@@ -1046,6 +1046,11 @@ extern "C"{
 
 
 }
+
+int getVertexPart(Array* array, v4nm32f* dst, float* tmpBuffer, int count);
+int getNormalPart(Array* array, v4nm32f* dst, float* tmpBuffer, int count);
+int getColorPart(Array* array, v4nm32f* dst, float* tmpBuffer, int count);
+
 void pushToLines_l(const float *vertexX, const float *vertexY, const float *vertexZ, const v4nm32f* color, Lines& lines, int countVertex);
 
 void pushToTriangles_t(const float *vertexX, const float *vertexY, const float *vertexZ, const v4nm32f* color, Triangles& triangles, int countVertex);
@@ -1062,6 +1067,7 @@ void rasterizeL(const Lines* lines, const BitMask* masks);
 void updatePolygonsT(PolygonsOld* poly, Triangles* triangles, int count, int segX, int segY);
 void updatePolygonsL(PolygonsOld* poly, Lines* lines, int count, int segX, int segY);
 void updatePolygonsT(DataForNmpu1* data, Triangles* triangles, int count, int segX, int segY);
+void updatePolygonsL(DataForNmpu1* data, Lines* triangles, int count, int segX, int segY);
 
 /**
  *  \defgroup color Light

@@ -10,7 +10,7 @@ SECTION(".text_demo3d") void drawLines() {
 
 	Polygons* poly = context->polygonsConnectors[0].ptrTail();
 
-	//getAddrPtrnsL(poly);
+	getAddrPtrnsL(poly);
 	COMMON_DRAW_TYPE* mulZ = (COMMON_DRAW_TYPE*)context->buffer0;
 	COMMON_DRAW_TYPE* mulC = (COMMON_DRAW_TYPE*)context->buffer0;
 	COMMON_DRAW_TYPE* zMaskBuffer = (COMMON_DRAW_TYPE*)context->buffer1;

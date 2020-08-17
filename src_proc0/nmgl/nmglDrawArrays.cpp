@@ -91,6 +91,9 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 	float* srcDDR_normal = (float*)cntxt->normalArray.pointer + cntxt->normalArray.size * first;
 	v4nm32f* srcDDR_color = (v4nm32f*)cntxt->colorArray.pointer + first;
 
+	cntxt->vertexArray.offset = first;
+	cntxt->normalArray.offset = first;
+	cntxt->colorArray.offset = first;
 
 	int maxInnerCount;
 	int nAllPrimitives;
@@ -124,6 +127,10 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 
 	while (!vertexAM.isEmpty()) {
 		//vertex
+		/*int localSize = getVertexPart(&cntxt->vertexArray, (v4nm32f*)cntxt->buffer1, cntxt->buffer0, count);
+		if (localSize == 0) {
+			break;
+		}*/
 		int localSize = vertexAM.pop(cntxt->buffer0) / cntxt->vertexArray.size;
 		switch (cntxt->vertexArray.size)
 		{
