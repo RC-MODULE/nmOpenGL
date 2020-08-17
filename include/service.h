@@ -173,6 +173,66 @@ static int pushFrontColors(Buffer *cbuf, Colors *colors);
 static int popBackColors(Buffer *cbuf, Colors *colors);
 
 int triangulateOneTriangle(const Triangle& tr, nm32f xMax, nm32f yMax, Buffer *verticesStack, Buffer *colorsStack);
+
+
+/*
+ * Init function for performance test
+ */
+static void srcVertexInit(nm32f *srcVertex, int srcCount)
+{
+	nm32f srcVertexInitArray[] = {
+								1,
+								1,
+								4,
+								2,
+								2,
+								7,
+								3,
+								1,
+								9
+							};
+
+	int coordCount = 9 * srcCount;
+
+	for (int i = 0; i < coordCount; ++i){
+		srcVertex[i] = srcVertexInitArray[i];
+	}
+}
+
+/**
+\defgroup triangulate_f triangulate
+\brief Разбиение большого треугольника на маленькие (триангуляция)
+\param srcVertex [in] Массив вершин входных треугольников
+\param srcColor [in] Массив цветов входных треугольников
+\param srcCount [in] Количество входных треугольников
+\param maxWidth [in] Максимально допустимая ширина треугольника
+\param maxHeight [in] Максимально допустимая высота треугольника
+\param maxDstSize [in] Максимально допустимое число выходных треугольников 
+\param dstVertex [out] Массив вершин выходных треугольников
+\param dstColor [out] Массив цветов выходных треугольников
+\param srcTreatedCount [out] Количество обработанных входных треугольников 
+\return Итоговое количество выходных треугольников
+\par
+\xmlonly
+	<testperf>
+ 		<param name=" srcVertex "> im0 </param>
+ 		<param name=" srcColor "> im1 </param>
+ 		<param name=" srcCount "> 1 </param>
+ 		<param name=" maxWidth "> 1 </param>
+ 		<param name=" maxHeight "> 1 </param>
+ 		<param name=" maxDstSize "> 10 </param>
+ 		<param name=" dstVertex "> im2 </param>
+ 		<param name=" dstColor "> im3 </param>
+ 		<param name=" srcTreatedCount "> im4 </param>
+		<init>
+			srcVertexInit(srcVertex, 1);
+		</init>
+		<size> srcCount </size>
+	</testperf>
+\endxmlonly
+*/
+//! \{
 int triangulate(const nm32f *srcVertex, const v4nm32f *srcColor, int srcCount, int maxWidth, int maxHeight, int maxDstSize, nm32f *dstVertex, v4nm32f *dstColor, int *srcTreatedCount);
+//! \}
 
 #endif //__SERVICE_H__
