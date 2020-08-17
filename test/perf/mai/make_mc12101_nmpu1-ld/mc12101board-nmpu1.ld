@@ -15,6 +15,10 @@ SECTIONS
   {
     *(.text);
   } > EMI
+  .text_demo3d : ALIGN(0x8)
+  {
+    *(.text);
+  } > C0_IMU0 
   .init : ALIGN(0x8)
   {
     *(.init);
