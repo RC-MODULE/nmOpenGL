@@ -39,6 +39,8 @@ public:
 
 	int* buffer0;
 	int* buffer1;
+	int pointSize;
+	int dummy;
 	clock_t t0, t1;
 
 	NMGLSynchro synchro;

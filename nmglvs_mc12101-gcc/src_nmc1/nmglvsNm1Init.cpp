@@ -139,6 +139,7 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 	cntxt->imagePoints = imagePoints;
 
 	cntxt->t0 = clock();
+	cntxt->pointSize = 1;
 	return 0;
 } 
 

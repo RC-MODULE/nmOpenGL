@@ -28,7 +28,7 @@ SECTION(".text_demo3d") int getAddrPtrnsP(DataForNmpu1* data) {
 
 	//этот кусок кода является си-реализацией этой функции и является более наглядным	
 	for (int i = 0; i < size; i++) {
-		int pixelRadius = 1;
+		int pixelRadius = cntxt->pointSize;
 		int minX = data->x0[i] - pixelRadius;
 		int maxX = data->x0[i] + pixelRadius;
 		int minY = data->y0[i] - pixelRadius;
