@@ -4,7 +4,95 @@
 
 #define abs(a) (((a) < 0) ? -(a) : (a))
 
-static void setPixel(unsigned char* dst, int x, int y, int color) {
+static void setPixel(unsigned char* dst, int x, int y, unsigned char color);
+static void fillRow(unsigned char* dst, int x1, int x2, int y, unsigned char color);
+static void drawLine(unsigned char* dst, int x1, int y1, int x2, int y2, unsigned char color);
+static void fillSide(unsigned char* dst, int x1, int y1, int x2, int y2, unsigned char color, int leftSide);
+static void fillCircle(unsigned char* dst, int x0, int y0, int radius, unsigned char color);
+
+void fillPtrnsInit(unsigned char* dst, unsigned char color) {
+	int cntRight = 0;
+	int cntLeft = FILL_PATTERNS_AMOUNT / 2 - 1;
+	const int size = WIDTH_PTRN * HEIGHT_PTRN;
+
+	for (int i = 0; i < FILL_PATTERNS_AMOUNT * size; i++) {
+		dst[i] = 0;
+	}
+
+
+	for (int y = 0; y < HEIGHT_PTRN; y++) {
+		for (int off = 0; off < OFFSETS; off++, cntRight++, cntLeft++) {
+			fillSide(dst + cntRight * size, off, 0, -WIDTH_PTRN + off, y, color, 0);
+			fillSide(dst + cntLeft  * size, off, 0, -WIDTH_PTRN + off, y, color, 1);
+			if (y == 0) {
+				for (int i = 0; i < size; i++) {
+					dst[cntRight * size + i] = color;
+					dst[cntLeft * size + i] = color;
+				}
+			}
+		}
+	}
+	for (int x = -(WIDTH_PTRN - 1); x <= 0; x++) {
+		for (int off = 0; off < OFFSETS; off++, cntRight++, cntLeft++) {
+			fillSide(dst + cntRight * size, off, 0, x + off, HEIGHT_PTRN, color, 0);
+			fillSide(dst + cntLeft  * size, off, 0, x + off, HEIGHT_PTRN, color, 1);
+		}
+	}
+	for (int x = 0; x < WIDTH_PTRN; x++) {
+		for (int off = 0; off < OFFSETS; off++, cntRight++, cntLeft++) {
+			fillSide(dst + cntRight * size, off, 0, x + off, HEIGHT_PTRN, color, 0);
+			fillSide(dst + cntLeft  * size, off, 0, x + off, HEIGHT_PTRN, color, 1);
+		}
+	}
+
+	for (int y = HEIGHT_PTRN - 1; y >= 0; y--) {
+		for (int off = 0; off < OFFSETS; off++, cntRight++, cntLeft++) {
+			fillSide(dst + cntRight * size, off, 0, WIDTH_PTRN + off, y, color, 0);
+			fillSide(dst + cntLeft  * size, off, 0, WIDTH_PTRN + off, y, color, 1);
+		}
+	}
+
+}
+
+void linePtrnsInit(unsigned char* dst, unsigned char color) {
+	int cnt = 0;
+	const int size = WIDTH_PTRN * HEIGHT_PTRN;
+
+	for (int i = 0; i < LINE_PATTERNS_AMOUNT * size; i++) {
+		dst[i] = 0;
+	}
+
+	for (int x = 0; x < WIDTH_PTRN; x++, cnt++) {
+		drawLine(dst + cnt * size, 0, 0, x, HEIGHT_PTRN, color);
+	}
+	for (int y = HEIGHT_PTRN - 1; y >= 0; y--, cnt++) {
+		drawLine(dst + cnt * size, 0, 0, WIDTH_PTRN, y, color);
+	}
+
+	for (int x = 0; x < WIDTH_PTRN; x++, cnt++) {
+		drawLine(dst + cnt * size, 0, HEIGHT_PTRN, x, 0, color);
+	}
+	for (int y = 0; y < HEIGHT_PTRN; y++, cnt++) {
+		drawLine(dst + cnt * size, 0, HEIGHT_PTRN, WIDTH_PTRN, y, color);
+	}
+
+
+}
+
+void pointPtrnsInit(unsigned char* dst, unsigned char color) {
+	int cnt = 0;
+	const int size = WIDTH_PTRN * HEIGHT_PTRN;
+	for (int i = 0; i < POINT_PATTERNS_AMOUNT * size; i++) {
+		dst[i] = 0;
+	}
+	for (int r = 0; r < POINT_PATTERNS_AMOUNT; r++, cnt++) {
+		unsigned char* tmpDst = dst + cnt * size;
+		fillCircle(tmpDst, r, r, r, color);
+	}
+}
+
+
+static void setPixel(unsigned char* dst, int x, int y, unsigned char color) {
 	if(x < 0 || x >= WIDTH_PTRN ||
 		y < 0 || y >= HEIGHT_PTRN){
 		return;
@@ -12,8 +100,18 @@ static void setPixel(unsigned char* dst, int x, int y, int color) {
 	dst[y * WIDTH_PTRN + x] = color;
 }
 
+static void fillRow(unsigned char* dst, int x1, int x2, int y, unsigned char color) {
+	if (y >= 0 && y < HEIGHT_PTRN) {
+		for (int x = x1; x < x2; x++) {
+			if (x >= 0 && x < WIDTH_PTRN) {
+				dst[y * WIDTH_PTRN + x] = color;
+			}
+		}
+	}
+}
 
-static void drawLine(unsigned char* dst, int x1, int y1, int x2, int y2, int color) {
+
+static void drawLine(unsigned char* dst, int x1, int y1, int x2, int y2, unsigned char color) {
 	const int deltaX = abs(x2 - x1);
 	const int deltaY = abs(y2 - y1);
 	const int signX = x1 < x2 ? 1 : -1;
@@ -40,36 +138,81 @@ static void drawLine(unsigned char* dst, int x1, int y1, int x2, int y2, int col
 	}
 }
 
+static void fillSide(unsigned char* dst, int x1, int y1, int x2, int y2, unsigned char color, int leftSide) {
+	const int deltaX = abs(x2 - x1);
+	const int deltaY = abs(y2 - y1);
+	const int signX = x1 < x2 ? 1 : -1;
+	const int signY = y1 < y2 ? 1 : -1;
+	//
+	int error = deltaX - deltaY;
+	//
+	//setPixel(dst, x2, y2, color);
+	if (leftSide) 
+		fillRow(dst, 0, x2 + 1, y2, color);
+	else 
+		fillRow(dst, x2, WIDTH_PTRN, y2, color);
 
-void fillPtrnsInit(unsigned char* dst, int color) {
-	
+	if (y1 == y2) {
+		return;
+	}
+	while (x1 != x2 || y1 != y2)
+	{
+		//setPixel(dst, x1, y1, color);
+		if (leftSide) 
+			fillRow(dst, 0, x1, y1, color);
+		else 
+			fillRow(dst, x1, WIDTH_PTRN, y1, color);
+		
+		const int error2 = error * 2;
+		//
+		if (error2 > -deltaY)
+		{
+			error -= deltaY;
+			x1 += signX;
+		}
+		if (error2 < deltaX)
+		{
+			error += deltaX;
+			y1 += signY;
+		}
+	}
+	//остаток изображения
+	if (signX / signY < 0 && leftSide == 0 ||
+		signX / signY > 0 && leftSide == 1) {
+		for (int y = y1; y < HEIGHT_PTRN; y++) {
+			fillRow(dst, 0, WIDTH_PTRN, y, color);
+		}
+	}
 }
 
-void linePtrnsInit(unsigned char* dst, int color) {
-	int counter = 0;
-	const int size = WIDTH_PTRN * HEIGHT_PTRN;
-
-	for (int i = 0; i < LINE_PATTERNS_AMOUNT * size; i++) {
-		dst[i] = 0;
+static void fillCircle(unsigned char* dst, int x0, int y0, int radius, unsigned char color) {
+	int x = 0;
+	int y = radius;
+	int delta = 1 - 2 * radius;
+	int error = 0;
+	while (y >= 0) {
+		//setPixel(dst, x0 + x, y0 + y, color);
+		//setPixel(dst, x0 + x, y0 - y, color);
+		//setPixel(dst, x0 - x, y0 + y, color);
+		//setPixel(dst, x0 - x, y0 - y, color);
+		fillRow(dst, x0 - x, x0 + x, y0 - y, color);
+		fillRow(dst, x0 - x, x0 + x, y0 + y, color);
+		error = 2 * (delta + y) - 1;
+		if (delta < 0 && error <= 0) {
+			++x;
+			delta += 2 * x + 1;
+			continue;
+		}
+		error = 2 * (delta - x) - 1;
+		if (delta > 0 && error > 0) {
+			--y;
+			delta += 1 - 2 * y;
+			continue;
+		}
+		++x;
+		delta += 2 * (x - y);
+		--y;
 	}
-
-	for (int x = 0; x < WIDTH_PTRN; x++) {
-		drawLine(dst + counter++ * size, 0, 0, x, HEIGHT_PTRN - 1, color);
-	}
-	for (int y = HEIGHT_PTRN - 1; y >= 0; y--) {
-		drawLine(dst + counter++ * size, 0, 0, WIDTH_PTRN - 1, y, color);
-	}
-
-	for (int x = 0; x < WIDTH_PTRN; x++) {
-		drawLine(dst + counter++ * size, 0, HEIGHT_PTRN - 1, x, 0, color);
-	}
-	for (int y = 0; y < HEIGHT_PTRN; y++) {
-		drawLine(dst + counter++ * size, 0, HEIGHT_PTRN - 1, WIDTH_PTRN - 1, y, color);
-	}
-
-	
 }
 
-void pointPtrnsInit(unsigned char* dst, int color) {
 
-}

@@ -91,6 +91,7 @@ void fillPattern(nm8s* pDstSource,int width, int height)
 	int y=0;
 	int size = width*height;		//size of one pattern
 	int nOffSets_X = OFFSETS;
+	//int color = -1;
 	int color = 1;
 	int cnt = 0;
 	Line line;
@@ -110,8 +111,10 @@ void fillPattern(nm8s* pDstSource,int width, int height)
 				line.p1.x = i - width;
 				line.p1.y = y;
 				drawPattern(&line, (nm8s*)dsti, width, height, color, mode[m]);
-				for (int i = y * width; i < size; i++) {
-					dsti[i] = color;
+				if (mode[m] == RIGHT) {
+					for (int i = y * width; i < size; i++) {
+						dsti[i] = color;
+					}
 				}
 			}
 		}
@@ -149,7 +152,7 @@ void fillPattern(nm8s* pDstSource,int width, int height)
 				nm8s* dsti = nmppsAddr_8s(pDstSource, cnt * size);
 				line.p0.x = i;
 				line.p0.y = 0;
-				line.p1.x = x + i;
+				line.p1.x = width + i;
 				line.p1.y = y;
 				drawPattern(&line, (nm8s*)dsti, width, height, color, mode[m]);
 			}
