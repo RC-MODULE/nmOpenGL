@@ -17,6 +17,9 @@ void hostCreatePatterns(PatternsArray* patterns){
 	nmppsConvert_8s4s((nm8s*)temp_8s,(nm4s*)temp_4s,NPATTERNS*WIDTH_PTRN*HEIGHT_PTRN);
 	nmppsConvert_4s2s((nm4s*)temp_4s,(nm2s*)patterns->ptrns,NPATTERNS*WIDTH_PTRN*HEIGHT_PTRN);
 
+	pointPtrnsInit((nm8u*)temp_8s, 1);
+	nmppsConvert_8s4s((nm8s*)temp_8s, (nm4s*)temp_4s, POINT_PATTERNS_AMOUNT*WIDTH_PTRN*HEIGHT_PTRN);
+	nmppsConvert_4s2s((nm4s*)temp_4s, (nm2s*)patterns->pointPtrns, POINT_PATTERNS_AMOUNT*WIDTH_PTRN*HEIGHT_PTRN);
 	//nmppsSet_8s((nm8s*)temp_8s, 0, LINE_PATTERNS_AMOUNT * WIDTH_PTRN * HEIGHT_PTRN);
 	//fillLinePattern(temp_8s, WIDTH_PTRN, HEIGHT_PTRN);
 	//nmppsConvert_8s4s((nm8s*)temp_8s, (nm4s*)temp_4s, LINE_PATTERNS_AMOUNT*WIDTH_PTRN*HEIGHT_PTRN);

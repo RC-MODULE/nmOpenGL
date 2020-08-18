@@ -165,9 +165,11 @@ extern "C" {
 
 void drawTriangles();
 void drawLines();
+void drawPoints();
 int getAddrPtrnsT(PolygonsOld* poly);
 int getAddrPtrnsL(PolygonsOld* poly);
 int getAddrPtrnsT(DataForNmpu1* data);
 int getAddrPtrnsL(DataForNmpu1* data);
+int getAddrPtrnsP(DataForNmpu1* data);
 
 #endif

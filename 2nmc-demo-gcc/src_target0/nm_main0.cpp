@@ -165,7 +165,8 @@ SECTION(".text_shared0") int main()
 		nmglRotatef(angle, 0.707, 0.707, 0);
 		nmglTranslatef(150, 150, 0);
 
-		nmglDrawArrays(NMGL_TRIANGLES, 0, 3 * amountPolygons2);
+		//nmglDrawArrays(NMGL_TRIANGLES, 0, 3 * amountPolygons2);
+		nmglDrawArrays(NMGL_POINTS, 0, 3 * amountPolygons2);
 #ifdef __OPEN_GL__
 		angle += 0.03;
 #else

@@ -100,11 +100,12 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 	switch (mode) {
 	case NMGL_TRIANGLES:
 		maxInnerCount = 3 * NMGL_SIZE;
-		nAllPrimitives = count / 3;
 		break;
 	case NMGL_LINES:
 		maxInnerCount = 2 * NMGL_SIZE;
-		nAllPrimitives = count - 2;
+		break;
+	case NMGL_POINTS:
+		maxInnerCount = NMGL_SIZE;
 		break;
 	default:
 		cntxt->error = NMGL_INVALID_ENUM;
@@ -259,6 +260,16 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 
 			setSegmentMask(minXY, maxXY, cntxt->segmentMasks, cntxt->lineInner.size);
 			rasterizeL(&cntxt->lineInner, cntxt->segmentMasks);
+			break;
+		case NMGL_POINTS:
+			nmblas_scopy(localSize, vertexX, 1, cntxt->pointInner.x0, 1);
+			nmblas_scopy(localSize, vertexY, 1, cntxt->pointInner.y0, 1);
+			nmppsConvert_32f32s_rounding(vertexZ, cntxt->pointInner.z, 0, localSize);
+			nmppsMerge_32f(vertexX, vertexY, (float*)minXY, localSize);
+			cntxt->pointInner.size = localSize;
+			setSegmentMask(minXY, minXY, cntxt->segmentMasks, localSize);
+
+			rasterizeP(&cntxt->pointInner, cntxt->segmentMasks);
 			break;
 		}
 

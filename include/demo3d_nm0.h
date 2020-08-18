@@ -76,6 +76,15 @@ struct Lines{
 	int maxSize;
 };
 
+struct Points {
+	float* x0;
+	float* y0;
+	int* z;
+	v4nm32s* colors;
+	int size;
+	int maxSize;
+};
+
 struct Triangles{
 	float* x0;
 	float* y0;
@@ -159,6 +168,7 @@ public:
 
 	Triangles trianInner;
 	Lines lineInner;
+	Points pointInner;
 	NmglBeginEndInfo beginEndInfo;
 
 	mat4nm32f modelviewMatrix[16];
@@ -1064,10 +1074,12 @@ void cullFaceSortTriangles(Triangles &triangles);
 void setSegmentMask(v2nm32f* minXY, v2nm32f* maxXY, BitMask* masks, int size);
 void rasterizeT(const Triangles* triangles, const BitMask* masks);
 void rasterizeL(const Lines* lines, const BitMask* masks);
+void rasterizeP(const Points* points, const BitMask* masks);
 void updatePolygonsT(PolygonsOld* poly, Triangles* triangles, int count, int segX, int segY);
 void updatePolygonsL(PolygonsOld* poly, Lines* lines, int count, int segX, int segY);
 void updatePolygonsT(DataForNmpu1* data, Triangles* triangles, int count, int segX, int segY);
 void updatePolygonsL(DataForNmpu1* data, Lines* triangles, int count, int segX, int segY);
+void updatePolygonsP(DataForNmpu1* data, Points* triangles, int count, int segX, int segY);
 
 /**
  *  \defgroup color Light

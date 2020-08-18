@@ -85,7 +85,9 @@ void pointPtrnsInit(unsigned char* dst, unsigned char color) {
 	for (int i = 0; i < POINT_PATTERNS_AMOUNT * size; i++) {
 		dst[i] = 0;
 	}
-	for (int r = 0; r < POINT_PATTERNS_AMOUNT; r++, cnt++) {
+	dst[0] = color; //point in one pixel
+	cnt++;
+	for (int r = 1; r < POINT_PATTERNS_AMOUNT; r++, cnt++) {
 		unsigned char* tmpDst = dst + cnt * size;
 		fillCircle(tmpDst, r, r, r, color);
 	}

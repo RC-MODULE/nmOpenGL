@@ -117,6 +117,13 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 	cntxt->lineInner.maxSize = NMGL_SIZE;
 	cntxt->lineInner.size = 0;
 
+	cntxt->pointInner.x0 = x0;
+	cntxt->pointInner.y0 = y0;
+	cntxt->pointInner.z = z_int;
+	cntxt->pointInner.colors = lightsValues;
+	cntxt->pointInner.maxSize = NMGL_SIZE;
+	cntxt->pointInner.size = 0;
+
 
 	cntxt->buffer0 = nmglBuffer0;
 	cntxt->buffer1 = nmglBuffer1;
