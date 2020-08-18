@@ -28,6 +28,9 @@ SECTION(".text_demo3d") int copyCounterDepth() {
 	return copyImageCounterDepth++;
 }
 
+
+
+
 SECTION(".text_demo3d") int swapImage() {
 	NMGL_Context_NM1 *cntxt = NMGL_Context_NM1::getContext();
 	cntxt->t1 = clock();
@@ -250,6 +253,12 @@ SECTION(".text_nmglvs") int nmglvsNm1Step()
 	case NMC1_SET_MIPMAP_LVL_POINTER: {
 		//use DDR only as addresses are sent directly
 		cntxt->texState.texObjects[currentCommand.params[0]].texImages2D[currentCommand.params[1]].pixels=(void*)currentCommand.params[2];
+		break;
+	}
+	case NMC1_BIND_ACTIVE_TEX_OBJECT: {
+		NMGLenum target=currentCommand.params[0];
+		NMGLuint texture=currentCommand.params[1];
+        ActiveTexObjectP=&cntxt->texState.texObjects[texture];
 		break;
 	}
 	default:

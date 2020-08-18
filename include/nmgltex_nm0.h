@@ -22,7 +22,8 @@ struct NMGL_Context_NM0_Texture {
 /**
 	* Определяет имена для текстурных объектов, которые можно использовать.
 	*	Имена генерируются путём инкрементации данной переменной на 1 для каждого имени
-	* 0   - ещё не было сгенерировано ни одного имени;
+	* 0   - ещё не было сгенерировано ни одного имени;при этом объект и именем 0 создаётся
+	* по умолчанию при инициализации контекста
 	* n>0 - содержит последнее сгенерированное имя (а также общее количество имён).
 	* При этом подразумеваются, что имена генерируются только с помощью функции genTextures
 	*/
@@ -86,7 +87,7 @@ struct NMGL_Context_NM0_Texture {
 			texUnits[i].enabled=NMGL_FALSE;
 			texUnits[i].texFunction=NULL;
 			texUnits[i].texFunctionName=0;
-			texUnits[i].boundTexObject=NULL;
+			texUnits[i].boundTexObject=texObjects;
 			for (int j = 0; j < 4; j++)
 			{
 				texUnits[i].texEnvColor[j]=0.0;
@@ -96,7 +97,7 @@ struct NMGL_Context_NM0_Texture {
 
 		for (int i = 0; i < NMGL_MAX_TEX_OBJECTS; i++)
 		{
-			texObjects[i].name=i+1;
+			texObjects[i].name=i;
 			texObjects[i].target=NMGL_TEXTURE_2D;
 			texObjects[i].texWrapS=NMGL_REPEAT;
 			texObjects[i].texWrapT=NMGL_REPEAT;
@@ -107,10 +108,9 @@ struct NMGL_Context_NM0_Texture {
 			{
 				texObjects[i].texImages2D[j].pixels=NULL;
 				texObjects[i].texImages2D[j].internalformat=NMGL_RGBA;
-				//texObjects[i].texImages2D[j].level=j;
 				texObjects[i].texImages2D[j].width=0;
 				texObjects[i].texImages2D[j].height=0;
-				//texObjects[i].texImages2D[j].border=0;
+				
 			}
 			
 		}

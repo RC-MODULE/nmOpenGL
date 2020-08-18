@@ -58,16 +58,16 @@ void initLvls(NMGLuint name,NMGL_Context_NM0 *cntxt)
 	{
 		cntxt->texState.firstFreeTexByte=(void*)mipmap;		
 	}
-	cntxt->texState.texObjects[name-1].texImages2D[0].pixels=cntxt->texState.firstFreeTexByte;
+	cntxt->texState.texObjects[name].texImages2D[0].pixels=cntxt->texState.firstFreeTexByte;
 /*sync*/cntxt->synchro.writeInstr(1, NMC1_SET_MIPMAP_LVL_POINTER,(int)(name-1),0,(int)cntxt->texState.firstFreeTexByte);
 	for(i=1;i<=NMGL_MAX_MIPMAP_LVL;i++)
 	{
-		cntxt->texState.texObjects[name-1].texImages2D[i].pixels=(void*)((NMGLubyte *)cntxt->texState.texObjects[name-1].texImages2D[i-1].pixels+cursize);
-/*sync*/cntxt->synchro.writeInstr(1, NMC1_SET_MIPMAP_LVL_POINTER,(int)(name-1),i,(int)((NMGLubyte *)cntxt->texState.texObjects[name-1].texImages2D[i-1].pixels+cursize));
+		cntxt->texState.texObjects[name].texImages2D[i].pixels=(void*)((NMGLubyte *)cntxt->texState.texObjects[name].texImages2D[i-1].pixels+cursize);
+/*sync*/cntxt->synchro.writeInstr(1, NMC1_SET_MIPMAP_LVL_POINTER,(int)(name-1),i,(int)((NMGLubyte *)cntxt->texState.texObjects[name].texImages2D[i-1].pixels+cursize));
 
 		cursize>>=2;
 	}
-	cntxt->texState.firstFreeTexByte=(void*)((NMGLubyte *)cntxt->texState.texObjects[name-1].texImages2D[NMGL_MAX_MIPMAP_LVL].pixels+UBYTES_PER_TEXEL);
+	cntxt->texState.firstFreeTexByte=(void*)((NMGLubyte *)cntxt->texState.texObjects[name].texImages2D[NMGL_MAX_MIPMAP_LVL].pixels+UBYTES_PER_TEXEL);
 }
 /*
 1 - if x is power of 2

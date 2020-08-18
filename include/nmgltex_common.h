@@ -199,14 +199,15 @@ struct TexCoords {
 
 
 //===================PRINTING==============================================================
-#define lvl(x) cntxt->texState.texObjects[objname-1].texImages2D[x]
-#define pxl(x) cntxt->texState.texObjects[objname-1].texImages2D[x].pixels
+#ifdef DEBUG
+#define lvl(x) cntxt->texState.texObjects[objname].texImages2D[x]
+#define pxl(x) cntxt->texState.texObjects[objname].texImages2D[x].pixels
 //prints pointers only
 template<class T> void PrintMipMapP(int objname,T *context)
 {
 
     T* cntxt = context;
-    std::cout<<"Texture object "<<cntxt->texState.texObjects[objname-1].name<<std::endl;
+    std::cout<<"Texture object "<<cntxt->texState.texObjects[objname].name<<std::endl;
     for(int i=0;i<=NMGL_MAX_MIPMAP_LVL;i++)
     {
         printf("Mipmap level %d\n",i);
@@ -224,7 +225,7 @@ extern int getTexelSizeUbytes(NMGLint format);
 template<class T> void PrintMipMap(int objname,T *context)
 {
     T* cntxt = context;
-    printf("Texture object %d\n", cntxt->texState.texObjects[objname-1].name);
+    printf("Texture object %d\n", cntxt->texState.texObjects[objname].name);
     int bpt=getTexelSizeUbytes(lvl(0).internalformat);
     int wbpt=0;
     for(int i=0;i<=NMGL_MAX_MIPMAP_LVL;i++)
@@ -243,4 +244,8 @@ template<class T> void PrintMipMap(int objname,T *context)
     }
 }
 //=========================================================================================
+#else
+    #define PrintMipMapP<NMGL_Context_NM0>(i,cntxt) do {} while (0)
+    #define PrintMipMapP<NMGL_Context_NM1>(i,cntxt) do {} while (0)
+#endif
 #endif
