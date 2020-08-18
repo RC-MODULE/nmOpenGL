@@ -244,8 +244,10 @@ template<class T> void PrintMipMap(int objname,T *context)
     }
 }
 //=========================================================================================
+#define PrintMipMapP(x,y,z) PrintMipMapP<x>(y,z)
 #else
-    #define PrintMipMapP<NMGL_Context_NM0>(i,cntxt) do {} while (0)
-    #define PrintMipMapP<NMGL_Context_NM1>(i,cntxt) do {} while (0)
+    
+    #define PrintMipMapP(x) do {} while (0)  
+    
 #endif
 #endif
