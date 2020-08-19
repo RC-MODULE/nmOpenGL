@@ -14,6 +14,7 @@
 #include "demo3d_host.h"
 #include "demo3d_nm1.h"
 #include "ringbuffert.h"
+#include "imagebuffer.h"
 
 
 
@@ -50,6 +51,13 @@ int nmglvsHostInit()
 		if (ok != 0x600DB00F) {
 			printf("Memory nmc%d allocation error!\n", i);
 			return -2;
+		}
+	}
+	for (int i = 0; i < NUM_NM_CORES; i++) {
+		int ok = halSync(0, i);
+		if (ok != 0x600DB00F) {
+			printf("Interprocessor allocation error!\n", i);
+			return -3;
 		}
 	}
 //----------------init-nmc1------------------------------

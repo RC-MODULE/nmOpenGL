@@ -1,3 +1,7 @@
+ifndef OS_RM
+ 	OS_RM    =rm -f -r
+  	OS_RD    =rm -d -r -f
+endif
 kill: clean
 	-$(OS_RM) *.vcproj *.sln *.vcxproj *.db output output.264 
 

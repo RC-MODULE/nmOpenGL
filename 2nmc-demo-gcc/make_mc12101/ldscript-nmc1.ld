@@ -23,7 +23,7 @@ SECTIONS
   .text_demo3d : ALIGN(0x8)
   {
     *(.text_demo3d);
-  } > C1_IMU0
+  } > EMI1
   .text_nmglvs : ALIGN(0x8)
   {
     *(text_nmglvs);
@@ -55,7 +55,7 @@ SECTIONS
   .data_demo3d : ALIGN(0x8)
   {
     *(.data_demo3d);
-  } > C1_IMU0
+  } > EMI1
   .bss : ALIGN(0x8)
   {
     *(.bss);
@@ -87,6 +87,10 @@ SECTIONS
   .data_imu0 : ALIGN(0x8)
   {
     *(.data_imu0);
+  } > C1_IMU0
+  .data_imu0A : ALIGN(0x64)
+  {
+    *(.data_imu0A);
   } > C1_IMU0
   .data_imu1 : ALIGN(0x8)
   {

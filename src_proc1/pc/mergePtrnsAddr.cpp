@@ -14,4 +14,18 @@ extern "C" {
 			count -= step;
 		}
 	}
+	
+	void mergePtrnsAddr2(nm32s** ppSrcLeft, nm32s** ppSrcRight, int step, nm32s** ppDst, int count){
+		int point=0;
+		int counter = 0;
+		while(count > 0){
+			int localSize = MIN(step, count);
+			for(int i=0;i<localSize;i++){
+				ppDst[2 * point + i] = ppSrcLeft[point + i];
+				ppDst[2 * point + localSize + i] = ppSrcRight[point + i];
+			}
+			point += step;
+			count -= step;
+		}
+	}
 }

@@ -54,14 +54,14 @@ PROJECT          = main0
 OUT_DIR          = .
 TARGET           = $(OUT_DIR)/$(PROJECT).abs
 INC_DIRS         = -I"$(NMPP)/include" -I$(HAL)/include -I$(ROOT)/include -I"../include"
-SRC_DIRS         = $(ROOT)/nmglvs_mc12101-gcc/src_nmc0 $(ROOT)/src_proc0/common $(ROOT)/src_proc0/nm $(ROOT)/src_proc0/nmgl ../src_target0 ./ ../src_nm
-LIB_DIRS         = -L"$(NMC_GCC_TOOLPATH)/nmc4-ide/lib" -L"$(NMPP)/lib" -L"$(HAL)/lib"
+SRC_DIRS         = $(ROOT)/nmglvs_mc12101-gcc/src_nmc0 ../src_target0 ./ ../src_nm
+LIB_DIRS         = -L"$(NMC_GCC_TOOLPATH)/nmc4-ide/lib" -L"$(NMPP)/lib" -L"$(HAL)/lib" -L"$(ROOT)/lib"
 TMP_DIR          = Release
 #-------------- RELEASE/ALL config -------------------
 CC 				 = nmc-g++
 AS               = nmc-gcc 				 
 AS_FLAGS    	 = -c -mmas -x assembler -mnmc4-float
-LIBS             = -lnmpp-nmc4f -lhal-mc12101
+LIBS             = -lnmopengl-nmc4f -lnmpp-nmc4f -lhal-mc12101
 LINKER_FLAGS     =   -Xlinker -Map=.main0.map $(LIB_DIRS) -save-temps "-Wl,-Tldscript-nmc0.ld" -Wl,--whole-archive -lmc12101 -Wl,--no-whole-archive -o$(TARGET) 
 #LINKER_FLAGS    += -Wl,--section-start,.heap2=0x14000,--defsym,__HEAP_2_END=0x60000
 #LINKER_FLAGS    += -Wl,--section-start,.heap3=0x1C000,--defsym,__HEAP_3_END=0x80000 

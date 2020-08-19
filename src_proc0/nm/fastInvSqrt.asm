@@ -41,6 +41,7 @@ global _fastInvSqrt: label;
 	ar0 = gr0;
 	ar6 = gr6;
 	gr5 = ar5;
+	gr5>>=1;
 	
 	
 	gr7 = gr5 << 27;
@@ -59,7 +60,7 @@ global _fastInvSqrt: label;
 
 	fpu 0 rep 32 vreg0 = [ar0++];						//x0
 	fpu 1 rep 32 vreg1 = [ar6++];						//y0
-	fpu 0 .float vreg4 = vreg0 * .retrive(vreg2);		//0.5 * x
+	fpu 0 .float vreg4 = vreg0 * .retrive(vreg2);		//-0.5 * x
 	fpu 1 .float vreg4 = vreg1 * vreg1;					//y0 * y0
 	fpu 2 vreg0 = fpu 0 vreg4;
 	fpu 2 vreg1 = fpu 1 vreg4;

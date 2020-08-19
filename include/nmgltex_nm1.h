@@ -72,6 +72,25 @@ struct NMGL_Context_NM1_Texture {
 	void init(){
 	
 		activeTexUnitIndex = 0;
+		for (int i = 0; i < NMGL_MAX_TEX_OBJECTS; i++)
+		{
+			texObjects[i].name=i;
+			texObjects[i].target=NMGL_TEXTURE_2D;
+			texObjects[i].texWrapS=NMGL_REPEAT;
+			texObjects[i].texWrapT=NMGL_REPEAT;
+			texObjects[i].texMinFilter=NMGL_NEAREST_MIPMAP_LINEAR;
+			texObjects[i].texMagFilter=NMGL_LINEAR;
+			texObjects[i].imageIsSet=0;
+			for(int j=0;j<=NMGL_MAX_MIPMAP_LVL;j++)
+			{
+				texObjects[i].texImages2D[j].pixels=NULL;
+				texObjects[i].texImages2D[j].internalformat=NMGL_RGBA;
+				texObjects[i].texImages2D[j].width=0;
+				texObjects[i].texImages2D[j].height=0;
+				
+			}
+			
+		}
 	}
 	
 };

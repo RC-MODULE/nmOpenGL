@@ -126,7 +126,22 @@ struct MatrixStack {
 };
 
 
-struct NMGL_Context_NM0 {
+class NMGL_Context_NM0 {
+private:
+	static NMGL_Context_NM0 *context;
+public:	
+	inline static void create(NMGLSynchroData* synchroData) {
+		context = (NMGL_Context_NM0*)halMalloc32(sizeof32(NMGL_Context_NM0));
+		context->init(synchroData);
+	}
+	inline static NMGL_Context_NM0 *getContext() {
+		return context;
+	}
+	inline static void free() {
+		halFree(context);
+	}
+
+
 	NMGLSynchro synchro;
 	PolygonsArray* polygonsData;
 	NMGLenum error;
@@ -142,6 +157,7 @@ struct NMGL_Context_NM0 {
 	float* buffer3;
 
 	Triangles trianInner;
+	Lines lineInner;
 	NmglBeginEndInfo beginEndInfo;
 
 	mat4nm32f modelviewMatrix[16];
@@ -186,9 +202,9 @@ struct NMGL_Context_NM0 {
 	bool isEnabledLight[MAX_LIGHTS];
 	int isLighting;
 	float specularExp;
-	
-	NMGL_Context_NM0_Texture texState;
 
+	NMGL_Context_NM0_Texture texState; //textures data
+	
 	void init(NMGLSynchroData* syncroData){
 		synchro.init(syncroData);
 
@@ -295,8 +311,6 @@ struct NMGL_Context_NM0 {
 		
 	}
 };
-
-
 
 extern "C"{
 	
@@ -988,8 +1002,6 @@ extern "C"{
 	 //! \{
 	void split_v2nm32f(v2nm32f* srcVec, int step, float* dstX, float* dstY, int countVec);
 	//! \}
-
-
 	/**
 	 *  \defgroup subCRev subCRev
 	 *  \brief Функция вычитания вектора из постоянного значения
@@ -1020,6 +1032,7 @@ extern "C"{
 
 
 }
+void pushToLines_l(const float *vertexX, const float *vertexY, const float *vertexZ, const v4nm32f* color, Lines& lines, int countVertex);
 
 void pushToTriangles_t(const float *vertexX, const float *vertexY, const float *vertexZ, const v4nm32f* color, Triangles& triangles, int countVertex);
 void reverseMatrix3x3in4x4(mat4nm32f* src, mat4nm32f* dst);
@@ -1029,7 +1042,7 @@ void copyColorByIndices_BGRA_RGBA(v4nm32s* srcColor, int* indices, v4nm32s* dstC
 
 //functions that use NMGLSynchroL_ContextNM0
 void cullFaceSortTriangles(Triangles &triangles);
-void setSegmentMask(NMGL_Context_NM0 &cntxt, Triangles &triangles, BitMask* masks);
+void setSegmentMask(v2nm32f* minXY, v2nm32f* maxXY, BitMask* masks, int size);
 void rasterizeT(const Triangles* triangles, const BitMask* masks);
 void rasterizeL(const Lines* lines, const BitMask* masks);
 void updatePolygonsT(Polygons* poly, Triangles* triangles, int count, int segX, int segY);

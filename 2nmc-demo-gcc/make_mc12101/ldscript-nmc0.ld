@@ -35,7 +35,11 @@ SECTIONS
   .text_demo3d : ALIGN(0x8)
   {
     *(.text_demo3d);
-  } > C0_IMU0
+  } > EMI0
+  .text_demo3dExt : ALIGN(0x8)
+  {
+    *(.text_demo3dExt);
+  } > EMI0
   .text_hal : ALIGN(0x8)
   {
     *(.text_hal);
@@ -100,6 +104,10 @@ SECTIONS
   {
     *(.data_shmem0);
   } > SHMEM0
+  .textures_mipmap_mem : ALIGN(0x8)
+  {
+    *(.textures_mipmap_mem);
+  } > EMI0
   .data_shared0 : ALIGN(0x8)
   {
     *(.data_shared0);

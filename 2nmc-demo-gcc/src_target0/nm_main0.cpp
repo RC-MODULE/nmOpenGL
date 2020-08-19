@@ -13,11 +13,13 @@
 SECTION(".data_shared0") float twoTriangles[24 * 4] = {
 	110, 90, 0, 1,
 	90, 110, 0, 1,
+
 	90, 90, 0, 1,
 	110, 110, 0, 1,
 
 	110, 90, 0, 1,
 	90, 90, 0, 1,
+
 	110, 90, 0, 1,
 	110, 110, 0, 1,
 
@@ -91,7 +93,7 @@ SECTION(".text_shared0") int main()
 	ok = halHostSync((int)0x600D600D);
 #endif
 	
-	nmglClearColor(0, 0, 0.4, 0.0f);
+	nmglClearColor(0, 0, 0.4f, 0.0f);
 	//nmglClearColor(0.5, 0.5, 0.5, 1.0f);
 
 	nmglEnable(NMGL_DEPTH_TEST);
@@ -125,13 +127,16 @@ SECTION(".text_shared0") int main()
 	nmglLightfv(NMGL_LIGHT1, NMGL_DIFFUSE, lightDiffuse);*/
 
 	while(nmglvsNm0Run()){
+		/*nmglEnableClientState(NMGL_VERTEX_ARRAY);
+		nmglClear(NMGL_COLOR_BUFFER_BIT);
+		nmglVertexPointer(4, NMGL_FLOAT, 0, twoTriangles);
+		nmglDrawArrays(NMGL_LINES, 0, 24);
+		nmglDisableClientState(NMGL_VERTEX_ARRAY);*/
+
 		nmglEnableClientState(NMGL_VERTEX_ARRAY);
 		nmglEnableClientState(NMGL_NORMAL_ARRAY);
 
 		nmglClear(NMGL_COLOR_BUFFER_BIT | NMGL_DEPTH_BUFFER_BIT);
-		//nmglTranslatef(1, 0, 0);
-		//nmglVertexPointer(4, NMGL_FLOAT, 0, twoTriangles);
-		//nmglDrawArrays(NMGL_LINES, 0, 24);
 		
 
 		nmglVertexPointer(4, NMGL_FLOAT, 0, vertices_DDR);
@@ -162,12 +167,6 @@ SECTION(".text_shared0") int main()
 		nmglTranslatef(150, 150, 0);
 
 		nmglDrawArrays(NMGL_TRIANGLES, 0, 3 * amountPolygons2);
-		/*nmglBegin(NMGL_TRIANGLES);
-		for (int i = 0; i < 3 * amountPolygons2; i++) {
-			nmglVertex3fv(&vertices_DDR2[4 * i]);
-			nmglNormal3fv(&normal_DDR2[3 * i]);
-		}
-		nmglEnd();*/
 #ifdef __OPEN_GL__
 		angle += 0.03;
 #else
@@ -175,7 +174,7 @@ SECTION(".text_shared0") int main()
 #endif // __OPEN_GL__
 
 		nmglDisableClientState(NMGL_VERTEX_ARRAY);
-		//nmglDisableClientState(NMGL_NORMAL_ARRAY);
+		nmglDisableClientState(NMGL_NORMAL_ARRAY);
 
 		//nmglFinish();
 		nmglvsSwapBuffer();
