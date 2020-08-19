@@ -27,7 +27,6 @@ SECTION(".data_shared0") float lines[24 * 2] = {
 
 	110, 90,
 	115, 110,
-
 	
 };
 
@@ -60,12 +59,15 @@ int main()
 	
 	//nmglVertexPointer(2, NMGL_FLOAT, 0, lines);
 	nmglVertexPointer(4, NMGL_FLOAT, 0, vertices);
+	
 	nmglEnableClientState(NMGL_VERTEX_ARRAY);
+	nmglMatrixMode(NMGL_MODELVIEW);
 	while(nmglvsNm0Run()){
 		nmglClear(NMGL_COLOR_BUFFER_BIT);
 
-		nmglDrawArrays(NMGL_LINES, 0, 2 * amount);
+		nmglRotatef(0.3, 0.707, 0.707, 0);
 		//nmglDrawArrays(NMGL_LINES, 0, 24);
+		nmglDrawArrays(NMGL_LINES, 0, 2 * amount);
 
 		nmglvsSwapBuffer();
 	}

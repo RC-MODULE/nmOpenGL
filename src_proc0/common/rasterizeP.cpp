@@ -48,7 +48,7 @@ void rasterizeP(const Points* points, const BitMask* masks){
 					copyColorByIndices_BGRA_RGBA(points->colors, indices, (v4nm32s*)localPoint.colors, resultSize);
 #endif // OUTPUT_IMAGE_RGB8888
 #ifdef OUTPUT_IMAGE_RGB565
-					copyColorByIndices(points->colors, indices, (v4nm32s*)localLine.colors, resultSize);
+					copyColorByIndices(points->colors, indices, (v4nm32s*)localPoint.colors, resultSize);
 #endif // OUTPUT_IMAGE_RGB565
 
 					localPoint.size = resultSize;

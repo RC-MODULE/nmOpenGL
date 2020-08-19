@@ -19,12 +19,14 @@ struct PatternsArray {
 	Pattern ptrns[FILL_PATTERNS_AMOUNT];
 	Pattern linePtrns[LINE_PATTERNS_AMOUNT];
 	Pattern pointPtrns[POINT_PATTERNS_AMOUNT];
-	int table_dydx[(2 * WIDTH_PTRN) * (HEIGHT_PTRN + 2)];
-	int lineTable[(2 * WIDTH_PTRN) * (HEIGHT_PTRN + 2)];
+	int table_dydx[(2 * WIDTH_PTRN) * HEIGHT_PTRN + 2 * WIDTH_PTRN];
+	int lineTable[(2 * WIDTH_PTRN) * HEIGHT_PTRN + 2 * WIDTH_PTRN];
 };
 
-void fillPtrnsInit(unsigned char* dst, unsigned char color);
-void linePtrnsInit(unsigned char* dst, unsigned char  color);
+void fillPtrnsInit(unsigned char* dst, int* table_dydx, unsigned char color);
+void linePtrnsInit(unsigned char* dst, int* table, unsigned char  color);
 void pointPtrnsInit(unsigned char* dst, unsigned char color);
+
+void create_tabl_dydx(unsigned char* srcPatterns, int* dydx, int width, int height);
 
 void hostCreatePatterns(PatternsArray* patterns);

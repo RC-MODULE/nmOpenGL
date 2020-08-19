@@ -26,21 +26,12 @@ SECTION(".text_demo3d") void drawLines() {
 
 	while (countTrangles > 0) {
 		int localSize = MIN(countTrangles, SMALL_SIZE);
-		int point_x2 = point * 2;
 
 		//копирование паттернов во внутреннюю память. Паттерны копируются
 		//не полностью, чтобы сэкономить время на пересылку
-		copyPacket_32s(context->ppSrcPackPtrns + point_x2,
-			context->ppDstPackPtrns + point_x2,
-			context->nSizePtrn32 + point_x2, 2 * localSize);
-
-		//объединение паттернов сторон в паттерн треугольника
-		//объединение происходит не полностью (только значимой части) для
-		//оптимизации
-		mAndVxN_32u((nm32u**)context->ppPtrns1_2s,
-			(nm32u**)context->ppPtrns2_2s,
-			(nm32u**)context->ppPtrnsCombined_2s,
-			context->nSizePtrn32 + point_x2, localSize);
+		copyPacket_32s(context->ppSrcPackPtrns + point,
+			context->ppDstPackPtrns + point,
+			context->nSizePtrn32 + point, localSize);
 
 		//проверка активирования теста глубины
 		if (context->depthBuffer.enabled == NMGL_FALSE) {
