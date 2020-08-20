@@ -1,8 +1,8 @@
 #include "VShell.h"
-#include "windows.h"
 #include "pattern.h"
 #include "nmpp.h"
 #include "stdio.h"
+#include "windows.h"
 #include <iostream>
 #include <fstream>
 
@@ -52,7 +52,7 @@ int main()
 	unsigned char* pointPtrns = new unsigned char[POINT_PATTERNS_AMOUNT * WIDTH_PTRN * HEIGHT_PTRN];
 	int *lineTable = new int[SIZE_TABLE];
 	int *fillTable = new int[SIZE_TABLE];
-	fillPtrnsInit(fillPtrns, fillTable, -1);
+	fillPtrnsInit(fillPtrns, fillTable, 1);
 	linePtrnsInit(linePtrns, lineTable, -1);
 	pointPtrnsInit(pointPtrns, -1);
 	int size = sizeof(PatternsArray);
@@ -62,20 +62,24 @@ int main()
 	int fillCnt = 0;
 	int lineCnt = 0;
 	int pointCnt = 0;
-	int values[][2] = { {1,0}, {-15,3}, {-15,15}, {-3,15}, { 0,1 }, { 3,15 }, { 15,15 }, { 15,3 }};
+	int values[][2] = { {-1,0}, {-15,3}, {-15,15}, {-3,15}, { 0,1 }, { 3,15 }, { 15,15 }, { 15,3 }, { 1,0 } };
+	int d[][2] = { {0,9}, {-5, 4}, {5,5} };
 	int i = 0;
 	while(VS_Run())	{
-		VS_SetData(1, fillPtrns + fillCnt * WIDTH_PTRN * HEIGHT_PTRN);
+		VS_SetData(1, fillPtrns + (2015 + NPATTERNS / 2) * WIDTH_PTRN * HEIGHT_PTRN);
+		//VS_SetData(1, fillPtrns + fillCnt * WIDTH_PTRN * HEIGHT_PTRN);
 		VS_SetData(2, linePtrns + lineCnt * WIDTH_PTRN * HEIGHT_PTRN);
 		VS_SetData(3, pointPtrns + pointCnt * WIDTH_PTRN * HEIGHT_PTRN);
 		VS_SetData(4, linePtrns + GET_TABLE_VALUE(lineTable, values[i][0], values[i][1]) * WIDTH_PTRN * HEIGHT_PTRN);
-		VS_SetData(5, fillPtrns + GET_TABLE_VALUE(fillTable, values[i][0], values[i][1]) * WIDTH_PTRN * HEIGHT_PTRN);
+		//VS_SetData(5, fillPtrns + GET_TABLE_VALUE(fillTable, values[i][0], values[i][1]) * WIDTH_PTRN * HEIGHT_PTRN);
+		VS_SetData(5, fillPtrns + (GET_TABLE_VALUE(fillTable, d[i][0], d[i][1]) + NPATTERNS / 2) * WIDTH_PTRN * HEIGHT_PTRN);
+		int h = GET_TABLE_VALUE(lineTable, values[i][0], values[i][1]);
 		i++;
 		fillCnt++;
 		lineCnt++;
 		pointCnt++;
 		Sleep(10);
-		i = (i == 8) ? 0 : i;
+		i = (i == 9) ? 0 : i;
 		fillCnt = (fillCnt >= FILL_PATTERNS_AMOUNT) ? 0 : fillCnt;
 		lineCnt = (lineCnt >= LINE_PATTERNS_AMOUNT) ? 0 : lineCnt;
 		pointCnt = (pointCnt >= POINT_PATTERNS_AMOUNT) ? 0 : pointCnt;

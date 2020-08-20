@@ -1,6 +1,10 @@
 #include "pattern.h"
 #include "math.h"
-
+#include "stdio.h"
+#include "windows.h"
+#include <iostream>
+#include <fstream>
+using namespace std;
 #define PI 3.14159265359
 
 #define abs(a) (((a) < 0) ? -(a) : (a))
@@ -35,7 +39,7 @@ void fillPtrnsInit(unsigned char* dst, int* table_dydx, unsigned char color) {
 			}
 		}
 	}
-	for (int x = -(WIDTH_PTRN - 1); x <= 0; x++) {
+	for (int x = -WIDTH_PTRN; x < 0; x++) {
 		for (int off = 0; off < OFFSETS; off++, cntRight++, cntLeft++) {
 			fillSide(dst + cntRight * size, off, 0, x + off, HEIGHT_PTRN, color, 0);
 			fillSide(dst + cntLeft  * size, off, 0, x + off, HEIGHT_PTRN, color, 1);
@@ -50,26 +54,64 @@ void fillPtrnsInit(unsigned char* dst, int* table_dydx, unsigned char color) {
 
 	for (int y = HEIGHT_PTRN - 1; y >= 0; y--) {
 		for (int off = 0; off < OFFSETS; off++, cntRight++, cntLeft++) {
-			fillSide(dst + cntRight * size, off, 0, WIDTH_PTRN + off, y, color, 0);
-			fillSide(dst + cntLeft  * size, off, 0, WIDTH_PTRN + off, y, color, 1);
+			fillSide(dst + cntRight * size, off, 0, (WIDTH_PTRN - 1) + off, y, color, 0);
+			fillSide(dst + cntLeft  * size, off, 0, (WIDTH_PTRN - 1) + off, y, color, 1);
+			if (y == 0) {
+				for (int i = 0; i < size; i++) {
+					dst[cntRight * size + i] = color;
+					dst[cntLeft * size + i] = color;
+				}
+			}
 		}
 	}
-
-
-	for (int i = 0; i < 2 * size + 2 * WIDTH_PTRN; i++) {
-		table_dydx[i] = 0;
-	}
-	create_tabl_dydx(dst, table_dydx, WIDTH_PTRN, HEIGHT_PTRN);
-	//createFillTable(table_dydx);
+	
+	//create_tabl_dydx(dst, table_dydx, WIDTH_PTRN, HEIGHT_PTRN);
+	createFillTable(table_dydx);
 }
 
 static void createFillTable(int* table) {
 	for (int i = 0; i < SIZE_TABLE; i++) {
 		table[i] = 0;
 	}
-	for (int y = 0; y < HEIGHT_PTRN; y++) {
-		//for(int i)
+
+	for (int x = -WIDTH_PTRN; x < WIDTH_PTRN; x++) {
+		if(x<0)
+			table[x + WIDTH_PTRN] = OFFSETS - 1;
+		else
+			table[x + WIDTH_PTRN] = 4032;
 	}
+	for (int y = 1; y <= HEIGHT_PTRN; y++) {
+		for (int x = -WIDTH_PTRN; x < 0; x++) {
+			double k = (double)y / (double)x;
+			int signX = (x < 0) ? -1 : 1;
+			if (abs(x) < y) {
+				int resX = -round(HEIGHT_PTRN / k);
+				table[y * 2 * WIDTH_PTRN + x + WIDTH_PTRN] = (64 - resX) * OFFSETS - 1;
+			}
+			else {
+				int resY = -round(WIDTH_PTRN * k);
+				table[y * 2 * WIDTH_PTRN + x + WIDTH_PTRN] = (resY) * OFFSETS - 1;
+			}
+		}
+		table[y * 2 * WIDTH_PTRN + WIDTH_PTRN] = 2080;
+		for (int x = 1; x < WIDTH_PTRN; x++) {
+			double k = (double)y / (double)x;
+			int signX = (x < 0) ? -1 : 1;
+			if (abs(x) < y) {
+				int resX = round(HEIGHT_PTRN / k);
+				table[y * 2 * WIDTH_PTRN + x + WIDTH_PTRN] = (resX) * OFFSETS + FILL_PATTERNS_AMOUNT / 4;
+			}
+			else {
+				int resY = round(WIDTH_PTRN * k);
+				table[y * 2 * WIDTH_PTRN + x + WIDTH_PTRN] = (64 - resY)* OFFSETS + FILL_PATTERNS_AMOUNT / 4;
+			}
+		}
+	}
+
+	/*//дублировнаие 31 строки в 32 строку
+	for (int i = 0; i < 2 * WIDTH_PTRN; i++) {
+		table[32 * 2 * WIDTH_PTRN + i] = table[31 * 2 * WIDTH_PTRN + i];
+	}*/
 }
 
 void linePtrnsInit(unsigned char* dst, int* table, unsigned char color) {
@@ -82,20 +124,21 @@ void linePtrnsInit(unsigned char* dst, int* table, unsigned char color) {
 	}
 //------------------------
 
-	for (int x = 0; x < WIDTH_PTRN; x++, cnt++) {
-		drawLine(dst + cnt * size, 0, 0, x, HEIGHT_PTRN - 1 , color);
-	}
-	for (int y = 0; y <= HEIGHT_PTRN; y++, cnt++) {
-		drawLine(dst + cnt * size, 0, 0, WIDTH_PTRN, y, color);
-	}
-
-
 	for (int y = 0; y < HEIGHT_PTRN; y++, cnt++) {
 		drawLine(dst + cnt * size, WIDTH_PTRN - 1, 0, 0, y, color);
 	}
-	for (int x = 0; x < WIDTH_PTRN; x++, cnt++) {
+	for (int x = 0; x <= WIDTH_PTRN; x++, cnt++) {
 		drawLine(dst + cnt * size, WIDTH_PTRN - 1, 0, x, HEIGHT_PTRN - 1, color);
 	}
+
+
+	for (int x = 0; x < WIDTH_PTRN; x++, cnt++) {
+		drawLine(dst + cnt * size, 0, 0, x, HEIGHT_PTRN - 1, color);
+	}
+	for (int y = HEIGHT_PTRN; y >= 0; y--, cnt++) {
+		drawLine(dst + cnt * size, 0, 0, WIDTH_PTRN, y, color);
+	}
+
 
 	createLineTable(table);
 	
@@ -106,8 +149,10 @@ static void createLineTable(int* table) {
 	for (int i = 0; i < SIZE_TABLE; i++) {
 		table[i] = 0;
 	}
-
-	for (int y = 0; y <= HEIGHT_PTRN; y++) {
+	for (int x = -WIDTH_PTRN; x < WIDTH_PTRN; x++) {
+		table[x + WIDTH_PTRN] = 0;
+	}
+	for (int y = 1; y <= HEIGHT_PTRN; y++) {
 		for (int x = -WIDTH_PTRN; x < WIDTH_PTRN; x++) {
 			if (x != 0) {
 				double k = (double)y / (double)x;
@@ -115,29 +160,33 @@ static void createLineTable(int* table) {
 				if (x < 0) {
 					if (abs(x) < y) {
 						int resX = -round(HEIGHT_PTRN / k);
-						table[y * 2 * WIDTH_PTRN + x + WIDTH_PTRN] = 2 * 32 - resX + LINE_PATTERNS_AMOUNT / 2;
+						table[y * 2 * WIDTH_PTRN + x + WIDTH_PTRN] = 64 - resX;
 					}
 					else {
 						int resY = -round(WIDTH_PTRN * k);
-						table[y * 2 * WIDTH_PTRN + x + WIDTH_PTRN] = resY + LINE_PATTERNS_AMOUNT / 2;
+						table[y * 2 * WIDTH_PTRN + x + WIDTH_PTRN] = resY;
 					}
 				}
 				else {
 					if (abs(x) < y) {
 						int resX = round(HEIGHT_PTRN / k);
-						table[y * 2 * WIDTH_PTRN + x + WIDTH_PTRN] = resX;
+						table[y * 2 * WIDTH_PTRN + x + WIDTH_PTRN] = resX + LINE_PATTERNS_AMOUNT / 2;
 					}
 					else {
 						int resY = round(WIDTH_PTRN * k);
-						table[y * 2 * WIDTH_PTRN + x + WIDTH_PTRN] = 32 + resY;
+						table[y * 2 * WIDTH_PTRN + x + WIDTH_PTRN] = 64 - resY + LINE_PATTERNS_AMOUNT / 2;
 					}
 				}
 			}
 			else {
-				table[y * 2 * WIDTH_PTRN + x + WIDTH_PTRN] = 0;
+				table[y * 2 * WIDTH_PTRN + x + WIDTH_PTRN] = LINE_PATTERNS_AMOUNT / 2 + 1;
 			}
 		}
 	}
+	/*//дублировнаие 31 строки в 32 строку
+	for (int i = 0; i < 2 * WIDTH_PTRN; i++) {
+		table[32 * 2 * WIDTH_PTRN + i] = table[31 * 2 * WIDTH_PTRN + i];
+	}*/
 }
 
 void pointPtrnsInit(unsigned char* dst, unsigned char color) {
