@@ -8,6 +8,9 @@
 #include "nmplv/vSupport.h"
 #include "tests.h"
 
+// Performance testing
+#include "time.h"
+
 int convertRGB565_RGB8888_singleInputIntermediateValue_singleOutputIntermediateValue();
 int convertRGB565_RGB8888_singleInputMaxValue_SingleOutputMaxValue();
 int convertRGB565_RGB8888_singleInputMinValue_singleOutputMinValue();
@@ -15,6 +18,9 @@ int convertRGB565_RGB8888_manyInputValues_manyOutputValues();
 int convertRGB565_RGB8888_FiveInputValues_FiveOutputValues();
 int convertRGB565_RGB8888_SixInputValues_SixOutputValues();
 int convertRGB565_RGB8888_SevenInputValues_SevenOutputValues();
+
+// Performance tests
+clock_t convertRGB565_RGB8888_fourInputValues_fourOutputValues();
 
 int main(int argc, char **argv)
 {
@@ -26,8 +32,13 @@ int main(int argc, char **argv)
     RUN_TEST(convertRGB565_RGB8888_FiveInputValues_FiveOutputValues);       
     RUN_TEST(convertRGB565_RGB8888_SixInputValues_SixOutputValues);         
     RUN_TEST(convertRGB565_RGB8888_SevenInputValues_SevenOutputValues);     
+
+	clock_t dt;
+	dt = convertRGB565_RGB8888_fourInputValues_fourOutputValues();
+	
     puts("OK");
-    return 0;
+
+    return dt;
 }
 
 int convertRGB565_RGB8888_singleInputIntermediateValue_singleOutputIntermediateValue()
@@ -238,3 +249,31 @@ int convertRGB565_RGB8888_SevenInputValues_SevenOutputValues()
     return 0;
 }
 
+clock_t convertRGB565_RGB8888_fourInputValues_fourOutputValues()
+{
+    //Arrange
+    constexpr int count = 4;
+    rgb565 *srcArray = nmppsMalloc_16s(count);
+    nm32u RGB565Values[count] = {0xC979, 0xFFFF, 0xAAAA, 0x5555};
+    rgb8888 *dstArray = new rgb8888[count];
+
+    for (int i = 0; i < count; ++i) {
+        dstArray[i].vec[0] = 0;
+    }
+
+    for (int i = 0; i < count; ++i){
+        nmppsPut_16s(srcArray, i, RGB565Values[i]);
+    }
+	clock_t t1, t2, dt;
+
+    //Act
+	t1 = clock();
+    convertRGB565_RGB8888(srcArray, dstArray, count);
+	t2 = clock();
+	dt = t2 - t1;
+
+	nmppsFree(srcArray);
+	delete dstArray;
+
+    return dt;
+}

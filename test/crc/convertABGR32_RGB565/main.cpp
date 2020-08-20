@@ -8,6 +8,9 @@
 #include "malloc32.h"
 #include "service.h"
 
+// Performance testing
+#include "time.h"
+
 int convertABGR32_RGB565_singleInputMaxValue_SingleOutputMaxValue();
 int convertABGR32_RGB565_singleInputMinValue_singleOutputMinValue();
 int convertABGR32_RGB565_singleInputIntermediateValue_singleOutputIntermediateValue();
@@ -16,6 +19,8 @@ int convertABGR32_RGB565_fiveInputValues_fiveOutputValues();
 int convertABGR32_RGB565_sixInputValues_sixOutputValues();
 int convertABGR32_RGB565_sevenInputValues_sevenOutputValues();
 
+// Performance tests
+clock_t convertABGR32_RGB565_fourInputValues_fourOutputValues();
 
 int main(int argc, char **argv)
 {
@@ -27,8 +32,12 @@ int main(int argc, char **argv)
     RUN_TEST(convertABGR32_RGB565_fiveInputValues_fiveOutputValues);
     RUN_TEST(convertABGR32_RGB565_sixInputValues_sixOutputValues);
     RUN_TEST(convertABGR32_RGB565_sevenInputValues_sevenOutputValues);
+
+	clock_t dt;
+	dt = convertABGR32_RGB565_fourInputValues_fourOutputValues();
+
     puts("OK");
-    return 0;
+    return dt;
 }
 
 int convertABGR32_RGB565_singleInputMaxValue_SingleOutputMaxValue()
@@ -349,3 +358,37 @@ int convertABGR32_RGB565_sevenInputValues_sevenOutputValues()
     return 0;
 }
 
+clock_t convertABGR32_RGB565_fourInputValues_fourOutputValues()
+{
+    // Arrange
+    constexpr int count = 4;
+    abgr32 *srcArray = new abgr32[count];    
+    rgb565 *dstArray = nmppsMalloc_16s(count);
+
+    srcArray[0].vec[0] = 0x3333333355555555;
+    srcArray[0].vec[1] = 0xAAAAAAAACCCCCCCC;
+
+    srcArray[1].vec[0] = 0xFFFFFFFFFFFFFFFF;
+    srcArray[1].vec[1] = 0xFFFFFFFFFFFFFFFF; 
+
+    srcArray[2].vec[0] = 0x000000D800000005;
+    srcArray[2].vec[1] = 0xFFFFFFFF000000A8; 
+
+    srcArray[3].vec[0] = 0x000000E800000006;
+    srcArray[3].vec[1] = 0xFFFFFFFF000000B8; 
+
+	clock_t t1, t2, dt;
+
+    //Act
+	t1 = clock();
+    convertABGR32_RGB565(srcArray, dstArray, count);
+	t2 = clock();
+	dt = t2 - t1;
+
+    //Assert
+
+    delete srcArray;
+    nmppsFree(dstArray);
+
+    return dt;
+}

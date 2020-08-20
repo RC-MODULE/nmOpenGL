@@ -1,4 +1,4 @@
-ROOT = ../..
+ROOT = ../../../..
 include $(ROOT)/global.mk
 # BUILD AND RUN MAKEFILE
 # This makefile builds simple nmc-application containing single cpp-file  

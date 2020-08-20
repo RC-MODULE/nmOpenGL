@@ -104,6 +104,10 @@ SECTIONS
   {
     *(.data_shmem0);
   } > SHMEM0
+  .textures_mipmap_mem : ALIGN(0x8)
+  {
+    *(.textures_mipmap_mem);
+  } > EMI0
   .data_shared0 : ALIGN(0x8)
   {
     *(.data_shared0);

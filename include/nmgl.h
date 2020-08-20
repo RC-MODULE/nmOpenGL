@@ -5,6 +5,9 @@
 
 #include "nmgldef.h"
 
+#include "demo3d_common.h"
+#define ActiveTexObjectP cntxt->texState.texUnits[cntxt->texState.activeTexUnitIndex].boundTexObject
+
 void nmglActiveTexture (NMGLenum texture);
 void nmglAlphaFunc (NMGLenum func, NMGLclampf ref);
 void nmglBegin(NMGLenum mode);
@@ -107,5 +110,9 @@ void nmglVertex3f (NMGLfloat x, NMGLfloat y, NMGLfloat z);
 void nmglVertex3fv (const NMGLfloat *v);
 void nmglVertexPointer (NMGLint size, NMGLenum type, NMGLsizei stride, const NMGLvoid *pointer);
 void nmglViewport (NMGLint x, NMGLint y, NMGLsizei width, NMGLsizei height);
+
+void nmglTexImage2D(NMGLenum target, NMGLint level, NMGLint internalformat, NMGLsizei width, NMGLsizei height, NMGLint border, NMGLenum format, NMGLenum type, const void *pixels );
+void nmglTexSubImage2D (NMGLenum target, NMGLint level, NMGLint xoffset, NMGLint yoffset, NMGLsizei width, NMGLsizei height, NMGLenum format, NMGLenum type, const void *pixels);
+void nmglTexCoordPointer (NMGLint size, NMGLenum type, NMGLsizei stride, const void *pointer);
 
 #endif

@@ -116,7 +116,7 @@ $(TMP_DIR):
 	-mkdir "$(@)"
 
 $(TARGET): $(TMP_DIR) $(OBJECTS) $(ALL_H) nmc4vars_win.mk Makefile
-	$(CC) $(LINKER_FLAGS) $(OBJECTS) $(LIBS)
+	$(CC) $(CC_FLAGS) $(LINKER_FLAGS) $(OBJECTS) $(LIBS)
 
 nmc4vars_win.mk:
 	copy "$(NMC_GCC_TOOLPATH)\nmc4-ide\include\nmc4vars_win.mk" nmc4vars_win.mk

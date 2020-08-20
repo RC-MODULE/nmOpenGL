@@ -18,14 +18,14 @@ SECTION(".data_imu3")	float nmglBuffer2[12 * NMGL_SIZE];
 SECTION(".data_imu4")	float nmglBuffer3[12 * NMGL_SIZE];
 
 
-SECTION(".data_imu1")	float x0[NMGL_SIZE];
-SECTION(".data_imu2")	float y0[NMGL_SIZE];
-SECTION(".data_imu3")	float x1[NMGL_SIZE];
-SECTION(".data_imu4")	float y1[NMGL_SIZE];
-SECTION(".data_imu5")	float x2[NMGL_SIZE];
-SECTION(".data_imu6")	float y2[NMGL_SIZE];
-SECTION(".data_imu7")	int z_int[NMGL_SIZE];
-SECTION(".data_imu6")	v4nm32s lightsValues[NMGL_SIZE];
+SECTION(".data_imu1")	float nmglx0[NMGL_SIZE];
+SECTION(".data_imu2")	float nmgly0[NMGL_SIZE];
+SECTION(".data_imu3")	float nmglx1[NMGL_SIZE];
+SECTION(".data_imu4")	float nmgly1[NMGL_SIZE];
+SECTION(".data_imu5")	float nmglx2[NMGL_SIZE];
+SECTION(".data_imu6")	float nmgly2[NMGL_SIZE];
+SECTION(".data_imu7")	int nmglz_int[NMGL_SIZE];
+SECTION(".data_imu6")	v4nm32s nmgllightsValues[NMGL_SIZE];
 
 SECTION(".data_imu7") int dividedMasksMemory[4][NMGL_SIZE / 32];
 
@@ -91,23 +91,23 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 
 	halHostSync(0x600DB00F);	// send ok to host
 
-	cntxt->trianInner.x0 = x0;
-	cntxt->trianInner.y0 = y0;
-	cntxt->trianInner.x1 = x1;
-	cntxt->trianInner.y1 = y1;
-	cntxt->trianInner.x2 = x2;
-	cntxt->trianInner.y2 = y2;
-	cntxt->trianInner.z = z_int;
-	cntxt->trianInner.colors = lightsValues;
+	cntxt->trianInner.x0 = nmglx0;
+	cntxt->trianInner.y0 = nmgly0;
+	cntxt->trianInner.x1 = nmglx1;
+	cntxt->trianInner.y1 = nmgly1;
+	cntxt->trianInner.x2 = nmglx2;
+	cntxt->trianInner.y2 = nmgly2;
+	cntxt->trianInner.z = nmglz_int;
+	cntxt->trianInner.colors = nmgllightsValues;
 	cntxt->trianInner.maxSize = NMGL_SIZE;
 	cntxt->trianInner.size = 0;
 
-	cntxt->lineInner.x0 = x0;
-	cntxt->lineInner.y0 = y0;
-	cntxt->lineInner.x1 = x1;
-	cntxt->lineInner.y1 = y1;
-	cntxt->lineInner.z = z_int;
-	cntxt->lineInner.colors = lightsValues;
+	cntxt->lineInner.x0 = nmglx0;
+	cntxt->lineInner.y0 = nmgly0;
+	cntxt->lineInner.x1 = nmglx1;
+	cntxt->lineInner.y1 = nmgly1;
+	cntxt->lineInner.z = nmglz_int;
+	cntxt->lineInner.colors = nmgllightsValues;
 	cntxt->lineInner.maxSize = NMGL_SIZE;
 	cntxt->lineInner.size = 0;
 

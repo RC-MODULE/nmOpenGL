@@ -21,4 +21,7 @@ void nmglDisableClientState(NMGLenum array) {
 		cntxt->error = NMGL_INVALID_ENUM;
 		break;
 	}
+	if (array == NMGL_TEXTURE_COORD_ARRAY) {
+		cntxt->texState.texcoordArray[cntxt->texState.clientActiveTexUnitIndex].enabled = NMGL_FALSE;
+	}
 }
