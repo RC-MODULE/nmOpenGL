@@ -116,6 +116,10 @@ SECTIONS
   {
     *(.data_shared2.bss);
   } > EMI2
+  .textures_mipmap_mem : ALIGN(0x8)
+  {
+    *(.textures_mipmap_mem);
+  } > EMI2
   .data_DDR : ALIGN(0x8)
   {
     *(.data_DDR);
