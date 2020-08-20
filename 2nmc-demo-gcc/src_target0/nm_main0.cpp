@@ -97,8 +97,7 @@ SECTION(".text_shared0") int main()
 
 		nmglClear(NMGL_COLOR_BUFFER_BIT | NMGL_DEPTH_BUFFER_BIT);
 
-		//nmglVertexPointer(4, NMGL_FLOAT, 0, vertices_DDR);
-		nmglVertexPointer(4, NMGL_FLOAT, 0, verticesLine);
+		nmglVertexPointer(4, NMGL_FLOAT, 0, vertices_DDR);
 		nmglNormalPointer(NMGL_FLOAT, 0, normal_DDR);
 		nmglLoadIdentity();
 		nmglRotatef(angle, 0.707f, 0.707f, 0);

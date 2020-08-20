@@ -55,7 +55,7 @@ int main()
 	nmglClearColor(0.5, 0.5, 0.5f, 1.0f);
 
 	nmglMatrixMode(NMGL_PROJECTION);
-	nmglOrthof(-768 /2, 768 / 2, -768 / 2, 768 / 2, 0, 100);
+	nmglOrthof(-768 /2, 768 / 2, -768 / 2, 768 / 2, -768/2, 768/2);
 	
 	//nmglVertexPointer(2, NMGL_FLOAT, 0, lines);
 	nmglVertexPointer(4, NMGL_FLOAT, 0, vertices);
@@ -65,7 +65,11 @@ int main()
 	while(nmglvsNm0Run()){
 		nmglClear(NMGL_COLOR_BUFFER_BIT);
 
+#ifdef __OPEN_GL__
+		nmglRotatef(0.03, 0.707, 0.707, 0);
+#else
 		nmglRotatef(0.3, 0.707, 0.707, 0);
+#endif
 		//nmglDrawArrays(NMGL_LINES, 0, 24);
 		nmglDrawArrays(NMGL_LINES, 0, 2 * amount);
 
