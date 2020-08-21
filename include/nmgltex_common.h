@@ -3,7 +3,6 @@
 
 #include "demo3d_common.h"
 #include "nmgltype.h"
-#include <iostream>
 //Memory
 //------------------------CUSTOMIZE-THIS-ONLY-----------------------------------------------------------------
 #define NMGL_MAX_MIPMAP_LVL                 10  //square textures only; 1024 width/height
@@ -207,7 +206,7 @@ template<class T> void PrintMipMapP(int objname,T *context)
 {
 
     T* cntxt = context;
-    std::cout<<"Texture object "<<cntxt->texState.texObjects[objname].name<<std::endl;
+    printf("Texture object %d\n",cntxt->texState.texObjects[objname].name);
     for(int i=0;i<=NMGL_MAX_MIPMAP_LVL;i++)
     {
         printf("Mipmap level %d\n",i);
