@@ -16,8 +16,9 @@
 SECTION(".text_demo3d")
 void pushToLines_l(const float *vertexX, const float *vertexY, const float *vertexZ, const v4nm32f* color, Lines& lines, int countVertex){
 	int countPrim = countVertex / 2;
-	int* colorInt = (int*)color;
-	int* colorIntLine = (int*)lines.colors;
+	float* srcColor = (float*)color;
+	int* dstColorLine = (int*)lines.colors;
+	
 	
 	for(int i = 0; i < countPrim; i++){
 		lines.x0[i] = vertexX[2 * i + 0];
@@ -25,10 +26,10 @@ void pushToLines_l(const float *vertexX, const float *vertexY, const float *vert
 		lines.y0[i] = vertexY[2 * i + 0];
 		lines.y1[i] = vertexY[2 * i + 1];
 		lines.z[i] = (vertexZ[2 * i] + vertexZ[2 * i + 1]) / 2;
-		colorIntLine[4 * i + 0] = colorInt[2 * 4 * i + 0];
-		colorIntLine[4 * i + 1] = colorInt[2 * 4 * i + 1];
-		colorIntLine[4 * i + 2] = colorInt[2 * 4 * i + 2];
-		colorIntLine[4 * i + 3] = colorInt[2 * 4 * i + 3];
+		dstColorLine[4 * i + 0] = (int)srcColor[2 * 4 * i + 0];
+		dstColorLine[4 * i + 1] = (int)srcColor[2 * 4 * i + 1];
+		dstColorLine[4 * i + 2] = (int)srcColor[2 * 4 * i + 2];
+		dstColorLine[4 * i + 3] = (int)srcColor[2 * 4 * i + 3];
 	}
 
 	lines.size = countPrim;

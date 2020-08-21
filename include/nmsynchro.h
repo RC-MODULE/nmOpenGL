@@ -3,13 +3,12 @@
 
 #include <time.h>
 #include "nmdef.h"
-#include "ringbuffer.h"
 #include "ringbuffert.h"
 #include "stdio.h"
 
 #define NMC1_DRAW_TRIANGLES 		0xF0000000
-#define NMC1_DRAW_TRIANGLES_TEST 	0xF0F00000
 #define NMC1_DRAW_LINES 			0xF0010000
+#define NMC1_DRAW_POINTS 			0xF0F00000
 #define NMC1_CLEAR 					0xF0020000
 #define NMC1_DEPTH 					0xF0050000
 #define NMC1_SET_COLOR 				0xF0060000
@@ -32,6 +31,7 @@
 #define NMC1_AND4 					0xF1030000
 #define NMC1_OR 					0xF1040000
 #define NMC1_FAST_INV_SQRT 			0xF1050000
+#define NMC1_POINT_SIZE 			0xF1060000
 #define NMC1_EXIT 					0xFFFF0000
 #define NMC1_SYNC 					0xFF000000
 

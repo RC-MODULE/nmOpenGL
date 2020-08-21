@@ -108,7 +108,7 @@ $(TMP_DIR)/dumps:
 	mkdir $(TMP_DIR)\dumps
 	
 $(TMP_DIR)/dumps/%.dump: $(TMP_DIR)/%.o
-	nmc-objdump $< -S -r -t >> $@
+	nmc-objdump $< -d -S -x >> $@
 	
 	
 	

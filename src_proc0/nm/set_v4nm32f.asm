@@ -9,16 +9,16 @@ begin ".text_demo3d"
 	push ar1,gr1	with gr7++;
 	push ar2,gr2	with gr0 = gr7<<1;
 	ar0 = [--ar5]	with gr1 = gr0;
-	ar2 = [--ar5]	with gr2 = gr7;
+	ar2 = [--ar5];
 	fpu 0 rep 32 vreg0 = [ar2];
-	ar2 += gr2	with gr2 = -gr2;	//gr2=2
+	ar2 += 2;
 	fpu 1 rep 32 vreg0 = [ar2];
-	ar2 += gr2;
+	ar2 -= 2;
 	gr2 = [--ar5];					//gr2 = size
-	ar1 = ar0 + 2	with gr7 = gr2<<27;
-	gr2>>=5;
-	if =0 delayed goto AfterRep32	with gr7>>=27;
-		nul;
+	ar1 = ar0 + 2	with gr7 = gr2 << 27;
+	gr2 >>= 5;
+	if =0 delayed goto AfterRep32;
+		with gr7 >>= 27;
 		gr2--;
 <NextRep32>
 	if > delayed goto NextRep32	with gr2--;
@@ -26,11 +26,11 @@ begin ".text_demo3d"
 		fpu 1 rep 32 [ar1++gr1] = vreg0;
 <AfterRep32>
 	gr7--;
-	if < delayed goto EndProg	with gr2 = false;
-		vlen = gr7				with gr2++;
-		gr2++;
+	if < delayed goto EndProg;
+		vlen = gr7;
+		nul;
 	fpu 0 rep vlen vreg0 = [ar2];
-	ar2 += gr2;
+	ar2 += 2;
 	fpu 1 rep vlen vreg0 = [ar2];
 	fpu 0 rep vlen [ar0++gr0] = vreg0;
 	fpu 1 rep vlen [ar1++gr1] = vreg0;

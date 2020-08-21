@@ -17,16 +17,16 @@ SECTION(".data_imu3")	int pool1[SIZE_BANK];
 SECTION(".data_imu2")	int segImage[WIDTH_SEG * HEIGHT_SEG];
 SECTION(".data_imu2")	int segZBuff[WIDTH_SEG * HEIGHT_SEG];
 
-SECTION(".data_imu0") Vector2 ptrnInnPoints[NMGL_SIZE];
-SECTION(".data_imu0") Size ptrnSizes[NMGL_SIZE];
-SECTION(".data_shmem1") nm32s valuesZ[NMGL_SIZE];
-SECTION(".data_shmem1") nm32s valuesC[NMGL_SIZE];
+SECTION(".data_imu0") Vector2 ptrnInnPoints[POLYGONS_SIZE];
+SECTION(".data_imu0") Size ptrnSizes[POLYGONS_SIZE];
+SECTION(".data_shmem1") nm32s valuesZ[POLYGONS_SIZE];
+SECTION(".data_shmem1") nm32s valuesC[POLYGONS_SIZE];
 
-SECTION(".data_shmem1") nm32s* ppSrcPackPtrns[3 * NMGL_SIZE];
-SECTION(".data_shmem1") nm32s* ppDstPackPtrns[3 * NMGL_SIZE];
-SECTION(".data_shmem1") nm32s nSizePtrn32[3 * NMGL_SIZE];
-SECTION(".data_shmem1") nm32s* zBuffPoints[NMGL_SIZE];
-SECTION(".data_shmem1") nm32s* imagePoints[NMGL_SIZE];
+SECTION(".data_shmem1") nm32s* ppSrcPackPtrns[3 * POLYGONS_SIZE];
+SECTION(".data_shmem1") nm32s* ppDstPackPtrns[3 * POLYGONS_SIZE];
+SECTION(".data_shmem1") nm32s nSizePtrn32[3 * POLYGONS_SIZE];
+SECTION(".data_shmem1") nm32s* zBuffPoints[POLYGONS_SIZE];
+SECTION(".data_shmem1") nm32s* imagePoints[POLYGONS_SIZE];
 
 
 SECTION(".data_shmem1") nm32s colorClearBuff[WIDTH_SEG * HEIGHT_SEG];
@@ -65,12 +65,11 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 		setHeap(0);
 		NMGL_Context_NM1::bind(&context);
 		cntxt = NMGL_Context_NM1::getContext();
+		cntxt->polygonsConnectors = myMallocT<PolygonsConnector>();
 		
 		setHeap(11);
 		cntxt->patterns = myMallocT<PatternsArray>();
-		//printf("size patterns = %d\n", sizeof32(cntxt->patterns->ptrns));
-		//printf("size patterns table = %d\n", sizeof32(cntxt->patterns->table_dydx));
-
+		
 		setHeap(13);
 		cntxt->imagesData = myMallocT<ImageData>();
 		cntxt->imagesData->init();
@@ -92,7 +91,8 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 
 	NMGLSynchroData* synchroData = (NMGLSynchroData*)halSyncAddr((int*)cntxt->patterns, 0);
 	cntxt->synchro.init(synchroData);
-	cntxt->polygonsData = (PolygonsArray*)halSyncAddr(0, 0);
+	PolygonsArray* polygonsData = (PolygonsArray*)halSyncAddr(0, 0);
+	cntxt->polygonsConnectors[0].init(polygonsData);
 
 	halHostSync(0x600DB00F);	// send ok to host
 
@@ -109,8 +109,6 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 
 	cntxt->smallClearColorBuff.init(colorClearBuff, WIDTH_SEG, HEIGHT_SEG);
 	cntxt->smallClearDepthBuff.init(depthClearBuff, WIDTH_SEG, HEIGHT_SEG);
-	
-	halSleep(10);
 
 	//sync0
 	halHostSync((int)cntxt->patterns);
@@ -141,6 +139,7 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 	cntxt->imagePoints = imagePoints;
 
 	cntxt->t0 = clock();
+	cntxt->pointSize = 1;
 	return 0;
 } 
 

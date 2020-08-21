@@ -16,6 +16,7 @@ SECTION(".data_imu1")	float nmglBuffer0[12 * NMGL_SIZE];
 SECTION(".data_imu2")	float nmglBuffer1[12 * NMGL_SIZE];
 SECTION(".data_imu3")	float nmglBuffer2[12 * NMGL_SIZE];
 SECTION(".data_imu4")	float nmglBuffer3[12 * NMGL_SIZE];
+SECTION(".data_imu5")	float nmglBuffer4[12 * NMGL_SIZE];
 
 
 SECTION(".data_imu1")	float nmglx0[NMGL_SIZE];
@@ -27,7 +28,7 @@ SECTION(".data_imu6")	float nmgly2[NMGL_SIZE];
 SECTION(".data_imu7")	int nmglz_int[NMGL_SIZE];
 SECTION(".data_imu6")	v4nm32s nmgllightsValues[NMGL_SIZE];
 
-SECTION(".data_imu7") int dividedMasksMemory[4][NMGL_SIZE / 32];
+SECTION(".data_imu6") int dividedMasksMemory[4][NMGL_SIZE / 32];
 
 SECTION(".data_imu6") int masksBits[36][NMGL_SIZE / 32];
 
@@ -55,6 +56,7 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 	halSleep(100);
 	NMGLSynchroData* synchroData;
 	NMGL_Context_NM0 *cntxt;
+	PolygonsArray* polygonsData;
 	try {
 		int fromHost = halHostSync(0xC0DE0000);		// send handshake to host
 		if (fromHost != 0xC0DE0086) {					// get  handshake from host
@@ -69,11 +71,15 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 		setHeap(7);
 		NMGL_Context_NM0::create(synchroData);	
 		cntxt = NMGL_Context_NM0::getContext();
+		cntxt->init(synchroData);
+
+		setHeap(1);
+		cntxt->polygonsConnectors = myMallocT<PolygonsConnector>();
 
 		setHeap(10);
-		cntxt->polygonsData = myMallocT<PolygonsArray>();
-		cntxt->polygonsData->init();
-		cntxt->init(synchroData);
+		polygonsData = myMallocT<PolygonsArray>();
+		polygonsData->init();
+		cntxt->polygonsConnectors[0].init(polygonsData);
 
 		cntxt->beginEndInfo.vertex = myMallocT<v4nm32f>(BIG_NMGL_SIZE);
 		cntxt->beginEndInfo.normal = myMallocT<v4nm32f>(BIG_NMGL_SIZE);
@@ -87,7 +93,7 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 	halHostSync(0x600DB00F);	// send ok to host
 	
 	cntxt->patterns = (PatternsArray*)halSyncAddr(synchroData, 1);
-	halSyncAddr(cntxt->polygonsData, 1);
+	halSyncAddr(polygonsData, 1);
 
 	halHostSync(0x600DB00F);	// send ok to host
 
@@ -111,11 +117,19 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 	cntxt->lineInner.maxSize = NMGL_SIZE;
 	cntxt->lineInner.size = 0;
 
+	cntxt->pointInner.x0 = nmglx0;
+	cntxt->pointInner.y0 = nmgly0;
+	cntxt->pointInner.z = nmglz_int;
+	cntxt->pointInner.colors = nmgllightsValues;
+	cntxt->pointInner.maxSize = NMGL_SIZE;
+	cntxt->pointInner.size = 0;
+
 
 	cntxt->buffer0 = nmglBuffer0;
 	cntxt->buffer1 = nmglBuffer1;
 	cntxt->buffer2 = nmglBuffer2;
 	cntxt->buffer3 = nmglBuffer3;
+	cntxt->buffer4 = nmglBuffer4;
 
 	cntxt->dividedMasks[0].init((nm1*)dividedMasksMemory[0], (nm1*)dividedMasksMemory[1]);
 	cntxt->dividedMasks[1].init((nm1*)dividedMasksMemory[2], (nm1*)dividedMasksMemory[3]);

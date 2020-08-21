@@ -13,6 +13,8 @@ void selectPatterns(nm32s* dydxTable, nm32s* dX, nm32s* dY, nm32s* x0, nm32s* pP
 struct NMGL_Context_NM1 {
 private:
 	static NMGL_Context_NM1 *context;
+	//NMGL_Context_NM1() {};		// недоступный конструктор
+	//~NMGL_Context_NM1() {};		// и деструктор
 public:
 	static void create() {
 		//context = (NMGL_Context_NM1*)halMalloc32(sizeof32(NMGL_Context_NM1));
@@ -37,11 +39,13 @@ public:
 
 	int* buffer0;
 	int* buffer1;
+	int pointSize;
+	int dummy;
 	clock_t t0, t1;
 
 	NMGLSynchro synchro;
 	ImageData* imagesData;
-	PolygonsArray* polygonsData;
+	PolygonsConnector* polygonsConnectors;
 
 	DepthBuffer depthBuffer;
 	IMAGE_BUFFER_CLASS colorBuffer;
@@ -163,7 +167,12 @@ extern "C" {
 
 void drawTriangles();
 void drawLines();
-int getAddrPtrnsT(Polygons* poly);
-int getAddrPtrnsL(Polygons* poly);
+void drawPoints();
+int getAddrPtrnsT(PolygonsOld* poly);
+int getAddrPtrnsL(PolygonsOld* poly);
+int getAddrPtrnsP(PolygonsOld* poly);
+int getAddrPtrnsT(DataForNmpu1* data);
+int getAddrPtrnsL(DataForNmpu1* data);
+int getAddrPtrnsP(DataForNmpu1* data);
 
 #endif

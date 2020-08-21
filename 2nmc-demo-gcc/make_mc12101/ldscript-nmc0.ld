@@ -100,6 +100,10 @@ SECTIONS
   {
     *(.data_imu7);
   } > C0_IMU7
+  .textures_mipmap_mem : ALIGN(0x8)
+  {
+    *(.textures_mipmap_mem);
+  } > EMI2
   .data_shmem0 : ALIGN(0x8)
   {
     *(.data_shmem0);

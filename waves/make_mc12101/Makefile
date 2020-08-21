@@ -12,7 +12,7 @@ $(warning *** WARNING: 'MC12101' environment variable is not defined! Board SDK 
 endif 
 
 BOARD    = mc12101
-HOST     = $(BOARD)-x86
+HOST     = $(BOARD)-host
 
 TARGET0  = main0.abs
 TARGET1  = main1.abs
@@ -29,11 +29,11 @@ nm1 $(TARGET1):
 	
 host $(HOST): $(VS)
 
-proflist: proflist0 proflist1
-proflist0:
-	$(MAKE) -f Makefile0 proflist
-proflist1:
-	$(MAKE) -f Makefile1 proflist
+profile: profile0 profile1
+profile0:
+	$(MAKE) -f Makefile0 profile
+profile1:
+	$(MAKE) -f Makefile1 profile
 	
 dump0:
 	$(MAKE) -f Makefile0 dumps

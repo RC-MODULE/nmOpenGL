@@ -1,5 +1,6 @@
-
-
+#ifdef __NM__
+extern "C"{
+#endif
 void mul_v4nm32f_mat4nm32f(float* srcVector4xN,
 							float* srcMatrix4x4, 
 							float* dstVector4xN, int count){
@@ -28,3 +29,6 @@ void mul_v4nm32f_mat4nm32f(float* srcVector4xN,
 		dstVector4xN[4*i + 3] = temp[3];
 	}
 }
+#ifdef __NM__
+}
+#endif

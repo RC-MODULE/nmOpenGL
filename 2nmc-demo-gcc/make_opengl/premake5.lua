@@ -9,7 +9,7 @@ solution "opengl-x86"
    project "opengl-x86"
       kind "ConsoleApp"
 	  language "C++"
-      files { "../../nmglvs_opengl/*.*", "../src_target0/*.*" }
+      files { "../../nmglvs_opengl/*.*", "../src_target0/*.cpp" }
 	  libdirs { "$(NMPP)/lib","$(HAL)/lib", "$(GLFW)/build/src/Debug", "$(GLEW)/lib/Release/Win32"}
 	  includedirs { "$(MC12101)/include","$(HAL)/include","$(NMPP)/include","../../nmglvs_opengl", "$(GLFW)/include","$(GLEW)/include"}
 	  links { "nmpp-x86.lib","hal-virtual-x86.lib", "glfw3.lib", "glew32s.lib", "opengl32.lib"}

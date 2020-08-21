@@ -148,6 +148,14 @@ SECTION(".text_nmglvs") int nmglvsNm1Step()
 		drawLines();
 		break;
 	}
+	case NMC1_DRAW_POINTS: {
+		drawPoints();
+		break;
+	}
+	case NMC1_POINT_SIZE: {
+		cntxt->pointSize = currentCommand.params[0];
+		break;
+	}
 
 	case NMC1_SET_COLOR: {
 		int red = currentCommand.params[0];

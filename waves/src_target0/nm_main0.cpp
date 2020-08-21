@@ -336,7 +336,8 @@ int main()
 		int error = nmglGetError();
 
 		t0 = clock();
-		nmglDrawArrays(NMGL_TRIANGLES, 0, COUNT_TRIANGLES*3);
+		//nmglDrawArrays(NMGL_POINTS, 0, COUNT_TRIANGLES*3);
+		nmglDrawArrays(NMGL_TRIANGLES, 0, COUNT_TRIANGLES * 3);
 		t1 = clock();
 		timeClock = t1 - t0;
 		printf("nmglDrawArrays=%d\n", timeClock);

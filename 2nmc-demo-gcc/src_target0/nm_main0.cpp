@@ -6,44 +6,6 @@
 #include "nmgl.h"
 #include "nmglvs_nmc0.h"
 
-#include "nmgladapter.h"
-	
-//SECTION(".data_shared0") float vertices_DDR[2000 * 12];
-//SECTION(".data_shared0") float normal_DDR[2000 * 9];
-//SECTION(".data_shared0") float vertices_DDR2[2000 * 12];
-//SECTION(".data_shared0") float normal_DDR2[2000 * 9];
-SECTION(".data_shared0") float twoTriangles[24 * 4] = {
-	110, 90, 0, 1,
-	90, 110, 0, 1,
-
-	90, 90, 0, 1,
-	110, 110, 0, 1,
-
-	110, 90, 0, 1,
-	90, 90, 0, 1,
-
-	110, 90, 0, 1,
-	110, 110, 0, 1,
-
-	110, 90, 0, 1,
-	125, 95, 0, 1,
-	90, 90, 0, 1,
-	75, 95, 0, 1,
-
-	90, 90, 0, 1,
-	75, 95, 0, 1,
-	90, 90, 0, 1,
-	75, 95, 0, 1,
-	110, 90, 0, 1,
-	125, 95, 0, 1,
-	110, 90, 0, 1,
-	125, 95, 0, 1,
-	110, 90, 0, 1,
-	125, 95, 0, 1,
-	110, 90, 0, 1,
-	125, 95, 0, 1,
-};
-
 SECTION(".text_shared0") int main()
 {
 	nmglvsNm0Init();
@@ -96,7 +58,6 @@ SECTION(".text_shared0") int main()
 #endif
 	
 	nmglClearColor(0, 0, 0.4f, 0.0f);
-	//nmglClearColor(0.5, 0.5, 0.5, 1.0f);
 
 	nmglEnable(NMGL_DEPTH_TEST);
 	nmglEnable(NMGL_CULL_FACE);
@@ -129,17 +90,11 @@ SECTION(".text_shared0") int main()
 	nmglLightfv(NMGL_LIGHT1, NMGL_DIFFUSE, lightDiffuse);*/
 
 	while(nmglvsNm0Run()){
-		/*nmglEnableClientState(NMGL_VERTEX_ARRAY);
-		nmglClear(NMGL_COLOR_BUFFER_BIT);
-		nmglVertexPointer(4, NMGL_FLOAT, 0, twoTriangles);
-		nmglDrawArrays(NMGL_LINES, 0, 24);
-		nmglDisableClientState(NMGL_VERTEX_ARRAY);*/
 
 		nmglEnableClientState(NMGL_VERTEX_ARRAY);
 		nmglEnableClientState(NMGL_NORMAL_ARRAY);
 
 		nmglClear(NMGL_COLOR_BUFFER_BIT | NMGL_DEPTH_BUFFER_BIT);
-		
 
 		nmglVertexPointer(4, NMGL_FLOAT, 0, vertices_DDR);
 		nmglNormalPointer(NMGL_FLOAT, 0, normal_DDR);
@@ -152,7 +107,7 @@ SECTION(".text_shared0") int main()
 		materialSpec[1] = 0.6;
 		materialSpec[2] = 0.6;
 		nmglMaterialfv(NMGL_FRONT_AND_BACK, NMGL_SPECULAR, materialSpec);
-		glDrawArrays(GL_TRIANGLES, 0, 3 * amountPolygons);
+		nmglDrawArrays(NMGL_TRIANGLES, 0, 3 * amountPolygons);
 
 		nmglVertexPointer(4, NMGL_FLOAT, 0, vertices_DDR2);
 		nmglNormalPointer(NMGL_FLOAT, 0, normal_DDR2);
@@ -167,7 +122,6 @@ SECTION(".text_shared0") int main()
 		nmglMaterialfv(NMGL_FRONT_AND_BACK, NMGL_SPECULAR, materialSpec);
 		nmglRotatef(angle, 0.707, 0.707, 0);
 		nmglTranslatef(150, 150, 0);
-
 		nmglDrawArrays(NMGL_TRIANGLES, 0, 3 * amountPolygons2);
 #ifdef __OPEN_GL__
 		angle += 0.03;
