@@ -440,9 +440,9 @@ void textureTriangle(Pattern* patterns,
         float s2 = triangles->s2[cnt];
         float t2 = triangles->t2[cnt];
         
-        float z0 = triangles->z[cnt];
-        float z1 = triangles->z[cnt];
-        float z2 = triangles->z[cnt];
+        float z0 = triangles->z0[cnt];
+        float z1 = triangles->z1[cnt];
+        float z2 = triangles->z2[cnt];
         
 #ifdef PERSPECTIVE_CORRECT        
 		// Compute some coefficients.
