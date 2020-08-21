@@ -67,15 +67,6 @@ nmglVertexPointer, nmglNormalPointer, nmglColorPointer
 */
 
 
-/*void printCrc(void* src, int size32, char* s = 0) {
-	unsigned crc = 0;
-	static unsigned counter = 0;
-	halCrcAcc_32f((float *)src, size32, &crc);
-	if (s == 0)
-		printf("%d 0x%x\n", counter++, crc);
-	else
-		printf("%d %s 0x%x\n", counter++, s, crc);
-}*/
 
 SECTION(".text_nmgl")
 void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
@@ -127,11 +118,6 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 	reverseMatrix3x3in4x4(cntxt->modelviewMatrixStack.top(), &cntxt->normalMatrix);
 
 	while (!vertexAM.isEmpty()) {
-		//vertex
-		/*int localSize = getVertexPart(&cntxt->vertexArray, (v4nm32f*)cntxt->buffer1, cntxt->buffer0, count);
-		if (localSize == 0) {
-			break;
-		}*/
 		int localSize = vertexAM.pop(cntxt->buffer0) / cntxt->vertexArray.size;
 		switch (cntxt->vertexArray.size)
 		{
@@ -150,6 +136,7 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 		default:
 			break;
 		}
+		//умножение на dидовую матрицу (Modelview matrix)
 		mul_mat4nm32f_v4nm32f(cntxt->modelviewMatrixStack.top(), (v4nm32f*)cntxt->buffer1, vertexResult, localSize);
 
 		//color
@@ -193,6 +180,7 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 		cntxt->tmp.vec[3] = ALPHA_COEFF;
 		mulC_v4nm32f((v4nm32f*)cntxt->buffer3, &cntxt->tmp, colorOrNormal, localSize);
 
+		//умножение на матрицу проекции (Projection matrix)
 		mul_mat4nm32f_v4nm32f(cntxt->projectionMatrixStack.top(), vertexResult, (v4nm32f*)vertexResult, localSize);
 
 
@@ -264,10 +252,16 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 		case NMGL_POINTS:
 			nmblas_scopy(localSize, vertexX, 1, cntxt->pointInner.x0, 1);
 			nmblas_scopy(localSize, vertexY, 1, cntxt->pointInner.y0, 1);
+			nmppsConvert_32f32s_rounding((float*)colorOrNormal, (int*)cntxt->pointInner.colors, 0, 4 * localSize);
 			nmppsConvert_32f32s_rounding(vertexZ, cntxt->pointInner.z, 0, localSize);
-			nmppsMerge_32f(vertexX, vertexY, (float*)minXY, localSize);
+			nmppsSubC_32f(vertexX, cntxt->buffer0, cntxt->pointRadius, localSize);
+			nmppsSubC_32f(vertexY, cntxt->buffer1, cntxt->pointRadius, localSize);
+			nmppsMerge_32f(cntxt->buffer0, cntxt->buffer1, (float*)minXY, localSize);
+			nmppsAddC_32f(vertexX, cntxt->buffer0, cntxt->pointRadius, localSize);
+			nmppsAddC_32f(vertexY, cntxt->buffer1, cntxt->pointRadius, localSize);
+			nmppsMerge_32f(cntxt->buffer0, cntxt->buffer1, (float*)maxXY, localSize);
 			cntxt->pointInner.size = localSize;
-			setSegmentMask(minXY, minXY, cntxt->segmentMasks, localSize);
+			setSegmentMask(minXY, maxXY, cntxt->segmentMasks, localSize);
 
 			rasterizeP(&cntxt->pointInner, cntxt->segmentMasks);
 			break;

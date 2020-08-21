@@ -183,6 +183,8 @@ public:
 	int cullFaceType;
 	int frontFaceOrientation;
 	int normalizeEnabled;
+	float pointRadius;
+	int dummy;
 
 	Array vertexArray;
 	Array normalArray;

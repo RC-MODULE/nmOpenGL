@@ -28,14 +28,14 @@ SECTION(".text_demo3d") int getAddrPtrnsP(DataForNmpu1* data) {
 
 	//этот кусок кода является си-реализацией этой функции и является более наглядным	
 	for (int i = 0; i < size; i++) {
-		int pixelRadius = cntxt->pointSize;
-		int minX = data->x0[i] - pixelRadius;
-		int maxX = data->x0[i] + pixelRadius;
-		int minY = data->y0[i] - pixelRadius;
-		int maxY = data->y0[i] + pixelRadius;
-		cntxt->ppSrcPackPtrns[i] = cntxt->patterns->pointPtrns[pixelRadius - 1];
+		int pointSize = cntxt->pointSize;
+		int minX = data->x0[i] - pointSize / 2;
+		int maxX = data->x0[i] + pointSize / 2;
+		int minY = data->y0[i] - pointSize / 2;
+		int maxY = data->y0[i] + pointSize / 2;
+		cntxt->ppSrcPackPtrns[i] = cntxt->patterns->pointPtrns[pointSize - 1];
 		cntxt->ppDstPackPtrns[i] = (nm32s*)cntxt->ppPtrnsCombined_2s[i % SMALL_SIZE];
-		cntxt->nSizePtrn32[i] = 2 * pixelRadius * WIDTH_PTRN / 16;
+		cntxt->nSizePtrn32[i] = pointSize * WIDTH_PTRN / 16;
 		cntxt->ptrnInnPoints[i].x = (minX < 0) ? -minX : 0;
 		cntxt->ptrnInnPoints[i].y = (minY < 0) ? -minY : 0;
 		minX = MAX(minX, 0);

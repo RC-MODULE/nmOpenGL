@@ -1,5 +1,6 @@
 #include "demo3d_nm0.h"
 #include "nmgl.h"
+#include "math.h"
 
 
 #pragma code_section ".text_nmgl"
@@ -11,5 +12,6 @@ void nmglPointSize(NMGLfloat size) {
 		cntxt->error = NMGL_INVALID_VALUE;
 		return;
 	}
+	cntxt->pointRadius = floor(size / 2);
 	cntxt->synchro.writeInstr(1, NMC1_POINT_SIZE, (int)size);
 }
