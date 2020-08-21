@@ -350,11 +350,9 @@ void textureTriangle(Pattern* patterns,
 #endif //DEBUG
     
     //Активный текстурный модуль
-    cntxt.texState.activeTexUnitIndex = 0;
     unsigned int activeTexUnitIndex = cntxt.texState.activeTexUnitIndex;
     
     //Текстурный объект, привязанный к активному текстурному модулю
-    cntxt.texState.texUnits[activeTexUnitIndex].boundTexObject = &cntxt.texState.texObjects[0];
     TexObject* boundTexObject = cntxt.texState.texUnits[activeTexUnitIndex].boundTexObject;
     
     float scaleFactor = 1.0;
