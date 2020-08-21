@@ -1079,6 +1079,7 @@ void rasterizeL(const Lines* lines, const BitMask* masks);
 void rasterizeP(const Points* points, const BitMask* masks);
 void updatePolygonsT(PolygonsOld* poly, Triangles* triangles, int count, int segX, int segY);
 void updatePolygonsL(PolygonsOld* poly, Lines* lines, int count, int segX, int segY);
+void updatePolygonsP(PolygonsOld* poly, Points* lines, int count, int segX, int segY);
 void updatePolygonsT(DataForNmpu1* data, Triangles* triangles, int count, int segX, int segY);
 void updatePolygonsL(DataForNmpu1* data, Lines* triangles, int count, int segX, int segY);
 void updatePolygonsP(DataForNmpu1* data, Points* triangles, int count, int segX, int segY);

@@ -5,8 +5,6 @@
 
 #include "nmgldef.h"
 
-#include "demo3d_common.h"
-
 void nmglActiveTexture (NMGLenum texture);
 void nmglAlphaFunc (NMGLenum func, NMGLclampf ref);
 void nmglBegin(NMGLenum mode);
