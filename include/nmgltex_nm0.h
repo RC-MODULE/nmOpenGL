@@ -82,38 +82,10 @@ struct NMGL_Context_NM0_Texture {
 			texcoordArray[i].enabled = NMGL_FALSE;
 		}
 //==========TEX_UNITS_INIT====================================
-		for (int i = 0; i < NMGL_MAX_TEX_UNITS; i++)
-		{
-			texUnits[i].enabled=NMGL_FALSE;
-			texUnits[i].texFunction=NULL;
-			texUnits[i].texFunctionName=0;
-			texUnits[i].boundTexObject=texObjects;
-			for (int j = 0; j < 4; j++)
-			{
-				texUnits[i].texEnvColor[j]=0.0;
-			}
-		}  
+		INIT_TEX_UNITS();
 //==========TEX_OBJ_INIT====================================
-
-		for (int i = 0; i < NMGL_MAX_TEX_OBJECTS; i++)
-		{
-			texObjects[i].name=i;
-			texObjects[i].target=NMGL_TEXTURE_2D;
-			texObjects[i].texWrapS=NMGL_REPEAT;
-			texObjects[i].texWrapT=NMGL_REPEAT;
-			texObjects[i].texMinFilter=NMGL_NEAREST_MIPMAP_LINEAR;
-			texObjects[i].texMagFilter=NMGL_LINEAR;
-			texObjects[i].imageIsSet=0;
-			for(int j=0;j<=NMGL_MAX_MIPMAP_LVL;j++)
-			{
-				texObjects[i].texImages2D[j].pixels=NULL;
-				texObjects[i].texImages2D[j].internalformat=NMGL_RGBA;
-				texObjects[i].texImages2D[j].width=0;
-				texObjects[i].texImages2D[j].height=0;
-				
-			}
-			
-		}
+		INIT_TEX_OBJECTS();
+		
 	}
 	
 };
