@@ -40,7 +40,9 @@ SECTION(".data_imu0") float texT1[NMGL_SIZE];
 SECTION(".data_imu0") float texS2[NMGL_SIZE];
 SECTION(".data_imu0") float texT2[NMGL_SIZE];
 
-SECTION(".data_imu0") float zEye[NMGL_SIZE];
+SECTION(".data_imu0") float zEye0[NMGL_SIZE];
+SECTION(".data_imu0") float zEye1[NMGL_SIZE];
+SECTION(".data_imu0") float zEye2[NMGL_SIZE];
 #endif //TEXTURE_ENABLED
 
 
@@ -162,7 +164,9 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
     cntxt.texS2 = texS2;
     cntxt.texT2 = texT2;
 
-    cntxt.zEye = zEye;
+    cntxt.zEye0 = zEye0;
+    cntxt.zEye1 = zEye1;
+    cntxt.zEye2 = zEye2;
 #endif //TEXTURE_ENABLED
 
 

@@ -113,6 +113,12 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			break;
 		}
 		mul_mat4nm32f_v4nm32f(cntxt.modelviewMatrixStack.top(), (v4nm32f*)cntxt.buffer1, vertexResult, localSize);
+#ifdef TEXTURE_ENABLED
+		//----------------------------------- Save vertexZEye for texturing-------------------------------------
+		if (cntxt.texState.textureEnabled){
+			nmblas_scopy(localSize, (float*)vertexResult + 2, 4, vertexZEye, 1);
+		}
+#endif //TEXTURE_ENABLED
 
 #ifdef TEXTURE_ENABLED
 	if (cntxt.texState.textureEnabled){
@@ -187,21 +193,7 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 		//------------------------------srcX-----srcY-----srcZ-----srcW--------------
 		split_v4nm32f(vertexResult, 1, cntxt.buffer0, cntxt.buffer1, cntxt.buffer2, cntxt.buffer3, localSize);
 
-#ifdef TEXTURE_ENABLED
-    	//----------------------------------- Save vertexZEye for texturing-------------------------------------
-		if (cntxt.texState.textureEnabled){
-        	int countPrim = localSize / 3;
-       		float* temp0 = cntxt.buffer0 + 3 * NMGL_SIZE;
-        	float* temp1 = cntxt.buffer1 + 6 * NMGL_SIZE;
-        	float* temp2 = cntxt.buffer2 + 3 * NMGL_SIZE;
-        	cnv32f_v3v4(cntxt.buffer2, cntxt.buffer3, 0, localSize);
-        	split_v4nm32f((v4nm32f*)cntxt.buffer3, 1, temp0, temp1, temp2, cntxt.buffer3 + 6 * NMGL_SIZE, countPrim);
-        	meanToFloat3(temp0, temp1, temp2, vertexZEye, countPrim);
-        	//restore srcX-----srcY-----srcZ-----srcW in buffers
-        	split_v4nm32f(vertexResult, 1, cntxt.buffer0, cntxt.buffer1, cntxt.buffer2, cntxt.buffer3, localSize);
-        }
-#endif //TEXTURE_ENABLED
-        
+
 		//------------clipping-------------------
 
 		//------------perspective-division-----------------		static unsigned time = 0;

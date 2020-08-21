@@ -22,7 +22,9 @@ triangles.s1[iDst] = triangles.s1[iSrc];									\
 triangles.t1[iDst] = triangles.t1[iSrc];									\
 triangles.s0[iDst] = triangles.s0[iSrc];									\
 triangles.t0[iDst] = triangles.t0[iSrc];                                    \
-triangles.zEye[iDst] = triangles.zEye[iSrc];
+triangles.zEye0[iDst] = triangles.zEye0[iSrc];								\
+triangles.zEye1[iDst] = triangles.zEye1[iSrc];								\
+triangles.zEye2[iDst] = triangles.zEye2[iSrc];								
 #else //TEXTURE_ENABLED
 #define COPY_TRIANGLE_IN_PLACE(iSrc, iDst) triangles.x2[iDst] = triangles.x2[iSrc];	\
 triangles.y2[iDst] = triangles.y2[iSrc];												\

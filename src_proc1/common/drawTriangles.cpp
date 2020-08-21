@@ -202,7 +202,9 @@ SECTION(".text_demo3dExt") void drawTriangles(NMGL_Context_NM1* context) {
         	triangles.s2 = context->texS2 + point;
         	triangles.t2 = context->texT2 + point;
         	
-        	triangles.z = context->zEye + point;
+        	triangles.z0 = context->zEye0 + point;
+        	triangles.z1 = context->zEye1 + point;
+        	triangles.z2 = context->zEye2 + point;
 
         	textureTriangle(context->polyImgTmp, &triangles, 
         	                context->imagePoints + point, 

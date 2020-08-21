@@ -65,7 +65,9 @@ struct NMGL_Context_NM1 {
 	float* texS2;
 	float* texT2;
 
-	float* zEye;
+	float* zEye0;
+	float* zEye1;
+	float* zEye2;
 #endif //TEXTURE_ENABLED
 	
 	NMGL_Context_NM1_Texture texState;

@@ -36,7 +36,9 @@ SECTION(".data_imu3")	float s1[NMGL_SIZE];
 SECTION(".data_imu4")	float t1[NMGL_SIZE];
 SECTION(".data_imu5")	float s2[NMGL_SIZE];
 SECTION(".data_imu6")	float t2[NMGL_SIZE];
-SECTION(".data_imu7")	float zEye[NMGL_SIZE];
+SECTION(".data_imu7")	float zEye0[NMGL_SIZE];
+SECTION(".data_imu7")	float zEye1[NMGL_SIZE];
+SECTION(".data_imu7")	float zEye2[NMGL_SIZE];
 #endif //TEXTURE_ENABLED
 
 SECTION(".data_imu7")	int z_int[NMGL_SIZE];
@@ -113,7 +115,9 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
     cntxt.trianInner.t1 = t1;
     cntxt.trianInner.s2 = s2;
     cntxt.trianInner.t2 = t2;
-    cntxt.trianInner.zEye = zEye;
+    cntxt.trianInner.zEye0 = zEye0;
+    cntxt.trianInner.zEye1 = zEye1;
+    cntxt.trianInner.zEye2 = zEye2;
     cntxt.texState.textureEnabled = 1;
 #endif
 

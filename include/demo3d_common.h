@@ -101,7 +101,9 @@ struct Polygons {
 	float y1[POLYGONS_SIZE];
 	float x2[POLYGONS_SIZE];
 	float y2[POLYGONS_SIZE];
-	float zEye[POLYGONS_SIZE];
+	float zEye0[POLYGONS_SIZE];
+	float zEye1[POLYGONS_SIZE];
+	float zEye2[POLYGONS_SIZE];
 	
 	float s0[POLYGONS_SIZE];
 	float t0[POLYGONS_SIZE];

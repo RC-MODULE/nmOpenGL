@@ -134,7 +134,9 @@ SECTION(".text_demo3d") int getAddrPtrnsT(NMGL_Context_NM1* context, Polygons* p
 		ADD_COPY(poly->s2, context->texS2, size, 10);
 		ADD_COPY(poly->t2, context->texT2, size, 11);
 
-		ADD_COPY(poly->zEye, context->zEye, size, 12);
+		ADD_COPY(poly->zEye0, context->zEye0, size, 12);
+		ADD_COPY(poly->zEye1, context->zEye1, size, 13);
+		ADD_COPY(poly->zEye2, context->zEye2, size, 0);
 	}
 #endif //TEXTURE_ENABLED
 

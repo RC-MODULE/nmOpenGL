@@ -25,7 +25,9 @@ void updatePolygonsT(Polygons* poly, Triangles* triangles, int count, int segX, 
 		nmblas_scopy(count, (float*)triangles->y1, 1, (float*)poly->y1 + poly->count, 1);
 		nmblas_scopy(count, (float*)triangles->x2, 1, (float*)poly->x2 + poly->count, 1);
 		nmblas_scopy(count, (float*)triangles->y2, 1, (float*)poly->y2 + poly->count, 1);
-		nmblas_scopy(count, (float*)triangles->zEye, 1, (float*)poly->zEye + poly->count, 1);
+		nmblas_scopy(count, (float*)triangles->zEye0, 1, (float*)poly->zEye0 + poly->count, 1);
+		nmblas_scopy(count, (float*)triangles->zEye1, 1, (float*)poly->zEye1 + poly->count, 1);
+		nmblas_scopy(count, (float*)triangles->zEye2, 1, (float*)poly->zEye2 + poly->count, 1);
 
 		nmblas_scopy(count, (float*)triangles->s0, 1, (float*)poly->s0 + poly->count, 1);
 		nmblas_scopy(count, (float*)triangles->t0, 1, (float*)poly->t0 + poly->count, 1);

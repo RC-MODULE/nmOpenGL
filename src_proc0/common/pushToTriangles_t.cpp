@@ -19,7 +19,9 @@
 #define HEAD_T1 (triangles.t1)
 #define HEAD_S2 (triangles.s2)
 #define HEAD_T2 (triangles.t2)
-#define HEAD_Z_EYE  (triangles.zEye )
+#define HEAD_Z_EYE0  (triangles.zEye0 )
+#define HEAD_Z_EYE1  (triangles.zEye1 )
+#define HEAD_Z_EYE2  (triangles.zEye2 )
 #endif //TEXTURE_ENABLED
 
 
@@ -60,7 +62,8 @@ void pushToTriangles_t(const float *vertexX, const float *vertexY, const float *
 		cnv32f_v3v4(vertexT, cntxt.buffer3, 0, countVertex);
 		split_v4nm32f((v4nm32f*)cntxt.buffer3, 1, HEAD_T0, HEAD_T1, HEAD_T2, cntxt.buffer3 + 6 * NMGL_SIZE, countPrim);
 		
-    	nmblas_scopy(countPrim, vertexZEye, 1, HEAD_Z_EYE, 1);
+		cnv32f_v3v4(vertexZEye, cntxt.buffer3, 0, countVertex);
+		split_v4nm32f((v4nm32f*)cntxt.buffer3, 1, HEAD_Z_EYE0, HEAD_Z_EYE1, HEAD_Z_EYE2, cntxt.buffer3 + 6 * NMGL_SIZE, countPrim);
     }
 #endif //TEXTURE_ENABLED
 

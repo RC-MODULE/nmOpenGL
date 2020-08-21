@@ -92,7 +92,9 @@ struct Triangles{
 	float* t1;
 	float* s2;
 	float* t2;
-	float* zEye;
+	float* zEye0;
+	float* zEye1;
+	float* zEye2;
 	int dummy;
 #endif //TEXTURE_ENABLED 
 	

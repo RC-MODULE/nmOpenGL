@@ -38,7 +38,9 @@ void rasterizeT(const Triangles* triangles, const BitMask* masks){
 		localTrian.t1 = cntxt.buffer1 + 11 * NMGL_SIZE;
 		localTrian.s2 = cntxt.buffer2 + 10 * NMGL_SIZE;
 		localTrian.t2 = cntxt.buffer2 + 11 * NMGL_SIZE;
-		localTrian.zEye = cntxt.buffer3 + 11 * NMGL_SIZE;
+		localTrian.zEye0 = cntxt.buffer3 + 11 * NMGL_SIZE;
+		localTrian.zEye1 = cntxt.buffer3 + 12 * NMGL_SIZE;
+		localTrian.zEye2 = cntxt.buffer3 + 13 * NMGL_SIZE;
 	}
 #endif //TEXTURE_ENABLED
 
@@ -57,7 +59,7 @@ void rasterizeT(const Triangles* triangles, const BitMask* masks){
 						iSeg);
 #ifdef TEXTURE_ENABLED
 					if (cntxt.texState.textureEnabled){
-						copyArraysByIndices((void**)triangles, indices, (void**)&localTrian, 14, resultSize);
+						copyArraysByIndices((void**)triangles, indices, (void**)&localTrian, 16, resultSize);
 					} else {
 						copyArraysByIndices((void**)triangles, indices, (void**)&localTrian, 7, resultSize);
 					}
