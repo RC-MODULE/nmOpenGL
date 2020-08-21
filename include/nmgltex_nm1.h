@@ -115,7 +115,9 @@ struct TrianglesInfo{
 	float* y1; /**< Оконная координата y 1-ой вершины треугольника */
 	float* x2; /**< Оконная координата x 2-ой вершины треугольника */
 	float* y2; /**< Оконная координата y 2-ой вершины треугольника */
-	float* z;  /**< Координата z треугольника (одна на три вершины)*/ //TODO: Needed float z in camera space, so float value
+	float* z0;  /**< Координата z0 треугольника */ //TODO: Needed float z in camera space, so float value
+	float* z1;  /**< Координата z1 треугольника */ //TODO: Needed float z in camera space, so float value
+	float* z2;  /**< Координата z2 треугольника */ //TODO: Needed float z in camera space, so float value
 	v4nm32s* colors; /**< Цвет треугольника (один на три вершины) */
 	int size;   /**< Количество треугольников */
 	int maxSize; /**< Максимальное обрабатываемое количество треугольников */
