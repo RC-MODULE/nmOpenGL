@@ -5,7 +5,9 @@
 #include "nmgltype.h"
 //Memory
 //------------------------CUSTOMIZE-THIS-ONLY-----------------------------------------------------------------
-#define NMGL_MAX_MIPMAP_LVL                 10  //square textures only; 1024 width/height
+#define TEST_NMGL_TEX_FUNC
+
+#define NMGL_MAX_MIPMAP_LVL               10  //square textures only; 1024 width/height
 //#define BYTES_IN_CHAR 
 #define RGBA_TEXEL_SIZE_UBYTE              4
 #define RGB_TEXEL_SIZE_UBYTE               3
@@ -23,7 +25,6 @@ int getTexelSizeUbytes(NMGLint format);
 //#define DEBUG
 #define DEBUG_LEVEL 0
 // #include "tests.h"
-
 /*
 * Максимальное поддерживаемое количество текстурных модулей
 */
@@ -227,55 +228,5 @@ struct TexCoords {
 		}
 
 //===================PRINTING==============================================================
-#ifdef DEBUG
-#define lvl(x) cntxt->texState.texObjects[objname].texImages2D[x]
-#define pxl(x) cntxt->texState.texObjects[objname].texImages2D[x].pixels
-//prints pointers only
-template<class T> void PrintMipMapP(int objname,T *context)
-{
 
-    T* cntxt = context;
-    printf("Texture object %d\n",cntxt->texState.texObjects[objname].name);
-    for(int i=0;i<=NMGL_MAX_MIPMAP_LVL;i++)
-    {
-        printf("Mipmap level %d\n",i);
-        printf("internalformat=0x%x\n",lvl(i).internalformat);
-       // printf("level=%d\n",lvl(i).level);
-        printf("width=%d\n",lvl(i).width);
-        printf("height=%d\n",lvl(i).height);
-        if(lvl(i).pixels == NULL) printf("pixels=NULL\n");
-        else printf("pixels=%x\n",lvl(i).pixels);
-    }
-}
-extern int getTexelSizeUbytes(NMGLint format);
-
-//prints pixels contents
-template<class T> void PrintMipMap(int objname,T *context)
-{
-    T* cntxt = context;
-    printf("Texture object %d\n", cntxt->texState.texObjects[objname].name);
-    int bpt=getTexelSizeUbytes(lvl(0).internalformat);
-    int wbpt=0;
-    for(int i=0;i<=NMGL_MAX_MIPMAP_LVL;i++)
-    {
-         wbpt=lvl(i).width*bpt;
-         if(pxl(i) == NULL) printf("Lvl %d is NULL\n",i);
-         else
-         {
-            for(int j=0;j<lvl(i).width*lvl(i).height*bpt;j++)
-            {
-                printf("%x",*((NMGLubyte*)pxl(i)+j));
-                if(j<wbpt-1) printf(" ");
-                else printf("\n");
-            }
-         }         
-    }
-}
-//=========================================================================================
-#define PrintMipMapP(x,y,z) PrintMipMapP<x>(y,z)
-#else
-    
-    #define PrintMipMapP(x) do {} while (0)  
-    
-#endif
 #endif

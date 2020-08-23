@@ -53,7 +53,7 @@ void initLvls(NMGLuint name,NMGL_Context_NM0 *cntxt)
 	//MIPMAP_OBJ_SIZE
 	int i=0;
 	unsigned long cursize=NMGL_MAX_TEX_SIDE*NMGL_MAX_TEX_SIDE*UBYTES_PER_TEXEL;
-
+DEBUG_PRINT(("Initlvls:firstFreeTexByte=%x\n",cntxt->texState.firstFreeTexByte));
 	if(cntxt->texState.firstFreeTexByte==NULL)
 	{
 		cntxt->texState.firstFreeTexByte=(void*)mipmap;		

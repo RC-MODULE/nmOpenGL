@@ -15,7 +15,10 @@ VS ?=vs2015
 ALL: $(VS)
 .PHONY = vs2005 vs2015
 
-
+debug: $(HOST).vcxproj $(TARGET0).vcxproj $(TARGET1).vcxproj
+	"$(VS140COMNTOOLS)vsvars32" && msbuild $(HOST).vcxproj    /p:Configuration=Debug
+	"$(VS140COMNTOOLS)vsvars32" && msbuild $(TARGET0).vcxproj /p:Configuration=Debug
+	"$(VS140COMNTOOLS)vsvars32" && msbuild $(TARGET1).vcxproj /p:Configuration=Debug
 $(TARGET0) $(TARGET1) $(HOST): $(VS)
 	
 vs2005: $(HOST).vcproj $(TARGET0).vcproj $(TARGET1).vcproj
@@ -25,9 +28,9 @@ vs2005: $(HOST).vcproj $(TARGET0).vcproj $(TARGET1).vcproj
 	
 
 vs2015:	$(HOST).vcxproj $(TARGET0).vcxproj $(TARGET1).vcxproj
-	"$(VS140COMNTOOLS)vsvars32" && msbuild $(HOST).vcxproj    /p:Configuration=Debug
-	"$(VS140COMNTOOLS)vsvars32" && msbuild $(TARGET0).vcxproj /p:Configuration=Debug
-	"$(VS140COMNTOOLS)vsvars32" && msbuild $(TARGET1).vcxproj /p:Configuration=Debug
+	"$(VS140COMNTOOLS)vsvars32" && msbuild $(HOST).vcxproj    /p:Configuration=Release
+	"$(VS140COMNTOOLS)vsvars32" && msbuild $(TARGET0).vcxproj /p:Configuration=Release
+	"$(VS140COMNTOOLS)vsvars32" && msbuild $(TARGET1).vcxproj /p:Configuration=Release
 
 $(HOST).vcproj $(TARGET0).vcproj $(TARGET1).vcproj:
 	premake5 vs2005
@@ -38,14 +41,25 @@ $(HOST).vcxproj $(TARGET0).vcxproj $(TARGET1).vcxproj:
 
 run: 
 	$(MAKE) -j4 runhost runtarget0  runtarget1 
+drun: 
+	$(MAKE) -j4 runhostd runtarget0d  runtarget1d 
 
 runhost: $(HOST)
-	bin\debug\$(HOST)
+	bin\Release\$(HOST)
 	
 runtarget0: $(TARGET0) 
-	bin\debug\$(TARGET0)
+	bin\Release\$(TARGET0)
 	
 runtarget1: $(TARGET1) 
+	bin\Release\$(TARGET1)
+
+runhostd: $(HOST)
+	bin\debug\$(HOST)
+	
+runtarget0d: $(TARGET0) 
+	bin\debug\$(TARGET0)
+	
+runtarget1d: $(TARGET1) 
 	bin\debug\$(TARGET1)
 	
 

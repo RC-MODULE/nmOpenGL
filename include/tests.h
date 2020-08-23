@@ -99,5 +99,4 @@ if (!(x)) \
 
 //Macro to run test. usage: RUN_TEST(functionMane_condition_result)
 #define RUN_TEST(x) if(x() == 0) printf ("OK   Function: %s\n", #x);
-
 #endif /* TESTS_H_ */

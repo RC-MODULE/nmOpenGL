@@ -11,7 +11,9 @@
 
 
 #define CHECK_EXIT0 if(nmglSynchro->exit_nm==EXIT) {	break;	}
-
+#ifdef TEST_NMGL_TEX_FUNC
+SECTION(".data_imu0") void* cntxtAddr_nm1;
+#endif
 SECTION(".data_imu1")	float nmglBuffer0[12 * NMGL_SIZE];
 SECTION(".data_imu2")	float nmglBuffer1[12 * NMGL_SIZE];
 SECTION(".data_imu3")	float nmglBuffer2[12 * NMGL_SIZE];
@@ -88,7 +90,9 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 	
 	cntxt->patterns = (PatternsArray*)halSyncAddr(synchroData, 1);
 	halSyncAddr(cntxt->polygonsData, 1);
-
+#ifdef TEST_NMGL_TEX_FUNC
+       cntxtAddr_nm1 = (void*)halSyncAddr(0, 1);	   
+#endif //TEST_NMGL_TEX_FUNC
 	halHostSync(0x600DB00F);	// send ok to host
 
 	cntxt->trianInner.x0 = x0;

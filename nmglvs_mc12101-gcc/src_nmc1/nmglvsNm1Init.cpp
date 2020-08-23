@@ -80,6 +80,7 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 
 		cntxt->colorBuffer.init(cntxt->imagesData->ptrHead(), WIDTH_IMAGE, HEIGHT_IMAGE);
 		cntxt->depthBuffer.init(depthImage, WIDTH_IMAGE, HEIGHT_IMAGE);
+		cntxt->texState.init();
 	}
 	catch (int &e){
 		if (e == -2) {
@@ -93,7 +94,9 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 	NMGLSynchroData* synchroData = (NMGLSynchroData*)halSyncAddr((int*)cntxt->patterns, 0);
 	cntxt->synchro.init(synchroData);
 	cntxt->polygonsData = (PolygonsArray*)halSyncAddr(0, 0);
-
+#ifdef TEST_NMGL_TEX_FUNC
+    halSyncAddr((void*)cntxt, 0);
+#endif //TEST_NMGL_TEX_FUNC
 	halHostSync(0x600DB00F);	// send ok to host
 
 	msdInit();

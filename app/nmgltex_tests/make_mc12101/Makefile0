@@ -46,7 +46,7 @@
 #============== PROJECT & BUILD CONFIGURATION ==========
 #
 
-ROOT             = ../../../
+ROOT             = ../../..
 include $(ROOT)/global.mk
 include 		 nmc4vars_win.mk
 #-------------- target & input dirs -------------------
@@ -95,8 +95,10 @@ all:  $(TARGET)
 	
 #	$(MAKE) -j4 DEBUG=y
 #	$(MAKE) -j4
+_debug: CXXFLAGS += -DDEBUG
+_debug: CC_FLAGS += -DDEBUG
+_debug: $(TARGET)
 
-	
 $(TMP_DIR):
 	-mkdir "$(@)"
 
