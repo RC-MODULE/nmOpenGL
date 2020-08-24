@@ -5,8 +5,6 @@
 #include "nmgltype.h"
 //Memory
 //------------------------CUSTOMIZE-THIS-ONLY-----------------------------------------------------------------
-#define TEST_NMGL_TEX_FUNC
-
 #define NMGL_MAX_MIPMAP_LVL               10  //square textures only; 1024 width/height
 //#define BYTES_IN_CHAR 
 #define RGBA_TEXEL_SIZE_UBYTE              4

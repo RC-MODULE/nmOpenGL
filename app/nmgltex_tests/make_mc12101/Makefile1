@@ -59,6 +59,7 @@ LIB_DIRS         = -L "$(NMC_GCC_TOOLPATH)/nmc4-ide/lib" -L"$(NMPP)/lib" -L"$(HA
 TMP_DIR          = Release
 #-------------- RELEASE/ALL config -------------------
 CC 				 = nmc-g++
+CC_FLAGS+= -DTEST_NMGL_TEX_FUNC
 AS               = nmc-gcc 				 
 AS_FLAGS    	 = -c -mmas -x assembler -Wa,-split_sir -mnmc4-fixed
 LIBS             = -lnmopengl-nmc4 -lhal-mc12101 -lnmpp-nmc4
@@ -92,7 +93,6 @@ default: $(TARGET)
 
 all:  $(TARGET)
 
-_debug: CXXFLAGS += -DDEBUG
 _debug: CC_FLAGS += -DDEBUG
 _debug: $(TARGET)	
 #	$(MAKE) -j4 DEBUG=y

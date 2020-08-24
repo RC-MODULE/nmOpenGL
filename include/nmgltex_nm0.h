@@ -9,7 +9,7 @@ struct NMGL_Context_NM0_Texture {
 	/*
 		Указатель на первый свободный байт текстурной памяти	
 	*/
-	void* firstFreeTexByte;
+	//void* firstFreeTexByte;
 	/**
 	* Массив текстурных модулей
 	*/
@@ -67,7 +67,7 @@ struct NMGL_Context_NM0_Texture {
 	
 	void init(){
 	
-		firstFreeTexByte=NULL;
+		//firstFreeTexByte=NULL;
 		activeTexUnit = NMGL_TEXTURE0;
 		activeTexUnitIndex = 0;
 		clientActiveTexUnit = NMGL_TEXTURE0;
