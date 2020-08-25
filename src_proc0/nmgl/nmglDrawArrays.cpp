@@ -113,12 +113,6 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			break;
 		}
 		mul_mat4nm32f_v4nm32f(cntxt.modelviewMatrixStack.top(), (v4nm32f*)cntxt.buffer1, vertexResult, localSize);
-#ifdef TEXTURE_ENABLED
-		//----------------------------------- Save vertexZEye for texturing-------------------------------------
-		if (cntxt.texState.textureEnabled){
-			nmblas_scopy(localSize, (float*)vertexResult + 2, 4, vertexZEye, 1);
-		}
-#endif //TEXTURE_ENABLED
 
 #ifdef TEXTURE_ENABLED
 	if (cntxt.texState.textureEnabled){
@@ -192,6 +186,13 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 		mul_mat4nm32f_v4nm32f(cntxt.projectionMatrixStack.top(), vertexResult, (v4nm32f*)vertexResult, localSize);
 		//------------------------------srcX-----srcY-----srcZ-----srcW--------------
 		split_v4nm32f(vertexResult, 1, cntxt.buffer0, cntxt.buffer1, cntxt.buffer2, cntxt.buffer3, localSize);
+
+#ifdef TEXTURE_ENABLED
+		//----------------------------------- Save Wclip for texturing (frustum:-vertexZEye, ortho:1.0) -------------------------------------
+		if (cntxt.texState.textureEnabled){
+			nmblas_scopy(localSize, (float*)cntxt.buffer3, 1, vertexZEye, 1);
+		}
+#endif //TEXTURE_ENABLED
 
 
 		//------------clipping-------------------
