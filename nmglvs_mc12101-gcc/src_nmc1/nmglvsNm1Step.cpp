@@ -265,8 +265,10 @@ SECTION(".text_nmglvs") int nmglvsNm1Step()
 	}
 	
 	case NMC1_SET_TEX_ENV_COLOR: {
+		Intfloat temp;
 		for (int i = 0; i < 4; i++) {
-			cntxt->texState.texUnits[cntxt->texState.activeTexUnitIndex].texEnvColor[i] = currentCommand.params[i]/255.0f;
+			temp.i = currentCommand.params[i];
+			cntxt->texState.texUnits[cntxt->texState.activeTexUnitIndex].texEnvColor[i] = temp.f;
 		}
 		break;
 	}

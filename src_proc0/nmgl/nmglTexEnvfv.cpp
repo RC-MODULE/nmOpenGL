@@ -32,11 +32,13 @@ void nmglTexEnvfv (NMGLenum target, NMGLenum pname, const NMGLfloat *params)
 		else
 			cntxt->texState.texUnits[cntxt->texState.activeTexUnitIndex].texEnvColor[i] = params[i];
  	}
-	
+
+	Intfloat temp;	
 	unsigned int texEnvColorInt [4];
 	for (i = 0; i < 4; i++)
 	{
-		texEnvColorInt[i] = 255 * cntxt->texState.texUnits[cntxt->texState.activeTexUnitIndex].texEnvColor[i];
+		temp.f = cntxt->texState.texUnits[cntxt->texState.activeTexUnitIndex].texEnvColor[i];
+		texEnvColorInt[i] = temp.i;
  	}
 	cntxt->synchro.writeInstr(1, NMC1_SET_TEX_ENV_COLOR, texEnvColorInt[0], texEnvColorInt[1], texEnvColorInt[2], texEnvColorInt[3]);
 	
