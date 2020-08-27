@@ -75,25 +75,8 @@ extern void* cntxtAddr_nm1;
 NMGL_Context_NM1 *nm1cntxt;
 SECTION(".data_tex_tests") NMGLubyte texels[USED_SIDE*USED_SIDE*UBYTES_PER_TEXEL];
 extern int getTexelSizeUbytes(NMGLint format);
-/////////////////DATA///STRUCTURES///////////////////////////////////////
-typedef struct internalformatdata
-{
-NMGLint type;
-NMGLint size;
-} internalformatdata;
-//---------------------------------------------------------------------------
-typedef struct TexImage2D_data
-{
-	NMGLenum target;//NMGL_TEXTURE_2D only
-	NMGLint level;
-	internalformatdata internalformat;//RGBA,RGB,LUMINANCE,ALPHA,LUMINANCE_ALPHA
-	NMGLsizei width;//min=64 max=NMGL_MAX_TEX_SIZE
-	NMGLsizei height;//min=64 max=NMGL_MAX_TEX_SIZE
-	//NMGLint border;//0 only
-	NMGLenum format;//must match internalformat
-	NMGLenum type;//UNSIGNED_BYTE
-	void *pixels;
-} TexImage2D_data;
+
+
 //---------------------------------------------------------------------------
 TexImage2D_data input;//main input data;	
 	//-----------curs-------------------------

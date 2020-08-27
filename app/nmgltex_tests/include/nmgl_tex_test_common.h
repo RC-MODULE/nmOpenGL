@@ -6,9 +6,26 @@
 #define USED_SIDE (0x1<<(USED_MIPMAP_LVL))
 #define MIPMAP_TESTOBJ_SIZE ((((0x1<<(2*(USED_MIPMAP_LVL+1)))-1)/3)*UBYTES_PER_TEXEL) //mipmap mem size in 4byte words	
 
+/////////////////DATA///STRUCTURES///////////////////////////////////////
+typedef struct internalformatdata
+{
+NMGLint type;
+NMGLint size;
+} internalformatdata;
+//---------------------------------------------------------------------------
 
-
-
+typedef struct TexImage2D_data
+{
+	NMGLenum target;//NMGL_TEXTURE_2D only
+	NMGLint level;
+	internalformatdata internalformat;//RGBA,RGB,LUMINANCE,ALPHA,LUMINANCE_ALPHA
+	NMGLsizei width;//min=64 max=NMGL_MAX_TEX_SIZE
+	NMGLsizei height;//min=64 max=NMGL_MAX_TEX_SIZE
+	//NMGLint border;//0 only
+	NMGLenum format;//must match internalformat
+	NMGLenum type;//UNSIGNED_BYTE
+	void *pixels;
+} TexImage2D_data;
 #ifdef DEBUG
 
 #define lvl(x) cntxt->texState.texObjects[objname].texImages2D[x]
@@ -103,5 +120,7 @@ template<class T> int objInitEq(T *cntxt,NMGLuint texture, void *zeroObjPointer=
 	TEST_ASSERT(_accum == 0);
 	return 0;
 }
+
+
 #endif //NMGL_TEX_TEST_COMMON_H_
 
