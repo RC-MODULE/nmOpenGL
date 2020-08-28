@@ -282,9 +282,6 @@ TexImage2D teximage_256_256 = {
     //internal format
     NMGL_RGB,
 
-    //level
-    0,
-
     //pixels
     pixels_256_256,
 
@@ -292,10 +289,7 @@ TexImage2D teximage_256_256 = {
     256,
 
     //height
-    256,
-
-    //border
-    0
+    256
 };  
 
 

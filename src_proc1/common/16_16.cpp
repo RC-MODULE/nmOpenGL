@@ -42,9 +42,6 @@ TexImage2D teximage_16_16 = {
     //internal format
     NMGL_RGB,
 
-    //level
-    0,
-
     //pixels
     pixels_16_16,
 
@@ -52,10 +49,7 @@ TexImage2D teximage_16_16 = {
     16,
 
     //height
-    16,
-
-    //border
-    0
+    16
 };  
 
 

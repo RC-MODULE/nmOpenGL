@@ -154,9 +154,6 @@ TexImage2D teximage_128_128 = {
     //internal format
     NMGL_RGB,
 
-    //level
-    0,
-
     //pixels
     pixels_128_128,
 
@@ -164,10 +161,7 @@ TexImage2D teximage_128_128 = {
     128,
 
     //height
-    128,
-
-    //border
-    0
+    128
 };  
 
 

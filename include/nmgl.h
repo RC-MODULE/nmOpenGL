@@ -6,6 +6,7 @@
 #include "nmgldef.h"
 
 #include "demo3d_common.h"
+#define ActiveTexObjectP cntxt.texState.texUnits[cntxt.texState.activeTexUnitIndex].boundTexObject
 
 void nmglActiveTexture(NMGLenum texture);
 void nmglBegin(NMGLenum mode); 

@@ -334,5 +334,11 @@
 #define NMGL_SRC2_ALPHA                     0x858A
 #define NMGL_DOT3_RGB                       0x86AE
 #define NMGL_DOT3_RGBA                      0x86AF
+
+#ifdef DEBUG 
+#define DEBUG_PRINT(x) printf x  
+#else 
+#define DEBUG_PRINT(x) do {} while (0)
+#endif
 	
 #endif

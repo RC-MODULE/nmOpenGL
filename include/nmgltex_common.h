@@ -3,10 +3,26 @@
 
 #include "demo3d_common.h"
 #include "nmgltype.h"
+//Memory
+//------------------------CUSTOMIZE-THIS-ONLY-----------------------------------------------------------------
+#define NMGL_MAX_MIPMAP_LVL               10  //square textures only; 1024 width/height
+//#define BYTES_IN_CHAR 
+#define RGBA_TEXEL_SIZE_UBYTE              4
+#define RGB_TEXEL_SIZE_UBYTE               3
+#define LUMINANCE_ALPHA_TEXEL_SIZE_UBYTE   2
+#define LUMINANCE_TEXEL_SIZE_UBYTE         1
+#define ALPHA_TEXEL_SIZE_UBYTE             1                      
+//-------------------------NOT-THIS----------------------------------------------------------------------------
+#define NMGL_MAX_TEX_SIDE (0x1<<(NMGL_MAX_MIPMAP_LVL))
+#define UBYTES_PER_TEXEL RGBA_TEXEL_SIZE_UBYTE   //each byte of texel is placed in 4-byte var (because char is 4-byte variable)
+#define MIPMAP_OBJ_SIZE ((((0x1<<(2*(NMGL_MAX_MIPMAP_LVL+1)))-1)/3)*UBYTES_PER_TEXEL) //mipmap mem size in 4byte words	
+#define MIPMAP_MEM_SIZE ((MIPMAP_OBJ_SIZE)*NMGL_MAX_TEX_OBJECTS) //mipmap mem size in NMGLubyte	
+//============================================================================================================
+int getTexelSizeUbytes(NMGLint format);
+//============================================================================================================
 //#define DEBUG
 #define DEBUG_LEVEL 0
 // #include "tests.h"
-
 /*
 * Максимальное поддерживаемое количество текстурных модулей
 */
@@ -16,12 +32,12 @@
 /**
 * Максимальный размер изображения текстуры по ширине или по высоте в пикселях
 */
-#define NMGL_MAX_TEX_SIZE 1024
+//#define NMGL_MAX_TEX_SIZE 1024
 
 /**
 * Максимальный уровень детализации текстурного изображения
 */
-#define NMGL_MAX_MIPMAP_LEVEL 10
+//#define NMGL_MAX_MIPMAP_LEVEL 10
                                  
 
 /**
@@ -63,7 +79,7 @@ struct TexImage2D {
     /**
     * Уровень детализации текстурного изображения. Значение аргумента level функции nmglTexImage2D.
     */
-    NMGLint level;
+    //NMGLint level;
 
     /**
     * Указатель на данные текстурного изображения, загружаемого с помощью функции nmglTexImage2D.
@@ -84,7 +100,7 @@ struct TexImage2D {
     * Ширина границы текстурного изображения. Значение аргумента border функции nmglTexImage2D.
     * Должно быть равно 0, поэтому можно, в принципе не использовать.
     */
-    NMGLint border;
+    //NMGLint border;
 };
 
 /**
@@ -98,7 +114,7 @@ struct TexObject{
     NMGLuint name;
 
     /**
-    *   Тип текстуры (может принимать значение только NMGL_TEXTURE_2D) TODO:возможно, стоит убрать
+    *   Тип текстуры (может принимать значение только NMGL_TEXTURE_2D) TODOma:возможно, стоит убрать
     */
     NMGLenum target;
 
@@ -125,7 +141,7 @@ struct TexObject{
     /**
     *   Массив текстурных изображений различных уровней детализации
     */
-    TexImage2D texImages2D[NMGL_MAX_MIPMAP_LEVEL+1];
+    TexImage2D texImages2D[NMGL_MAX_MIPMAP_LVL+1];
 
 
     /*
@@ -177,6 +193,38 @@ struct TexCoords {
     NMGLfloat s;
     NMGLfloat t;
 };
+//----------------------------FUNCTIONS----------------------------------------------------------------------------------
+#define INIT_TEX_UNITS() for (int i = 0; i < NMGL_MAX_TEX_UNITS; i++) \
+{                                                                     \
+    texUnits[i].enabled=NMGL_FALSE;                                   \
+    texUnits[i].texFunction=NULL;                                     \
+    texUnits[i].texFunctionName=0;                                    \
+    texUnits[i].boundTexObject=texObjects;                            \
+    for (int j = 0; j < 4; j++)                                       \
+    {                                                                 \
+        texUnits[i].texEnvColor[j]=0.0;                               \
+    }                                                                 \
+}
 
+
+#define INIT_TEX_OBJECTS() for(int i = 0; i < NMGL_MAX_TEX_OBJECTS; i++)  \
+{                                                                       \
+            texObjects[i].name=i;                                       \
+			texObjects[i].target=NMGL_TEXTURE_2D;                       \
+			texObjects[i].texWrapS=NMGL_REPEAT;                         \
+			texObjects[i].texWrapT=NMGL_REPEAT;                         \
+			texObjects[i].texMinFilter=NMGL_NEAREST_MIPMAP_LINEAR;      \
+			texObjects[i].texMagFilter=NMGL_LINEAR;                     \
+			texObjects[i].imageIsSet=0;                                 \
+			for(int j=0;j<=NMGL_MAX_MIPMAP_LVL;j++)                     \
+            {                                                           \
+            texObjects[i].texImages2D[j].pixels=NULL;                   \
+				texObjects[i].texImages2D[j].internalformat=NMGL_RGBA;  \
+				texObjects[i].texImages2D[j].width=0;                   \
+                texObjects[i].texImages2D[j].height=0;                  \
+                }			                                            \
+		}
+
+//===================PRINTING==============================================================
 
 #endif

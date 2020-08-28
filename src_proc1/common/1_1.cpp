@@ -27,9 +27,6 @@ TexImage2D teximage_1_1 = {
     //internal format
     NMGL_RGB,
 
-    //level
-    0,
-
     //pixels
     pixels_1_1,
 
@@ -37,10 +34,7 @@ TexImage2D teximage_1_1 = {
     1,
 
     //height
-    1,
-
-    //border
-    0
+    1
 };  
 
 

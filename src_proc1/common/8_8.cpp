@@ -34,9 +34,6 @@ TexImage2D teximage_8_8 = {
     //internal format
     NMGL_RGB,
 
-    //level
-    0,
-
     //pixels
     pixels_8_8,
 
@@ -44,10 +41,7 @@ TexImage2D teximage_8_8 = {
     8,
 
     //height
-    8,
-
-    //border
-    0
+    8
 };  
 
 

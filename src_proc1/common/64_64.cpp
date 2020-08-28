@@ -90,9 +90,6 @@ TexImage2D teximage_64_64 = {
     //internal format
     NMGL_RGB,
 
-    //level
-    0,
-
     //pixels
     pixels_64_64,
 
@@ -100,10 +97,7 @@ TexImage2D teximage_64_64 = {
     64,
 
     //height
-    64,
-
-    //border
-    0
+    64
 };  
 
 

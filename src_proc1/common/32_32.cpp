@@ -58,9 +58,6 @@ TexImage2D teximage_32_32 = {
     //internal format
     NMGL_RGB,
 
-    //level
-    0,
-
     //pixels
     pixels_32_32,
 
@@ -68,10 +65,7 @@ TexImage2D teximage_32_32 = {
     32,
 
     //height
-    32,
-
-    //border
-    0
+    32
 };  
 
 
