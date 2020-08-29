@@ -18,7 +18,7 @@ void nmglTexSubImage2D (NMGLenum target, NMGLint level, NMGLint xoffset, NMGLint
 		
 	if (type != NMGL_UNSIGNED_BYTE) {cntxt->error=NMGL_INVALID_ENUM;return;}
 	if((width<0)||(height<0)) {cntxt->error=NMGL_INVALID_VALUE;return;}
-	if((xoffset<0)||(yoffset<0)||(xoffset+width >= ActiveTexObjectP->texImages2D[level].width)||(yoffset+height >= ActiveTexObjectP->texImages2D[level].height)) {cntxt->error=NMGL_INVALID_VALUE;return;}
+	if((xoffset<0)||(yoffset<0)||(xoffset+width > ActiveTexObjectP->texImages2D[level].width)||(yoffset+height > ActiveTexObjectP->texImages2D[level].height)) {cntxt->error=NMGL_INVALID_VALUE;return;}
 	if(format != ActiveTexObjectP->texImages2D[level].internalformat){cntxt->error=NMGL_INVALID_OPERATION;return;}
 	if(pixels == NULL){cntxt->error=NMGL_INVALID_VALUE;return;}
 

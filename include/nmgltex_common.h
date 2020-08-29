@@ -21,7 +21,7 @@
 int getTexelSizeUbytes(NMGLint format);
 //============================================================================================================
 //#define DEBUG
-#define DEBUG_LEVEL 0
+#define DEBUG_LEVEL 2
 // #include "tests.h"
 /*
 * Максимальное поддерживаемое количество текстурных модулей

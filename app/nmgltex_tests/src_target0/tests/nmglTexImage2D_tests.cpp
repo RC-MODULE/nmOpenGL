@@ -142,15 +142,29 @@ int cmpPixelsUbytes(void* from, void *to, NMGLint n_pixels)
 	
 }
 //----------------------------------------------------------------------------------------
-void fillPixels (void **pixels,NMGLint size)
+void fillPixels (void **pixels,NMGLint size,int sfiller=-1)
 {
 	static int t=0xAA;
 	int i=0;
 	NMGLubyte *p=(NMGLubyte*)*pixels;
-	for(i=0;i<size;i++,t++)
+	if(sfiller>=0)
 	{
-		*((NMGLubyte*)(p + i))=t;
+		t=sfiller;
+		for(i=0;i<size;i++)
+		{
+			*((NMGLubyte*)(p + i))=t;
+		}
 	}
+	else{
+		for(i=0;i<size;i++,t++)
+		{
+			*((NMGLubyte*)(p + i))=t;
+		}
+	}
+	
+	
+	
+	
 }
 //----------------------------------------------------------------------------------------
 
