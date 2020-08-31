@@ -62,13 +62,14 @@ SECTION(".text_shared0") int main()
 
 	nmglEnable(NMGL_DEPTH_TEST);
 	nmglEnable(NMGL_CULL_FACE);
+	nmglPointSize(2);
 
 	nmglMatrixMode(NMGL_MODELVIEW);
 	nmglLoadIdentity();
 	nmglMatrixMode(NMGL_PROJECTION);
 	nmglOrthof(-384, 384, -384, 384, -384, 384);
 	nmglMatrixMode(NMGL_MODELVIEW);
-	//nmglPointSize(6);
+	//nmglPointSize(4);
 	//nmglEnable(NMGL_POINT_SMOOTH);
 
 	nmglViewport(0, 0, 768, 768);

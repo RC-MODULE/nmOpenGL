@@ -124,13 +124,13 @@ nmc4vars_win.mk:
 $(OUT_DIR):
 	-mkdir "$(@)"
 	
-$(TMP_DIR)/%.o: %.asm 
+$(TMP_DIR)/%.o: %.asm $(ALL_H)
 	$(AS) $(AS_FLAGS) $(<) -o$(@) $(INC_DIRS)
 	
-$(TMP_DIR)/%.o: %.cpp 
+$(TMP_DIR)/%.o: %.cpp $(ALL_H)
 	$(CC) $(CC_FLAGS) -c $(<) -o$(@) $(INC_DIRS)
 
-$(TMP_DIR)/%.o: %.c
+$(TMP_DIR)/%.o: %.c $(ALL_H)
 	$(CC) $(CC_FLAGS) -c $(<) -o$(@) $(INC_DIRS)
 	
 profile:	

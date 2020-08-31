@@ -57,6 +57,7 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 	NMGLSynchroData* synchroData;
 	NMGL_Context_NM0 *cntxt;
 	PolygonsArray* polygonsData;
+
 	try {
 		int fromHost = halHostSync(0xC0DE0000);		// send handshake to host
 		if (fromHost != 0xC0DE0086) {					// get  handshake from host
