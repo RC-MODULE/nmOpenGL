@@ -59,8 +59,14 @@ run: $(TARGET0) $(TARGET1) $(HOST)
 	bin\debug\$(HOST)
 
 libs:
+	rm -rf ../../../make/nmopengl-nmc4/Release
 	$(MAKE) -C $(ROOT)/make/nmopengl-nmc4 -f ./Makefile
+	rm -rf ../../../make/nmopengl-nmc4f/Release
 	$(MAKE) -C $(ROOT)/make/nmopengl-nmc4f -f ./Makefile
+	rm -rf ../../../make/nmopengl-x86-x64/obj
+	cd ../../../make/nmopengl-x86-x64/ 
+	rm *.vcxproj*
+	rm *.sln
 	$(MAKE) -C $(ROOT)/make/nmopengl-x86-x64 -f ./Makefile
 	
 	
