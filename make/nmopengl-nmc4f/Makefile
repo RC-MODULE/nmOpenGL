@@ -45,11 +45,15 @@ endif
 
 -include 		 nmc4vars_win.mk
 #include          $(ROOT)/global.mk
-
+DEBUG ?= n
 
 ARCH             =nmc4
 #--------------  target & input dirs -------------------
+ifeq ($(DEBUG),y)
+PROJECT          = libnmopengl-$(ARCH)fd
+else
 PROJECT          = libnmopengl-$(ARCH)f
+endif
 TMP_DIR          = Release
 OUT_DIR          = $(ROOT)/lib
 TARGET           = $(OUT_DIR)/$(PROJECT).a
@@ -67,6 +71,12 @@ AS               = asm
 CC_FLAGS 	     = -m$(ARCH) $(INC_DIRS)  -std=c++11 -c -O2
 AR_FLAGS         = rcs $(TARGET)
 AS_FLAGS         =-$(ARCH) -nm2ms  -split_sir -W-111 -W-109 $(INC_DIRS) 
+
+ifeq ($(DEBUG),y)
+CC_FLAGS	+= -DDEBUG
+else
+CC_FLAGS	+= -DNDEBUG
+endif
 #=================== SOURCE & OBJECTS COLLECTION ===========================
 .SUFFIXES:
 # regular search of *.c *.cpp,*.asm,*.s sources in all $(SRC_DIRS)
@@ -102,16 +112,16 @@ $(OUT_DIR):
 	-mkdir "$(@)"
 	
 
-$(TMP_DIR)/%.o: %.c 
+$(TMP_DIR)/%.o: %.c   $(ALL_H)
 	$(CC) $(CC_FLAGS) $(<) -o$(@) $(INC_DIRS) $(ERRECHO)
 
-$(TMP_DIR)/%.o: %.cpp
+$(TMP_DIR)/%.o: %.cpp $(ALL_H)
 	$(CC) $(CC_FLAGS) $(<) -o$(@) $(INC_DIRS) $(ERRECHO)
 	
-$(TMP_DIR)/%.o: %.asm 
+$(TMP_DIR)/%.o: %.asm  $(ALL_H)
 	$(AS) $(AS_FLAGS) $(<) -o$(@) $(ERRECHO)
 
-$(TMP_DIR)/%.o: %.s 
+$(TMP_DIR)/%.o: %.s  $(ALL_H)
 	$(AS) $(AS_FLAGS) $(<) -o$(@) $(ERRECHO)
 	
 	

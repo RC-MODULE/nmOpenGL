@@ -61,6 +61,7 @@ SECTION(".text_shared0") int main()
 
 	nmglEnable(NMGL_DEPTH_TEST);
 	nmglEnable(NMGL_CULL_FACE);
+	nmglPointSize(2);
 
 	nmglMatrixMode(NMGL_MODELVIEW);
 	nmglLoadIdentity();

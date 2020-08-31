@@ -46,7 +46,9 @@
 #============== PROJECT & BUILD CONFIGURATION ==========
 #
 
-ROOT             = ../../../..
+DEBUG ?= n
+ROOT             = ../..
+
 include $(ROOT)/global.mk
 include 		 nmc4vars_win.mk
 #-------------- target & input dirs -------------------
@@ -65,6 +67,11 @@ LIBS             = -lnmopengl-nmc4f -lnmpp-nmc4f -lhal-mc12101
 MAP		         = $(PROJECT).map
 LINKER_FLAGS     = -Xlinker -Map=$(MAP) $(LIB_DIRS) "-Wl,-Tldscript-nmc0.ld" -Wl,--whole-archive -lmc12101 -Wl,--no-whole-archive -o$(TARGET) 
 
+ifeq ($(DEBUG),y)
+	CC_FLAGS	+= -DDEBUG
+else
+	CC_FLAGS	+= -DNDEBUG
+endif
 #=================== SOURCE & OBJECTS COLLECTION ===========================
 
 .SUFFIXES:
@@ -73,7 +80,7 @@ LINKER_FLAGS     = -Xlinker -Map=$(MAP) $(LIB_DIRS) "-Wl,-Tldscript-nmc0.ld" -Wl
 ALL_CPP =$(wildcard $(addsuffix /*.cpp, $(SRC_DIRS)))
 ALL_ASM =$(wildcard $(addsuffix /*.asm, $(SRC_DIRS)))
 ALL_C   =$(wildcard $(addsuffix /*.c, $(SRC_DIRS)))
-ALL_H   =$(wildcard $(addsuffix /*.h, $(HEADER_DIRS)))
+ALL_H   =$(wildcard $(addsuffix /*.h, $(INC_DIRS)))
 
 VPATH   = $(SRC_DIRS)
 
@@ -109,13 +116,13 @@ nmc4vars_win.mk:
 $(OUT_DIR): 
 	-mkdir "$(@)"
 	
-$(TMP_DIR)/%.o: %.asm 
+$(TMP_DIR)/%.o: %.asm  $(ALL_H)
 	$(AS) $(AS_FLAGS) $(<) -o$(@)
 	
-$(TMP_DIR)/%.o: %.cpp 
+$(TMP_DIR)/%.o: %.cpp  $(ALL_H)
 	$(CC) $(CC_FLAGS) -c $(<) -o$(@) $(INC_DIRS) -O2
 
-$(TMP_DIR)/%.o: %.c
+$(TMP_DIR)/%.o: %.c  $(ALL_H)
 	$(CC) $(CC_FLAGS) -c $(<) -o$(@) $(INC_DIRS) -O2
 	
 #========================== Visual Studio  ===================
