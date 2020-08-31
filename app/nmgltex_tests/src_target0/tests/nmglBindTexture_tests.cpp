@@ -12,6 +12,7 @@ extern void* cntxtAddr_nm1;
 #pragma data_section ".data_tex_tests"
 #endif
 NMGL_Context_NM1 *cntxt_nm1;
+extern NMGLubyte mipmap[MIPMAP_MEM_SIZE];
 extern int getTexelSizeUbytes(NMGLint format);
 int isPowerOf2(NMGLint x);
 
@@ -216,8 +217,8 @@ int nmglBindTexture_bindTexture_contextStateCorrect()
 	//#define MAX_TEX_SIZE_UBYTE (RGBA_TEXEL_SIZE_UBYTE*NMGL_MAX_TEX_SIDE*NMGL_MAX_TEX_SIDE)
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
 	cntxt->error=NMGL_NO_ERROR;
-	NMGLubyte testTexBytes[MIPMAP_TESTOBJ_SIZE];
-	NMGLubyte testTexBytes2[MIPMAP_TESTOBJ_SIZE];
+	NMGLubyte *testTexBytes=&mipmap[MIPMAP_MEM_SIZE-MIPMAP_OBJ_SIZE];;
+	NMGLubyte *testTexBytes2=&mipmap[MIPMAP_MEM_SIZE-2*MIPMAP_OBJ_SIZE];;
 	int object_in_init_state=0;
 	//NMGLint* curpixels[NMGL_MAX_MIPMAP_LVL];
 	//NMGLint curwidth[NMGL_MAX_MIPMAP_LVL];

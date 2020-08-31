@@ -66,14 +66,18 @@ pname:TEXTURE_MIN_FILTER,TEXTURE_MAG_FILTER
 pname:TEXTURE_WRAP_S,TEXTURE_WRAP_T
 
 */
+
+
 #ifdef __GNUC__
 #pragma code_section ".text_tex_tests"
 #pragma data_section ".data_tex_tests"
 #endif
+extern NMGLubyte mipmap[MIPMAP_MEM_SIZE];
 NMGL_Context_NM0 *cntxt;
 extern void* cntxtAddr_nm1;
 NMGL_Context_NM1 *nm1cntxt;
-SECTION(".data_tex_tests") NMGLubyte texels[USED_SIDE*USED_SIDE*UBYTES_PER_TEXEL];
+//SECTION(".data_tex_tests") NMGLubyte texels[USED_SIDE*USED_SIDE*UBYTES_PER_TEXEL];
+NMGLubyte *texels;
 extern int getTexelSizeUbytes(NMGLint format);
 
 
@@ -319,6 +323,7 @@ int run_nmglTexImage2D_test()
 {
 	cntxt = NMGL_Context_NM0::getContext();
 	nm1cntxt = (NMGL_Context_NM1*)cntxtAddr_nm1;
+	texels=&mipmap[MIPMAP_MEM_SIZE-MIPMAP_OBJ_SIZE];          
 	init_internalformats();
 	cur_width=USED_SIDE;	
 //	cur_format=internalformats[0].type;
@@ -490,7 +495,7 @@ int nmglTexImage2D_wrongWidth_isError()
 	nmglTexImage2D(input.target,input.level,input.internalformat.type,input.width,input.height,0,input.format,input.type,input.pixels);
 	TEST_ASSERT(cntxt->error==NMGL_NO_ERROR);
 
-nmglTexImage2D(input.target,input.level,input.internalformat.type,input.width<<1,input.height,0,input.format,input.type,input.pixels);
+nmglTexImage2D(input.target,input.level,input.internalformat.type,input.width>>1,input.height,0,input.format,input.type,input.pixels);
 	TEST_ASSERT(cntxt->error==NMGL_INVALID_OPERATION);
 
 	_nmglTexImage2D_prevent_internal_errors();//CHANGE_REPORT	
@@ -510,7 +515,7 @@ int nmglTexImage2D_wrongHeight_isError()
 	nmglTexImage2D(input.target,input.level,input.internalformat.type,input.width,input.height,0,input.format,input.type,input.pixels);
 	TEST_ASSERT(cntxt->error==NMGL_NO_ERROR);
 
-	nmglTexImage2D(input.target,input.level,input.internalformat.type,input.width,input.height<<1,0,input.format,input.type,input.pixels);
+	nmglTexImage2D(input.target,input.level,input.internalformat.type,input.width,input.height>>1,0,input.format,input.type,input.pixels);
 	TEST_ASSERT(cntxt->error==NMGL_INVALID_OPERATION);
 	_nmglTexImage2D_prevent_internal_errors();//CHANGE_REPORT	
 

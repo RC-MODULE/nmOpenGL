@@ -2,7 +2,7 @@
 #define NMGL_TEX_TEST_COMMON_H_
 #include "tests.h"
 #include "nmgltex_common.h"
-#define USED_MIPMAP_LVL 4  //mst be <= MAX_MIPMAP_LVL
+#define USED_MIPMAP_LVL 10  //mst be <= MAX_MIPMAP_LVL
 #define USED_SIDE (0x1<<(USED_MIPMAP_LVL))
 #define MIPMAP_TESTOBJ_SIZE ((((0x1<<(2*(USED_MIPMAP_LVL+1)))-1)/3)*UBYTES_PER_TEXEL) //mipmap mem size in 4byte words	
 
