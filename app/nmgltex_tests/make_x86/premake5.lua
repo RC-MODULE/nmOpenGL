@@ -34,7 +34,8 @@ solution "demo3d-target0-x86"
       files { "../../../include/*.h","../include/*.h","../src_target0/*.*","../src_target0/tests/*.*","../../../nmglvs_mc12101-gcc/src_nmc0/*.*","../../../src_proc0/pc/*.*","../../../src_proc0/common/*.*" }
 	  libdirs { "$(NMPP)/lib","$(HAL)/lib", "../../../lib"}
 	  includedirs { "$(MC12101)/include","$(HAL)/include","$(NMPP)/include","../../../include","../include"}
-     links { "nmpp-x86.lib"}  
+     links { "nmpp-x86.lib"} 
+     defines { "TEST_NMGL_TEX_FUNC" } 
      configuration "Debug"
          defines { "DEBUG" }
          symbols  "On"
@@ -58,7 +59,7 @@ solution "demo3d-target1-x86"
 	  libdirs { "$(NMPP)/lib","$(HAL)/lib", "$(VSHELL)/lib", "../../../lib"}
 	  includedirs { "$(MC12101)/include","$(HAL)/include","$(NMPP)/include","../../../include", "$(VSHELL)/include"}
      links { "nmpp-x86.lib", "vshell.lib"}
-
+     defines { "TEST_NMGL_TEX_FUNC" }
       configuration "Debug"
          defines { "DEBUG" }
          symbols  "On" 

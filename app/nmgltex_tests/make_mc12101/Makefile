@@ -21,15 +21,23 @@ TARGET_LIB  = main1.abs
 TARGET1  = main1.abs
 TARGET1  = main1.abs
 
+NMTARGET=
+
 VS ?= vs2015 
 #PATH:=$(MC12101)/bin;$(PATH)
+
+
+all: NMTARGET = 
 all: $(TARGET0) $(TARGET1)  $(HOST)
 
+debug: NMTARGET = _debug
+debug: $(TARGET0) $(TARGET1)  $(HOST)
+
 nm0 $(TARGET0): 
-	$(MAKE) -f Makefile0 
+	$(MAKE) -f Makefile0 $(NMTARGET)
 
 nm1 $(TARGET1):
-	$(MAKE) -f Makefile1
+	$(MAKE) $(NMTARGET) -f Makefile1 $(NMTARGET)
 	
 host $(HOST): $(VS)
 
@@ -51,8 +59,14 @@ run: $(TARGET0) $(TARGET1) $(HOST)
 	bin\debug\$(HOST)
 
 libs:
+	rm -rf ../../../make/nmopengl-nmc4/Release
 	$(MAKE) -C $(ROOT)/make/nmopengl-nmc4 -f ./Makefile
+	rm -rf ../../../make/nmopengl-nmc4f/Release
 	$(MAKE) -C $(ROOT)/make/nmopengl-nmc4f -f ./Makefile
+	rm -rf ../../../make/nmopengl-x86-x64/obj
+	cd ../../../make/nmopengl-x86-x64/ 
+	rm *.vcxproj*
+	rm *.sln
 	$(MAKE) -C $(ROOT)/make/nmopengl-x86-x64 -f ./Makefile
 	
 	
