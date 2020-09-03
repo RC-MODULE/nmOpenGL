@@ -19,18 +19,18 @@ SECTION(".data_imu4")	float nmglBuffer3[12 * NMGL_SIZE];
 SECTION(".data_imu5")	float nmglBuffer4[12 * NMGL_SIZE];
 
 
-SECTION(".data_imu2")	float x0[NMGL_SIZE];
-SECTION(".data_imu2")	float y0[NMGL_SIZE];
-SECTION(".data_imu2")	float x1[NMGL_SIZE];
-SECTION(".data_imu3")	float y1[NMGL_SIZE];
-SECTION(".data_imu3")	float x2[NMGL_SIZE];
-SECTION(".data_imu3")	float y2[NMGL_SIZE];
-SECTION(".data_imu4")	int z_int[NMGL_SIZE];
-SECTION(".data_imu6")	v4nm32s lightsValues[NMGL_SIZE];
+SECTION(".data_imu2")	float x0[3 * NMGL_SIZE];
+SECTION(".data_imu2")	float y0[3 * NMGL_SIZE];
+SECTION(".data_imu2")	float x1[3 * NMGL_SIZE];
+SECTION(".data_imu3")	float y1[3 * NMGL_SIZE];
+SECTION(".data_imu3")	float x2[3 * NMGL_SIZE];
+SECTION(".data_imu3")	float y2[3 * NMGL_SIZE];
+SECTION(".data_imu4")	int z_int[3 * NMGL_SIZE];
+SECTION(".data_imu6")	v4nm32s lightsValues[3 * NMGL_SIZE];
 
-SECTION(".data_imu6") int dividedMasksMemory[4][NMGL_SIZE / 32];
+SECTION(".data_imu6") int dividedMasksMemory[4][3 * NMGL_SIZE / 32];
 
-SECTION(".data_imu6") int masksBits[36][NMGL_SIZE / 32];
+SECTION(".data_imu6") int masksBits[36][3 * NMGL_SIZE / 32];
 
 int counter = 0;
 
@@ -153,6 +153,7 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 	halHostSync((int)0x600d600d);
 	nmglClearColor(0, 0, 0, 1.0f);
 	nmglClearDepthf(1);
+	nmglPointSize(1);
 
 	return 0;
 } 

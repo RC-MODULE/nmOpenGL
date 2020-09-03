@@ -23,9 +23,9 @@ void rasterizeP(const Points* points, const BitMask* masks){
 
 	int count = points->size;
 	localPoint.x0 = cntxt->buffer0;
-	localPoint.y0 = cntxt->buffer0 + NMGL_SIZE;
-	localPoint.colors = (v4nm32s*)cntxt->buffer3;
-	localPoint.z = (int*)cntxt->buffer3 + 4 * NMGL_SIZE;
+	localPoint.y0 = cntxt->buffer1;
+	localPoint.colors = (v4nm32s*)cntxt->buffer2;
+	localPoint.z = (int*)cntxt->buffer3;
 	int* indices = (int*)cntxt->buffer4;
 
 	for (int segY = 0, iSeg = 0; segY < cntxt->windowInfo.nRows; segY++) {

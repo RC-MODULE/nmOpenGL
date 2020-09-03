@@ -61,16 +61,14 @@ SECTION(".text_shared0") int main()
 	//nmglClearColor(0.5, 0.5, 0.5, 1.0f);
 
 	nmglEnable(NMGL_DEPTH_TEST);
-	nmglEnable(NMGL_CULL_FACE);
-	nmglPointSize(2);
+	//nmglEnable(NMGL_CULL_FACE);
+	//nmglPointSize(2);
 
 	nmglMatrixMode(NMGL_MODELVIEW);
 	nmglLoadIdentity();
 	nmglMatrixMode(NMGL_PROJECTION);
 	nmglOrthof(-384, 384, -384, 384, -384, 384);
 	nmglMatrixMode(NMGL_MODELVIEW);
-	//nmglPointSize(4);
-	//nmglEnable(NMGL_POINT_SMOOTH);
 
 	nmglViewport(0, 0, 768, 768);
 
@@ -92,7 +90,7 @@ SECTION(".text_shared0") int main()
 	nmglLightfv(NMGL_LIGHT1, NMGL_POSITION, lightVector);
 	float lightDiffuse2[4] = { 1, 1, 0, 1 };
 	nmglLightfv(NMGL_LIGHT1, NMGL_DIFFUSE, lightDiffuse);*/
-
+	int counter = 0;
 	while(nmglvsNm0Run()){
 
 		nmglEnableClientState(NMGL_VERTEX_ARRAY);
@@ -111,8 +109,10 @@ SECTION(".text_shared0") int main()
 		materialSpec[1] = 0.6;
 		materialSpec[2] = 0.6;
 		nmglMaterialfv(NMGL_FRONT_AND_BACK, NMGL_SPECULAR, materialSpec);
-		nmglDrawArrays(NMGL_TRIANGLES, 0, 3 * amountPolygons);
-		
+		//if(counter % 2)
+		//	nmglDrawArrays(NMGL_POINTS, 0, 3 * amountPolygons);
+		//else
+			nmglDrawArrays(NMGL_TRIANGLES, 0, 3 * amountPolygons);
 
 		nmglVertexPointer(4, NMGL_FLOAT, 0, vertices_DDR2);
 		nmglNormalPointer(NMGL_FLOAT, 0, normal_DDR2);
@@ -127,7 +127,10 @@ SECTION(".text_shared0") int main()
 		nmglMaterialfv(NMGL_FRONT_AND_BACK, NMGL_SPECULAR, materialSpec);
 		nmglRotatef(angle, 0.707, 0.707, 0);
 		nmglTranslatef(150, 150, 0);
-		nmglDrawArrays(NMGL_TRIANGLES, 0, 3 * amountPolygons2);
+		//if (counter % 2)
+		//	nmglDrawArrays(NMGL_POINTS, 0, 3 * amountPolygons2);
+		//else
+			nmglDrawArrays(NMGL_TRIANGLES, 0, 3 * amountPolygons2);
 #ifdef __OPEN_GL__
 		angle += 0.03;
 #else
@@ -136,7 +139,7 @@ SECTION(".text_shared0") int main()
 
 		nmglDisableClientState(NMGL_VERTEX_ARRAY);
 		nmglDisableClientState(NMGL_NORMAL_ARRAY);
-
+		counter++;
 		//nmglFinish();
 		nmglvsSwapBuffer();
 	}

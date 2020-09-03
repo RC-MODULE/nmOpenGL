@@ -24,8 +24,7 @@ int main()
 	if (!VS_Init())
 		return 0;
 	VS_CreateImage("Source Image", 1, WIDTH_IMAGE, HEIGHT_IMAGE, VS_RGB32, 0);	// Create window for 8-bit source grayscale image
-	VS_CreateImage("Pattern", 2, WIDTH_PTRN, HEIGHT_PTRN, VS_RGB8, 0);	// Create window for 8-bit source grayscale image
-	//VS_OpRunForward();
+	VS_OpRunForward();
 	int ok;
 
 	Models models;
@@ -42,22 +41,11 @@ int main()
 	ok = halWriteMemBlock(vertices2, verticesNM, amount * 24, 0);
 	ok = halSync(3 * amount, 0);
 
-	PatternsArray* patterns = (PatternsArray*)nmppsMalloc_32s(sizeof32(PatternsArray));
-	hostCreatePatterns(patterns);
-	int counter = 0;
-	signed char ptrn8[WIDTH_PTRN * HEIGHT_PTRN];
-	char ptrn4[WIDTH_PTRN * HEIGHT_PTRN / 2];
 
 	while(VS_Run())	{
 		nmglvsHostReadImage(currentImage);
 
 		VS_SetData(1, currentImage);
-		nmppsConvert_2s4s(patterns->linePtrns[counter++], ptrn4, WIDTH_PTRN * HEIGHT_PTRN);
-		if (counter == LINE_PATTERNS_AMOUNT) {
-			counter = 0;
-		}
-		nmppsConvert_4s8s(ptrn4, ptrn8, WIDTH_PTRN * HEIGHT_PTRN);
-		VS_SetData(2, ptrn8);
 		VS_Draw(VS_DRAW_ALL);
 	}
 

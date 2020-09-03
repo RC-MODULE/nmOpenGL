@@ -9,18 +9,7 @@
 SECTION(".data_demo3d") unsigned int points[14];
 SECTION(".data_demo3d") MyDmaTask task;
 
-const int maxTmpCount0 = (SIZE_BANK - sizeof32(DataForNmpu1)) / POLYGONS_SIZE;
-const int maxTmpCount1 = SIZE_BANK / POLYGONS_SIZE;
-
 #define CHECK_STATUS(a) while (!msdGetStatusCopy(points[a], 0))
-
-extern "C" void clipCC_32s(
-	nm32s*	pSrcVec,			// Input vec			:long Global[Size/2]
-	int		NegThreshold,	// Upper threshold		:=[0...2^16-1]
-	int		PosThreshold,	// Lower threshold		:=[-2^16....0]
-	nm32s*	pDstVec,			// Output vec		:long Local[Size/2]
-	int		nSize		// nSize of vec 32 bit elements. nSize=[0,2,4,6...]
-);
 
 inline void ADD_COPY(const void* src, void* dst, int size, int i) {
 	task.src = src;
@@ -38,7 +27,6 @@ SECTION(".text_demo3d") int getAddrPtrnsT(DataForNmpu1* data) {
 	DataForNmpu1* dataTmp = (DataForNmpu1*)cntxt->buffer0;
 	offset0 += sizeof32(DataForNmpu1);
 	msdAdd(data, dataTmp, sizeof32(DataForNmpu1), 0);
-	msdWaitDma(0);
 	int* dx02 = cntxt->buffer0 + offset0;
 	offset0 += POLYGONS_SIZE;
 	int* dx01 = cntxt->buffer0 + offset0;
@@ -98,6 +86,8 @@ SECTION(".text_demo3d") int getAddrPtrnsT(DataForNmpu1* data) {
 		return 0;
 	}
 #endif // DEBUG	
+	msdWaitDma(0);
+
 	nmppsSub_32s(dataTmp->x2, dataTmp->x0, dx02, size);
 	nmppsSub_32s(dataTmp->x1, dataTmp->x0, dx01, size);
 	nmppsSub_32s(dataTmp->x2, dataTmp->x1, dx12, size);
@@ -186,7 +176,7 @@ SECTION(".text_demo3d") int getAddrPtrnsT(DataForNmpu1* data) {
 
 	nmppmCopy_32s((nm32s*)cntxt->ppPtrns2_2s, 0, (nm32s*)temp0, SMALL_SIZE, height, SMALL_SIZE);
 	nmppsCopy_32s((nm32s*)cntxt->ppPtrns2_2s, (nm32s*)(temp0 + height * SMALL_SIZE), size % SMALL_SIZE);
-#ifdef __NM__
+#ifdef __GNUC__
 	nmppsAdd_32s(temp0, sizePackTmp01, (int*)dstPackTmp12, size);
 #else 
 	for (int i = 0; i < size; i++) {

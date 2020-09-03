@@ -1,8 +1,8 @@
-//#include "demo3d_common.h"
+#include "demo3d_common.h"
 #include "nmtype.h"
 
 
-//SECTION(".text_demo3d")
+SECTION(".text_demo3d")
 void copyColorByIndices_BGRA_RGBA(v4nm32s* srcColor, int* indices, v4nm32s* dstColor, int size) {
 	int* src = (int*)srcColor;
 	int* dst = (int*)dstColor;

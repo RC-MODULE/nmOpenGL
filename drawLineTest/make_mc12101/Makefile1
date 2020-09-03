@@ -45,6 +45,7 @@
 
 #============== PROJECT & BUILD CONFIGURATION ==========
 #
+DEBUG ?= n
 
 ROOT             = ../..
 include $(ROOT)/global.mk
@@ -66,6 +67,12 @@ AS_FLAGS    	 = -c -mmas -x assembler -Wa,-split_sir -mnmc4-fixed
 LIBS             = -lnmpp-nmc4 -lhal-mc12101
 MAP		         = $(PROJECT).map
 LINKER_FLAGS     = -Xlinker -Map=$(MAP) $(LIB_DIRS) "-Wl,-Tldscript-nmc1.ld"  -Wl,--whole-archive -lmc12101 -Wl,--no-whole-archive -o$(TARGET)
+
+ifeq ($(DEBUG),y)
+	CC_FLAGS	+= -DDEBUG
+else
+	CC_FLAGS	+= -DNDEBUG
+endif
 #=================== SOURCE & OBJECTS COLLECTION ===========================
 
 .SUFFIXES:

@@ -53,7 +53,6 @@ SECTION(".data_imu0") NMGL_Context_NM1 *NMGL_Context_NM1::context;
 
 SECTION(".text_nmglvs") int nmglvsNm1Init()
 {
-	halSleep(100);
 	halSetProcessorNo(1);
 	//---------- start nm program ------------
 	NMGL_Context_NM1 *cntxt;
