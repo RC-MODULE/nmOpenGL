@@ -167,6 +167,7 @@ SECTION(".text_demo3d") int getAddrPtrnsT(DataForNmpu1* data) {
 	nmppsAdd_32s(temp0, temp2, temp0, size);
 	nmppsMerge_32s(temp0, temp1, (nm32s*)cntxt->ptrnSizes, size);
 
+#ifdef __GNUC__
 	int height = size / SMALL_SIZE;
 	nmppmCopy_32s((nm32s*)cntxt->ppPtrns1_2s, 0, (nm32s*)dstPackTmp02, SMALL_SIZE, height, SMALL_SIZE);
 	nmppsCopy_32s((nm32s*)cntxt->ppPtrns1_2s, (nm32s*)(dstPackTmp02 + height * SMALL_SIZE), size % SMALL_SIZE);
@@ -176,11 +177,13 @@ SECTION(".text_demo3d") int getAddrPtrnsT(DataForNmpu1* data) {
 
 	nmppmCopy_32s((nm32s*)cntxt->ppPtrns2_2s, 0, (nm32s*)temp0, SMALL_SIZE, height, SMALL_SIZE);
 	nmppsCopy_32s((nm32s*)cntxt->ppPtrns2_2s, (nm32s*)(temp0 + height * SMALL_SIZE), size % SMALL_SIZE);
-#ifdef __GNUC__
 	nmppsAdd_32s(temp0, sizePackTmp01, (int*)dstPackTmp12, size);
 #else 
 	for (int i = 0; i < size; i++) {
-		dstPackTmp12[i] = (nm32s*)temp0[i] + sizePackTmp01[i];
+		dstPackTmp02[i] = (nm32s*)cntxt->ppPtrns1_2s[i % SMALL_SIZE];
+		dstPackTmp01[i] = (nm32s*)cntxt->ppPtrns2_2s[i % SMALL_SIZE];
+		dstPackTmp12[i] = (nm32s*)cntxt->ppPtrns2_2s[i % SMALL_SIZE] +
+			+ dy01[i] * WIDTH_PTRN / 16; // + cntxt->nSizePtrn32[3 * i + 1]
 	}
 #endif
 	baseAddrOffs_32s((nm32s*)cntxt->smallColorBuff.mData, imageOffset, cntxt->imagePoints, size);

@@ -154,6 +154,13 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 	case NMGL_TRIANGLES:
 		maxInnerCount = 3 * NMGL_SIZE;
 		break;
+	case NMGL_TRIANGLE_FAN:
+		maxInnerCount = NMGL_SIZE + 2;
+		break;
+	case NMGL_TRIANGLE_STRIP:
+		maxInnerCount = NMGL_SIZE + 2;
+		break;
+		break;
 	case NMGL_LINES:
 		maxInnerCount = 2 * NMGL_SIZE;
 		break;

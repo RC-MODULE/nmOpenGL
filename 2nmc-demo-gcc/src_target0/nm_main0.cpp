@@ -14,6 +14,7 @@ SECTION(".text_shared0") int main()
 	float* normal_DDR = (float*)halMalloc32(2000 * 9);
 	float* vertices_DDR2 = (float*)halMalloc32(2000 * 12);
 	float* normal_DDR2 = (float*)halMalloc32(2000 * 9);
+	int ok;
 	
 #ifdef __OPEN_GL__
 	Models models;
@@ -38,22 +39,21 @@ SECTION(".text_shared0") int main()
 
 
 	int amountPolygons2 = amount;
-	int ok;
 #else
 	int amountPolygons = halHostSync(0);
 
 	//Массив цветов полигонов (по 4 компоненты на вершину)
 	//sync1
-	halHostSync((int)vertices_DDR);
+	halHostSyncAddr(vertices_DDR);
 
 	//sync2
-	int ok = halHostSync((int)normal_DDR);
+	halHostSyncAddr(normal_DDR);
 
 	int amountPolygons2 = halHostSync(0);
-	halHostSync((int)vertices_DDR2);
+	halHostSyncAddr(vertices_DDR2);
 
 	//sync2
-	ok = halHostSync((int)normal_DDR2);
+	halHostSyncAddr(normal_DDR2);
 	ok = halHostSync((int)0x600D600D);
 #endif
 	

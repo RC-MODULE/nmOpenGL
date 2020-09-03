@@ -93,7 +93,9 @@ void rasterizeT(const Triangles* triangles, const BitMask* masks){
 					int localSize = MIN(resultSize - offset, POLYGONS_SIZE);
 					triangleOffset(localTrian, localTrian2, offset);
 					offset += POLYGONS_SIZE;
-					while (connector[0].isFull());
+					while (connector[0].isFull()) {
+						halSleep(2);
+					}
 					Polygons* poly = connector[0].ptrHead();
 					poly->count = 0;
 					updatePolygonsT(poly, &localTrian2, localSize, segX, segY);

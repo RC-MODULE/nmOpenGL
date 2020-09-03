@@ -110,7 +110,7 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 	cntxt->smallClearDepthBuff.init(depthClearBuff, WIDTH_SEG, HEIGHT_SEG);
 
 	//sync0
-	halHostSync((int)cntxt->patterns);
+	halHostSyncAddr(cntxt->patterns);
 
 	cntxt->buffer0 = pool0;
 	cntxt->buffer1 = pool1;
@@ -123,7 +123,7 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 		cntxt->minusOne[j] = -1;
 	}
 	//sync3
-	halHostSync((int)cntxt->imagesData);
+	halHostSyncAddr(cntxt->imagesData);
 
 	cntxt->ptrnInnPoints = ptrnInnPoints;
 	cntxt->ptrnSizes = ptrnSizes;

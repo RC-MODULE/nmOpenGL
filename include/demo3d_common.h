@@ -14,8 +14,8 @@
 #endif
 
 //#define USED_OLD_POLYGONS
-//#define PROFILER0
-#define PROFILER1
+#define PROFILER0
+//#define PROFILER1
 
 #ifdef __GNUC__
 #define SECTION(sec) __attribute__((section(sec)))
