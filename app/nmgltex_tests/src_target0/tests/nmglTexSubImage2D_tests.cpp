@@ -14,8 +14,8 @@
 extern NMGLubyte mipmap[MIPMAP_MEM_SIZE];
 extern NMGLint init_TexImage2D_input(TexImage2D_data* data,NMGLint width,internalformatdata internalformat,NMGLint lvl=0);
 //extern NMGLubyte texels[(USED_SIDE)*(USED_SIDE)*(UBYTES_PER_TEXEL)];
-extern void fillPixels (void **pixels,NMGLint size,int sfiller=-1);
-extern int copyPixels(const void* pfrom,NMGLint format,NMGLint width,NMGLint height,void** pto);//mem allocation
+extern void fillPixels (void **pixels,NMGLint size,NMGLint width,int sfiller=-1);
+extern int copyPixels(const void* pfrom,NMGLint format,NMGLint width,NMGLint height,void** pto,NMGL_Context_NM0 *cntxt);//mem allocation
 extern void initLvls(NMGLuint name,NMGL_Context_NM0 *cntxt);
 extern NMGLubyte mipmap[MIPMAP_MEM_SIZE];
 int fillMipMap( int texture,NMGLint format,NMGLint width,NMGLint height);
@@ -195,7 +195,7 @@ int nmglTexSubImage2D_TexSubImage_contextStateCorrect()
 	cntxt->texState.activeTexUnit=NMGL_TEXTURE0;
 	cntxt->texState.activeTexUnitIndex=0;
 
-	fillPixels (&pixels,picSize,sfiller++);
+	fillPixels (&pixels,picSize,curw,sfiller++);
 
 
 	fillMipMap(0,NMGL_RGBA,USED_SIDE,USED_SIDE);
@@ -218,7 +218,7 @@ int nmglTexSubImage2D_TexSubImage_contextStateCorrect()
 				DEBUG_PRINT(("SubWidth=%d	SubHeight=%d \n",curw,curh));
 				}
 #endif
-				copyPixels(ActiveTexObjectP->texImages2D[k].pixels,ActiveTexObjectP->texImages2D[k].internalformat,ActiveTexObjectP->texImages2D[k].width,ActiveTexObjectP->texImages2D[k].height,(void**)&testarray);
+				copyPixels(ActiveTexObjectP->texImages2D[k].pixels,ActiveTexObjectP->texImages2D[k].internalformat,ActiveTexObjectP->texImages2D[k].width,ActiveTexObjectP->texImages2D[k].height,(void**)&testarray,cntxt);
 
 
 				nmglTexSubImage2D (NMGL_TEXTURE_2D, k, i, j, curw, curh, NMGL_RGBA, NMGL_UNSIGNED_BYTE, pixels);
@@ -226,7 +226,7 @@ int nmglTexSubImage2D_TexSubImage_contextStateCorrect()
 			DEBUG_PRINT(("k=%d i=%d j=%d\n",k,i,j));						
 				TEST_ASSERT(cntxt->error==NMGL_NO_ERROR);
 				TEST_ASSERT(cmpRefreshPixels(ActiveTexObjectP->texImages2D[k].pixels,testarray,pixels,getTexelSizeUbytes(ActiveTexObjectP->texImages2D[k].internalformat),ActiveTexObjectP->texImages2D[k].width,ActiveTexObjectP->texImages2D[k].height,i,j,curw,curh) == 1 );
-				fillPixels (&pixels,picSize,sfiller++);
+				fillPixels (&pixels,picSize,curw,sfiller++);
 				if((USED_SIDE>>k)-curh == 0) j=1;				
 			}
 			if((USED_SIDE>>k)-curw == 0) i=1;
@@ -235,12 +235,12 @@ int nmglTexSubImage2D_TexSubImage_contextStateCorrect()
 		if(curh > 1) curh>>=1;
 		picSize=curw*curh*UBYTES_PER_TEXEL;
 		sfiller=0;
-		fillPixels (&pixels,picSize,sfiller++);
+		fillPixels (&pixels,picSize,curw,sfiller++);
 	}	
 	TEST_ASSERT(_accum==0);	
 	curw=USED_SIDE;
 	curh=USED_SIDE;
-	copyPixels(ActiveTexObjectP->texImages2D[0].pixels,ActiveTexObjectP->texImages2D[0].internalformat,ActiveTexObjectP->texImages2D[0].width,ActiveTexObjectP->texImages2D[0].height,(void**)&testarray);
+	copyPixels(ActiveTexObjectP->texImages2D[0].pixels,ActiveTexObjectP->texImages2D[0].internalformat,ActiveTexObjectP->texImages2D[0].width,ActiveTexObjectP->texImages2D[0].height,(void**)&testarray,cntxt);
 
 
 	nmglTexSubImage2D (NMGL_TEXTURE_2D, 0, 0, 0, curw, curh, NMGL_RGBA, NMGL_UNSIGNED_BYTE, pixels);	
@@ -270,7 +270,7 @@ int nmglTexSubImage2D_wrongArgs_isError()
 	
 	if(pixels==0) {DEBUG_PRINT(("Error!Cant allocate mem for test mipmap!\n"));return 2;}
 //__________________normal_________________________________________________
-		fillPixels(&pixels,UBYTES_PER_TEXEL*((USED_SIDE*USED_SIDE)>>4));
+		fillPixels(&pixels,UBYTES_PER_TEXEL*((USED_SIDE*USED_SIDE)>>4),USED_SIDE>>2);
 		nmglTexSubImage2D (NMGL_TEXTURE_2D, 0, 1, 1, USED_SIDE>>2, USED_SIDE>>2, NMGL_RGBA, NMGL_UNSIGNED_BYTE, pixels);
 		TEST_ASSERT_ACCUM(cntxt->error==NMGL_NO_ERROR);
 

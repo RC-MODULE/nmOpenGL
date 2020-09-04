@@ -88,7 +88,7 @@ TexImage2D_data input;//main input data;
 	NMGLint cur_width;
 	//----------------------------------------
 	int status=0;
-	int i=0;//index
+	int i=0,j=0,k=0;//index
 
 //==============================================================================================
 //Тестовые сценарии
@@ -124,7 +124,7 @@ void init_internalformats()
 	internalformats[4].size=getTexelSizeUbytes(NMGL_LUMINANCE_ALPHA);
 }
 //----------------------------------------------------------------------------------------
-int cmpPixelsUbytes(void* from, void *to, NMGLint n_pixels)
+int cmpPixelsUbytes(void* from_w_pads, void *to, NMGLint n_pixels)
 {
     int i=0;
   /*
@@ -136,9 +136,9 @@ int cmpPixelsUbytes(void* from, void *to, NMGLint n_pixels)
    */
   for(i=0;i<n_pixels;i++)
   {
-	  if(*((NMGLubyte*)from+i) != *((NMGLubyte*)to+i) )
+	  if(*((NMGLubyte*)from_w_pads+i) != *((NMGLubyte*)to+i) )
 	  {
-		  printf("i=%d mismatch. from/to=0x%x/0x%x ",i,*((NMGLubyte*)from+i),	*((NMGLubyte*)to+i));
+		  printf("i=%d mismatch. from/to=0x%x/0x%x ",i,*((NMGLubyte*)from_w_pads+i),	*((NMGLubyte*)to+i));
 		  return 0;
 	  }
   }
@@ -146,26 +146,51 @@ int cmpPixelsUbytes(void* from, void *to, NMGLint n_pixels)
 	
 }
 //----------------------------------------------------------------------------------------
-void fillPixels (void **pixels,NMGLint size,int sfiller=-1)
+void fillPixels (void **pixels,NMGLint size,NMGLint width,int sfiller=-1)
 {
 	static int t=0xAA;
-	int i=0;
+	
+	
+	int line=width*UBYTES_PER_TEXEL;
+	int paddings=0;
 	NMGLubyte *p=(NMGLubyte*)*pixels;
-	if(sfiller>=0)
+	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
+	if(cntxt->texState.unpackAlignment == 1)
 	{
-		t=sfiller;
-		for(i=0;i<size;i++)
+		if(sfiller>=0)
 		{
-			*((NMGLubyte*)(p + i))=t;
+			t=sfiller;
+			for(i=0;i<size;i++)
+			{
+				*((NMGLubyte*)(p + i))=t;
+			}
+		}
+		else{
+			for(i=0;i<size;i++,t++)
+			{
+				*((NMGLubyte*)(p + i))=t;
+			}
 		}
 	}
-	else{
-		for(i=0;i<size;i++,t++)
-		{
-			*((NMGLubyte*)(p + i))=t;
-		}
+	else
+	{
+		paddings=((!cntxt->texState.unpackAlignment)||(line % cntxt->texState.unpackAlignment == 0)) ? 0 : (cntxt->texState.unpackAlignment - line % cntxt->texState.unpackAlignment);
+		
+		for(j=0;j<width;j++)
+	    {
+	       for(i=0;i<line;i++)
+	    	{
+	       
+	        	*((NMGLubyte*)(p + j*(line+paddings) + i))=t;
+	    	}
+			for(k=0;k<paddings;k++)
+			{
+				*((NMGLubyte*)(p + (j*(line + paddings))+line + k))=-1;
+			}
+	    }
 	}
 	
+
 	
 	
 	
@@ -192,7 +217,7 @@ NMGLint init_TexImage2D_input(TexImage2D_data* data,NMGLint width,internalformat
 	
 	data->pixels=texels;
 	
-		fillPixels(&data->pixels,picture_size_);		
+		fillPixels(&data->pixels,picture_size_,width);		
 	
 	return 0;
 }
@@ -262,7 +287,7 @@ int _nmglTexImage2D_check(NMGLint level)
 			return 1;
 		}
 		DEBUG_PRINT(("w=%d h=%d s=%d\n",input.width,input.height,getTexelSizeUbytes(input.internalformat.type)));
-		if(!cmpPixelsUbytes(ActiveTexObjectP->texImages2D[level].pixels,input.pixels,input.width*input.height*getTexelSizeUbytes(input.internalformat.type)))
+		if(!cmpPixelsUbytes(input.pixels,ActiveTexObjectP->texImages2D[level].pixels,input.width*input.height*getTexelSizeUbytes(input.internalformat.type)))
 		{
 			printf("Error!Pixels arrays dont match!\n");
 			return 1;

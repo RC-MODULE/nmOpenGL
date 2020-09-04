@@ -5,7 +5,7 @@
 //#include "malloc.h" //func malloc
 //#include "nmtype.h" //func malloc32
 //#define DEBUG
-SECTION(".textures_mipmap_mem") volatile NMGLubyte mipmap[MIPMAP_MEM_SIZE];
+SECTION(".textures_mipmap_mem")  NMGLubyte mipmap[MIPMAP_MEM_SIZE];
 
 //Alternative: #pragma data_section ".data_imu1"
 //     double x1[SIZE];
@@ -14,7 +14,7 @@ SECTION(".textures_mipmap_mem") volatile NMGLubyte mipmap[MIPMAP_MEM_SIZE];
 #pragma code_section ".text_nmgl"
 //============================================================================================================
 int isPowerOf2(NMGLint x);// check, if x is power of 2
-int copyPixels(const void* pfrom,NMGLint format,NMGLint width,NMGLint height,void** pto);//mem allocation
+int copyPixels(const void* pfrom,NMGLint format,NMGLint width,NMGLint height,void** pto,NMGL_Context_NM0 *cntxt);//mem allocation
 void initLvls(NMGLuint name, NMGLsizei width, NMGLsizei height,NMGLenum format);
 
 int getTexelSizeUbytes(NMGLint format); //moved to nmgltex_common.h
@@ -100,36 +100,59 @@ Writes rectangular array of pixels of specified format from pfrom to pto
 1 - allocation was succesful
 0 - failed
 */
-int copyPixels(const void* pfrom,NMGLint format,NMGLint width,NMGLint height,void** pto)
+int copyPixels(const void* pfrom,NMGLint format,NMGLint width,NMGLint height,void** pto,NMGL_Context_NM0 *cntxt)
 {
     int size=getTexelSizeUbytes(format);
-    int i=0;
-    NMGLint xlen=0;
+    int i=0,j=0;
+    //NMGLint xlen=0;
+    int line=width*size;
     NMGLint xw=width;
     NMGLint xh=height;
+	NMGLubyte* pfrom_cur;
+	int padLength=0;
+	int unpackAlign=cntxt->texState.unpackAlignment;
     //size=4;//32bit word
    if(*pto==NULL)
    {
 	   DEBUG_PRINT(("nmglTexImage2D:copypixels:bad pto pointer!\n"));
 	   return -1;
    }
-    xlen=xw*xh*size;
+    
+
 	//printf("w=%d h=%d s=%d\n",xw,xh,size);
     //if(*pto != NULL) free(*pto);
 
 	//*pto=malloc(4*xlen);
 	
    // if (*pto==0) return 0;
+	if(unpackAlign == 1)
+	{
+	    for(i=0;i<xw*xh*size;i++)
+	    {
+	       //  DEBUG_PRINT(("ACTIVE_ARRAY="));
+	        *((NMGLubyte*)*pto+i)=*((NMGLubyte*)pfrom+i);
 
-    for(i=0;i<xlen;i++)
-    {
-       //  DEBUG_PRINT(("ACTIVE_ARRAY="));
-        *((NMGLubyte*)*pto+i)=*((NMGLubyte*)pfrom+i);
+	       //  DEBUG_PRINT(( "%d\n", *((NMGLint*)*pto+i) ));
+	        //REMAKE if cant have byte access
+	    }    
+	   // DEBUG_PRINT(("=========\n"));
+	}
+	else
+	{
+		pfrom_cur=(NMGLubyte*)pfrom;
+		padLength=((!unpackAlign)||(line % unpackAlign == 0)) ? 0 : (unpackAlign - line % unpackAlign);
+		DEBUG_PRINT1(("width=%d height=%d unpackAlign=%d padLength=%d\n",width,height, unpackAlign,padLength));
+		for(j=0;j<height;j++)
+	    {
+	       for(i=0;i<line;i++)
+	    	{
+	       
+	        	*((NMGLubyte*)*pto+j*line+i)=*((NMGLubyte*)pfrom_cur+i);	       
+	    	}
+			pfrom_cur+=(line+padLength);
+	    }
+	}
 
-       //  DEBUG_PRINT(( "%d\n", *((NMGLint*)*pto+i) ));
-        //REMAKE if cant have byte access
-    }    
-   // DEBUG_PRINT(("=========\n"));
     return 0;
 }
 //============================================================================================================
@@ -228,7 +251,7 @@ void nmglTexImage2D(NMGLenum target, NMGLint level, NMGLint internalformat, NMGL
 		*/
 
 	}
-	s=copyPixels(pixels,internalformat,width,height,&ActiveTexObjectP->texImages2D[level].pixels);
+	s=copyPixels(pixels,internalformat,width,height,&ActiveTexObjectP->texImages2D[level].pixels,cntxt);
 	ActiveTexObjectP->imageIsSet=1;
 }
 //	cntxt->synchro.writeInstr(1, NMC1_SET_ACTIVE_TEXTURE, (unsigned int)activeTexUnitIndex);
