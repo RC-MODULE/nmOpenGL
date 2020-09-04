@@ -17,6 +17,8 @@
 //#define PROFILER0
 //#define PROFILER1
 
+#define ActiveTexObjectP cntxt->texState.texUnits[cntxt->texState.activeTexUnitIndex].boundTexObject
+
 #ifdef __GNUC__
 #define SECTION(sec) __attribute__((section(sec)))
 #else

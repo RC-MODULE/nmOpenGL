@@ -67,7 +67,7 @@ AS               = nmc-gcc
 AS_FLAGS    	 = -c -mmas -x assembler -mnmc4-float
 LIBS             = -lnmpp-nmc4f -lhal-mc12101
 MAP		         = $(PROJECT).map
-LINKER_FLAGS     = -Xlinker -Map=$(MAP) $(LIB_DIRS) "-Wl,-Tldscript-nmc0.ld" -Wl,--whole-archive -lmc12101 -Wl,--no-whole-archive -o$(TARGET)
+LINKER_FLAGS     = -Xlinker -Map=$(MAP) $(LIB_DIRS) "-Wl,-Tldscript-nmc0.ld" -Wl,--whole-archive -lmc12101 -Wl,--no-whole-archive -o$(TARGET) 
 
 ifeq ($(DEBUG),y)
 	CC_FLAGS	+= -DDEBUG

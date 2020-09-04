@@ -24,7 +24,7 @@ int main()
 	if (!VS_Init())
 		return 0;
 	VS_CreateImage("Source Image", 1, WIDTH_IMAGE, HEIGHT_IMAGE, VS_RGB32, 0);	// Create window for 8-bit source grayscale image
-	//VS_OpRunForward();
+	VS_OpRunForward();
 	int ok;
 
 	Models models;

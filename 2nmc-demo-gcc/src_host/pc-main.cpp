@@ -39,9 +39,9 @@ int main()
 	fmodel = fopen(filePath, "r");
 	createArrayVec4(fmodel, vertices, normal, 1);
 	ok = halSync(amount, 0);
-	int verticesNM = halSync(1, 0);
+	int verticesNM = halSyncAddr(0, 0);
 	ok = halWriteMemBlock(vertices, verticesNM, amount * 12, 0);
-	int normalNM = halSync(3, 0);
+	int normalNM = halSyncAddr(0, 0);
 	ok = halWriteMemBlock(normal, normalNM, amount * 9, 0);
 
 	filePath = models.two_sphere;
@@ -50,9 +50,9 @@ int main()
 	fmodel = fopen(filePath, "r");
 	createArrayVec4(fmodel, vertices, normal, 0.5);
 	halSync(amount, 0);
-	verticesNM = halSync(1, 0);
+	verticesNM = halSyncAddr(0, 0);
 	ok = halWriteMemBlock(vertices, verticesNM, amount * 12, 0);
-	normalNM = halSync(3, 0);
+	normalNM = halSyncAddr(0, 0);
 	ok = halWriteMemBlock(normal, normalNM, amount * 9, 0);
 	ok = halSync(4, 0);
 

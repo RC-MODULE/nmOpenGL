@@ -14,6 +14,7 @@ SECTION(".text_shared0") int main()
 	float* normal_DDR = (float*)halMalloc32(2000 * 9);
 	float* vertices_DDR2 = (float*)halMalloc32(2000 * 12);
 	float* normal_DDR2 = (float*)halMalloc32(2000 * 9);
+	int ok;
 	
 #ifdef __OPEN_GL__
 	Models models;
@@ -38,30 +39,29 @@ SECTION(".text_shared0") int main()
 
 
 	int amountPolygons2 = amount;
-	int ok;
 #else
 	int amountPolygons = halHostSync(0);
 
 	//Массив цветов полигонов (по 4 компоненты на вершину)
 	//sync1
-	halHostSync((int)vertices_DDR);
+	halHostSyncAddr(vertices_DDR);
 
 	//sync2
-	int ok = halHostSync((int)normal_DDR);
+	halHostSyncAddr(normal_DDR);
 
 	int amountPolygons2 = halHostSync(0);
-	halHostSync((int)vertices_DDR2);
+	halHostSyncAddr(vertices_DDR2);
 
 	//sync2
-	ok = halHostSync((int)normal_DDR2);
+	halHostSyncAddr(normal_DDR2);
 	ok = halHostSync((int)0x600D600D);
 #endif
 	
 	nmglClearColor(0, 0, 0.4f, 0.0f);
 
 	nmglEnable(NMGL_DEPTH_TEST);
-	nmglEnable(NMGL_CULL_FACE);
-	nmglPointSize(2);
+	//nmglEnable(NMGL_CULL_FACE);
+	//nmglPointSize(2);
 
 	nmglMatrixMode(NMGL_MODELVIEW);
 	nmglLoadIdentity();
@@ -89,7 +89,7 @@ SECTION(".text_shared0") int main()
 	nmglLightfv(NMGL_LIGHT1, NMGL_POSITION, lightVector);
 	float lightDiffuse2[4] = { 1, 1, 0, 1 };
 	nmglLightfv(NMGL_LIGHT1, NMGL_DIFFUSE, lightDiffuse);*/
-
+	int counter = 0;
 	while(nmglvsNm0Run()){
 
 		nmglEnableClientState(NMGL_VERTEX_ARRAY);
@@ -132,7 +132,7 @@ SECTION(".text_shared0") int main()
 
 		nmglDisableClientState(NMGL_VERTEX_ARRAY);
 		nmglDisableClientState(NMGL_NORMAL_ARRAY);
-
+		counter++;
 		//nmglFinish();
 		nmglvsSwapBuffer();
 	}

@@ -68,6 +68,11 @@ MAP		         = $(PROJECT).map
 LINKER_FLAGS     = -Xlinker -Map=$(MAP) $(LIB_DIRS) "-Wl,-Tldscript-nmc0.ld" -Wl,--whole-archive -lmc12101 -Wl,--no-whole-archive -o$(TARGET)
 #LINKER_FLAGS    += -Wl,--section-start,.heap4=0x8000,--defsym,__HEAP_4_END=0x200000
 
+ifeq ($(DEBUG),y)
+	CC_FLAGS	+= -DDEBUG
+else
+	CC_FLAGS	+= -DNDEBUG
+endif
 #=================== SOURCE & OBJECTS COLLECTION ===========================
 
 .SUFFIXES:
@@ -115,7 +120,7 @@ $(TMP_DIR)/dumps/%.dump: $(TMP_DIR)/%.o
 $(TMP_DIR):
 	-mkdir "$(@)"
 
-$(TARGET): $(TMP_DIR) $(OBJECTS) $(ALL_H) nmc4vars_win.mk Makefile
+$(TARGET): $(TMP_DIR) $(OBJECTS) nmc4vars_win.mk Makefile
 	$(CC) $(LINKER_FLAGS) $(OBJECTS) $(LIBS)
 
 nmc4vars_win.mk:

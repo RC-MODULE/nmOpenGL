@@ -19,7 +19,7 @@ struct MyDmaTask {
 	msdCallback callback;
 };
 
-#ifdef __NM__
+#ifdef __GNUC__
 inline void msdStartCopy(MyDmaTask* dmaCopy) {
 	switch (dmaCopy->type)
 	{
@@ -53,7 +53,7 @@ inline void msdStartCopy(MyDmaTask* dmaCopy) {
 		break;
 	}
 }
-#endif // __NM__
+#endif // __GNUC__
 
 
 

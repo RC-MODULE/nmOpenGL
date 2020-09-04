@@ -45,11 +45,13 @@
 
 #============== PROJECT & BUILD CONFIGURATION ==========
 #
+DEBUG ?= n
 
 ROOT             = ../../../..
 include $(ROOT)/global.mk
 include 		 nmc4vars_win.mk
 #-------------- target & input dirs -------------------
+PROFILE			 = ../src_target1/proflist_generated1.asm
 PROJECT          = main1
 OUT_DIR          = .
 TARGET           = $(OUT_DIR)/$(PROJECT).abs
@@ -62,7 +64,13 @@ CC 				 = nmc-g++
 AS               = nmc-gcc 				 
 AS_FLAGS    	 = -c -mmas -x assembler -Wa,-split_sir -mnmc4-fixed
 LIBS             = -lnmopengl-nmc4 -lhal-mc12101 -lnmpp-nmc4 
-LINKER_FLAGS     =   -Xlinker -Map=.main1.map $(LIB_DIRS) "-Wl,-Tldscript-nmc1.ld"  -Wl,--whole-archive -lmc12101 -Wl,--no-whole-archive -o$(TARGET)
+MAP		         = $(PROJECT).map
+LINKER_FLAGS     = -Xlinker -Map=$(MAP) $(LIB_DIRS) "-Wl,-Tldscript-nmc1.ld"  -Wl,--whole-archive -lmc12101 -Wl,--no-whole-archive -o$(TARGET)
+ifeq ($(DEBUG),y)
+	CC_FLAGS	+= -DDEBUG
+else
+	CC_FLAGS	+= -DNDEBUG
+endif
 #=================== SOURCE & OBJECTS COLLECTION ===========================
 
 .SUFFIXES:
@@ -108,13 +116,18 @@ $(OUT_DIR):
 	-mkdir "$(@)"
 	
 $(TMP_DIR)/%.o: %.asm  $(ALL_H)
-	$(AS) $(AS_FLAGS) $(<) -o$(@)
+	$(AS) $(AS_FLAGS) $(<) -o$(@) $(INC_DIRS)
 	
 $(TMP_DIR)/%.o: %.cpp  $(ALL_H)
-	$(CC) $(CC_FLAGS) -c $(<) -o$(@) $(INC_DIRS) -O2
+	$(CC) $(CC_FLAGS) -c $(<) -o$(@) $(INC_DIRS)
 
-$(TMP_DIR)/%.o: %.c  $(ALL_H)
-	$(CC) $(CC_FLAGS) -c $(<) -o$(@) $(INC_DIRS) -O2
+$(TMP_DIR)/%.o: %.c $(ALL_H)
+	$(CC) $(CC_FLAGS) -c $(<) -o$(@) $(INC_DIRS)
+	
+profile:	
+	python $(HAL)/script/profiler.py > $(PROFILE)
+	$(MAKE)
+	python $(HAL)/script/profiler-gcc.py $(MAP) > $(PROFILE)
 	
 
 #========================== Visual Studio  ===================

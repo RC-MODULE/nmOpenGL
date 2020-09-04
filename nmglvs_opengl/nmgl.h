@@ -41,7 +41,6 @@
 }; */
 
 
-
 #define nmglActiveTexture                              glActiveTexture 
 #define nmglAlphaFunc                                  glAlphaFunc 
 #define nmglBegin                                      glBegin
