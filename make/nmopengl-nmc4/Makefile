@@ -125,8 +125,14 @@ $(TMP_DIR)/%.o: %.s  $(ALL_H)
 	$(AS) $(AS_FLAGS) $(<) -o$(@) $(ERRECHO)
 	
 	
-vs2015: 
-	premake5 vs2015 
+
+
+vs2015:
+	premake5 vs2015
+	"$(VS140COMNTOOLS)vsvars32" && msbuild $(PROJECT).vcxproj /p:Configuration=Release /property:Platform=win32
+	"$(VS140COMNTOOLS)vsvars32" && msbuild $(PROJECT).vcxproj /p:Configuration=Debug   /property:Platform=win32
+	"$(VS140COMNTOOLS)vsvars32" && msbuild $(PROJECT).vcxproj /p:Configuration=Release /property:Platform=x64
+	"$(VS140COMNTOOLS)vsvars32" && msbuild $(PROJECT).vcxproj /p:Configuration=Debug   /property:Platform=x64
 	
 
 #========================== cleanup ===================
