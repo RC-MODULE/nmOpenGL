@@ -7,11 +7,13 @@
 //#include "tex_functions.h"
 #include "tests.h"
 
-#include <iostream>
-#include <cstdio>
+//#include <iostream>
+//#include <cstdio>
 
-#undef DEBUG
-#define DEBUG
+#ifdef __GNUC__
+#pragma code_section ".text_tex_tests"
+#pragma data_section ".data_tex_tests"
+#endif
 /*
 From OpenGL SC 1.0.1 spec:
 //////////////////////////////////////////////////////////////////

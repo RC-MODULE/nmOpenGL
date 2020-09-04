@@ -261,6 +261,7 @@ SECTION(".text_nmglvs") int nmglvsNm1Step()
 	case NMC1_SET_MIPMAP_LVL_POINTER: {
 		//use DDR only as addresses are sent directly
 		cntxt->texState.texObjects[currentCommand.params[0]].texImages2D[currentCommand.params[1]].pixels=(void*)currentCommand.params[2];
+		DEBUG_PRINT2(("Step:for texture %d level %d got pointer %x\n",currentCommand.params[0],currentCommand.params[1],currentCommand.params[2]));
 		break;
 	}
 	case NMC1_BIND_ACTIVE_TEX_OBJECT: {

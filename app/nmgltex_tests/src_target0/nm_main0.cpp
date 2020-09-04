@@ -3,6 +3,7 @@
 #include "nmgl_tex_tests_config.h"
 #include "nmglvs_nmc0.h"
 #include <iostream>
+extern void* cntxtAddr_nm1;
 float triangles[24]{
 	0,0,
 	0,31,

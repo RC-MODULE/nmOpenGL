@@ -46,10 +46,12 @@
 #============== PROJECT & BUILD CONFIGURATION ==========
 #
 
-ROOT             = ../../../
+DEBUG ?= n
+ROOT             = ../../..
 include $(ROOT)/global.mk
 include 		 nmc4vars_win.mk
 #-------------- target & input dirs -------------------
+PROFILE			 = ../src_target0/proflist_generated0.asm
 PROJECT          = main0
 OUT_DIR          = .
 TARGET           = $(OUT_DIR)/$(PROJECT).abs
@@ -59,12 +61,19 @@ LIB_DIRS         = -L"$(NMC_GCC_TOOLPATH)/nmc4-ide/lib" -L"$(NMPP)/lib" -L"$(HAL
 TMP_DIR          = Release
 #-------------- RELEASE/ALL config -------------------
 CC 				 = nmc-g++
+CC_FLAGS	 	 = -O2 -fno-builtin-printf -std=c++11
+CC_FLAGS+= -DTEST_NMGL_TEX_FUNC
 AS               = nmc-gcc 				 
 AS_FLAGS    	 = -c -mmas -x assembler -mnmc4-float
 LIBS             = -lnmopengl-nmc4f -lnmpp-nmc4f -lhal-mc12101 
 MAP		         = $(PROJECT).map
 LINKER_FLAGS     = -Xlinker -Map=$(MAP) $(LIB_DIRS) "-Wl,-Tldscript-nmc0.ld" -Wl,--whole-archive -lmc12101 -Wl,--no-whole-archive -o$(TARGET) 
 
+ifeq ($(DEBUG),y)
+	CC_FLAGS	+= -DDEBUG
+else
+	CC_FLAGS	+= -DNDEBUG
+endif
 #=================== SOURCE & OBJECTS COLLECTION ===========================
 
 .SUFFIXES:
@@ -95,13 +104,14 @@ all:  $(TARGET)
 	
 #	$(MAKE) -j4 DEBUG=y
 #	$(MAKE) -j4
+_debug: CC_FLAGS += -DDEBUG
+_debug: $(TARGET)
 
-	
 $(TMP_DIR):
 	-mkdir "$(@)"
 
-$(TARGET): $(TMP_DIR) $(OBJECTS) nmc4vars_win.mk Makefile $(ALL_H)
-	$(CC) $(LINKER_FLAGS) $(OBJECTS) $(LIBS)
+$(TARGET): $(TMP_DIR) $(OBJECTS) $(ALL_H) nmc4vars_win.mk Makefile
+	$(CC) $(CC_FLAGS) $(LINKER_FLAGS) $(OBJECTS) $(LIBS)
 
 nmc4vars_win.mk:
 	copy "$(NMC_GCC_TOOLPATH)\nmc4-ide\include\nmc4vars_win.mk" nmc4vars_win.mk
@@ -109,15 +119,21 @@ nmc4vars_win.mk:
 $(OUT_DIR): 
 	-mkdir "$(@)"
 	
-$(TMP_DIR)/%.o: %.asm 
-	$(AS) $(AS_FLAGS) $(<) -o$(@)
+$(TMP_DIR)/%.o: %.asm  $(ALL_H)
+	$(AS) $(AS_FLAGS) $(<) -o$(@) $(INC_DIRS)
 	
-$(TMP_DIR)/%.o: %.cpp 
-	$(CC) $(CC_FLAGS) -c $(<) -o$(@) $(INC_DIRS) -O2
+$(TMP_DIR)/%.o: %.cpp  $(ALL_H)
+	$(CC) $(CC_FLAGS) -c $(<) -o$(@) $(INC_DIRS)
 
-$(TMP_DIR)/%.o: %.c
-	$(CC) $(CC_FLAGS) -c $(<) -o$(@) $(INC_DIRS) -O2
+$(TMP_DIR)/%.o: %.c  $(ALL_H)
+	$(CC) $(CC_FLAGS) -c $(<) -o$(@) $(INC_DIRS)
 	
+profile:	
+	python $(HAL)/script/profiler.py > $(PROFILE)
+	$(MAKE)
+	python $(HAL)/script/profiler-gcc.py $(MAP) > $(PROFILE)
+	
+
 #========================== Visual Studio  ===================
 export ALL_CPP ALL_ASM ALL_C ALL_H
 

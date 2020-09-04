@@ -48,6 +48,10 @@ SECTIONS
   {
     *(.text_nmprofiler);
   } > EMI0
+  .text_tex_tests : ALIGN(0x8)
+  {
+    *(.text_tex_tests);
+  } > EMI0  
   .init : ALIGN(0x8)
   {
     *(.init);
@@ -123,6 +127,10 @@ SECTIONS
   .data_DDR : ALIGN(0x8)
   {
     *(.data_DDR);
+  } > EMI0
+  .data_tex_tests : ALIGN(0x8)
+  {
+    *(.data_tex_tests);
   } > EMI0
   .data : ALIGN(0x8)
   {

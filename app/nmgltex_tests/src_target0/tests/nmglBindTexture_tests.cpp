@@ -1,27 +1,23 @@
+
 #include "demo3d_nm0.h"
-/*
-#include "nmgldef.h"
-#include "nmgltype.h"
-#include "nmgl_data0.h"
-
-#include "tex_common.h"
-#include "tex_functions.h"
-#include "tex_support_functions.h"
-#include "tex_test_support_functions.h"
-*/
+#include "demo3d_nm1.h"
 #include "tests.h"
+#include "nmgl_tex_test_common.h"
 
-#include <iostream>
 
-
+//#include <iostream>
+extern void* cntxtAddr_nm1;
+#ifdef __GNUC__
+#pragma code_section ".text_tex_tests"
+#pragma data_section ".data_tex_tests"
+#endif
+NMGL_Context_NM1 *cntxt_nm1;
+extern NMGLubyte mipmap[MIPMAP_MEM_SIZE];
 extern int getTexelSizeUbytes(NMGLint format);
 int isPowerOf2(NMGLint x);
-#undef DEBUG
-#define DEBUG
 
-#define USED_MIPMAP_LVL 4  //mst be <= MAX_MIPMAP_LVL
-#define USED_SIDE (0x1<<(USED_MIPMAP_LVL))
-#define MIPMAP_TESTOBJ_SIZE ((((0x1<<(2*(USED_MIPMAP_LVL+1)))-1)/3)*UBYTES_PER_TEXEL) //mipmap mem size in 4byte words	
+
+
 /*
 From OpenGL SC 1.0.1 spec:
 //////////////////////////////////////////////////////////////////
@@ -43,7 +39,7 @@ void nmglBindTexture (NMGLenum target, NMGLuint texture);
 int _accum=0;
 int iterb=0;
 
-int cmpPixels32(void* from, void *to, NMGLint n_pixels);
+//int cmpPixels32(void* from, void *to, NMGLint n_pixels);
 int fillMipMap( int texture,NMGLint format,NMGLint width,NMGLint height,int filler);
 int cmpTexObj(TexObject* first,TexObject* second);
 int getMaxPower(NMGLuint x, NMGLuint y);
@@ -52,7 +48,7 @@ int getMaxPower(NMGLuint x, NMGLuint y);
 int nmglBindTexture_wrongArgs_isError();
 int nmglBindTexture_bindTexture_contextStateCorrect();
 /////////////////////////////////////////////////////////////////////////////////////////////////
-
+/*
 int objInitEq(NMGL_Context_NM0 *cntxt,NMGLuint texture)
 {
 	int i=0;
@@ -78,6 +74,7 @@ int objInitEq(NMGL_Context_NM0 *cntxt,NMGLuint texture)
 	TEST_ASSERT(_accum == 0);
 	return 0;
 }
+*/
 //-----------------------------------------------------------------------------------------------------
 int getMaxPower(NMGLuint x, NMGLuint y)
 {
@@ -125,16 +122,6 @@ int cmpTexObj(TexObject* first,TexObject* second)
         {
             if(*((unsigned char *)first->texImages2D[i].pixels+j) !=*((unsigned char *)first->texImages2D[i].pixels+j)) {DEBUG_PRINT(("Tex objects dont match!Level:%d Pixels mismatch!\n",i));return 0;}
         }
-    }
-    return 1;
-}
-//-----------------------------------------------------------------------------------------------------
-int cmpPixels32(void* from, void *to, NMGLint n_pixels)
-{
-    int i=0;
-    for(i=0;i<n_pixels;i++)
-    {
-        if(*((NMGLint*)from+i) != *((NMGLint*)to+i)) return 0;
     }
     return 1;
 }
@@ -191,6 +178,9 @@ int fillMipMap( int texture,NMGLint format,NMGLint width,NMGLint height,NMGLubyt
 int run_nmglBindTexture_test()
 {	
 	printf ("\nStart nmglBindTexture tests\n\n");
+	cntxt_nm1 = (NMGL_Context_NM1*)cntxtAddr_nm1;
+		DEBUG_PRINT(("Context nm1=%x\n",cntxt_nm1));
+		if(cntxt_nm1 == 0) return -2;
 		RUN_TEST(nmglBindTexture_wrongArgs_isError);
 		RUN_TEST(nmglBindTexture_bindTexture_contextStateCorrect);
 	printf ("\nEnd nmglBindTexture tests\n");
@@ -227,8 +217,8 @@ int nmglBindTexture_bindTexture_contextStateCorrect()
 	//#define MAX_TEX_SIZE_UBYTE (RGBA_TEXEL_SIZE_UBYTE*NMGL_MAX_TEX_SIDE*NMGL_MAX_TEX_SIDE)
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
 	cntxt->error=NMGL_NO_ERROR;
-	NMGLubyte testTexBytes[MIPMAP_TESTOBJ_SIZE];
-	NMGLubyte testTexBytes2[MIPMAP_TESTOBJ_SIZE];
+	NMGLubyte *testTexBytes=&mipmap[MIPMAP_MEM_SIZE-MIPMAP_OBJ_SIZE];;
+	NMGLubyte *testTexBytes2=&mipmap[MIPMAP_MEM_SIZE-2*MIPMAP_OBJ_SIZE];;
 	int object_in_init_state=0;
 	//NMGLint* curpixels[NMGL_MAX_MIPMAP_LVL];
 	//NMGLint curwidth[NMGL_MAX_MIPMAP_LVL];
@@ -269,7 +259,7 @@ int nmglBindTexture_bindTexture_contextStateCorrect()
 		return 2;
 	}
 	*/
-if(_st != 0) return 2;
+TEST_ASSERT(_st == 0);
 
 
 	cntxt->texState.texObjects[2].texWrapS=NMGL_CLAMP_TO_EDGE;
@@ -284,9 +274,14 @@ for(int i=1;i<=USED_MIPMAP_LVL;i++)
 	/*!!!*/	cntxt->texState.texObjects[2].texImages2D[i].pixels=(NMGLubyte *)cntxt->texState.texObjects[2].texImages2D[i-1].pixels+(USED_SIDE>>(i-1))*(USED_SIDE>>(i-1))*UBYTES_PER_TEXEL;
 	}
 _st=fillMipMap(2,NMGL_RGBA,USED_SIDE,USED_SIDE,0xAA);
-if(_st != 0) return 2;
+TEST_ASSERT(_st == 0);
 
-	objInitEq(cntxt,0);// check zero object is initilized
+	_st = objInitEq<NMGL_Context_NM0>(cntxt,0);// check zero object is initilized
+	TEST_ASSERT(_st == 0);
+
+	_st = objInitEq<NMGL_Context_NM1>(cntxt_nm1,0);// check zero object is initilized
+	TEST_ASSERT(_st == 0);
+
 TEST_ASSERT(cmpTexObj(ActiveTexObjectP,&cntxt->texState.texObjects[0]));//check zero obj is binded
 
 	nmglBindTexture(NMGL_TEXTURE_2D,1);
