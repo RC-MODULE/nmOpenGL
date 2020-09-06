@@ -101,7 +101,9 @@ int nmglTexImage2D_wrongHeight_isError();
 int nmglTexImage2D_wrongBorder_isError();
 int nmglTexImage2D_wrongType_isError();
 int nmglTexImage2D_setImage_contextSetCorrect();
+int nmglTexImage2D_varUnpackAlign_contextSetCorrect();
 //==============================================================================================
+int cmpPixelsPads(void* left_w_pads, void *right, NMGLint width, NMGLenum format);
 
 int cmpPixelsUbytes(void* from, void *to, NMGLint n_pixels);
 //==============================================================================================
@@ -124,7 +126,64 @@ void init_internalformats()
 	internalformats[4].size=getTexelSizeUbytes(NMGL_LUMINANCE_ALPHA);
 }
 //----------------------------------------------------------------------------------------
-int cmpPixelsUbytes(void* from_w_pads, void *to, NMGLint n_pixels)
+int cmpPixelsPads(void* left_w_pads, void *right, NMGLint width, NMGLenum format)
+{
+    int i=0,j=0;
+	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
+  /*
+   printf("n_pixels=%d\n",n_pixels);
+   printf("from=0x%x\n",from);
+   printf("to=0x%x\n",to);
+   printf("firstBfrom=0x%x\n",*(NMGLubyte*)from);
+   printf("firstBto=0x%x\n",*(NMGLubyte*)to);
+   */
+  int line=width*getTexelSizeUbytes(format);
+  int pads=0;
+  int cpad=((!cntxt->texState.unpackAlignment)||(line % cntxt->texState.unpackAlignment == 0)) ? 0 : (cntxt->texState.unpackAlignment - line % cntxt->texState.unpackAlignment);
+
+  if(cntxt->texState.unpackAlignment == 1)
+  {
+	for(i=0;i<width*line;i++)
+  	{
+	  if(*((NMGLubyte*)left_w_pads+i) != *((NMGLubyte*)right+i) )
+	  {
+		  printf("i=%d mismatch. from/to=0x%x/0x%x ",i,*((NMGLubyte*)left_w_pads+i),	*((NMGLubyte*)right+i));
+		  return 0;
+	  }
+  	}
+	return 1; 
+  }
+  else
+  {
+	for(j=0;j<width;j++)
+  	{
+		for(i=0;i<line;i++)
+  		{
+			if(*((NMGLubyte*)left_w_pads + j*(line + pads) + i) != *((NMGLubyte*)right + j*line+i) )
+	  		{
+		  		printf("i=%d mismatch. from/to=0x%x/0x%x ",i,*((NMGLubyte*)left_w_pads + j*(line + pads) + i),	*((NMGLubyte*)right + j*line + i ));
+		  		return 0;
+	  		} 
+		}
+		pads+=cpad;
+	}
+	return 1;
+  }
+  /*
+  for(i=0;i<n_pixels;i++)
+  {
+	  if(*((NMGLubyte*)from_w_pads+i) != *((NMGLubyte*)to+i) )
+	  {
+		  printf("i=%d mismatch. from/to=0x%x/0x%x ",i,*((NMGLubyte*)from_w_pads+i),	*((NMGLubyte*)to+i));
+		  return 0;
+	  }
+  }
+  */
+	return 1;
+	
+}
+//----------------------------------------------------------------------------------------
+int cmpPixelsUbytes(void* from, void *to, NMGLint n_pixels)
 {
     int i=0;
   /*
@@ -136,9 +195,9 @@ int cmpPixelsUbytes(void* from_w_pads, void *to, NMGLint n_pixels)
    */
   for(i=0;i<n_pixels;i++)
   {
-	  if(*((NMGLubyte*)from_w_pads+i) != *((NMGLubyte*)to+i) )
+	  if(*((NMGLubyte*)from+i) != *((NMGLubyte*)to+i) )
 	  {
-		  printf("i=%d mismatch. from/to=0x%x/0x%x ",i,*((NMGLubyte*)from_w_pads+i),	*((NMGLubyte*)to+i));
+		  printf("i=%d mismatch. from/to=0x%x/0x%x ",i,*((NMGLubyte*)from+i),	*((NMGLubyte*)to+i));
 		  return 0;
 	  }
   }
@@ -287,7 +346,8 @@ int _nmglTexImage2D_check(NMGLint level)
 			return 1;
 		}
 		DEBUG_PRINT(("w=%d h=%d s=%d\n",input.width,input.height,getTexelSizeUbytes(input.internalformat.type)));
-		if(!cmpPixelsUbytes(input.pixels,ActiveTexObjectP->texImages2D[level].pixels,input.width*input.height*getTexelSizeUbytes(input.internalformat.type)))
+	//	if(!cmpPixelsUbytes(input.pixels,ActiveTexObjectP->texImages2D[level].pixels,input.width*input.height*getTexelSizeUbytes(input.internalformat.type)))
+		if(!cmpPixelsPads(input.pixels,ActiveTexObjectP->texImages2D[level].pixels,input.width,input.internalformat.type))
 		{
 			printf("Error!Pixels arrays dont match!\n");
 			return 1;
@@ -375,6 +435,7 @@ DEBUG_PRINT(("------------------------------------------------------------------
 	RUN_TEST(nmglTexImage2D_wrongType_isError);
 //#endif	
 	RUN_TEST(nmglTexImage2D_setImage_contextSetCorrect);
+	RUN_TEST(nmglTexImage2D_varUnpackAlign_contextSetCorrect);
 //
 _nmglTexImage2D_prevent_internal_errors();
 	
@@ -603,4 +664,57 @@ ActiveTexObjectP=&cntxt->texState.texObjects[0];
 	
 	_nmglTexImage2D_prevent_internal_errors();
 	return 0;
+}
+//------------------------------------------------------------------------------
+int nmglTexImage2D_varUnpackAlign_contextSetCorrect()
+{
+	#define unPack cntxt->texState.unpackAlignment
+	_nmglTexImage2D_prevent_internal_errors();
+	ActiveTexObjectP=&cntxt->texState.texObjects[0];
+	unPack=4;
+	cur_width=USED_SIDE;
+		status=init_TexImage2D_input(&input,cur_width,internalformats[0]);
+		nmglTexImage2D(input.target,input.level,input.internalformat.type,input.width,input.height,0,input.format,input.type,input.pixels);
+		status=_nmglTexImage2D_check(0);
+		
+	TEST_ASSERT(status==0);	
+
+		_nmglTexImage2D_prevent_internal_errors();
+		
+		cur_width=4;
+		status=init_TexImage2D_input(&input,cur_width,internalformats[1]);//RGB
+		nmglTexImage2D(input.target,input.level,input.internalformat.type,input.width,input.height,0,input.format,input.type,input.pixels);
+		status=_nmglTexImage2D_check(0);
+		
+	TEST_ASSERT(status==0);
+_nmglTexImage2D_prevent_internal_errors();
+	unPack=1;
+		status=init_TexImage2D_input(&input,cur_width,internalformats[1]);//RGB
+		nmglTexImage2D(input.target,input.level,input.internalformat.type,input.width,input.height,0,input.format,input.type,input.pixels);
+		status=_nmglTexImage2D_check(0);
+		
+	TEST_ASSERT(status==0);
+_nmglTexImage2D_prevent_internal_errors();
+	cur_width=USED_SIDE;
+	unPack=2;
+		status=init_TexImage2D_input(&input,cur_width,internalformats[1]);//RGB
+		nmglTexImage2D(input.target,input.level,input.internalformat.type,input.width,input.height,0,input.format,input.type,input.pixels);
+		status=_nmglTexImage2D_check(0);
+		
+	TEST_ASSERT(status==0);
+_nmglTexImage2D_prevent_internal_errors();
+	unPack=4;
+		status=init_TexImage2D_input(&input,cur_width,internalformats[1]);//RGB
+		nmglTexImage2D(input.target,input.level,input.internalformat.type,input.width,input.height,0,input.format,input.type,input.pixels);
+		status=_nmglTexImage2D_check(0);
+		
+	TEST_ASSERT(status==0);
+_nmglTexImage2D_prevent_internal_errors();
+	unPack=8;
+		status=init_TexImage2D_input(&input,cur_width,internalformats[1]);//RGB
+		nmglTexImage2D(input.target,input.level,input.internalformat.type,input.width,input.height,0,input.format,input.type,input.pixels);
+		status=_nmglTexImage2D_check(0);
+		
+	TEST_ASSERT(status==0);
+_nmglTexImage2D_prevent_internal_errors();
 }
