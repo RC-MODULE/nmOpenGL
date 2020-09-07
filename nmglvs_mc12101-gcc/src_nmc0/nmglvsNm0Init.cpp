@@ -5,7 +5,6 @@
 #include "demo3d_nm0.h"
 #include "cache.h"
 #include "ringbuffer.h"
-#include "nmprofiler.h"
 
 #include "nmgl.h"
 
@@ -148,9 +147,6 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 #ifdef __GNUC__
 	halDmaInitC();
 	halInstrCacheEnable();
-#ifdef PROFILER0
-	halProfilerEnable();
-#endif // PROFILER0	
 #endif // __GNUC__
 
 	//sync4

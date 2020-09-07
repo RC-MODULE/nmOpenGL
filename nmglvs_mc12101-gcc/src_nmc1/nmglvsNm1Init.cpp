@@ -103,9 +103,6 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 	
 #ifdef __GNUC__
 	halInstrCacheEnable();
-#ifdef PROFILER1
-	PROFILER_START();
-#endif // PROFILER1	
 #endif // __GNUC__
 	cntxt->smallColorBuff.init(segImage, WIDTH_SEG, HEIGHT_SEG);
 	cntxt->smallDepthBuff.init(segZBuff, WIDTH_SEG, HEIGHT_SEG);

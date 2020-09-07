@@ -14,7 +14,7 @@
 
 //#define TRIANGULATION_ENABLED
 #define USED_OLD_POLYGONS
-//#define PROFILER0
+#define PROFILER0
 //#define PROFILER1
 
 #define ActiveTexObjectP cntxt->texState.texUnits[cntxt->texState.activeTexUnitIndex].boundTexObject
