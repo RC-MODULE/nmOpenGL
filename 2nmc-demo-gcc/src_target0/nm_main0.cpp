@@ -5,10 +5,18 @@
 #include "nmpp.h"
 #include "nmgl.h"
 #include "nmglvs_nmc0.h"
+#include "nmprofiler.h"
 
 SECTION(".text_shared0") int main()
 {
+	halSleep(3000);
 	nmglvsNm0Init();
+
+#if defined(__GNUC__) && defined(PROFILER0)
+	nmprofiler_init();
+	nmprofiler_enable();
+#endif // __GNUC__
+
 	setHeap(10);
 	float* vertices_DDR = (float*)halMalloc32(2000 * 12);
 	float* normal_DDR = (float*)halMalloc32(2000 * 9);
@@ -108,6 +116,7 @@ SECTION(".text_shared0") int main()
 		materialSpec[1] = 0.6;
 		materialSpec[2] = 0.6;
 		nmglMaterialfv(NMGL_FRONT_AND_BACK, NMGL_SPECULAR, materialSpec);
+
 		nmglDrawArrays(NMGL_TRIANGLES, 0, 3 * amountPolygons);
 
 		nmglVertexPointer(4, NMGL_FLOAT, 0, vertices_DDR2);
@@ -123,6 +132,7 @@ SECTION(".text_shared0") int main()
 		nmglMaterialfv(NMGL_FRONT_AND_BACK, NMGL_SPECULAR, materialSpec);
 		nmglRotatef(angle, 0.707, 0.707, 0);
 		nmglTranslatef(150, 150, 0);
+
 		nmglDrawArrays(NMGL_TRIANGLES, 0, 3 * amountPolygons2);
 #ifdef __OPEN_GL__
 		angle += 0.03;
@@ -140,6 +150,11 @@ SECTION(".text_shared0") int main()
 	//halFree(vertices_DDR2);
 	//halFree(normal_DDR);
 	//halFree(normal_DDR2);
+
+#if defined(__GNUC__) && defined(PROFILER0)
+	nmprofiler_disable();
+#endif // __GNUC__
+
 	nmglvsExit_mc12101();
 	return 0x600D600D;
 } 

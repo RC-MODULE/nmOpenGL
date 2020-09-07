@@ -35,7 +35,7 @@ SECTIONS
   .text_demo3d : ALIGN(0x8)
   {
     *(.text_demo3d);
-  } > EMI0
+  } > C0_IMU7
   .text_demo3dExt : ALIGN(0x8)
   {
     *(.text_demo3dExt);
@@ -68,6 +68,10 @@ SECTIONS
   {
     *(.bss);
   } > SHMEM0
+  .data_demo3d : ALIGN(0x8)
+  {
+    *(.data_imu0);
+  } > C0_IMU0
   .data_imu0 : ALIGN(0x8)
   {
     *(.data_imu0);

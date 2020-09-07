@@ -11,10 +11,11 @@
 
 #include "nmgl.h"
 
-SECTION(".data_imu1")	int pool0[SIZE_BANK];
-SECTION(".data_imu3")	int pool1[SIZE_BANK];
+SECTION(".data_imu1")	int pool0[SIZE_BUFFER_NM1];
+SECTION(".data_imu2")	int pool1[SIZE_BUFFER_NM1];
+SECTION(".data_imu3")	int pool2[SIZE_BUFFER_NM1];
 
-SECTION(".data_imu2")	int segImage[WIDTH_SEG * HEIGHT_SEG];
+SECTION(".data_imu3")	int segImage[WIDTH_SEG * HEIGHT_SEG];
 SECTION(".data_imu2")	int segZBuff[WIDTH_SEG * HEIGHT_SEG];
 
 SECTION(".data_imu0") Vector2 ptrnInnPoints[POLYGONS_SIZE];
@@ -103,9 +104,6 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 	
 #ifdef __GNUC__
 	halInstrCacheEnable();
-#ifdef PROFILER1
-	PROFILER_START();
-#endif // PROFILER1	
 #endif // __GNUC__
 	cntxt->smallColorBuff.init(segImage, WIDTH_SEG, HEIGHT_SEG);
 	cntxt->smallDepthBuff.init(segZBuff, WIDTH_SEG, HEIGHT_SEG);
@@ -118,6 +116,7 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 
 	cntxt->buffer0 = pool0;
 	cntxt->buffer1 = pool1;
+	cntxt->buffer2 = pool2;
 
 	for (int j = 0; j < SMALL_SIZE; j++) {
 		int off = j * sizeof32(Pattern);

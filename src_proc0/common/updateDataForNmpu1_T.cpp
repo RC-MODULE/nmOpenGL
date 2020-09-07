@@ -4,6 +4,7 @@
 
 #include "stdio.h"
 #include "nmblas.h"
+#include "nmprofiler.h"
 
 
 

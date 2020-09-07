@@ -311,12 +311,9 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			nmppsMerge_32f(cntxt->buffer1, cntxt->buffer3, (float*)maxXY, cntxt->trianInner.size);
 			setSegmentMask(minXY, maxXY, cntxt->segmentMasks, cntxt->trianInner.size);
 #ifdef DEBUG
-			printf("    rasterize...");
+			printf("    rasterize... \n");
 #endif // DEBUG
 			rasterizeT(&cntxt->trianInner, cntxt->segmentMasks);
-#ifdef DEBUG
-			printf("ok\n");
-#endif // DEBUG
 			break;
 		}
 		case NMGL_LINES:
@@ -332,12 +329,9 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			setSegmentMask(minXY, maxXY, cntxt->segmentMasks, cntxt->lineInner.size);
 
 #ifdef DEBUG
-			printf("    rasterize...");
+			printf("    rasterize... \n");
 #endif // DEBUG
 			rasterizeL(&cntxt->lineInner, cntxt->segmentMasks);
-#ifdef DEBUG
-			printf("ok\n");
-#endif // DEBUG
 			break;
 		case NMGL_POINTS:
 			nmblas_scopy(localSize, vertexX, 1, cntxt->pointInner.x0, 1);
@@ -353,12 +347,9 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			cntxt->pointInner.size = localSize;
 			setSegmentMask(minXY, maxXY, cntxt->segmentMasks, localSize);
 #ifdef DEBUG
-			printf("    rasterize...");
+			printf("    rasterize... \n");
 #endif // DEBUG
 			rasterizeP(&cntxt->pointInner, cntxt->segmentMasks);
-#ifdef DEBUG
-			printf("ok\n");
-#endif // DEBUG
 			break;
 		}
 #else

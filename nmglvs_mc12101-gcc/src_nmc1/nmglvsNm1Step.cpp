@@ -110,6 +110,7 @@ SECTION(".text_nmglvs") int nmglvsNm1Step()
 		int width = currentCommand.params[2];
 		int height = currentCommand.params[3];
 		int numOfSeg = currentCommand.params[4];
+		//msdWaitDma(1);
 		if (cntxt->depthBuffer.enabled == NMGL_TRUE) {
 			cntxt->depthBuffer.setCursor(x0, y0);
 			cntxt->smallDepthBuff.setCursor(0, 0);
@@ -140,7 +141,12 @@ SECTION(".text_nmglvs") int nmglvsNm1Step()
 	}
 
 	case NMC1_DRAW_TRIANGLES: {
+		//DataForNmpu1* poly = cntxt->polygonsConnectors[0].ptrTail();
+
+		//nmprofiler_enable();
+		//PROFILER_SIZE(poly->count);
 		drawTriangles();
+		//nmprofiler_disable();
 		break;
 	}
 
@@ -197,62 +203,6 @@ SECTION(".text_nmglvs") int nmglvsNm1Step()
 	case NMC1_DEPTH:
 		cntxt->depthBuffer.enabled = currentCommand.params[0];
 		break;
-	case NMC1_AND: {
-		int* src0 = (int*)currentCommand.params[0];
-		int* src1 = (int*)currentCommand.params[1];
-		nm32u* dst = (nm32u*)currentCommand.params[2];
-		int size = currentCommand.params[3];
-		nmppsCopy_32s(src0, cntxt->buffer0, size);
-		nmppsCopy_32s(src1, cntxt->buffer1, size);
-		nmppsAnd_32u((nm32u*)cntxt->buffer0, (nm32u*)cntxt->buffer1, dst, size);
-		break;
-	}
-	case NMC1_AND4: {
-		int* src0Ext = (int*)currentCommand.params[0];
-		int* src1Ext = (int*)currentCommand.params[1];
-		int* src2Ext = (int*)currentCommand.params[2];
-		int* src3Ext = (int*)currentCommand.params[3];
-		nm64u* dst = (nm64u*)currentCommand.params[4];
-		
-		int size = currentCommand.params[5];
-		while (size > 0) {
-			int localSize = (size, SIZE_BANK / 2);
-			nm64u* src0 = (nm64u*)(cntxt->buffer0);
-			nm64u* src1 = (nm64u*)(cntxt->buffer1);
-			nm64u* src2 = (nm64u*)(cntxt->buffer0 + SIZE_BANK / 2);
-			nm64u* src3 = (nm64u*)(cntxt->buffer1 + SIZE_BANK / 2);
-			nmppsCopy_32s(src0Ext, (nm32s*)src0, localSize);
-			nmppsCopy_32s(src1Ext, (nm32s*)src1, localSize);
-			nmppsCopy_32s(src2Ext, (nm32s*)src2, localSize);
-			nmppsCopy_32s(src3Ext, (nm32s*)src3, localSize);
-			nmppsAnd4V_64u(src0, src1, src2, src3, dst, localSize / 2);
-			size -= localSize;
-			src0Ext += localSize;
-			src1Ext += localSize;
-			src2Ext += localSize;
-			src3Ext += localSize;
-			dst += localSize / 2;
-		}
-		break;
-	}
-	case NMC1_OR: {
-		int* src1 = (int*)currentCommand.params[0];
-		int* src2 = (int*)currentCommand.params[1];
-		nm32u* dst = (nm32u*)currentCommand.params[2];
-		int size = currentCommand.params[3];
-		nmppsCopy_32s(src1, cntxt->buffer0, size);
-		nmppsCopy_32s(src2, cntxt->buffer1, size);
-		nmppsOr_32u((nm32u*)cntxt->buffer0, (nm32u*)cntxt->buffer1, dst, size);
-		break;
-	}
-	case NMC1_CNV_32S_8S: {
-		int* src = (int*)currentCommand.params[0];
-		nm8s* dst = (nm8s*)currentCommand.params[1];
-		int size = currentCommand.params[2];
-		nmppsCopy_32s(src, cntxt->buffer0, size);
-		nmppsConvert_32s8s((nm32s*)cntxt->buffer0, dst, size);
-		break;
-	}
 	
 	case NMC1_SET_ACTIVE_TEXTURE: {
 		cntxt->texState.activeTexUnitIndex = currentCommand.params[0];

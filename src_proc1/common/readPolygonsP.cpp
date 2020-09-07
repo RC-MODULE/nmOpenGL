@@ -48,7 +48,7 @@ SECTION(".text_demo3d") int getAddrPtrnsP(DataForNmpu1* data) {
 
 	
 #ifdef DEBUG
-	if (offset0 > SIZE_BANK || offset1 > SIZE_BANK) {
+	if (offset0 > SIZE_BUFFER_NM1 || offset1 > SIZE_BUFFER_NM1) {
 		printf("error!! \n");
 		printf("readPolygonsT - over size of bank\n");
 		return 0;

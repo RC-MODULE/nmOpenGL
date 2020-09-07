@@ -1,4 +1,4 @@
-ROOT = ../../../..
+ROOT = ../..
 include $(ROOT)/global.mk
 # BUILD AND RUN MAKEFILE
 # This makefile builds simple nmc-application containing single cpp-file  
@@ -40,16 +40,16 @@ vs2005: $(HOST).vcproj
 	"$(VS80COMNTOOLS)vsvars32" && vcbuild $(HOST).vcproj
 
 vs2015:	$(HOST).vcxproj
-	"$(VS140COMNTOOLS)vsvars32" && msbuild $(HOST).vcxproj /p:Configuration=Debug
+	"$(VS140COMNTOOLS)vsvars32" && msbuild $(HOST).vcxproj /p:Configuration=Release
 
 $(HOST).vcproj:
 	premake5 vs2005
 
-$(HOST).vcxproj:
-	premake5 vs2015
+$(HOST).vcxproj:	
+	premake5 vs2015 
 
 
 run: $(TARGET0) $(TARGET1) $(HOST)
-	bin\debug\$(HOST)
+	bin\x86\Release\$(HOST)-x86
 	
 include $(ROOT)/clean.mk

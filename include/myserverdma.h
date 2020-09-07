@@ -1,5 +1,6 @@
 #ifndef __MY_SERVER_DMA_H__
 #define __MY_SERVER_DMA_H__ 
+#include "time.h"
 
 #define MSD_DMA 1
 #define MSD_DMA_2D 2
@@ -17,22 +18,18 @@ struct MyDmaTask {
 	int dstStride;
 	int type;
 	msdCallback callback;
+	clock_t t0;
 };
 
 #ifdef __GNUC__
 inline void msdStartCopy(MyDmaTask* dmaCopy) {
-	switch (dmaCopy->type)
-	{
-	case MSD_DMA:
+	if (dmaCopy->type == MSD_DMA) {
 		halDmaStartA(dmaCopy->src, dmaCopy->dst, dmaCopy->size);
-		break;
-	case MSD_DMA_2D:
+	}
+	else {
 		halDma2D_StartA(dmaCopy->src, dmaCopy->dst,
 			dmaCopy->size, dmaCopy->width,
 			dmaCopy->srcStride, dmaCopy->dstStride);
-		break;
-	default:
-		break;
 	}
 }
 #else
@@ -102,8 +99,8 @@ public:
 
 	// здесь установливается порядок обхода задач, (например, стратегия где задачи выибираются по одной поочередно из каждого канала. В данном примере важно чтобы NUM_CHANNELS - степерь двойка
 	inline void startNextTask() {
-#ifdef __NM__
-		isWorking = true;					// флаг что сервер ишачит
+#ifdef __GNUC__
+		isWorking = true;					// флаг что сервер работает
 		for (int i = 0; i < NUM_CHANNELS; i++) {
 			currentChannel = &channel[i];
 			if (!currentChannel->isEmpty()) {
@@ -111,7 +108,7 @@ public:
 				return;
 			}
 		}
-		isWorking = false;				// флаг что сервер чили
+		isWorking = false;				// флаг что сервер стоит
 #else
 		for (int i = 0; i < NUM_CHANNELS; i++) {
 			currentChannel = &channel[i];

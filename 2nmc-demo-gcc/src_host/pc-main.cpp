@@ -74,7 +74,6 @@ int main()
 		if (counter>=256 && flag) {
 #ifdef PROFILER0
 			halProfilerPrint2xml("main0.map", 0, "../perf0.xml");
-			//return 0;
 #endif // PROFILER0
 #ifdef PROFILER1
 			halProfilerPrint2xml("main1.map", 1, "../perf1.xml");

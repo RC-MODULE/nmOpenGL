@@ -4,7 +4,6 @@
 #include "nmgl.h"
 
 #include "stdio.h"
-#include "nmprofiler.h"
 
 extern  Polygons polygons[36];
 
@@ -113,5 +112,5 @@ void rasterizeT(const Triangles* triangles, const BitMask* masks){
 			}
 		}
 	}
-
+	//STOPWATCH_PRINT2TBL();
 }

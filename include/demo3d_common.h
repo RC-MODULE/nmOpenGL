@@ -40,7 +40,7 @@ typedef v4nm8s rgb8888;
 #define POLYGONS_SIZE 256
 
 #define SMALL_SIZE 	  16
-#define SIZE_BANK	0x8000
+#define SIZE_BUFFER_NM1	0x4000
 
 #define BLACK 0x00000000
 #define DARK_GRAY 0x44444444
@@ -83,9 +83,8 @@ struct DataForNmpu1 {
 	int y1[POLYGONS_SIZE];
 	int x2[POLYGONS_SIZE];
 	int y2[POLYGONS_SIZE];
-	int z[POLYGONS_SIZE];
 	int crossProducts[POLYGONS_SIZE];
-
+	int z[POLYGONS_SIZE];
 	int color[4 * POLYGONS_SIZE];
 
 	int count;
