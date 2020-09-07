@@ -4,11 +4,15 @@
 #include <nmpp.h>
 #include <stdio.h>
 #include "imagebuffer.h"
+#include "nmprofiler.h"
+
+int totalSum(nm32s* pVec, int size);
 
 SECTION(".text_demo3d") void drawTriangles() {
 	NMGL_Context_NM1 *context = NMGL_Context_NM1::getContext();
 
 	Polygons* poly = context->polygonsConnectors[0].ptrTail();
+
 	getAddrPtrnsT(context->polygonsConnectors->ptrTail());
 	//readPolygonsT(context->polygonsConnectors->ptrTail());
 

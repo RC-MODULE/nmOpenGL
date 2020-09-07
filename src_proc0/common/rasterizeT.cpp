@@ -98,6 +98,7 @@ void rasterizeT(const Triangles* triangles, const BitMask* masks){
 					}
 					Polygons* poly = connector[0].ptrHead();
 					poly->count = 0;
+					PROFILER_SIZE(localSize);
 					updatePolygonsT(poly, &localTrian2, localSize, segX, segY);
 					connector[0].incHead();
 					cntxt->synchro.writeInstr(1, NMC1_DRAW_TRIANGLES);

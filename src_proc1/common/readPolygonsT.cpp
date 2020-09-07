@@ -5,9 +5,10 @@
 #include "stdio.h"
 #include "service.h"
 #include "imagebuffer.h"
+#include "nmprofiler.h"
 
-SECTION(".data_demo3d") unsigned int points[14];
-SECTION(".data_demo3d") MyDmaTask task;
+SECTION(".data_demo3d") static unsigned int points[14];
+SECTION(".data_demo3d") static MyDmaTask task;
 
 #define CHECK_STATUS(a) while (!msdGetStatusCopy(points[a], 0))
 
@@ -24,9 +25,12 @@ SECTION(".text_demo3d") int getAddrPtrnsT(DataForNmpu1* data) {
 	int size = data->count;
 	int offset0 = 0;
 	int offset1 = 0;
+	int imageWidth = cntxt->smallColorBuff.getWidth();
+	int imageHeight = cntxt->smallColorBuff.getHeight();
 	DataForNmpu1* dataTmp = (DataForNmpu1*)cntxt->buffer0;
 	offset0 += sizeof32(DataForNmpu1);
 	msdAdd(data, dataTmp, sizeof32(DataForNmpu1), 0);
+
 	int* dx02 = cntxt->buffer0 + offset0;
 	offset0 += POLYGONS_SIZE;
 	int* dx01 = cntxt->buffer0 + offset0;
@@ -51,15 +55,17 @@ SECTION(".text_demo3d") int getAddrPtrnsT(DataForNmpu1* data) {
 	offset1 += POLYGONS_SIZE;
 
 	int* temp0 = cntxt->buffer0 + offset0;
-	offset0 += POLYGONS_SIZE;
+	offset0 += 2 * POLYGONS_SIZE;
 	int* temp1 = cntxt->buffer1 + offset1;
-	offset1 += POLYGONS_SIZE;
+	offset1 += 2 * POLYGONS_SIZE;
 	int* temp2 = cntxt->buffer0 + offset0;
-	offset0 += POLYGONS_SIZE;
+	offset0 += 2 * POLYGONS_SIZE;
 	int* temp3 = cntxt->buffer1 + offset1;
-	offset1 += POLYGONS_SIZE;
+	offset1 += 2 * POLYGONS_SIZE;
 	int* imageOffset = cntxt->buffer0 + offset0;
 	offset0 += POLYGONS_SIZE;
+	int* alignDistance = cntxt->buffer1 + offset1;
+	offset1 += POLYGONS_SIZE;
 
 	int** srcPackTmp02 = (int**)cntxt->buffer0 + offset0;
 	offset0 += POLYGONS_SIZE;
@@ -79,6 +85,10 @@ SECTION(".text_demo3d") int getAddrPtrnsT(DataForNmpu1* data) {
 	offset1 += POLYGONS_SIZE;
 	int* sizePackTmp12 = (int*)cntxt->buffer1 + offset1;
 	offset1 += POLYGONS_SIZE;
+
+	int* localTable = (int*)cntxt->buffer1 + offset1;
+	offset1 += sizeof32(cntxt->patterns->table_dydx);
+	nmppsCopy_32s(cntxt->patterns->table_dydx, localTable, sizeof32(cntxt->patterns->table_dydx));
 #ifdef DEBUG
 	if (offset0 > SIZE_BANK || offset1 > SIZE_BANK) {
 		printf("error!! \n");
@@ -86,112 +96,112 @@ SECTION(".text_demo3d") int getAddrPtrnsT(DataForNmpu1* data) {
 		return 0;
 	}
 #endif // DEBUG	
-	msdWaitDma(0);
-
-	nmppsSub_32s(dataTmp->x2, dataTmp->x0, dx02, size);
-	nmppsSub_32s(dataTmp->x1, dataTmp->x0, dx01, size);
-	nmppsSub_32s(dataTmp->x2, dataTmp->x1, dx12, size);
-	nmppsSub_32s(dataTmp->y2, dataTmp->y0, dy02, size);
-	nmppsSub_32s(dataTmp->y1, dataTmp->y0, dy01, size);
-	nmppsSub_32s(dataTmp->y2, dataTmp->y1, dy12, size);
-
-	nmppsMinMaxEvery_32s(dataTmp->x0, dataTmp->x1, temp0, temp1, size);
-	nmppsMinEvery_32s(temp0, dataTmp->x2, minX, size);
-	nmppsMaxEvery_32s(temp1, dataTmp->x2, maxX, size);
-
-	nmppsSub_32s(dataTmp->x0, minX, localX0, size);
-	nmppsSub_32s(dataTmp->x1, minX, localX1, size);
-	
-	// get ptrnNumbers
-	selectPaintSide(dataTmp->crossProducts, 0, NPATTERNS / 2, temp2, size);
-	nmppsMulC_AddV_AddC_32s(dy02, 2 * WIDTH_PTRN, dx02, WIDTH_PTRN, temp0, size);
-	nmppsRemap_32u((nm32u*)cntxt->patterns->table_dydx, (nm32u*)temp1, temp0, size);
-	nmppsAdd_32s(temp1, localX0, temp0, size);
-	nmppsAdd_32s(temp0, temp2, temp1, size);
-	nmppsMulC_32s(temp1, sizeof32(Pattern), temp0, size);
-	baseAddrOffs_32s((nm32s*)cntxt->patterns->ptrns, temp0, srcPackTmp02, size);
-	
-	
-	selectPaintSide(dataTmp->crossProducts, NPATTERNS / 2, 0, temp2, size);
-	nmppsMulC_AddV_AddC_32s(dy01, 2 * WIDTH_PTRN, dx01, WIDTH_PTRN, temp0, size);
-	nmppsRemap_32u((nm32u*)cntxt->patterns->table_dydx, (nm32u*)temp1, temp0, size);
-	nmppsAdd_32s(temp1, localX0, temp0, size);
-	nmppsAdd_32s(temp0, temp2, temp1, size);
-	nmppsMulC_32s(temp1, sizeof32(Pattern), temp0, size);
-	baseAddrOffs_32s((nm32s*)cntxt->patterns->ptrns, temp0, srcPackTmp01, size);
-	
-
-	nmppsMulC_AddV_AddC_32s(dy12, 2 * WIDTH_PTRN, dx12, WIDTH_PTRN, temp0, size);
-	nmppsRemap_32u((nm32u*)cntxt->patterns->table_dydx, (nm32u*)temp1, temp0, size);
-	nmppsAdd_32s(temp1, localX1, temp0, size);
-	nmppsAdd_32s(temp0, temp2, temp1, size);
-	nmppsMulC_32s(temp1, sizeof32(Pattern), temp0, size);
-	baseAddrOffs_32s((nm32s*)cntxt->patterns->ptrns, temp0, srcPackTmp12, size);
-	
-	// get ptrn sizes of int
-	nmppsMulC_32s(dy02, WIDTH_PTRN / 16, sizePackTmp02, size);
-	nmppsMulC_32s(dy12, WIDTH_PTRN / 16, sizePackTmp12, size);
-	nmppsMulC_32s(dy01, WIDTH_PTRN / 16, sizePackTmp01, size);
-
-	// get imageOffset
-	nmppsClipCC_32s(minX, 0, cntxt->smallColorBuff.getWidth(), temp0, size);
-	//nmppsClipCC_32s(maxX, 0, cntxt->smallColorBuff.getWidth(), temp1, size);
-	nmppsClipCC_32s(dataTmp->y0, 0, cntxt->smallColorBuff.getHeight(), temp2, size);
-	//nmppsClipCC_32s(dataTmp->y2, 0, cntxt->smallColorBuff.getHeight(), temp3, size);
-	nmppsMulC_AddV_AddC_32s(temp2, cntxt->smallColorBuff.getWidth(), temp0, 0, imageOffset, size);
-	//nmppsSub_32s(temp1, temp0, temp0, size);
-	//nmppsSub_32s(temp3, temp2, temp1, size);
-	//nmppsMerge_32s(temp2, temp3, (nm32s*)cntxt->ptrnSizes, 2);
-
-	absIfNegElse0(minX, temp0, size);
-	absIfNegElse0(dataTmp->y0, temp1, size);
-	nmppsMerge_32s(temp0, temp1, (nm32s*)cntxt->ptrnInnPoints, size);
-	nmppsClipCC_32s(minX, 0, cntxt->smallColorBuff.getWidth(), temp0, size);
-	nmppsClipCC_32s(maxX, 0, cntxt->smallColorBuff.getWidth(), temp1, size);	
-	nmppsSub_32s(temp1, temp0, temp2, size);
-	nmppsClipCC_32s(dataTmp->y0, 0, cntxt->smallColorBuff.getHeight(), temp1, size);
-	nmppsMulC_AddV_AddC_32s(temp1, cntxt->smallColorBuff.getWidth(), temp0, 0, imageOffset, size);
-	nmppsClipCC_32s(dataTmp->y2, 0, cntxt->smallColorBuff.getHeight(), temp0, size);
-	nmppsSub_32s(temp0, temp1, temp1, size);
-	nmppsMerge_32s(temp2, temp1, (nm32s*)cntxt->ptrnSizes, size);
-
-	nmppsAndC_32u((nm32u*)imageOffset, 1, (nm32u*)temp2, size);
-	nmppsAndC_32u((nm32u*)imageOffset, 0xFFFFFFFE, (nm32u*)imageOffset, size);
-	nmppsSplit_32s((nm32s*)cntxt->ptrnInnPoints, temp0, temp1, 2 * size);
-	nmppsSub_32s(temp0, temp2, temp0, size);
-	nmppsMerge_32s(temp0, temp1, (nm32s*)cntxt->ptrnInnPoints, size);
-
-	nmppsSplit_32s((nm32s*)cntxt->ptrnSizes, temp0, temp1, 2 *size);
-	nmppsAdd_32s(temp0, temp2, temp0, size);
-	nmppsAndC_32u((nm32u*)temp0, 1, (nm32u*)temp2, size);
-	nmppsAdd_32s(temp0, temp2, temp0, size);
-	nmppsMerge_32s(temp0, temp1, (nm32s*)cntxt->ptrnSizes, size);
 
 #ifdef __GNUC__
 	int height = size / SMALL_SIZE;
+	
 	nmppmCopy_32s((nm32s*)cntxt->ppPtrns1_2s, 0, (nm32s*)dstPackTmp02, SMALL_SIZE, height, SMALL_SIZE);
 	nmppsCopy_32s((nm32s*)cntxt->ppPtrns1_2s, (nm32s*)(dstPackTmp02 + height * SMALL_SIZE), size % SMALL_SIZE);
 
-	nmppmCopy_32s((nm32s*)cntxt->ppPtrns2_2s, 0, (nm32s*)dstPackTmp01, SMALL_SIZE, height, SMALL_SIZE);
+	 
+	nmppmCopy_32s((nm32s*)cntxt->ppPtrns2_2s, 0, (nm32s*)dstPackTmp01, SMALL_SIZE, height, SMALL_SIZE);	 
 	nmppsCopy_32s((nm32s*)cntxt->ppPtrns2_2s, (nm32s*)(dstPackTmp01 + height * SMALL_SIZE), size % SMALL_SIZE);
 
-	nmppmCopy_32s((nm32s*)cntxt->ppPtrns2_2s, 0, (nm32s*)temp0, SMALL_SIZE, height, SMALL_SIZE);
-	nmppsCopy_32s((nm32s*)cntxt->ppPtrns2_2s, (nm32s*)(temp0 + height * SMALL_SIZE), size % SMALL_SIZE);
-	nmppsAdd_32s(temp0, sizePackTmp01, (int*)dstPackTmp12, size);
+	 
+	nmppmCopy_32s((nm32s*)cntxt->ppPtrns2_2s, 0, (nm32s*)dstPackTmp12, SMALL_SIZE, height, SMALL_SIZE);	 
+	nmppsCopy_32s((nm32s*)cntxt->ppPtrns2_2s, (nm32s*)(dstPackTmp12 + height * SMALL_SIZE), size % SMALL_SIZE);
+	 
 #else 
 	for (int i = 0; i < size; i++) {
 		dstPackTmp02[i] = (nm32s*)cntxt->ppPtrns1_2s[i % SMALL_SIZE];
 		dstPackTmp01[i] = (nm32s*)cntxt->ppPtrns2_2s[i % SMALL_SIZE];
-		dstPackTmp12[i] = (nm32s*)cntxt->ppPtrns2_2s[i % SMALL_SIZE] +
-			+ dy01[i] * WIDTH_PTRN / 16; // + cntxt->nSizePtrn32[3 * i + 1]
+		dstPackTmp12[i] = (nm32s*)cntxt->ppPtrns2_2s[i % SMALL_SIZE];
 	}
 #endif
-	baseAddrOffs_32s((nm32s*)cntxt->smallColorBuff.mData, imageOffset, cntxt->imagePoints, size);
+	msdWaitDma(0);
+	//msdAdd(dataTmp->z, cntxt->valuesZ, size);
+
+	nmppsSub_32s(dataTmp->x2, dataTmp->x0, dx02, size);
+	nmppsSub_32s(dataTmp->x1, dataTmp->x0, dx01, size);	 
+	nmppsSub_32s(dataTmp->x2, dataTmp->x1, dx12, size);	 
+	nmppsSub_32s(dataTmp->y2, dataTmp->y0, dy02, size);	 
+	nmppsSub_32s(dataTmp->y1, dataTmp->y0, dy01, size);	 
+	nmppsSub_32s(dataTmp->y2, dataTmp->y1, dy12, size);
+	 
+	nmppsMinMaxEvery_32s(dataTmp->x0, dataTmp->x1, temp0, temp1, size);	 
+	nmppsMinEvery_32s(temp0, dataTmp->x2, minX, size);	 
+	nmppsMaxEvery_32s(temp1, dataTmp->x2, maxX, size);
+	nmppsSub_32s(dataTmp->x0, minX, localX0, size);
+	nmppsSub_32s(dataTmp->x1, minX, localX1, size);
+
+	// get ptrnNumbers	 
+	selectPaintSide(dataTmp->crossProducts, 0, NPATTERNS / 2, temp2, size);	 
+	nmppsMulC_AddV_AddC_32s(dy02, 2 * WIDTH_PTRN, dx02, WIDTH_PTRN, temp0, size);	 
+	nmppsRemap_32u((nm32u*)localTable, (nm32u*)temp1, temp0, size);	 
+	nmppsAdd_32s(temp1, localX0, temp0, size);	 
+	nmppsAdd_32s(temp0, temp2, temp1, size);	 
+	nmppsMulC_32s(temp1, sizeof32(Pattern), temp0, size);	 
+	baseAddrOffs_32s((nm32s*)cntxt->patterns->ptrns, temp0, srcPackTmp02, size);	
+	 
+	selectPaintSide(dataTmp->crossProducts, NPATTERNS / 2, 0, temp2, size);	 
+	nmppsMulC_AddV_AddC_32s(dy01, 2 * WIDTH_PTRN, dx01, WIDTH_PTRN, temp0, size);	 
+	nmppsRemap_32u((nm32u*)localTable, (nm32u*)temp1, temp0, size);	 
+	nmppsAdd_32s(temp1, localX0, temp0, size);	 
+	nmppsAdd_32s(temp0, temp2, temp1, size);	 
+	nmppsMulC_32s(temp1, sizeof32(Pattern), temp0, size);	 
+	baseAddrOffs_32s((nm32s*)cntxt->patterns->ptrns, temp0, srcPackTmp01, size);	
+	 
+	nmppsMulC_AddV_AddC_32s(dy12, 2 * WIDTH_PTRN, dx12, WIDTH_PTRN, temp0, size);	 
+	nmppsRemap_32u((nm32u*)localTable, (nm32u*)temp1, temp0, size);	 
+	nmppsAdd_32s(temp1, localX1, temp0, size);	 
+	nmppsAdd_32s(temp0, temp2, temp1, size);	 
+	nmppsMulC_32s(temp1, sizeof32(Pattern), temp0, size);	 
+	baseAddrOffs_32s((nm32s*)cntxt->patterns->ptrns, temp0, srcPackTmp12, size);
+	
+	// get ptrn sizes of int	 
+	nmppsMulC_32s(dy02, WIDTH_PTRN / 16, sizePackTmp02, size);	 
+	nmppsMulC_32s(dy12, WIDTH_PTRN / 16, sizePackTmp12, size);	 
+	nmppsMulC_32s(dy01, WIDTH_PTRN / 16, sizePackTmp01, size);
+#ifdef __GNUC__
+	nmppsAdd_32s((int*)dstPackTmp12, sizePackTmp01, (int*)dstPackTmp12, size);
+#else
+	for (int i = 0; i < size; i++) {
+		dstPackTmp12[i] += sizePackTmp01[i];
+	}
+#endif
+
+
+	// get imageOffset	 
+	nmppsClipCC_32s(minX, 0, imageWidth, temp0, size);	 
+	nmppsClipCC_32s(dataTmp->y0, 0, imageHeight, temp1, size);	 
+	nmppsMulC_AddV_AddC_32s(temp1, imageWidth, temp0, 0, imageOffset, size);	 
+	nmppsAndC_32u((nm32u*)imageOffset, 1, (nm32u*)alignDistance, size);	 
+	nmppsAndC_32u((nm32u*)imageOffset, 0xFFFFFFFE, (nm32u*)imageOffset, size);
+
+	//ptrnInner	 
+	absIfNegElse0(minX, temp3, size);	 
+	nmppsSub_32s(temp3, alignDistance, temp2, size);	 
+	absIfNegElse0(dataTmp->y0, temp3, size);	 
+	nmppsMerge_32s(temp2, temp3, (nm32s*)cntxt->ptrnInnPoints, size);
+
+	//ptrnSizes	 
+	nmppsClipCC_32s(maxX, 0, imageWidth, temp2, size);	 
+	nmppsClipCC_32s(dataTmp->y2, 0, imageHeight, temp3, size);	 
+	nmppsSub_32s(temp2, temp0, temp2, size);	 
+	nmppsAdd_32s(temp2, alignDistance, temp0, size);	 
+	nmppsAndC_32u((nm32u*)temp0, 1, (nm32u*)temp2, size);	 
+	nmppsAdd_32s(temp2, temp0, temp0, size);	 
+	nmppsSub_32s(temp3, temp1, temp1, size);	 	
+	nmppsMerge_32s(temp0, temp1, (nm32s*)cntxt->ptrnSizes, size); 
+	 
+	baseAddrOffs_32s((nm32s*)cntxt->smallColorBuff.mData, imageOffset, cntxt->imagePoints, size);	 
 	baseAddrOffs_32s((nm32s*)cntxt->smallDepthBuff.mData, imageOffset, cntxt->zBuffPoints, size);
-	nmppsConvert_32s8s(dataTmp->color, (nm8s*)cntxt->valuesC, 4 * size);
+	 
+	nmppsConvert_32s8s(dataTmp->color, (nm8s*)cntxt->valuesC, 4 * size);	 
 	nmppsCopy_32s(dataTmp->z, cntxt->valuesZ, size);
-	mergePtrnsAddr3(srcPackTmp02, srcPackTmp01, srcPackTmp12, SMALL_SIZE, cntxt->ppSrcPackPtrns, size);
-	mergePtrnsAddr3(dstPackTmp02, dstPackTmp01, dstPackTmp12, SMALL_SIZE, cntxt->ppDstPackPtrns, size);
+	 
+	mergePtrnsAddr3(srcPackTmp02, srcPackTmp01, srcPackTmp12, SMALL_SIZE, cntxt->ppSrcPackPtrns, size);	 
+	mergePtrnsAddr3(dstPackTmp02, dstPackTmp01, dstPackTmp12, SMALL_SIZE, cntxt->ppDstPackPtrns, size);	 
 	mergePtrnsAddr3((nm32s**)sizePackTmp02, (nm32s**)sizePackTmp01, (nm32s**)sizePackTmp12, SMALL_SIZE, (nm32s**)cntxt->nSizePtrn32, size);
 
 
@@ -248,8 +258,8 @@ SECTION(".text_demo3d") int getAddrPtrnsT(DataForNmpu1* data) {
 		else {
 			cntxt->ptrnInnPoints[i].y = 0;
 		}
-		maxX[i] = MIN(cntxt->smallColorBuff.getWidth(), maxX[i]);
-		int maxY = MIN(cntxt->smallColorBuff.getWidth(), data->y2[i]);
+		maxX[i] = MIN(imageWidth, maxX[i]);
+		int maxY = MIN(imageWidth, data->y2[i]);
 		cntxt->ptrnSizes[i].width = maxX[i] - minX[i];
 		cntxt->ptrnSizes[i].height = maxY - minY;
 		

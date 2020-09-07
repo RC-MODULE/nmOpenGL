@@ -17,7 +17,8 @@ begin ".text_demo3d"
 	EndTail: label;
 	
 	ar5 = sp - 2;
-	push ar0, gr0	with gr7 = gr5;
+	push ar0, gr0;
+	push ar5, gr5;
 	push ar6, gr6;
 	ar0 = [--ar5];
 	ar6 = [--ar5];
@@ -75,6 +76,7 @@ begin ".text_demo3d"
 <EndTail>
 
 	pop ar6, gr6;
-	pop ar0, gr0	with gr5 = gr7;
+	pop ar5, gr5;
+	pop ar0, gr0;
 	return;
 end ".text_demo3d";

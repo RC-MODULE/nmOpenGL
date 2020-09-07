@@ -2,23 +2,18 @@
 
 #include "nmgl.h"
 #include "nmglvs_nmc1.h"
+#include "nmprofiler.h"
 
 int main()
 { 
 	nmglvsNm1Init();
 
-#if defined(__GNUC__) && defined(PROFILER1)
 	nmprofiler_init();
-	nmprofiler_enable();
-#endif // __GNUC__
+	nmprofiler_disable();
 
 	while (nmglvsNm1Run()) {
 		nmglvsNm1Step();
 	}
-
-#if defined(__GNUC__) && defined(PROFILER1)
-	nmprofiler_disable();
-#endif // __GNUC__
 	return 0x611D611D;
 } 
 

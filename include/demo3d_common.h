@@ -13,8 +13,8 @@
 #endif
 
 //#define TRIANGULATION_ENABLED
-#define USED_OLD_POLYGONS
-#define PROFILER0
+//#define USED_OLD_POLYGONS
+//#define PROFILER0
 //#define PROFILER1
 
 #define ActiveTexObjectP cntxt->texState.texUnits[cntxt->texState.activeTexUnitIndex].boundTexObject
@@ -83,9 +83,8 @@ struct DataForNmpu1 {
 	int y1[POLYGONS_SIZE];
 	int x2[POLYGONS_SIZE];
 	int y2[POLYGONS_SIZE];
-	int z[POLYGONS_SIZE];
 	int crossProducts[POLYGONS_SIZE];
-
+	int z[POLYGONS_SIZE];
 	int color[4 * POLYGONS_SIZE];
 
 	int count;
