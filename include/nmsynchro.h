@@ -42,7 +42,7 @@ struct CommandNm1{
 	int params[7];
 };
 
-#define PRIORITY_SIZE 256
+#define PRIORITY_SIZE 512
 
 typedef HalRingBufferData<CommandNm1, PRIORITY_SIZE> NMGLSynchroData;
 
@@ -68,6 +68,7 @@ public:
 		int param4 = 0, 
 		int param5 = 0) {
 
+		//printf("head-tail=%d, max=%d\n", connector.getHead() - connector.getTail(), PRIORITY_SIZE);
 		while (connector.isFull());
 		CommandNm1* command = connector.ptrHead();
 		command->instr_nmc1 = instr;

@@ -13,7 +13,10 @@ SECTION(".text_demo3d") void drawTriangles() {
 
 	Polygons* poly = context->polygonsConnectors[0].ptrTail();
 
+	nmprofiler_enable();
+	PROFILER_SIZE(poly->count);
 	getAddrPtrnsT(context->polygonsConnectors->ptrTail());
+	nmprofiler_disable();
 	//readPolygonsT(context->polygonsConnectors->ptrTail());
 
 	COMMON_DRAW_TYPE* mulZ = (COMMON_DRAW_TYPE*)context->buffer0;
@@ -21,7 +24,7 @@ SECTION(".text_demo3d") void drawTriangles() {
 	COMMON_DRAW_TYPE* zMaskBuffer = (COMMON_DRAW_TYPE*)context->buffer1;
 	int countTrangles = poly->count;
 
-	msdWaitDma(0);
+	//msdWaitDma(0);
 	int point = 0;
 
 	msdWaitDma(1);

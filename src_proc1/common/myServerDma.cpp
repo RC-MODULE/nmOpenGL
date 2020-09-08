@@ -9,12 +9,15 @@ int cbUpdate();
 SECTION(".data_demo3d") MyDmaServer<MSD_SIZE, MSD_NUM_CHANNELS> dmaServer;
 SECTION(".data_demo3d") MyDmaClient<MSD_SIZE> dmaClient[MSD_NUM_CHANNELS];
 
-
 SECTION(".text_demo3d") int cbUpdate() {
 	msdCallback callback = dmaServer.currentChannel->ptrTail()->callback;
 	if (callback != 0) {
 		callback();
 	}
+	clock_t t1 = clock();
+	int time = t1 - dmaServer.currentChannel->ptrTail()->t0;
+	//printf("time=%d, size=%d\n", time, dmaServer.currentChannel->ptrTail()->size);
+	//printf("head-tail=%d, max=%d\n", dmaServer.currentChannel->getHead() - dmaServer.currentChannel->getTail(), MSD_SIZE);
 	dmaServer.currentChannel->incTail();
 	dmaServer.startNextTask();
 	return 0;
@@ -37,6 +40,7 @@ SECTION(".text_demo3d") unsigned int msdAdd(const void* src, void* dst, int size
 	current->size = size;
 	current->type = MSD_DMA;
 	current->callback = 0;
+	current->t0 = clock();
 	dmaClient[priority].incHead();
 	dmaServer.startJob();
 	return id;
@@ -54,6 +58,7 @@ SECTION(".text_demo3d") unsigned int msdAdd2D(const void* src, void* dst, unsign
 	current->srcStride = srcStride32;
 	current->dstStride = dstStride32;
 	current->callback = 0;
+	current->t0 = clock();
 	dmaClient[priority].incHead();
 	dmaServer.startJob();
 	return id;
@@ -62,6 +67,7 @@ SECTION(".text_demo3d") unsigned int msdAdd2D(const void* src, void* dst, unsign
 SECTION(".text_demo3d") unsigned int msdAdd(MyDmaTask &task, int priority) {
 	unsigned int id = dmaClient[priority].getHead();
 	while (dmaClient[priority].isFull());
+	task.t0 = clock();
 	dmaClient[priority].add(task);
 	dmaServer.startJob();
 	return id;

@@ -7,10 +7,10 @@
 int main()
 { 
 	nmglvsNm1Init();
-
+#if defined(PROFILER1) && defined(__GNUC__)
 	nmprofiler_init();
 	nmprofiler_disable();
-
+#endif // (PROFILER1) && defined(__GNUC__)
 	while (nmglvsNm1Run()) {
 		nmglvsNm1Step();
 	}

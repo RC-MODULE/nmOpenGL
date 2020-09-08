@@ -295,7 +295,6 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 #ifdef DEBUG
 				printf("    cullface selection...");
 #endif // DEBUG
-				PROFILER_SIZE(cntxt->trianInner.size);
 				cullFaceSortTriangles(cntxt->trianInner);
 #ifdef DEBUG
 				printf("    ok\n");
@@ -311,12 +310,10 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 				cntxt->buffer2, cntxt->buffer3, cntxt->trianInner.size);
 			nmppsMerge_32f(cntxt->buffer0, cntxt->buffer2, (float*)minXY, cntxt->trianInner.size);
 			nmppsMerge_32f(cntxt->buffer1, cntxt->buffer3, (float*)maxXY, cntxt->trianInner.size);
-			PROFILER_SIZE(cntxt->trianInner.size);
 			setSegmentMask(minXY, maxXY, cntxt->segmentMasks, cntxt->trianInner.size);
 #ifdef DEBUG
 			printf("    rasterize... \n");
 #endif // DEBUG
-			PROFILER_SIZE(cntxt->trianInner.size);
 			rasterizeT(&cntxt->trianInner, cntxt->segmentMasks);
 			break;
 		}
