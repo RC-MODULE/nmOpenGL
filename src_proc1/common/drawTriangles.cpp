@@ -13,10 +13,9 @@ SECTION(".text_demo3d") void drawTriangles() {
 
 	Polygons* poly = context->polygonsConnectors[0].ptrTail();
 
-	nmprofiler_enable();
-	PROFILER_SIZE(poly->count);
+	//nmprofiler_enable();
 	getAddrPtrnsT(context->polygonsConnectors->ptrTail());
-	nmprofiler_disable();
+	//nmprofiler_disable();
 	//readPolygonsT(context->polygonsConnectors->ptrTail());
 
 	COMMON_DRAW_TYPE* mulZ = (COMMON_DRAW_TYPE*)context->buffer0;

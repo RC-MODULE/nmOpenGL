@@ -13,7 +13,7 @@
 #endif
 
 //#define TRIANGULATION_ENABLED
-#define USED_OLD_POLYGONS
+//#define USED_OLD_POLYGONS
 //#define PROFILER0
 //#define PROFILER1
 
@@ -38,10 +38,9 @@ typedef v4nm8s rgb8888;
 #define HEIGHT_SEG 128
 #define NMGL_SIZE 1024
 #define POLYGONS_SIZE 256
-//#define POLYGONS_SIZE 1024
 
 #define SMALL_SIZE 	  16
-#define SIZE_BANK	0x8000
+#define SIZE_BUFFER_NM1	0x4000
 
 #define BLACK 0x00000000
 #define DARK_GRAY 0x44444444
