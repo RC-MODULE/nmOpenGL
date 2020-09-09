@@ -141,10 +141,10 @@ SECTION(".text_nmglvs") int nmglvsNm1Step()
 	}
 
 	case NMC1_DRAW_TRIANGLES: {
-		DataForNmpu1* poly = cntxt->polygonsConnectors[0].ptrTail();
+		//DataForNmpu1* poly = cntxt->polygonsConnectors[0].ptrTail();
 
 		//nmprofiler_enable();
-		PROFILER_SIZE(poly->count);
+		//PROFILER_SIZE(poly->count);
 		drawTriangles();
 		//nmprofiler_disable();
 		break;

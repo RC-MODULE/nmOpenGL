@@ -116,7 +116,6 @@ SECTION(".text_shared0") int main()
 		materialSpec[2] = 0.6;
 		nmglMaterialfv(NMGL_FRONT_AND_BACK, NMGL_SPECULAR, materialSpec);
 
-		PROFILER_SIZE(amountPolygons);
 		nmglDrawArrays(NMGL_TRIANGLES, 0, 3 * amountPolygons);
 
 		nmglVertexPointer(4, NMGL_FLOAT, 0, vertices_DDR2);
@@ -133,7 +132,6 @@ SECTION(".text_shared0") int main()
 		nmglRotatef(angle, 0.707, 0.707, 0);
 		nmglTranslatef(150, 150, 0);
 
-		PROFILER_SIZE(amountPolygons2);
 		nmglDrawArrays(NMGL_TRIANGLES, 0, 3 * amountPolygons2);
 #ifdef __OPEN_GL__
 		angle += 0.03;

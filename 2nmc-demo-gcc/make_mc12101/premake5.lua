@@ -46,14 +46,14 @@ solution "demo3d-mc12101"
 	 
 	  configuration "Debug"
 		   defines { "DEBUG"}
-		   buildcommands {"make DEBUG=y -f Makefile0"}
-		   rebuildcommands {"make -B DEBUG=y -f Makefile0"}
+		   buildcommands {"make DEBUG=y -f Makefile0 -j4"}
+		   rebuildcommands {"make -B DEBUG=y -f Makefile0  -j4"}
 		   cleancommands {"make clean"}
 		   
 	  configuration "Release"
 		   defines { "NDEBUG"}
-		   buildcommands {"make -f Makefile0"}
-		   rebuildcommands {"make -B -f Makefile0"}
+		   buildcommands {"make -f Makefile0 -j4"}
+		   rebuildcommands {"make -B -f Makefile0 -j4"}
 		   cleancommands {"make clean"}		   
 		   
 	project "mc12101-nmc4-1"
@@ -64,14 +64,14 @@ solution "demo3d-mc12101"
 	 
 	  configuration "Debug"
 		   defines { "DEBUG"}
-		   buildcommands {"make DEBUG=y -f Makefile1"}
-		   rebuildcommands {"make -B DEBUG=y -f Makefile1"}
+		   buildcommands {"make DEBUG=y -f Makefile1 -j4"}
+		   rebuildcommands {"make -B DEBUG=y -f Makefile1  -j4"}
 		   cleancommands {"make clean"}
 		   
 	  configuration "Release"
 		   defines { "NDEBUG"}
-		   buildcommands {"make -f Makefile1"}
-		   rebuildcommands {"make -B -f Makefile1"}
+		   buildcommands {"make -f Makefile1  -j4"}
+		   rebuildcommands {"make -B -f Makefile1  -j4"}
 		   cleancommands {"make clean"}		   
 		   
 		  

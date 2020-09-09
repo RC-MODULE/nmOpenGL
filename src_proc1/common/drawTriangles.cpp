@@ -14,6 +14,7 @@ SECTION(".text_demo3d") void drawTriangles() {
 	Polygons* poly = context->polygonsConnectors[0].ptrTail();
 
 	//nmprofiler_enable();
+	//PROFILER_SIZE(poly->count);
 	getAddrPtrnsT(context->polygonsConnectors->ptrTail());
 	//nmprofiler_disable();
 	//readPolygonsT(context->polygonsConnectors->ptrTail());

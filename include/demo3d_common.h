@@ -13,7 +13,7 @@
 #endif
 
 //#define TRIANGULATION_ENABLED
-//#define USED_OLD_POLYGONS
+#define USED_OLD_POLYGONS
 //#define PROFILER0
 //#define PROFILER1
 

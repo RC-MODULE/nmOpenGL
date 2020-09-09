@@ -66,7 +66,8 @@ AS               = nmc-gcc
 AS_FLAGS    	 = -c -mmas -x assembler -Wa,-split_sir -mnmc4-fixed
 LIBS             = -lnmpp-nmc4 -lhal-mc12101
 MAP		         = $(PROJECT).map
-LINKER_FLAGS     = -Xlinker -Map=$(MAP) $(LIB_DIRS) "-Wl,-Tldscript-nmc1.ld"  -Wl,--whole-archive -lmc12101 -Wl,--no-whole-archive -o$(TARGET)
+CFG				 = ldscript-nmc1.ld
+LINKER_FLAGS     = -Xlinker -Map=$(MAP) $(LIB_DIRS) "-Wl,-T$(CFG)"  -Wl,--whole-archive -lmc12101 -Wl,--no-whole-archive -o$(TARGET)
 
 ifeq ($(DEBUG),y)
 	CC_FLAGS	+= -DDEBUG
@@ -119,7 +120,7 @@ $(TMP_DIR)/dumps/%.dump: $(TMP_DIR)/%.o
 $(TMP_DIR):
 	-mkdir "$(@)"
 
-$(TARGET): $(TMP_DIR) $(OBJECTS) nmc4vars_win.mk Makefile
+$(TARGET): $(TMP_DIR) $(OBJECTS) $(CFG) nmc4vars_win.mk Makefile $(ALL_H)
 	$(CC) $(LINKER_FLAGS) $(OBJECTS) $(LIBS)
 
 nmc4vars_win.mk:
@@ -128,13 +129,13 @@ nmc4vars_win.mk:
 $(OUT_DIR): 
 	-mkdir "$(@)"
 	
-$(TMP_DIR)/%.o: %.asm  $(ALL_H)
+$(TMP_DIR)/%.o: %.asm  $(ALL_H) $(CFG)
 	$(AS) $(AS_FLAGS) $(<) -o$(@) $(INC_DIRS)
 	
-$(TMP_DIR)/%.o: %.cpp  $(ALL_H)
+$(TMP_DIR)/%.o: %.cpp  $(ALL_H) $(CFG)
 	$(CC) $(CC_FLAGS) -c $(<) -o$(@) $(INC_DIRS)
 
-$(TMP_DIR)/%.o: %.c $(ALL_H)
+$(TMP_DIR)/%.o: %.c $(ALL_H) $(CFG)
 	$(CC) $(CC_FLAGS) -c $(<) -o$(@) $(INC_DIRS)
 	
 profile:	
