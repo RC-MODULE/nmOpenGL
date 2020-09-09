@@ -1,5 +1,6 @@
-ROOT = ../../../..
+ROOT = ../..
 include $(ROOT)/global.mk
+export ROOT
 # BUILD AND RUN MAKEFILE
 # This makefile builds simple nmc-application containing single cpp-file  
 # Rule 'run' executes the application on MC12101 board and stores return code in ".exitcode"  file
@@ -45,8 +46,8 @@ vs2015:	$(HOST).vcxproj
 $(HOST).vcproj:
 	premake5 vs2005
 
-$(HOST).vcxproj:
-	premake5 vs2015
+$(HOST).vcxproj:	
+	premake5 vs2015 
 
 
 run: $(TARGET0) $(TARGET1) $(HOST)

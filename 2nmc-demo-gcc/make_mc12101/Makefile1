@@ -47,7 +47,6 @@
 #
 DEBUG ?= n
 
-ROOT             = ../..
 include $(ROOT)/global.mk
 include 		 nmc4vars_win.mk
 #-------------- target & input dirs -------------------

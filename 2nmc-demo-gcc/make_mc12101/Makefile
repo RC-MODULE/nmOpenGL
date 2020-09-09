@@ -1,5 +1,6 @@
 ROOT = ../..
 include $(ROOT)/global.mk
+export ROOT
 # BUILD AND RUN MAKEFILE
 # This makefile builds simple nmc-application containing single cpp-file  
 # Rule 'run' executes the application on MC12101 board and stores return code in ".exitcode"  file
