@@ -40,13 +40,13 @@ run:
 	$(MAKE) -j4 runhost runtarget0  runtarget1 
 
 runhost: $(HOST)
-	bin\debug\$(HOST)
+	bin\x86\Debug\$(HOST)-x86d
 	
 runtarget0: $(TARGET0) 
-	bin\debug\$(TARGET0)
+	bin\x86\Debug\$(TARGET0)-x86d
 	
 runtarget1: $(TARGET1) 
-	bin\debug\$(TARGET1)
+	bin\x86\Debug\$(TARGET1)-x86d
 	
 
 include $(ROOT)/clean.mk

@@ -9,6 +9,7 @@
 
 SECTION(".text_shared0") int main()
 {
+	halSleep(3000);
 	nmglvsNm0Init();
 
 #if defined(__GNUC__) && defined(PROFILER0)

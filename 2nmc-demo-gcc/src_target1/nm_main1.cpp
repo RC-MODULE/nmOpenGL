@@ -6,6 +6,7 @@
 
 int main()
 { 
+	halSleep(3000);
 	nmglvsNm1Init();
 #if defined(PROFILER1) && defined(__GNUC__)
 	nmprofiler_init();

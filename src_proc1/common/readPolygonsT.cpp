@@ -151,7 +151,6 @@ SECTION(".text_demo3d") int getAddrPtrnsT(DataForNmpu1* data) {
 	// get ptrnNumbers	 
 	selectPaintSide(dataTmp->crossProducts, 0, NPATTERNS / 2, temp3, size);	 
 	nmppsMulC_AddV_AddC_32s(dy02, 2 * WIDTH_PTRN, dx02, WIDTH_PTRN, temp2, size);	 
-	PROFILER_SIZE(size);
 	nmppsRemap_32u((nm32u*)localTable, (nm32u*)temp0, temp2, size);
 	nmppsAdd_32s(temp0, localX0, temp2, size);
 	nmppsAdd_32s(temp2, temp3, temp0, size);	 
@@ -160,7 +159,6 @@ SECTION(".text_demo3d") int getAddrPtrnsT(DataForNmpu1* data) {
 
 	selectPaintSide(dataTmp->crossProducts, NPATTERNS / 2, 0, temp3, size);	 
 	nmppsMulC_AddV_AddC_32s(dy01, 2 * WIDTH_PTRN, dx01, WIDTH_PTRN, temp0, size);	 
-	PROFILER_SIZE(size);
 	nmppsRemap_32u((nm32u*)localTable, (nm32u*)temp2, temp0, size);	 
 	nmppsAdd_32s(temp2, localX0, temp0, size);
 	nmppsAdd_32s(temp0, temp3, temp2, size);

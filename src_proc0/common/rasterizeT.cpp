@@ -4,8 +4,6 @@
 #include "nmgl.h"
 
 #include "stdio.h"
-#include "nmprofiler.h"
-#include "stopwatch.h"
 
 extern  Polygons polygons[36];
 
@@ -46,8 +44,6 @@ SECTION(".text_demo3d") void recursiveUpdate(Triangles& triangles, Polygons &pol
 	}
 }*/
 
-STOPWATCH_CREATE(tmr_waitP, "tmr_waitP");
-
 SECTION(".text_demo3d")
 void rasterizeT(const Triangles* triangles, const BitMask* masks){
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
@@ -70,7 +66,6 @@ void rasterizeT(const Triangles* triangles, const BitMask* masks){
 		for (int segX = 0; segX < cntxt->windowInfo.nColumns; segX++, iSeg++) {
 			if (masks[iSeg].hasNotZeroBits != 0) {
 
-				PROFILER_SIZE(count);
 				int resultSize = readMask(masks[iSeg].bits, indices, count);
 				
 				cntxt->synchro.writeInstr(1, NMC1_COPY_SEG_FROM_IMAGE,
@@ -80,11 +75,9 @@ void rasterizeT(const Triangles* triangles, const BitMask* masks){
 					cntxt->windowInfo.y1[segY] - cntxt->windowInfo.y0[segY],
 					iSeg);
 
-				PROFILER_SIZE(resultSize);
 				copyArraysByIndices((void**)triangles, indices, (void**)&localTrian, 7, resultSize);
 
 #ifdef OUTPUT_IMAGE_RGB8888
-				PROFILER_SIZE(resultSize);
 				copyColorByIndices_BGRA_RGBA(triangles->colors, indices, (v4nm32s*)localTrian.colors, resultSize);
 #endif // OUTPUT_IMAGE_RGB8888
 #ifdef OUTPUT_IMAGE_RGB565
@@ -99,14 +92,11 @@ void rasterizeT(const Triangles* triangles, const BitMask* masks){
 					int localSize = MIN(resultSize - offset, POLYGONS_SIZE);
 					triangleOffset(localTrian, localTrian2, offset);
 					offset += POLYGONS_SIZE;
-					//STOPWATCH_START(tmr_waitP, "tmr_waitP");
 					while (connector[0].isFull()) {
 						halSleep(2);
 					}
-					//STOPWATCH_STOP(tmr_waitP);
 					Polygons* poly = connector[0].ptrHead();
 					poly->count = 0;
-					PROFILER_SIZE(localSize);
 					updatePolygonsT(poly, &localTrian2, localSize, segX, segY);
 					connector[0].incHead();
 					cntxt->synchro.writeInstr(1, NMC1_DRAW_TRIANGLES);

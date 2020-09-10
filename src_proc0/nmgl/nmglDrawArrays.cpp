@@ -235,7 +235,6 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 		//normal in colorOrNormal
 		//Освещение или наложение цветов
 		if (cntxt->isLighting) {
-			PROFILER_SIZE(localSize);
 			light(vertexResult, colorOrNormal, localSize);
 		}
 		else {
