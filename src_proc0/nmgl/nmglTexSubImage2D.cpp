@@ -36,29 +36,29 @@ void nmglTexSubImage2D (NMGLenum target, NMGLint level, NMGLint xoffset, NMGLint
 	paddings=((width*tSize) % cntxt->texState.unpackAlignment == 0) ? 0 : (cntxt->texState.unpackAlignment - (width*tSize) % cntxt->texState.unpackAlignment);
 
 //DEBUG_PRINT1(("width=%d height=%d alignment=%d paddings=%d\n",width, height,cntxt->texState.unpackAlignment, paddings ));
-//printf("width=%d height=%d alignment=%d paddings=%d\n",width, height,cntxt->texState.unpackAlignment, paddings );
+//DEBUG_PRINT(("width=%d height=%d alignment=%d paddings=%d\n",width, height,cntxt->texState.unpackAlignment, paddings ));
 	//xstart=yoffset*line+xoffset*size;
-//printf("texelUbytes00=%x TheOne=%x\n",getTexelSizeUbytes(ActiveTexObjectP->texImages2D[level].internalformat),1+getTexelSizeUbytes(ActiveTexObjectP->texImages2D[level].internalformat));
-//printf("format is=%x should be %x\n",ActiveTexObjectP->texImages2D[level].internalformat,NMGL_RGBA);
+//DEBUG_PRINT(("texelUbytes00=%x TheOne=%x\n",getTexelSizeUbytes(ActiveTexObjectP->texImages2D[level].internalformat)),1+getTexelSizeUbytes(ActiveTexObjectP->texImages2D[level].internalformat));
+//DEBUG_PRINT(("format is=%x should be %x\n",ActiveTexObjectP->texImages2D[level].internalformat,NMGL_RGBA));
 	xstart=(NMGLint)(yoffset * line + xoffset * tSize);
-printf("inside SubImage2D line=%d\n",line);
-printf("inside SubImage2D paddings=%d\n",paddings);
-printf("inside SubImage2D xstart=%d\n",xstart);
-printf("inside SubImage2D xoffset=%d\n",xoffset);
-printf("inside SubImage2D yoffset=%d\n",yoffset);
-printf("inside SubImage2D tSize=%d\n",tSize);
-printf("inside SubImage2D width=%d\n",width);
-printf("inside SubImage2D height=%d\n",height);
-printf("level=%d\n",level);
-printf("texelUbytes=%d\n", tSize);
+DEBUG_PRINT(("inside SubImage2D line=%d\n",line));
+DEBUG_PRINT(("inside SubImage2D paddings=%d\n",paddings));
+DEBUG_PRINT(("inside SubImage2D xstart=%d\n",xstart));
+DEBUG_PRINT(("inside SubImage2D xoffset=%d\n",xoffset));
+DEBUG_PRINT(("inside SubImage2D yoffset=%d\n",yoffset));
+DEBUG_PRINT(("inside SubImage2D tSize=%d\n",tSize));
+DEBUG_PRINT(("inside SubImage2D width=%d\n",width));
+DEBUG_PRINT(("inside SubImage2D height=%d\n",height));
+DEBUG_PRINT(("level=%d\n",level));
+DEBUG_PRINT(("texelUbytes=%d\n", tSize));
 
-/*	printf("REZULT=%x\n",yoffset * line + xoffset * tSize);
-	printf("FITST=%x\n",yoffset * line) ;
-	printf("SECOND=%x\n",xoffset * tSize );
-	printf("xoffset=%x\n",xoffset) ;
-	printf("yoffset=%x\n",yoffset );
-	printf("yoffset+second=%x\n",yoffset + xoffset * tSize);
-	printf("yoffset+ubyte=%x\n",yoffset + tSize);
+/*	DEBUG_PRINT(("REZULT=%x\n",yoffset * line + xoffset * tSize));
+	DEBUG_PRINT(("FITST=%x\n",yoffset * line)) ;
+	DEBUG_PRINT(("SECOND=%x\n",xoffset * tSize ));
+	DEBUG_PRINT(("xoffset=%x\n",xoffset)) ;
+	DEBUG_PRINT(("yoffset=%x\n",yoffset ));
+	DEBUG_PRINT(("yoffset+second=%x\n",yoffset + xoffset * tSize));
+	DEBUG_PRINT(("yoffset+ubyte=%x\n",yoffset + tSize));
 */
 	//xstart=yoffset*line+xoffset*4;
 	for(i=0;i<height;i++)
@@ -71,7 +71,7 @@ printf("texelUbytes=%d\n", tSize);
 		}	
 	}
 	//DEBUG_PRINT1(("texObjects[0].pixels[%d][0,0]=%x\n",level,*((NMGLubyte*)ActiveTexObjectP->texImages2D[level].pixels)));
-//printf("texObjects[0].pixels[%d][0,0]=%x\n",level,*((NMGLubyte*)ActiveTexObjectP->texImages2D[level].pixels));
+//DEBUG_PRINT(("texObjects[0].pixels[%d][0,0]=%x\n",level,*((NMGLubyte*))ActiveTexObjectP->texImages2D[level].pixels));
 	//DEBUG_PRINT1(("level=%d\n",level));
 
 	//DEBUG_PRINT1(("xstart=%d\n",xstart));
