@@ -17,7 +17,7 @@ int isPowerOf2(NMGLint x);// check, if x is power of 2
 int copyPixels(const void* pfrom,NMGLint format,NMGLint width,NMGLint height,void** pto,NMGL_Context_NM0 *cntxt);//mem allocation
 void initLvls(NMGLuint name, NMGLsizei width, NMGLsizei height,NMGLenum format);
 
-int getTexelSizeUbytes(NMGLint format); //moved to nmgltex_common.h
+NMGLint getTexelSizeUbytes(NMGLint format); //moved to nmgltex_common.h
 
 
 void nmglTexImage2D(NMGLenum target, NMGLint level, NMGLint internalformat, NMGLsizei width, NMGLsizei height, NMGLint border, NMGLenum format, NMGLenum type, const void *pixels);
@@ -26,7 +26,7 @@ void nmglTexImage2D(NMGLenum target, NMGLint level, NMGLint internalformat, NMGL
 /*
 Texel size in NMGLubytes
 */
-int getTexelSizeUbytes(NMGLint format)
+NMGLint getTexelSizeUbytes(NMGLint format)
 {
 	switch(format)
 	{
@@ -102,7 +102,7 @@ Writes rectangular array of pixels of specified format from pfrom to pto
 */
 int copyPixels(const void* pfrom,NMGLint format,NMGLint width,NMGLint height,void** pto,NMGL_Context_NM0 *cntxt)
 {
-    int size=getTexelSizeUbytes(format);
+    NMGLint size=getTexelSizeUbytes(format);
     int i=0,j=0;
     //NMGLint xlen=0;
     int line=width*size;
@@ -140,7 +140,7 @@ int copyPixels(const void* pfrom,NMGLint format,NMGLint width,NMGLint height,voi
 	else
 	{
 		pfrom_cur=(NMGLubyte*)pfrom;
-		padLength=((!unpackAlign)||(line % unpackAlign == 0)) ? 0 : (unpackAlign - line % unpackAlign);
+		padLength=(line % unpackAlign == 0) ? 0 : (unpackAlign - line % unpackAlign);
 		DEBUG_PRINT1(("width=%d height=%d unpackAlign=%d padLength=%d\n",width,height, unpackAlign,padLength));
 		for(j=0;j<height;j++)
 	    {

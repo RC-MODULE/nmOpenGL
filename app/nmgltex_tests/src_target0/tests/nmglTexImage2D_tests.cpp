@@ -78,7 +78,7 @@ extern void* cntxtAddr_nm1;
 NMGL_Context_NM1 *nm1cntxt;
 //SECTION(".data_tex_tests") NMGLubyte texels[USED_SIDE*USED_SIDE*UBYTES_PER_TEXEL];
 NMGLubyte *texels;
-extern int getTexelSizeUbytes(NMGLint format);
+extern NMGLint getTexelSizeUbytes(NMGLint format);
 
 
 //---------------------------------------------------------------------------
@@ -105,7 +105,7 @@ int nmglTexImage2D_varUnpackAlign_contextSetCorrect();
 //==============================================================================================
 int cmpPixelsPads(void* left_w_pads, void *right, NMGLint width, NMGLenum format);
 
-int cmpPixelsUbytes(void* from, void *to, NMGLint n_pixels);
+int cmpPixelsUbytes(void* from, void *to, NMGLubyte n_pixels);
 //==============================================================================================
 
 internalformatdata internalformats[5];
@@ -139,7 +139,7 @@ int cmpPixelsPads(void* left_w_pads, void *right, NMGLint width, NMGLenum format
    */
   int line=width*getTexelSizeUbytes(format);
   int pads=0;
-  int cpad=((!cntxt->texState.unpackAlignment)||(line % cntxt->texState.unpackAlignment == 0)) ? 0 : (cntxt->texState.unpackAlignment - line % cntxt->texState.unpackAlignment);
+  int cpad=(line % cntxt->texState.unpackAlignment == 0) ? 0 : (cntxt->texState.unpackAlignment - line % cntxt->texState.unpackAlignment);
 
   if(cntxt->texState.unpackAlignment == 1)
   {
@@ -183,7 +183,7 @@ int cmpPixelsPads(void* left_w_pads, void *right, NMGLint width, NMGLenum format
 	
 }
 //----------------------------------------------------------------------------------------
-int cmpPixelsUbytes(void* from, void *to, NMGLint n_pixels)
+int cmpPixelsUbytes(void* from, void *to, NMGLubyte n_pixels)
 {
     int i=0;
   /*
@@ -205,12 +205,12 @@ int cmpPixelsUbytes(void* from, void *to, NMGLint n_pixels)
 	
 }
 //----------------------------------------------------------------------------------------
-void fillPixels (void **pixels,NMGLint size,NMGLint width,int sfiller=-1)
+void fillPixels (void **pixels,NMGLint ubytesPerTexel,NMGLint width,int sfiller=-1)
 {
 	static int t=0xAA;
 	
 	
-	int line=width*UBYTES_PER_TEXEL;
+	int line=width*ubytesPerTexel;
 	int paddings=0;
 	NMGLubyte *p=(NMGLubyte*)*pixels;
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
@@ -219,28 +219,29 @@ void fillPixels (void **pixels,NMGLint size,NMGLint width,int sfiller=-1)
 		if(sfiller>=0)
 		{
 			t=sfiller;
-			for(i=0;i<size;i++)
+			for(i=0;i<width*width*ubytesPerTexel;i++)
 			{
-				*((NMGLubyte*)(p + i))=t;
+				*((NMGLubyte*)(p + i))=t%0xFF;
 			}
 		}
 		else{
-			for(i=0;i<size;i++,t++)
+			for(i=0;i<width*width*ubytesPerTexel;i++,t++)
 			{
-				*((NMGLubyte*)(p + i))=t;
+				*((NMGLubyte*)(p + i))=t%0xFF;
 			}
 		}
 	}
 	else
 	{
-		paddings=((!cntxt->texState.unpackAlignment)||(line % cntxt->texState.unpackAlignment == 0)) ? 0 : (cntxt->texState.unpackAlignment - line % cntxt->texState.unpackAlignment);
+		paddings=(line % cntxt->texState.unpackAlignment == 0) ? 0 : (cntxt->texState.unpackAlignment - line % cntxt->texState.unpackAlignment);
 		
 		for(j=0;j<width;j++)
 	    {
 	       for(i=0;i<line;i++)
 	    	{
 	       
-	        	*((NMGLubyte*)(p + j*(line+paddings) + i))=t;
+	        	*((NMGLubyte*)(p + j*(line+paddings) + i))=t%0xFF;
+				if( sfiller < 0 ) t++;
 	    	}
 			for(k=0;k<paddings;k++)
 			{
@@ -259,9 +260,9 @@ void fillPixels (void **pixels,NMGLint size,NMGLint width,int sfiller=-1)
 NMGLint init_TexImage2D_input(TexImage2D_data* data,NMGLint width,internalformatdata internalformat,NMGLint lvl=0)
 {
 	
-	NMGLint picture_size_;
+	//NMGLint picture_size_;
 	
-	picture_size_=width*width*getTexelSizeUbytes(internalformat.type);	
+	//picture_size_=width*width*getTexelSizeUbytes(internalformat.type);	
 	data->target=NMGL_TEXTURE_2D;//NMGL_TEXTURE_2D only
 	data->level=lvl;
 	data->type=NMGL_UNSIGNED_BYTE;//UNSIGNED_BYTE
@@ -276,7 +277,7 @@ NMGLint init_TexImage2D_input(TexImage2D_data* data,NMGLint width,internalformat
 	
 	data->pixels=texels;
 	
-		fillPixels(&data->pixels,picture_size_,width);		
+		fillPixels(&data->pixels,getTexelSizeUbytes(internalformat.type),width);		
 	
 	return 0;
 }
