@@ -3,7 +3,12 @@
 #include "nmgl_tex_tests_config.h"
 #include "nmglvs_nmc0.h"
 #include <iostream>
+
+#include "demo3d_nm1.h"
 extern void* cntxtAddr_nm1;
+NMGL_Context_NM1 *cntxt_nm1;
+unsigned int nmpu1IsAccessible;
+
 float triangles[24]{
 	0,0,
 	0,31,
@@ -65,6 +70,18 @@ int main()
 	*/
 
 //=========RUNNING=TESTS======================================================
+
+	printf("\n***** Start nmgl texture functions tests *****\n");
+
+	cntxt_nm1 = (NMGL_Context_NM1*)cntxtAddr_nm1;
+	nmpu1IsAccessible = 0;
+	DEBUG_PRINT(("Context nm1=%x\n",cntxt_nm1));
+	if(cntxt_nm1 == 0) {
+		printf("\nWarning: NM1 context address is equal to 0. \nNmpu1 is not accessible from nmpu0. Test only for nmpu0.\n");
+	} else {
+		nmpu1IsAccessible = 1;
+	}
+
 #ifdef TEST_NMGL_GEN_TEXTURES
 	run_nmglGenTextures_test();
 #endif
@@ -125,6 +142,9 @@ int main()
 #ifdef TEST_NMGL_TEX_COORD_POINTER
 	run_nmglTexCoordPointer_test();
 #endif
+
+	printf("\n***** End nmgl texture functions tests *****\n");
+	
 while(nmglvsNm0Run()){
 		nmglClear(NMGL_COLOR_BUFFER_BIT);
 

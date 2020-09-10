@@ -9,6 +9,11 @@
 #include <stdio.h>
 #include <assert.h>
 
+//To check data at nmpu1
+#include "demo3d_nm1.h"
+extern NMGL_Context_NM1 *cntxt_nm1;
+extern unsigned int nmpu1IsAccessible;
+
 //Тестовые сценарии
 int nmglActiveTexture_wrongTexture_isError();
 int nmglActiveTexture_setActiveTexture_setContextCorrect();
@@ -48,8 +53,21 @@ int nmglActiveTexture_setActiveTexture_setContextCorrect()
 	
 	cntxt->texState.activeTexUnit = NMGL_TEXTURE0 + 1;
 	cntxt->texState.activeTexUnitIndex = 1;
+	if (nmpu1IsAccessible){
+		cntxt_nm1->texState.activeTexUnit = NMGL_TEXTURE0 + 1;
+		cntxt_nm1->texState.activeTexUnitIndex = 1;
+	}
+
+	TEST_ASSERT((cntxt->texState.activeTexUnit == NMGL_TEXTURE0+1) && (cntxt->texState.activeTexUnitIndex == 1));
+	if (nmpu1IsAccessible){
+		TEST_ASSERT(cntxt_nm1->texState.activeTexUnitIndex == 1); //cntxt_nm1->texState.activeTexUnit is not set at nmpu1
+	}
 
 	nmglActiveTexture(NMGL_TEXTURE0);
+	halSleep(500);
 	TEST_ASSERT((cntxt->texState.activeTexUnit == NMGL_TEXTURE0) && (cntxt->texState.activeTexUnitIndex == 0));
+	if (nmpu1IsAccessible){
+		TEST_ASSERT(cntxt_nm1->texState.activeTexUnitIndex == 0); //cntxt_nm1->texState.activeTexUnit is not set at nmpu1
+	}
 	return 0;	
 }
