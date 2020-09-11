@@ -49,9 +49,24 @@ void updatePolygonsT(DataForNmpu1* data, Triangles* triangles, int count, int se
 	nmblas_scopy(4 * count, (float*)triangles->colors, 1, (float*)data->color, 1);
 
 #ifdef DEBUG
-	/*for (int i = 0; i < count; i++) {
-		printf("1"\n);
-	}*/
+	static unsigned int counter = 0;
+	for (int i = 0; i < count; i++) {
+		if(ABS((data->x1[i] - data->x0[i])) >= 32 ||
+			ABS((data->x2[i] - data->x0[i])) >= 32 ||
+			ABS((data->x2[i] - data->x1[i])) >= 32 ||
+			(data->y1[i] - data->y0[i]) >= 32 ||
+			(data->y2[i] - data->y0[i]) >= 32 ||
+			(data->y2[i] - data->y1[i]) >= 32){
+				printf("updatePolygonsT error. counter=%i, i=%d", counter,i);
+				data->x0[i] = 0;
+				data->x1[i] = 0;
+				data->x2[i] = 0;
+				data->y0[i] = 0;
+				data->y1[i] = 0;
+				data->y2[i] = 0;
+			}
+		counter++;
+	}
 #endif // DEBUG
 
 	

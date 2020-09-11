@@ -26,8 +26,8 @@ SECTION(".text_demo3d") int getAddrPtrnsT(DataForNmpu1* data) {
 	offset1 += sizeof32(cntxt->patterns->table_dydx);
 
 	msdAdd(data, dataTmp, sizeof32(DataForNmpu1), 0);
-	nmppsCopy_32s(cntxt->patterns->table_dydx, localTable, sizeof32(cntxt->patterns->table_dydx));
 	msdAdd(data->z, cntxt->valuesZ, sizeof32(cntxt->patterns->table_dydx), 0);
+	nmppsCopy_32s(cntxt->patterns->table_dydx, localTable, sizeof32(cntxt->patterns->table_dydx));
 	/*copyId[0] = msdAdd(data->x0, dataTmp->x0, size, 0);
 	copyId[1] = msdAdd(data->x1, dataTmp->x1, size, 0);
 	copyId[2] = msdAdd(data->x2, dataTmp->x2, size, 0);
@@ -104,10 +104,7 @@ SECTION(".text_demo3d") int getAddrPtrnsT(DataForNmpu1* data) {
 #endif // DEBUG	
 
 #ifdef __GNUC__
-	int height = size / SMALL_SIZE;
-	if (size % SMALL_SIZE) {
-		height++;
-	}
+	int height = (size + (SMALL_SIZE - 1)) / SMALL_SIZE;	//высота с учетом неполных строк
 	
 	//msdAdd2D(cntxt->ppPtrns1_2s, dstPackTmp02, size, SMALL_SIZE, 0, SMALL_SIZE, 0);
 	nmppmCopy_32s((nm32s*)cntxt->ppPtrns1_2s, 0, (nm32s*)dstPackTmp02, SMALL_SIZE, height, SMALL_SIZE);

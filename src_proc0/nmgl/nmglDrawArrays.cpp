@@ -60,6 +60,15 @@ inline void copyVec(const void* src, void* dst, size_t size) {
 	nmblas_scopy(size * sizeof32(T), (float*)src, 1, (float*)dst, 1);
 }
 
+template < typename T >
+inline void copyRisc(const void* src, void* dst, size_t size) {
+	int* srcInt = (int*)src;
+	int* dstInt = (int*)dst;
+	for(int i = 0; i < size * sizeof32(T); i++){
+		dstInt[i] = srcInt[i];
+	}
+}
+
 /* функция nmglDrawArrays является функцией со статическим конвеером.
 Значения переданные из массивов, которые задаются с помощью функций 
 nmglVertexPointer, nmglNormalPointer, nmglColorPointer
@@ -170,10 +179,15 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 		cntxt->error = NMGL_INVALID_ENUM;
 		return;
 	}
-
-	vertexAM.set(srcDDR_vertex, cntxt->vertexArray.size * count, cntxt->vertexArray.size * maxInnerCount, copyVec<float>);
-	normalAM.set(srcDDR_normal, cntxt->normalArray.size * count, cntxt->normalArray.size * maxInnerCount, copyVec<float>);
-	colorAM.set(srcDDR_color, count, maxInnerCount, copyVec<v4nm32f>);
+	if(first % 2 == 0 && count % 2 == 0){
+		vertexAM.set(srcDDR_vertex, cntxt->vertexArray.size * count, cntxt->vertexArray.size * maxInnerCount, copyVec<float>);
+		normalAM.set(srcDDR_normal, cntxt->normalArray.size * count, cntxt->normalArray.size * maxInnerCount, copyVec<float>);
+		colorAM.set(srcDDR_color, count, maxInnerCount, copyVec<v4nm32f>);
+	}else{
+		vertexAM.set(srcDDR_vertex, cntxt->vertexArray.size * count, cntxt->vertexArray.size * maxInnerCount, copyRisc<float>);
+		normalAM.set(srcDDR_normal, cntxt->normalArray.size * count, cntxt->normalArray.size * maxInnerCount, copyRisc<float>);
+		colorAM.set(srcDDR_color, count, maxInnerCount, copyRisc<v4nm32f>);
+	}
 
 	if (cntxt->isLighting) {
 		mulC_v4nm32f(cntxt->lightAmbient, &cntxt->materialAmbient, cntxt->ambientMul, MAX_LIGHTS + 1);
@@ -193,6 +207,9 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 #endif // DEBUG
 		//int localSize = MIN(count - pointVertex, maxInnerCount);
 		int localSize = vertexAM.pop(cntxt->buffer0) / cntxt->vertexArray.size;
+		if (localSize % 2) {
+			localSize++;
+		}
 		switch (cntxt->vertexArray.size)
 		{
 		case 2:
@@ -238,7 +255,7 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			light(vertexResult, colorOrNormal, localSize);
 		}
 		else {
-			nmppsMulC_32f(cntxt->buffer0, (float*)colorOrNormal, 0, 4 * localSize);
+			nmppsMulC_32f(cntxt->buffer0, (float*)colorOrNormal, 1, 4 * localSize);
 		}
 		//color
 		if (cntxt->colorArray.enabled) {
@@ -357,6 +374,17 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 		TrianglePrimitiveArrays3f trian3f_1;
 		TrianglePrimitiveArrays3f trian3f_2;
 		int primCount = vertexPrimitiveRepack(vertexResult, colorOrNormal, cntxt->buffer0, (v4nm32f*)cntxt->buffer1, mode, localSize);
+		if (primCount % 2) {
+			for (int i = 11; i >=0 ; i--) {
+				copyRisc<float>(cntxt->buffer0 + primCount * i, cntxt->buffer0 + (primCount + 1) * i, primCount);
+				cntxt->buffer0[(primCount + 1) * i + primCount] = cntxt->buffer0[(primCount + 1) * i + primCount - 1];
+			}
+			cntxt->buffer1[4 * primCount + 0] = cntxt->buffer1[4 * (primCount - 1) + 0];
+			cntxt->buffer1[4 * primCount + 1] = cntxt->buffer1[4 * (primCount - 1) + 1];
+			cntxt->buffer1[4 * primCount + 2] = cntxt->buffer1[4 * (primCount - 1) + 2];
+			cntxt->buffer1[4 * primCount + 3] = cntxt->buffer1[4 * (primCount - 1) + 3];
+			primCount++;
+		}
 
 		trian4f.x0 = cntxt->buffer0;
 		trian4f.y0 = cntxt->buffer0 + primCount;
@@ -392,7 +420,6 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 		trian3f_2.z2 = cntxt->buffer3 + 8 * primCount;
 		
 		//------------clipping-------------------
-
 		//------------perspective-division-----------------
 		nmppsDiv_32f(trian4f.x0, trian4f.w0, trian3f_1.x0, primCount);
 		nmppsDiv_32f(trian4f.y0, trian4f.w0, trian3f_1.y0, primCount);
@@ -417,9 +444,10 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 		nmppsMulC_AddC_32f(trian3f_1.y2, cntxt->windowInfo.viewportMulY, cntxt->windowInfo.viewportAddY, trian3f_2.y2, primCount);		//Y
 		nmppsMulC_AddC_32f(trian3f_1.z2, cntxt->windowInfo.viewportMulZ, cntxt->windowInfo.viewportAddZ, trian3f_2.z2, primCount);		//Z			
 		
-		nmppsConvert_32f32s_rounding(trian3f_2.x0, (int*)trian3f_1.x0, 0, 9 * primCount);
+		nmppsConvert_32f32s_floor(trian3f_2.x0, (int*)trian3f_1.x0, 0, 9 * primCount);
 		nmppsConvert_32s32f((int*)trian3f_1.x0, trian3f_2.x0, 9 * primCount);
-		
+		v2nm32f *minXY = (v2nm32f*)cntxt->buffer4;
+		v2nm32f *maxXY = (v2nm32f*)cntxt->buffer4 + 3 * NMGL_SIZE;
 		//with triangulation
 		int srcThreated = 0;
 		while (srcThreated < primCount) {
