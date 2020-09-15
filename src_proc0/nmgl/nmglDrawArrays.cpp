@@ -129,6 +129,12 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 	case NMGL_TRIANGLES:
 		printf("triangles drawing\n");
 		break;
+	case NMGL_TRIANGLE_FAN:
+		printf("triangles fan drawing\n");
+		break;
+	case NMGL_TRIANGLE_STRIP:
+		printf("triangles strip drawing\n");
+		break;
 	case NMGL_POINTS:
 		printf("points drawing\n");
 		break;
@@ -168,7 +174,6 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 	case NMGL_TRIANGLE_STRIP:
 		maxInnerCount = NMGL_SIZE + 2;
 		break;
-		break;
 	case NMGL_LINES:
 		maxInnerCount = 2 * NMGL_SIZE;
 		break;
@@ -199,16 +204,17 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 	}
 	reverseMatrix3x3in4x4(cntxt->modelviewMatrixStack.top(), &cntxt->normalMatrix);
 
-	int pointVertex = first;
 	while (!vertexAM.isEmpty()) {
 #ifdef DEBUG
 		printf("    start pack\n");
-		printf("    coordinate transformation...");		
+		printf("    coordinate transformation...");
 #endif // DEBUG
 		//int localSize = MIN(count - pointVertex, maxInnerCount);
 		int localSize = vertexAM.pop(cntxt->buffer0) / cntxt->vertexArray.size;
+		int excessVertexCount = 0;
 		if (localSize % 2) {
 			localSize++;
+			excessVertexCount++;
 		}
 		switch (cntxt->vertexArray.size)
 		{
@@ -282,7 +288,7 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 		//color in colorOrNormal
 		//------------------------------srcX-----srcY-----srcZ-----srcW--------------
 		split_v4nm32f(vertexResult, 1, cntxt->buffer0, cntxt->buffer1, cntxt->buffer2, cntxt->buffer3, localSize);
-		
+
 		//------------clipping-------------------
 
 		//------------perspective-division-----------------
@@ -295,9 +301,9 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 		nmppsMulC_AddC_32f(cntxt->buffer2 + 3 * NMGL_SIZE, cntxt->windowInfo.viewportMulY, cntxt->windowInfo.viewportAddY, vertexY, localSize);		//Y
 		nmppsMulC_AddC_32f(cntxt->buffer0 + 3 * NMGL_SIZE, cntxt->windowInfo.viewportMulZ, cntxt->windowInfo.viewportAddZ, vertexZ, localSize);	//Z
 
-		nmppsConvert_32f32s_rounding(vertexX, (int*)cntxt->buffer0, 0, localSize);
+		nmppsConvert_32f32s_floor(vertexX, (int*)cntxt->buffer0, 0, localSize);
 		nmppsConvert_32s32f((int*)cntxt->buffer0, vertexX, localSize);
-		nmppsConvert_32f32s_rounding(vertexY, (int*)cntxt->buffer0, 0, localSize);
+		nmppsConvert_32f32s_floor(vertexY, (int*)cntxt->buffer0, 0, localSize);
 		nmppsConvert_32s32f((int*)cntxt->buffer0, vertexY, localSize);
 
 		//---------------rasterize------------------------------------
@@ -318,7 +324,7 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 				if (cntxt->trianInner.size == 0) {
 					break;
 				}
-			}		
+			}
 
 			findMinMax3(cntxt->trianInner.x0, cntxt->trianInner.x1, cntxt->trianInner.x2,
 				cntxt->buffer0, cntxt->buffer1, cntxt->trianInner.size);
@@ -336,10 +342,10 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 		case NMGL_LINES:
 			pushToLines_l(vertexX, vertexY, vertexZ, colorOrNormal, cntxt->lineInner, localSize);
 			findMinMax2(cntxt->lineInner.x0, cntxt->lineInner.x1,
-				cntxt->buffer0, cntxt->buffer1, 
+				cntxt->buffer0, cntxt->buffer1,
 				cntxt->lineInner.size);
 			findMinMax2(cntxt->lineInner.y0, cntxt->lineInner.y1,
-				cntxt->buffer2, cntxt->buffer3, 
+				cntxt->buffer2, cntxt->buffer3,
 				cntxt->lineInner.size);
 			nmppsMerge_32f(cntxt->buffer0, cntxt->buffer2, (float*)minXY, cntxt->lineInner.size);
 			nmppsMerge_32f(cntxt->buffer1, cntxt->buffer3, (float*)maxXY, cntxt->lineInner.size);
@@ -370,132 +376,174 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			break;
 		}
 #else
-		TrianglePrimitiveArrays4f trian4f;
-		TrianglePrimitiveArrays3f trian3f_1;
-		TrianglePrimitiveArrays3f trian3f_2;
-		int primCount = vertexPrimitiveRepack(vertexResult, colorOrNormal, cntxt->buffer0, (v4nm32f*)cntxt->buffer1, mode, localSize);
-		if (primCount % 2) {
-			for (int i = 11; i >=0 ; i--) {
-				copyRisc<float>(cntxt->buffer0 + primCount * i, cntxt->buffer0 + (primCount + 1) * i, primCount);
-				cntxt->buffer0[(primCount + 1) * i + primCount] = cntxt->buffer0[(primCount + 1) * i + primCount - 1];
+		switch (mode)
+		{
+		case NMGL_TRIANGLES:
+		case NMGL_TRIANGLE_FAN:
+		case NMGL_TRIANGLE_STRIP:
+		{
+			TrianglePrimitiveArrays4f trian4f;
+			TrianglePrimitiveArrays3f trian3f_1;
+			TrianglePrimitiveArrays3f trian3f_2;
+			localSize -= excessVertexCount;
+			int primCount = vertexPrimitiveRepack(vertexResult, colorOrNormal, cntxt->buffer0, (v4nm32f*)cntxt->buffer1, mode, localSize);
+
+			trian4f.x0 = cntxt->buffer0;
+			trian4f.y0 = cntxt->buffer0 + primCount;
+			trian4f.z0 = cntxt->buffer0 + 2 * primCount;
+			trian4f.w0 = cntxt->buffer0 + 3 * primCount;
+			trian4f.x1 = cntxt->buffer0 + 4 * primCount;
+			trian4f.y1 = cntxt->buffer0 + 5 * primCount;
+			trian4f.z1 = cntxt->buffer0 + 6 * primCount;
+			trian4f.w1 = cntxt->buffer0 + 7 * primCount;
+			trian4f.x2 = cntxt->buffer0 + 8 * primCount;
+			trian4f.y2 = cntxt->buffer0 + 9 * primCount;
+			trian4f.z2 = cntxt->buffer0 + 10 * primCount;
+			trian4f.w2 = cntxt->buffer0 + 11 * primCount;
+
+			trian3f_1.x0 = cntxt->buffer2;
+			trian3f_1.y0 = cntxt->buffer2 + primCount;
+			trian3f_1.z0 = cntxt->buffer2 + 2 * primCount;
+			trian3f_1.x1 = cntxt->buffer2 + 3 * primCount;
+			trian3f_1.y1 = cntxt->buffer2 + 4 * primCount;
+			trian3f_1.z1 = cntxt->buffer2 + 5 * primCount;
+			trian3f_1.x2 = cntxt->buffer2 + 6 * primCount;
+			trian3f_1.y2 = cntxt->buffer2 + 7 * primCount;
+			trian3f_1.z2 = cntxt->buffer2 + 8 * primCount;
+
+			trian3f_2.x0 = cntxt->buffer3;
+			trian3f_2.y0 = cntxt->buffer3 + primCount;
+			trian3f_2.z0 = cntxt->buffer3 + 2 * primCount;
+			trian3f_2.x1 = cntxt->buffer3 + 3 * primCount;
+			trian3f_2.y1 = cntxt->buffer3 + 4 * primCount;
+			trian3f_2.z1 = cntxt->buffer3 + 5 * primCount;
+			trian3f_2.x2 = cntxt->buffer3 + 6 * primCount;
+			trian3f_2.y2 = cntxt->buffer3 + 7 * primCount;
+			trian3f_2.z2 = cntxt->buffer3 + 8 * primCount;
+
+			//------------clipping-------------------
+			//------------perspective-division-----------------
+			nmppsDiv_32f(trian4f.x0, trian4f.w0, trian3f_1.x0, primCount);
+			nmppsDiv_32f(trian4f.y0, trian4f.w0, trian3f_1.y0, primCount);
+			nmppsDiv_32f(trian4f.z0, trian4f.w0, trian3f_1.z0, primCount);
+			nmppsDiv_32f(trian4f.x1, trian4f.w1, trian3f_1.x1, primCount);
+			nmppsDiv_32f(trian4f.y1, trian4f.w1, trian3f_1.y1, primCount);
+			nmppsDiv_32f(trian4f.z1, trian4f.w1, trian3f_1.z1, primCount);
+			nmppsDiv_32f(trian4f.x2, trian4f.w2, trian3f_1.x2, primCount);
+			nmppsDiv_32f(trian4f.y2, trian4f.w2, trian3f_1.y2, primCount);
+			nmppsDiv_32f(trian4f.z2, trian4f.w2, trian3f_1.z2, primCount);
+			//------------viewport------------------------		
+
+			nmppsMulC_AddC_32f(trian3f_1.x0, cntxt->windowInfo.viewportMulX, cntxt->windowInfo.viewportAddX, trian3f_2.x0, primCount);		//X
+			nmppsMulC_AddC_32f(trian3f_1.y0, cntxt->windowInfo.viewportMulY, cntxt->windowInfo.viewportAddY, trian3f_2.y0, primCount);		//Y
+			nmppsMulC_AddC_32f(trian3f_1.z0, cntxt->windowInfo.viewportMulZ, cntxt->windowInfo.viewportAddZ, trian3f_2.z0, primCount);		//Z		
+
+			nmppsMulC_AddC_32f(trian3f_1.x1, cntxt->windowInfo.viewportMulX, cntxt->windowInfo.viewportAddX, trian3f_2.x1, primCount);		//X
+			nmppsMulC_AddC_32f(trian3f_1.y1, cntxt->windowInfo.viewportMulY, cntxt->windowInfo.viewportAddY, trian3f_2.y1, primCount);		//Y
+			nmppsMulC_AddC_32f(trian3f_1.z1, cntxt->windowInfo.viewportMulZ, cntxt->windowInfo.viewportAddZ, trian3f_2.z1, primCount);		//Z		
+
+			nmppsMulC_AddC_32f(trian3f_1.x2, cntxt->windowInfo.viewportMulX, cntxt->windowInfo.viewportAddX, trian3f_2.x2, primCount);		//X
+			nmppsMulC_AddC_32f(trian3f_1.y2, cntxt->windowInfo.viewportMulY, cntxt->windowInfo.viewportAddY, trian3f_2.y2, primCount);		//Y
+			nmppsMulC_AddC_32f(trian3f_1.z2, cntxt->windowInfo.viewportMulZ, cntxt->windowInfo.viewportAddZ, trian3f_2.z2, primCount);		//Z			
+
+			nmppsConvert_32f32s_floor(trian3f_2.x0, (int*)trian3f_1.x0, 0, 9 * primCount);
+			nmppsConvert_32s32f((int*)trian3f_1.x0, trian3f_2.x0, 9 * primCount);
+			v2nm32f *minXY = (v2nm32f*)cntxt->buffer4;
+			v2nm32f *maxXY = (v2nm32f*)cntxt->buffer4 + 3 * NMGL_SIZE;
+			int srcThreated = 0;
+#ifdef DEBUG
+			printf("    rasterize... \n");
+#endif // DEBUG
+			while (srcThreated < primCount) {
+				int currentCount = triangulate(trian3f_2.x0, (v4nm32f*)cntxt->buffer1, primCount,
+					WIDTH_PTRN, HEIGHT_PTRN,
+					NMGL_SIZE, trian3f_1.x0, (v4nm32f*)cntxt->buffer0, &srcThreated);
+				trian3f_1.x0 = trian3f_1.x0 + 0 * NMGL_SIZE;
+				trian3f_1.y0 = trian3f_1.x0 + 1 * NMGL_SIZE;
+				trian3f_1.z0 = trian3f_1.x0 + 2 * NMGL_SIZE;
+				trian3f_1.x1 = trian3f_1.x0 + 3 * NMGL_SIZE;
+				trian3f_1.y1 = trian3f_1.x0 + 4 * NMGL_SIZE;
+				trian3f_1.z1 = trian3f_1.x0 + 5 * NMGL_SIZE;
+				trian3f_1.x2 = trian3f_1.x0 + 6 * NMGL_SIZE;
+				trian3f_1.y2 = trian3f_1.x0 + 7 * NMGL_SIZE;
+				trian3f_1.z2 = trian3f_1.x0 + 8 * NMGL_SIZE;
+				TrianglePrimitiveArrays3f* current = &trian3f_1;
+
+				//копирование каждого третьего цвета
+				nmblas_dcopy(2 * currentCount, (double*)cntxt->buffer0, 6, (double*)colorOrNormal, 2);
+				nmblas_dcopy(2 * currentCount, (double*)cntxt->buffer0 + 1, 6, (double*)colorOrNormal + 1, 2);
+
+				nmblas_scopy(currentCount, current->x0, 1, cntxt->trianInner.x0, 1);
+				nmblas_scopy(currentCount, current->y0, 1, cntxt->trianInner.y0, 1);
+				nmblas_scopy(currentCount, current->x1, 1, cntxt->trianInner.x1, 1);
+				nmblas_scopy(currentCount, current->y1, 1, cntxt->trianInner.y1, 1);
+				nmblas_scopy(currentCount, current->x2, 1, cntxt->trianInner.x2, 1);
+				nmblas_scopy(currentCount, current->y2, 1, cntxt->trianInner.y2, 1);
+				meanToInt3(current->z0, current->z1, current->z2, cntxt->trianInner.z, currentCount);
+				nmppsConvert_32f32s_rounding((float*)colorOrNormal, (int*)cntxt->trianInner.colors, 0, 4 * currentCount);
+				cntxt->trianInner.size = currentCount;
+				if (cntxt->isCullFace) {
+					cullFaceSortTriangles(cntxt->trianInner);
+				}
+				if (cntxt->trianInner.size == 0) {
+					continue;
+				}
+				findMinMax3(cntxt->trianInner.x0, cntxt->trianInner.x1, cntxt->trianInner.x2,
+					cntxt->buffer0, cntxt->buffer1,
+					cntxt->trianInner.size);
+				findMinMax3(cntxt->trianInner.y0, cntxt->trianInner.y1, cntxt->trianInner.y2,
+					cntxt->buffer2, cntxt->buffer3,
+					cntxt->trianInner.size);
+				nmppsMerge_32f(cntxt->buffer0, cntxt->buffer2, (float*)minXY, cntxt->trianInner.size);
+				nmppsMerge_32f(cntxt->buffer1, cntxt->buffer3, (float*)maxXY, cntxt->trianInner.size);
+				setSegmentMask(minXY, maxXY, cntxt->segmentMasks, cntxt->trianInner.size);
+				rasterizeT(&cntxt->trianInner, cntxt->segmentMasks);
 			}
-			cntxt->buffer1[4 * primCount + 0] = cntxt->buffer1[4 * (primCount - 1) + 0];
-			cntxt->buffer1[4 * primCount + 1] = cntxt->buffer1[4 * (primCount - 1) + 1];
-			cntxt->buffer1[4 * primCount + 2] = cntxt->buffer1[4 * (primCount - 1) + 2];
-			cntxt->buffer1[4 * primCount + 3] = cntxt->buffer1[4 * (primCount - 1) + 3];
-			primCount++;
+			break;
 		}
-
-		trian4f.x0 = cntxt->buffer0;
-		trian4f.y0 = cntxt->buffer0 + primCount;
-		trian4f.z0 = cntxt->buffer0 + 2 * primCount;
-		trian4f.w0 = cntxt->buffer0 + 3 * primCount;
-		trian4f.x1 = cntxt->buffer0 + 4 * primCount;
-		trian4f.y1 = cntxt->buffer0 + 5 * primCount;
-		trian4f.z1 = cntxt->buffer0 + 6 * primCount;
-		trian4f.w1 = cntxt->buffer0 + 7 * primCount;
-		trian4f.x2 = cntxt->buffer0 + 8 * primCount;
-		trian4f.y2 = cntxt->buffer0 + 9 * primCount;
-		trian4f.z2 = cntxt->buffer0 + 10 * primCount;
-		trian4f.w2 = cntxt->buffer0 + 11 * primCount;
-
-		trian3f_1.x0 = cntxt->buffer2;
-		trian3f_1.y0 = cntxt->buffer2 + primCount;
-		trian3f_1.z0 = cntxt->buffer2 + 2 * primCount;
-		trian3f_1.x1 = cntxt->buffer2 + 3 * primCount;
-		trian3f_1.y1 = cntxt->buffer2 + 4 * primCount;
-		trian3f_1.z1 = cntxt->buffer2 + 5 * primCount;
-		trian3f_1.x2 = cntxt->buffer2 + 6 * primCount;
-		trian3f_1.y2 = cntxt->buffer2 + 7 * primCount;
-		trian3f_1.z2 = cntxt->buffer2 + 8 * primCount;
-
-		trian3f_2.x0 = cntxt->buffer3;
-		trian3f_2.y0 = cntxt->buffer3 + primCount;
-		trian3f_2.z0 = cntxt->buffer3 + 2 * primCount;
-		trian3f_2.x1 = cntxt->buffer3 + 3 * primCount;
-		trian3f_2.y1 = cntxt->buffer3 + 4 * primCount;
-		trian3f_2.z1 = cntxt->buffer3 + 5 * primCount;
-		trian3f_2.x2 = cntxt->buffer3 + 6 * primCount;
-		trian3f_2.y2 = cntxt->buffer3 + 7 * primCount;
-		trian3f_2.z2 = cntxt->buffer3 + 8 * primCount;
-		
-		//------------clipping-------------------
-		//------------perspective-division-----------------
-		nmppsDiv_32f(trian4f.x0, trian4f.w0, trian3f_1.x0, primCount);
-		nmppsDiv_32f(trian4f.y0, trian4f.w0, trian3f_1.y0, primCount);
-		nmppsDiv_32f(trian4f.z0, trian4f.w0, trian3f_1.z0, primCount);
-		nmppsDiv_32f(trian4f.x1, trian4f.w1, trian3f_1.x1, primCount);
-		nmppsDiv_32f(trian4f.y1, trian4f.w1, trian3f_1.y1, primCount);
-		nmppsDiv_32f(trian4f.z1, trian4f.w1, trian3f_1.z1, primCount);
-		nmppsDiv_32f(trian4f.x2, trian4f.w2, trian3f_1.x2, primCount);
-		nmppsDiv_32f(trian4f.y2, trian4f.w2, trian3f_1.y2, primCount);
-		nmppsDiv_32f(trian4f.z2, trian4f.w2, trian3f_1.z2, primCount);
-		//------------viewport------------------------		
-		
-		nmppsMulC_AddC_32f(trian3f_1.x0, cntxt->windowInfo.viewportMulX, cntxt->windowInfo.viewportAddX, trian3f_2.x0, primCount);		//X
-		nmppsMulC_AddC_32f(trian3f_1.y0, cntxt->windowInfo.viewportMulY, cntxt->windowInfo.viewportAddY, trian3f_2.y0, primCount);		//Y
-		nmppsMulC_AddC_32f(trian3f_1.z0, cntxt->windowInfo.viewportMulZ, cntxt->windowInfo.viewportAddZ, trian3f_2.z0, primCount);		//Z		
-
-		nmppsMulC_AddC_32f(trian3f_1.x1, cntxt->windowInfo.viewportMulX, cntxt->windowInfo.viewportAddX, trian3f_2.x1, primCount);		//X
-		nmppsMulC_AddC_32f(trian3f_1.y1, cntxt->windowInfo.viewportMulY, cntxt->windowInfo.viewportAddY, trian3f_2.y1, primCount);		//Y
-		nmppsMulC_AddC_32f(trian3f_1.z1, cntxt->windowInfo.viewportMulZ, cntxt->windowInfo.viewportAddZ, trian3f_2.z1, primCount);		//Z		
-
-		nmppsMulC_AddC_32f(trian3f_1.x2, cntxt->windowInfo.viewportMulX, cntxt->windowInfo.viewportAddX, trian3f_2.x2, primCount);		//X
-		nmppsMulC_AddC_32f(trian3f_1.y2, cntxt->windowInfo.viewportMulY, cntxt->windowInfo.viewportAddY, trian3f_2.y2, primCount);		//Y
-		nmppsMulC_AddC_32f(trian3f_1.z2, cntxt->windowInfo.viewportMulZ, cntxt->windowInfo.viewportAddZ, trian3f_2.z2, primCount);		//Z			
-		
-		nmppsConvert_32f32s_floor(trian3f_2.x0, (int*)trian3f_1.x0, 0, 9 * primCount);
-		nmppsConvert_32s32f((int*)trian3f_1.x0, trian3f_2.x0, 9 * primCount);
-		v2nm32f *minXY = (v2nm32f*)cntxt->buffer4;
-		v2nm32f *maxXY = (v2nm32f*)cntxt->buffer4 + 3 * NMGL_SIZE;
-		//with triangulation
-		int srcThreated = 0;
-		while (srcThreated < primCount) {
-			int currentCount = triangulate(trian3f_2.x0, (v4nm32f*)cntxt->buffer1, primCount,
-				WIDTH_PTRN, HEIGHT_PTRN,
-				NMGL_SIZE, trian3f_1.x0, (v4nm32f*)cntxt->buffer0, &srcThreated);
-			trian3f_1.x0 = trian3f_1.x0 + 0 * NMGL_SIZE;
-			trian3f_1.y0 = trian3f_1.x0 + 1 * NMGL_SIZE;
-			trian3f_1.z0 = trian3f_1.x0 + 2 * NMGL_SIZE;
-			trian3f_1.x1 = trian3f_1.x0 + 3 * NMGL_SIZE;
-			trian3f_1.y1 = trian3f_1.x0 + 4 * NMGL_SIZE;
-			trian3f_1.z1 = trian3f_1.x0 + 5 * NMGL_SIZE;
-			trian3f_1.x2 = trian3f_1.x0 + 6 * NMGL_SIZE;
-			trian3f_1.y2 = trian3f_1.x0 + 7 * NMGL_SIZE;
-			trian3f_1.z2 = trian3f_1.x0 + 8 * NMGL_SIZE;
-			TrianglePrimitiveArrays3f* current = &trian3f_1;
-
-			//копирование каждого третьего цвета
-			nmblas_dcopy(2 * currentCount, (double*)cntxt->buffer0, 6, (double*)colorOrNormal, 2);
-			nmblas_dcopy(2 * currentCount, (double*)cntxt->buffer0 + 1, 6, (double*)colorOrNormal + 1, 2);
-
-			nmblas_scopy(currentCount, current->x0, 1, cntxt->trianInner.x0, 1);
-			nmblas_scopy(currentCount, current->y0, 1, cntxt->trianInner.y0, 1);
-			nmblas_scopy(currentCount, current->x1, 1, cntxt->trianInner.x1, 1);
-			nmblas_scopy(currentCount, current->y1, 1, cntxt->trianInner.y1, 1);
-			nmblas_scopy(currentCount, current->x2, 1, cntxt->trianInner.x2, 1);
-			nmblas_scopy(currentCount, current->y2, 1, cntxt->trianInner.y2, 1);
-			meanToInt3(current->z0, current->z1, current->z2, cntxt->trianInner.z, currentCount);
-			nmppsConvert_32f32s_rounding((float*)colorOrNormal, (int*)cntxt->trianInner.colors, 0, 4 * currentCount);
-			cntxt->trianInner.size = currentCount;
-
-			if (cntxt->isCullFace) {
-				cullFaceSortTriangles(cntxt->trianInner);
-			}
-			if (cntxt->trianInner.size == 0) {
-				continue;
-			}
-			findMinMax3(cntxt->trianInner.x0, cntxt->trianInner.x1, cntxt->trianInner.x2,
+		case NMGL_LINES: {
+			v2nm32f *minXY = (v2nm32f*)cntxt->buffer4;
+			v2nm32f *maxXY = (v2nm32f*)cntxt->buffer4 + 3 * NMGL_SIZE;
+			pushToLines_l(vertexX, vertexY, vertexZ, colorOrNormal, cntxt->lineInner, localSize);
+			findMinMax2(cntxt->lineInner.x0, cntxt->lineInner.x1,
 				cntxt->buffer0, cntxt->buffer1,
-				cntxt->trianInner.size);
-			findMinMax3(cntxt->trianInner.y0, cntxt->trianInner.y1, cntxt->trianInner.y2,
+				cntxt->lineInner.size);
+			findMinMax2(cntxt->lineInner.y0, cntxt->lineInner.y1,
 				cntxt->buffer2, cntxt->buffer3,
-				cntxt->trianInner.size);
-			nmppsMerge_32f(cntxt->buffer0, cntxt->buffer2, (float*)minXY, cntxt->trianInner.size);
-			nmppsMerge_32f(cntxt->buffer1, cntxt->buffer3, (float*)maxXY, cntxt->trianInner.size);
-			setSegmentMask(minXY, maxXY, cntxt->segmentMasks, cntxt->trianInner.size);
-			rasterizeT(&cntxt->trianInner, cntxt->segmentMasks);
+				cntxt->lineInner.size);
+			nmppsMerge_32f(cntxt->buffer0, cntxt->buffer2, (float*)minXY, cntxt->lineInner.size);
+			nmppsMerge_32f(cntxt->buffer1, cntxt->buffer3, (float*)maxXY, cntxt->lineInner.size);
+			setSegmentMask(minXY, maxXY, cntxt->segmentMasks, cntxt->lineInner.size);
+
+#ifdef DEBUG
+			printf("    rasterize... \n");
+#endif // DEBUG
+			rasterizeL(&cntxt->lineInner, cntxt->segmentMasks);
+			break;
 		}
+		case NMGL_POINTS: {
+			v2nm32f *minXY = (v2nm32f*)cntxt->buffer4;
+			v2nm32f *maxXY = (v2nm32f*)cntxt->buffer4 + 3 * NMGL_SIZE;
+			nmblas_scopy(localSize, vertexX, 1, cntxt->pointInner.x0, 1);
+			nmblas_scopy(localSize, vertexY, 1, cntxt->pointInner.y0, 1);
+			nmppsConvert_32f32s_rounding((float*)colorOrNormal, (int*)cntxt->pointInner.colors, 0, 4 * localSize);
+			nmppsConvert_32f32s_rounding(vertexZ, cntxt->pointInner.z, 0, localSize);
+			nmppsSubC_32f(vertexX, cntxt->buffer0, cntxt->pointRadius, localSize);
+			nmppsSubC_32f(vertexY, cntxt->buffer1, cntxt->pointRadius, localSize);
+			nmppsMerge_32f(cntxt->buffer0, cntxt->buffer1, (float*)minXY, localSize);
+			nmppsAddC_32f(vertexX, cntxt->buffer0, cntxt->pointRadius, localSize);
+			nmppsAddC_32f(vertexY, cntxt->buffer1, cntxt->pointRadius, localSize);
+			nmppsMerge_32f(cntxt->buffer0, cntxt->buffer1, (float*)maxXY, localSize);
+			cntxt->pointInner.size = localSize;
+			setSegmentMask(minXY, maxXY, cntxt->segmentMasks, localSize);
+#ifdef DEBUG
+			printf("    rasterize... \n");
+#endif // DEBUG
+			rasterizeP(&cntxt->pointInner, cntxt->segmentMasks);
+			break;
+		}
+		}
+		
 #endif
 #ifdef DEBUG
 		printf("    end pack\n");

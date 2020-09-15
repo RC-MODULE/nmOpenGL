@@ -35,16 +35,18 @@ void updatePolygonsL(DataForNmpu1* data, Lines* lines, int count, int segX, int 
 	nmblas_scopy (count, (float*)lines->z, 1, (float*)data->z, 1);
 	nmblas_scopy(4 * count, (float*)lines->colors, 1, (float*)data->color, 1);
 #ifdef DEBUG
+	static unsigned int counter = 0;
 	for (int i = 0; i < count; i++) {
 		if (ABS(data->x1[i] - data->x0[i]) > 32 ||
 			data->y1[i] - data->y0[i] > 32) {
-			printf("error!! Oversize pattern\n");
+			printf("updatePolygonsL error. counter=%i, i=%d\n", counter, i);
 			data->x0[i] = 0;
 			data->x1[i] = 0;
 			data->y0[i] = 0;
 			data->y1[i] = 0;
 		}
 	}
+	counter++;
 #endif // DEBUG
 
 	

@@ -65,16 +65,20 @@ void rasterizeT(const Triangles* triangles, const BitMask* masks){
 	for (int segY = 0, iSeg = 0; segY < cntxt->windowInfo.nRows; segY++) {
 		for (int segX = 0; segX < cntxt->windowInfo.nColumns; segX++, iSeg++) {
 			if (masks[iSeg].hasNotZeroBits != 0) {
+				/*printf("segX=%d, segY=%d\n", segX, segY);
+				printf("x0=%d, y0=%d\n", cntxt->windowInfo.x0[segX], cntxt->windowInfo.y0[segY]);
+				printf("width=%d, height=%d\n",
+					cntxt->windowInfo.x1[segX] - cntxt->windowInfo.x0[segX],
+					cntxt->windowInfo.y1[segY] - cntxt->windowInfo.y0[segY]);*/
 
 				int resultSize = readMask(masks[iSeg].bits, indices, count);
-				
+
 				cntxt->synchro.writeInstr(1, NMC1_COPY_SEG_FROM_IMAGE,
 					cntxt->windowInfo.x0[segX],
 					cntxt->windowInfo.y0[segY],
 					cntxt->windowInfo.x1[segX] - cntxt->windowInfo.x0[segX],
 					cntxt->windowInfo.y1[segY] - cntxt->windowInfo.y0[segY],
 					iSeg);
-
 				copyArraysByIndices((void**)triangles, indices, (void**)&localTrian, 7, resultSize);
 
 #ifdef OUTPUT_IMAGE_RGB8888
@@ -83,7 +87,6 @@ void rasterizeT(const Triangles* triangles, const BitMask* masks){
 #ifdef OUTPUT_IMAGE_RGB565
 				copyColorByIndices(triangles->colors, indices, (v4nm32s*)localTrian.colors, resultSize);
 #endif // OUTPUT_IMAGE_RGB565
-
 				localTrian.size = resultSize;
 					
 				int offset = 0;

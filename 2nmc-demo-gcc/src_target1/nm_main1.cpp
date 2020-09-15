@@ -7,11 +7,11 @@
 int main()
 { 
 	halSleep(3000);
-	nmglvsNm1Init();
 #if defined(PROFILER1) && defined(__GNUC__)
 	nmprofiler_init();
 	nmprofiler_disable();
 #endif // (PROFILER1) && defined(__GNUC__)
+	nmglvsNm1Init();
 	while (nmglvsNm1Run()) {
 		nmglvsNm1Step();
 	}

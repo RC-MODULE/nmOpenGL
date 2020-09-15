@@ -10,12 +10,14 @@
 SECTION(".text_shared0") int main()
 {
 	halSleep(3000);
-	nmglvsNm0Init();
+
 
 #if defined(__GNUC__) && defined(PROFILER0)
 	nmprofiler_init();
 	nmprofiler_enable();
 #endif // __GNUC__
+
+	nmglvsNm0Init();
 
 	setHeap(10);
 	float* vertices_DDR = (float*)halMalloc32(2000 * 12);
@@ -64,12 +66,10 @@ SECTION(".text_shared0") int main()
 	halHostSyncAddr(normal_DDR2);
 	ok = halHostSync((int)0x600D600D);
 #endif
-	
 	nmglClearColor(0, 0, 0.4f, 0.0f);
 
 	nmglEnable(NMGL_DEPTH_TEST);
 	//nmglEnable(NMGL_CULL_FACE);
-	//nmglPointSize(2);
 
 	nmglMatrixMode(NMGL_MODELVIEW);
 	nmglLoadIdentity();
@@ -99,7 +99,6 @@ SECTION(".text_shared0") int main()
 	nmglLightfv(NMGL_LIGHT1, NMGL_DIFFUSE, lightDiffuse);*/
 	int counter = 0;
 	while(nmglvsNm0Run()){
-
 		nmglEnableClientState(NMGL_VERTEX_ARRAY);
 		nmglEnableClientState(NMGL_NORMAL_ARRAY);
 
@@ -108,6 +107,7 @@ SECTION(".text_shared0") int main()
 		nmglVertexPointer(4, NMGL_FLOAT, 0, vertices_DDR);
 		nmglNormalPointer(NMGL_FLOAT, 0, normal_DDR);
 		nmglLoadIdentity();
+		//nmglScalef(0.8f, 0.8f, 0.8f);
 		nmglRotatef(angle, 0.707f, 0.707f, 0);
 		materialDiffuse[0] = 1;
 		materialDiffuse[2] = 0;
@@ -116,7 +116,6 @@ SECTION(".text_shared0") int main()
 		materialSpec[1] = 0.6;
 		materialSpec[2] = 0.6;
 		nmglMaterialfv(NMGL_FRONT_AND_BACK, NMGL_SPECULAR, materialSpec);
-
 		nmglDrawArrays(NMGL_TRIANGLES, 0, 3 * amountPolygons);
 
 		nmglVertexPointer(4, NMGL_FLOAT, 0, vertices_DDR2);

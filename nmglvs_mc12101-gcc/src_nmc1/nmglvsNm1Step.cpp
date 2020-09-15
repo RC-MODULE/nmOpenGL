@@ -110,6 +110,7 @@ SECTION(".text_nmglvs") int nmglvsNm1Step()
 		int width = currentCommand.params[2];
 		int height = currentCommand.params[3];
 		int numOfSeg = currentCommand.params[4];
+		//printf("x0=%d, y=%d, w=%d, h=%d, i=%d\n",x0, y0, width, height, numOfSeg);
 		//msdWaitDma(1);
 		if (cntxt->depthBuffer.enabled == NMGL_TRUE) {
 			cntxt->depthBuffer.setCursor(x0, y0);
@@ -141,12 +142,7 @@ SECTION(".text_nmglvs") int nmglvsNm1Step()
 	}
 
 	case NMC1_DRAW_TRIANGLES: {
-		//DataForNmpu1* poly = cntxt->polygonsConnectors[0].ptrTail();
-
-		//nmprofiler_enable();
-		//PROFILER_SIZE(poly->count);
 		drawTriangles();
-		//nmprofiler_disable();
 		break;
 	}
 

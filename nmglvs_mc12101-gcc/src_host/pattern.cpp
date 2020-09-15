@@ -29,8 +29,8 @@ void fillPtrnsInit(unsigned char* dst, int* table_dydx, unsigned char color) {
 
 	for (int y = 0; y < HEIGHT_PTRN; y++) {
 		for (int off = 0; off < OFFSETS; off++, cntRight++, cntLeft++) {
-			fillSide(dst + cntRight * size, off, 0, -WIDTH_PTRN + off, y, color, 0);
-			fillSide(dst + cntLeft  * size, off, 0, -WIDTH_PTRN + off, y, color, 1);
+			fillSide(dst + cntRight * size, off, 0, -(WIDTH_PTRN - 1) + off, y, color, 0);
+			fillSide(dst + cntLeft  * size, off, 0, -(WIDTH_PTRN - 1) + off, y, color, 1);
 			if (y == 0) {
 				for (int i = 0; i < size; i++) {
 					dst[cntRight * size + i] = color;

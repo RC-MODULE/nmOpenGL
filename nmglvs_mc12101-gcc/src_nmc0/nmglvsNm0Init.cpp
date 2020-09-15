@@ -101,6 +101,8 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 #endif //TEST_NMGL_TEX_FUNC
 	halHostSync(0x600DB00F);	// send ok to host
 
+	cntxt->pointRadius = 1;
+
 	cntxt->trianInner.x0 = nmglx0;
 	cntxt->trianInner.y0 = nmgly0;
 	cntxt->trianInner.x1 = nmglx1;
@@ -153,7 +155,6 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 	halHostSync((int)0x600d600d);
 	nmglClearColor(0, 0, 0, 1.0f);
 	nmglClearDepthf(1);
-	nmglPointSize(1);
 
 	return 0;
 } 

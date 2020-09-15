@@ -71,7 +71,7 @@ int main()
 		VS_SetData(1, currentImage);
 		counter++;
 #if defined(PROFILER0) || defined(PROFILER1)
-		if (counter>=256 && flag) {
+		if (counter>=1 && flag) {
 #ifdef PROFILER0
 			halProfilerPrint2xml("main0.map", 0, "../perf0.xml");
 #endif // PROFILER0
