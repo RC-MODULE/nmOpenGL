@@ -11,7 +11,7 @@ MEMORY
   SHMEM0 : ORIGIN = 0x002A0000, LENGTH = 0x00020000
   EMI0 : ORIGIN = 0x80000000, LENGTH = 0x8000000
   EMI2 : ORIGIN = 0x90000000, LENGTH = 0x8000000
-  SYNCRO : ORIGIN = 0x9FFFFFC0, LENGTH = 0x00000040
+  SYNCRO : ORIGIN = 0x9FFFFF00, LENGTH = 0x00000100
 }
 
 SECTIONS
@@ -35,7 +35,7 @@ SECTIONS
   .text_demo3d : ALIGN(0x8)
   {
     *(.text_demo3d);
-  } > EMI0
+  } > C0_IMU7
   .text_demo3dExt : ALIGN(0x8)
   {
     *(.text_demo3dExt);
@@ -68,6 +68,10 @@ SECTIONS
   {
     *(.bss);
   } > SHMEM0
+  .data_demo3d : ALIGN(0x8)
+  {
+    *(.data_imu0);
+  } > C0_IMU0
   .data_imu0 : ALIGN(0x8)
   {
     *(.data_imu0);
@@ -100,6 +104,10 @@ SECTIONS
   {
     *(.data_imu7);
   } > C0_IMU7
+  .textures_mipmap_mem : ALIGN(0x8)
+  {
+    *(.textures_mipmap_mem);
+  } > EMI2
   .data_shmem0 : ALIGN(0x8)
   {
     *(.data_shmem0);

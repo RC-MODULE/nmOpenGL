@@ -76,6 +76,15 @@ struct Lines{
 	int maxSize;
 };
 
+struct Points {
+	float* x0;
+	float* y0;
+	int* z;
+	v4nm32s* colors;
+	int size;
+	int maxSize;
+};
+
 struct Triangles{
 	float* x0;
 	float* y0;
@@ -129,6 +138,8 @@ struct MatrixStack {
 class NMGL_Context_NM0 {
 private:
 	static NMGL_Context_NM0 *context;
+	NMGL_Context_NM0() {};		// недоступный конструктор
+	~NMGL_Context_NM0() {};		// и деструктор
 public:	
 	inline static void create(NMGLSynchroData* synchroData) {
 		context = (NMGL_Context_NM0*)halMalloc32(sizeof32(NMGL_Context_NM0));
@@ -143,21 +154,21 @@ public:
 
 
 	NMGLSynchro synchro;
-	PolygonsArray* polygonsData;
+	PolygonsConnector* polygonsConnectors;
 	NMGLenum error;
 	PatternsArray* patterns;
-	int dummy;
-
-	BitMask segmentMasks[36];
-	BitDividedMask dividedMasks[2];
-
 	float* buffer0;
 	float* buffer1;
 	float* buffer2;
 	float* buffer3;
+	float* buffer4;
+
+	BitMask segmentMasks[36];
+	BitDividedMask dividedMasks[2];	
 
 	Triangles trianInner;
 	Lines lineInner;
+	Points pointInner;
 	NmglBeginEndInfo beginEndInfo;
 
 	mat4nm32f modelviewMatrix[16];
@@ -172,6 +183,8 @@ public:
 	int cullFaceType;
 	int frontFaceOrientation;
 	int normalizeEnabled;
+	float pointRadius;
+	int dummy;
 
 	Array vertexArray;
 	Array normalArray;
@@ -228,11 +241,22 @@ public:
 		projectionMatrixStack.size = 2;
 		projectionMatrixStack.type = NMGL_PROJECTION_MATRIX;
 
-		materialAmbient.vec[2] = materialAmbient.vec[1] = materialAmbient.vec[0] = 0.2;
-		materialDiffuse.vec[2] = materialDiffuse.vec[1] = materialDiffuse.vec[0] = 0.8;
-		materialSpecular.vec[2] = materialSpecular.vec[1] = materialSpecular.vec[0] = 0;
-		materialEmissive.vec[2] = materialEmissive.vec[1] = materialEmissive.vec[0] = 0;
-		materialAmbient.vec[3] = materialDiffuse.vec[3] = materialSpecular.vec[3] = materialEmissive.vec[3] = 1;
+		materialAmbient.vec[0] = 0.2;
+		materialAmbient.vec[1] = 0.2;
+		materialAmbient.vec[2] = 0.2;
+		materialDiffuse.vec[0] = 0.8;
+		materialDiffuse.vec[1] = 0.8;
+		materialDiffuse.vec[2] = 0.8;
+		materialSpecular.vec[0] = 0;
+		materialSpecular.vec[1] = 0;
+		materialSpecular.vec[2] = 0;
+		materialEmissive.vec[0] = 0;
+		materialEmissive.vec[1] = 0;
+		materialEmissive.vec[2] = 0;
+		materialAmbient.vec[3] = 1;
+		materialDiffuse.vec[3] = 1;
+		materialSpecular.vec[3] = 1;
+		materialEmissive.vec[3] = 1;
 
 		for (int i = 0; i < MAX_LIGHTS; i++) {
 			if (i == 0) {
@@ -258,7 +282,9 @@ public:
 				lightSpecular[i].vec[3] = 1;
 			}
 
-			lightAmbient[i].vec[2] = lightAmbient[i].vec[1] = lightAmbient[i].vec[1] = 0;
+			lightAmbient[i].vec[0] = 0;
+			lightAmbient[i].vec[1] = 0;
+			lightAmbient[i].vec[2] = 0;
 			lightAmbient[i].vec[3] = 1;
 
 			lightPosition[i].vec[0] = 0;
@@ -1032,6 +1058,11 @@ extern "C"{
 
 
 }
+
+int getVertexPart(Array* array, v4nm32f* dst, float* tmpBuffer, int count);
+int getNormalPart(Array* array, v4nm32f* dst, float* tmpBuffer, int count);
+int getColorPart(Array* array, v4nm32f* dst, float* tmpBuffer, int count);
+
 void pushToLines_l(const float *vertexX, const float *vertexY, const float *vertexZ, const v4nm32f* color, Lines& lines, int countVertex);
 
 void pushToTriangles_t(const float *vertexX, const float *vertexY, const float *vertexZ, const v4nm32f* color, Triangles& triangles, int countVertex);
@@ -1045,8 +1076,13 @@ void cullFaceSortTriangles(Triangles &triangles);
 void setSegmentMask(v2nm32f* minXY, v2nm32f* maxXY, BitMask* masks, int size);
 void rasterizeT(const Triangles* triangles, const BitMask* masks);
 void rasterizeL(const Lines* lines, const BitMask* masks);
-void updatePolygonsT(Polygons* poly, Triangles* triangles, int count, int segX, int segY);
-void updatePolygonsL(Polygons* poly, Lines* lines, int count, int segX, int segY);
+void rasterizeP(const Points* points, const BitMask* masks);
+void updatePolygonsT(PolygonsOld* poly, Triangles* triangles, int count, int segX, int segY);
+void updatePolygonsL(PolygonsOld* poly, Lines* lines, int count, int segX, int segY);
+void updatePolygonsP(PolygonsOld* poly, Points* lines, int count, int segX, int segY);
+void updatePolygonsT(DataForNmpu1* data, Triangles* triangles, int count, int segX, int segY);
+void updatePolygonsL(DataForNmpu1* data, Lines* triangles, int count, int segX, int segY);
+void updatePolygonsP(DataForNmpu1* data, Points* triangles, int count, int segX, int segY);
 
 /**
  *  \defgroup color Light

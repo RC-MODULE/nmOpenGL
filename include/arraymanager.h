@@ -1,6 +1,7 @@
 #ifndef __ADDR_MANAGER_H__
 #define __ADDR_MANAGER_H__
 
+#include "nmdef.h"
 #include "hal.h"
 #include "nmblas.h"
 
@@ -13,7 +14,7 @@ void addrManagerDefaultCopy(const void* src, void* dst, size_t size) {
 template <typename T>
 class ArrayManager{
 private:
-	int remaningSize;
+	int offset;
 	int maxLocalSize;
 	int totalSize;
 	T* startAddr;
@@ -36,21 +37,21 @@ public:
 	}
 
 	int pop(T* dst) {
-		int localSize = MIN(remaningSize, maxLocalSize);
+		int localSize = MIN(totalSize - offset, maxLocalSize);
 		localSize = MAX(0, localSize);
 		copyFunction(localAddr, dst, localSize);
 		localAddr += localSize;
-		remaningSize -= localSize;
+		offset += localSize;
 		return localSize;
 	}
 
 	bool isEmpty() {
-		return remaningSize <= 0;
+		return offset >= totalSize;
 	}
 
 	void reset() {
 		localAddr = startAddr;
-		remaningSize = totalSize;
+		offset = 0;
 	}
 	
 };

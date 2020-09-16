@@ -8,13 +8,13 @@ solution "nmopengl-nmc4f"
       files { "../../include/*.h", "Makefile" , "../../src_proc0/nm/*.asm", "../../src_proc0/nmgl/*.cpp",  "../../src_proc0/common/*.cpp" }
 	 
 	  configuration "Debug"
-		   buildcommands {"make DEBUG=y -f Makefile"}
-		   rebuildcommands {"make -B DEBUG=y -f Makefile"}
+		   buildcommands {"make DEBUG=y -f Makefile -j4"}
+		   rebuildcommands {"make -B DEBUG=y -f Makefile -j4"}
 		   cleancommands {"make clean"}
 		   
 	  configuration "Release"
-		   buildcommands {"make -f Makefile"}
-		   rebuildcommands {"make -B -f Makefile"}
+		   buildcommands {"make -f Makefile -j4"}
+		   rebuildcommands {"make -B -f Makefile -j4"}
 		   cleancommands {"make clean"}		   
 		
 		

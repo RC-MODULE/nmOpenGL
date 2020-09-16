@@ -12,10 +12,10 @@ void sum(nm8s* src, nm32s* temp, nm32s* accTemp, int nOffSets_X, int sizePtrn)
 };
 
 
-void create_tabl_dydx(nm8s* srcPatterns,int* dydx, int width, int height){
+void create_tabl_dydx(unsigned char* srcPatterns,int* dydx, int width, int height){
 	int sizePtrn = width*height;
 	int nPtrn = AMOUNT_ANGLES/2;
-	nmppsSet_32s(dydx, 0, 2*width*height);
+	nmppsSet_32s(dydx, 0, 2*width*height + 2 * width);
 
 //---------------dydx--------------------
 	//заполнение 0..31 строки

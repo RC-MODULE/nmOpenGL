@@ -6,8 +6,8 @@ MEMORY
   C1_IMU3 : ORIGIN = 0x00060000, LENGTH = 0x00020000
   SHMEM1 : ORIGIN = 0x002C0000, LENGTH = 0x00040000
   EMI1 : ORIGIN = 0x88000000, LENGTH = 0x8000000
-  EMI3 : ORIGIN = 0x98000000, LENGTH = 0x7FFFFC0
-  SYNCRO : ORIGIN = 0x9FFFFFC0, LENGTH = 0x00000040
+  EMI3 : ORIGIN = 0x98000000, LENGTH = 0x7FFFF00
+  SYNCRO : ORIGIN = 0x9FFFFF00, LENGTH = 0x00000100
 }
 
 SECTIONS
@@ -51,11 +51,11 @@ SECTIONS
   .data : ALIGN(0x8)
   {
     *(.data);
-  } > C1_IMU0
+  } > EMI1
   .data_demo3d : ALIGN(0x8)
   {
     *(.data_demo3d);
-  } > EMI1
+  } > C1_IMU0
   .bss : ALIGN(0x8)
   {
     *(.bss);
@@ -84,6 +84,10 @@ SECTIONS
   {
     *(.text_nmvcore);
   } > C1_IMU0
+  .data_hal_syncro : ALIGN(0x8)
+  {
+    *(.data_hal_syncro);
+  } > EMI1
   .data_imu0 : ALIGN(0x8)
   {
     *(.data_imu0);

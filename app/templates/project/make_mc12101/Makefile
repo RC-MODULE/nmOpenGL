@@ -1,4 +1,4 @@
-ROOT = ../../../..
+ROOT = ../..
 include $(ROOT)/global.mk
 # BUILD AND RUN MAKEFILE
 # This makefile builds simple nmc-application containing single cpp-file  
@@ -12,7 +12,7 @@ $(warning *** WARNING: 'MC12101' environment variable is not defined! Board SDK 
 endif 
 
 BOARD    = mc12101
-HOST     = $(BOARD)-x86
+HOST     = $(BOARD)-host
 
 TARGET0  = main0.abs
 TARGET1  = main1.abs
@@ -29,21 +29,27 @@ nm1 $(TARGET1):
 	
 host $(HOST): $(VS)
 
+profile: profile0 profile1
+profile0:
+	$(MAKE) -f Makefile0 profile
+profile1:
+	$(MAKE) -f Makefile1 profile
+	
 	
 vs2005: $(HOST).vcproj 
 	"$(VS80COMNTOOLS)vsvars32" && vcbuild $(HOST).vcproj
 
 vs2015:	$(HOST).vcxproj
-	"$(VS140COMNTOOLS)vsvars32" && msbuild $(HOST).vcxproj /p:Configuration=Debug
+	"$(VS140COMNTOOLS)vsvars32" && msbuild $(HOST).vcxproj /p:Configuration=Release
 
 $(HOST).vcproj:
 	premake5 vs2005
 
-$(HOST).vcxproj:
-	premake5 vs2015
+$(HOST).vcxproj:	
+	premake5 vs2015 
 
 
 run: $(TARGET0) $(TARGET1) $(HOST)
-	bin\debug\$(HOST)
+	bin\x86\Release\$(HOST)-x86
 	
 include $(ROOT)/clean.mk

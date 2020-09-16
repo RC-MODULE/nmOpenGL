@@ -1,9 +1,7 @@
 #ifndef __NMGLTYPE_H__
 #define __NMGLTYPE_H__
 
-#include "nmtype.h"
-
-typedef bool NMGLboolean;
+typedef int NMGLboolean;
 typedef int NMGLbyte;
 typedef int NMGLubyte;
 typedef int NMGLshort;

@@ -3,6 +3,7 @@
 #include "stdio.h"
 #include "demo3d_common.h"
 #include "demo3d_nm1.h"
+#include "pattern.h"
 
 #define NUM_NM_CORES 2
 
@@ -43,9 +44,9 @@ extern "C"{
 		float* normalVec4,
 		float scale
 	);
+	void cnvTrianglesToLines(float* srcVertices, float* dstVertices, int size);
 };
 //-------------------------------------------------------------------------------------------------------------------
-void hostCreatePatterns(PatternsArray* patterns);
 
 //---------------------------------------------------------------------------------------------
 

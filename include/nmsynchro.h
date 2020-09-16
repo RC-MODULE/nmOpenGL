@@ -3,35 +3,32 @@
 
 #include <time.h>
 #include "nmdef.h"
-#include "ringbuffer.h"
 #include "ringbuffert.h"
 #include "stdio.h"
 
-#define NMC1_DRAW_TRIANGLES 		0xF0000000
-#define NMC1_DRAW_TRIANGLES_TEST 	0xF0F00000
-#define NMC1_DRAW_LINES 			0xF0010000
-#define NMC1_CLEAR 					0xF0020000
+#define NMC1_CLEAR 					0xF0010000
+#define NMC1_DRAW_TRIANGLES 		0xF0020000
+#define NMC1_DRAW_LINES 			0xF0030000
+#define NMC1_DRAW_POINTS 			0xF0040000
 #define NMC1_DEPTH 					0xF0050000
 #define NMC1_SET_COLOR 				0xF0060000
 #define NMC1_SET_DEPTH 				0xF0070000
 #define NMC1_SWAP_BUFFER 			0xF0080000
-#define NMC1_CNV_32S_8S 			0xF0090000
-#define NMC1_DEPTH_MASK 			0xF00A0000
-#define NMC1_DEPTH_FUNC 			0xF00B0000
-#define NMC1_SET_ACTIVE_TEXTURE 	0xF00C0000
+#define NMC1_DEPTH_MASK 			0xF0090000
+#define NMC1_DEPTH_FUNC 			0xF00A0000
+#define NMC1_COPY_SEG_FROM_IMAGE 	0xF00B0000
+#define NMC1_COPY_SEG_TO_IMAGE 		0xF00C0000
 
-#define NMC1_BIND_ACTIVE_TEX_OBJECT	0xF00D0000
+#define NMC1_SET_ACTIVE_TEXTURE 	0xF0800000
+#define NMC1_BIND_ACTIVE_TEX_OBJECT	0xF0810000
+#define NMC1_SET_MIPMAP_LVL_POINTER 0xF0820000
 
-#define NMC1_SET_MIPMAP_LVL_POINTER 0xF00E0000
-
-
-
-#define NMC1_COPY_SEG_FROM_IMAGE 	0xF1000000
-#define NMC1_COPY_SEG_TO_IMAGE 		0xF1010000
 #define NMC1_AND 					0xF1020000
 #define NMC1_AND4 					0xF1030000
 #define NMC1_OR 					0xF1040000
 #define NMC1_FAST_INV_SQRT 			0xF1050000
+#define NMC1_POINT_SIZE 			0xF1060000
+#define NMC1_CNV_32S_8S 			0xF1070000
 #define NMC1_EXIT 					0xFFFF0000
 #define NMC1_SYNC 					0xFF000000
 
@@ -42,7 +39,8 @@ struct CommandNm1{
 	int params[7];
 };
 
-#define PRIORITY_SIZE 256
+#define PRIORITY_SIZE 512
+//#define PRIORITY_SIZE 1
 
 typedef HalRingBufferData<CommandNm1, PRIORITY_SIZE> NMGLSynchroData;
 
@@ -67,7 +65,9 @@ public:
 		int param3 = 0, 
 		int param4 = 0, 
 		int param5 = 0) {
-
+#ifdef DEBUG
+		//printf("push: instr=0x%x, head-tail=%d, max=%d\n", instr, connector.getHead() - connector.getTail(), PRIORITY_SIZE);
+#endif // DEBUG
 		while (connector.isFull());
 		CommandNm1* command = connector.ptrHead();
 		command->instr_nmc1 = instr;
@@ -78,6 +78,12 @@ public:
 		command->params[4] = param4;
 		command->params[5] = param5;
 		(*connector.pHead)++;
+		//halLed(instr >> 16);
+		//halLed((connector.getHead() & 0xF) | (connector.getTail() << 4));
+		
+#ifdef DEBUG
+		//printf("push end: instr=0x%x, head-tail=%d, max=%d\n", instr, connector.getHead() - connector.getTail(), PRIORITY_SIZE);
+#endif // DEBUG
 	}
 
 	inline bool isEmpty() {
@@ -85,8 +91,14 @@ public:
 	}
 
 	inline void popInstr(CommandNm1 *command) {
-		isEmpty();
+#ifdef DEBUG
+		//printf("pop: head-tail=%d, max=%d\n", connector.getHead() - connector.getTail(), PRIORITY_SIZE);
+#endif // DEBUG
 		connector.pop(command, 1);
+		//halLed((connector.getHead() & 0xF) | (connector.getTail() << 4));
+#ifdef DEBUG
+		//printf("pop: instr=0x%x end\n", command->instr_nmc1);
+#endif // DEBUG
 	}
 };
 

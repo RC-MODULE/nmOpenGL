@@ -7,10 +7,16 @@
 
 SECTION(".text_demo3d") void drawLines() {
 	NMGL_Context_NM1 *context = NMGL_Context_NM1::getContext();
-	PolygonsConnector connector(context->polygonsData);
-	Polygons* poly = connector.ptrTail();
+
+	Polygons* poly = context->polygonsConnectors[0].ptrTail();
+#ifdef DEBUG
+	halLed(1);
+#endif // DEBUG
 
 	getAddrPtrnsL(poly);
+#ifdef DEBUG
+	halLed(2);
+#endif // DEBUG
 	COMMON_DRAW_TYPE* mulZ = (COMMON_DRAW_TYPE*)context->buffer0;
 	COMMON_DRAW_TYPE* mulC = (COMMON_DRAW_TYPE*)context->buffer0;
 	COMMON_DRAW_TYPE* zMaskBuffer = (COMMON_DRAW_TYPE*)context->buffer1;
@@ -22,25 +28,18 @@ SECTION(".text_demo3d") void drawLines() {
 
 	msdWaitDma(1);
 
-	(*connector.pTail)++;
-
+	context->polygonsConnectors[0].incTail();
+#ifdef DEBUG
+	halLed(4);
+#endif // DEBUG
 	while (countTrangles > 0) {
 		int localSize = MIN(countTrangles, SMALL_SIZE);
-		int point_x2 = point * 2;
 
 		//копирование паттернов во внутреннюю память. Паттерны копируются
 		//не полностью, чтобы сэкономить время на пересылку
-		copyPacket_32s(context->ppSrcPackPtrns + point_x2,
-			context->ppDstPackPtrns + point_x2,
-			context->nSizePtrn32 + point_x2, 2 * localSize);
-
-		//объединение паттернов сторон в паттерн треугольника
-		//объединение происходит не полностью (только значимой части) для
-		//оптимизации
-		mAndVxN_32u((nm32u**)context->ppPtrns1_2s,
-			(nm32u**)context->ppPtrns2_2s,
-			(nm32u**)context->ppPtrnsCombined_2s,
-			context->nSizePtrn32 + point_x2, localSize);
+		copyPacket_32s(context->ppSrcPackPtrns + point,
+			context->ppDstPackPtrns + point,
+			context->nSizePtrn32 + point, localSize);
 
 		//проверка активирования теста глубины
 		if (context->depthBuffer.enabled == NMGL_FALSE) {
@@ -96,6 +95,9 @@ SECTION(".text_demo3d") void drawLines() {
 		countTrangles -= SMALL_SIZE;
 		point += SMALL_SIZE;
 	}
+#ifdef DEBUG
+	halLed(8);
+#endif // DEBUG
 
 	return;
 }
