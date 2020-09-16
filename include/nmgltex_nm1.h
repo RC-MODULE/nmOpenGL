@@ -48,6 +48,11 @@ struct NMGL_Context_NM1_Texture {
 	unsigned int unpackAlignment;
 
 	
+#ifdef TEST_NMGL_TEX_FUNC
+	//ref value to check the accessibility of nmpu1
+	unsigned int refValue = 0xC0DEC0DE;
+#endif //TEST_NMGL_TEX_FUNC
+	
 	void init(){	
 		activeTexUnit = NMGL_TEXTURE0;
 		activeTexUnitIndex = 0;

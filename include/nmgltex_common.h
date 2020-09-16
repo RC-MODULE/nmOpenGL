@@ -193,6 +193,14 @@ struct TexCoords {
     NMGLfloat s;
     NMGLfloat t;
 };
+
+/**
+*	Структура для передачи значения цвета текстурного окружения c nmpu0 на nmpu1
+*/
+typedef union Intfloat {
+	int i;
+	float f;
+} Intfloat;
 //----------------------------FUNCTIONS----------------------------------------------------------------------------------
 #define INIT_TEX_UNITS() for (int i = 0; i < NMGL_MAX_TEX_UNITS; i++) \
 {                                                                     \
