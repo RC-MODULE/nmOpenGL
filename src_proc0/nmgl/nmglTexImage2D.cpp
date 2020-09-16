@@ -5,7 +5,7 @@
 //#include "malloc.h" //func malloc
 //#include "nmtype.h" //func malloc32
 //#define DEBUG
-SECTION(".textures_mipmap_mem") volatile NMGLubyte mipmap[MIPMAP_MEM_SIZE];
+SECTION(".textures_mipmap_mem") NMGLubyte mipmap[MIPMAP_MEM_SIZE];
 
 //Alternative: #pragma data_section ".data_imu1"
 //     double x1[SIZE];
