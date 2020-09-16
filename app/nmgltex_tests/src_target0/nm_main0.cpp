@@ -78,7 +78,11 @@ int main()
 	DEBUG_PRINT(("Context nm1=%x\n",cntxt_nm1));
 	if(cntxt_nm1 == 0) {
 		printf("\nWarning: NM1 context address is equal to 0. \nNmpu1 is not accessible from nmpu0. Test only for nmpu0.\n");
-	} else {
+	} 
+	else if (cntxt_nm1->texState.refValue != 0xC0DEC0DE) {
+		printf("\nWarning: refValue field from nmpu1 texture context is not equal to 0xCODECODE.\nNmpu1 is not accessible from nmpu0. Test only for nmpu0.\n");
+	}
+	else {
 		nmpu1IsAccessible = 1;
 	}
 
