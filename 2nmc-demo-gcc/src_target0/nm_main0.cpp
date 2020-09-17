@@ -5,51 +5,26 @@
 #include "nmpp.h"
 #include "nmgl.h"
 #include "nmglvs_nmc0.h"
-	
-//SECTION(".data_shared0") float vertices_DDR[2000 * 12];
-//SECTION(".data_shared0") float normal_DDR[2000 * 9];
-//SECTION(".data_shared0") float vertices_DDR2[2000 * 12];
-//SECTION(".data_shared0") float normal_DDR2[2000 * 9];
-SECTION(".data_shared0") float twoTriangles[24 * 4] = {
-	110, 90, 0, 1,
-	90, 110, 0, 1,
-
-	90, 90, 0, 1,
-	110, 110, 0, 1,
-
-	110, 90, 0, 1,
-	90, 90, 0, 1,
-
-	110, 90, 0, 1,
-	110, 110, 0, 1,
-
-	110, 90, 0, 1,
-	125, 95, 0, 1,
-	90, 90, 0, 1,
-	75, 95, 0, 1,
-
-	90, 90, 0, 1,
-	75, 95, 0, 1,
-	90, 90, 0, 1,
-	75, 95, 0, 1,
-	110, 90, 0, 1,
-	125, 95, 0, 1,
-	110, 90, 0, 1,
-	125, 95, 0, 1,
-	110, 90, 0, 1,
-	125, 95, 0, 1,
-	110, 90, 0, 1,
-	125, 95, 0, 1,
-};
+#include "nmprofiler.h"
 
 SECTION(".text_shared0") int main()
 {
+	halSleep(3000);
+
+
+#if defined(__GNUC__) && defined(PROFILER0)
+	nmprofiler_init();
+	nmprofiler_enable();
+#endif // __GNUC__
+
 	nmglvsNm0Init();
+
 	setHeap(10);
 	float* vertices_DDR = (float*)halMalloc32(2000 * 12);
 	float* normal_DDR = (float*)halMalloc32(2000 * 9);
 	float* vertices_DDR2 = (float*)halMalloc32(2000 * 12);
 	float* normal_DDR2 = (float*)halMalloc32(2000 * 9);
+	int ok;
 	
 #ifdef __OPEN_GL__
 	Models models;
@@ -74,30 +49,27 @@ SECTION(".text_shared0") int main()
 
 
 	int amountPolygons2 = amount;
-	int ok;
 #else
 	int amountPolygons = halHostSync(0);
 
 	//Массив цветов полигонов (по 4 компоненты на вершину)
 	//sync1
-	halHostSync((int)vertices_DDR);
+	halHostSyncAddr(vertices_DDR);
 
 	//sync2
-	int ok = halHostSync((int)normal_DDR);
+	halHostSyncAddr(normal_DDR);
 
 	int amountPolygons2 = halHostSync(0);
-	halHostSync((int)vertices_DDR2);
+	halHostSyncAddr(vertices_DDR2);
 
 	//sync2
-	ok = halHostSync((int)normal_DDR2);
+	halHostSyncAddr(normal_DDR2);
 	ok = halHostSync((int)0x600D600D);
 #endif
-	
 	nmglClearColor(0, 0, 0.4f, 0.0f);
-	//nmglClearColor(0.5, 0.5, 0.5, 1.0f);
 
 	nmglEnable(NMGL_DEPTH_TEST);
-	nmglEnable(NMGL_CULL_FACE);
+	//nmglEnable(NMGL_CULL_FACE);
 
 	nmglMatrixMode(NMGL_MODELVIEW);
 	nmglLoadIdentity();
@@ -125,23 +97,17 @@ SECTION(".text_shared0") int main()
 	nmglLightfv(NMGL_LIGHT1, NMGL_POSITION, lightVector);
 	float lightDiffuse2[4] = { 1, 1, 0, 1 };
 	nmglLightfv(NMGL_LIGHT1, NMGL_DIFFUSE, lightDiffuse);*/
-
+	int counter = 0;
 	while(nmglvsNm0Run()){
-		/*nmglEnableClientState(NMGL_VERTEX_ARRAY);
-		nmglClear(NMGL_COLOR_BUFFER_BIT);
-		nmglVertexPointer(4, NMGL_FLOAT, 0, twoTriangles);
-		nmglDrawArrays(NMGL_LINES, 0, 24);
-		nmglDisableClientState(NMGL_VERTEX_ARRAY);*/
-
 		nmglEnableClientState(NMGL_VERTEX_ARRAY);
 		nmglEnableClientState(NMGL_NORMAL_ARRAY);
 
 		nmglClear(NMGL_COLOR_BUFFER_BIT | NMGL_DEPTH_BUFFER_BIT);
-		
 
 		nmglVertexPointer(4, NMGL_FLOAT, 0, vertices_DDR);
 		nmglNormalPointer(NMGL_FLOAT, 0, normal_DDR);
 		nmglLoadIdentity();
+		//nmglScalef(0.8f, 0.8f, 0.8f);
 		nmglRotatef(angle, 0.707f, 0.707f, 0);
 		materialDiffuse[0] = 1;
 		materialDiffuse[2] = 0;
@@ -175,7 +141,7 @@ SECTION(".text_shared0") int main()
 
 		nmglDisableClientState(NMGL_VERTEX_ARRAY);
 		nmglDisableClientState(NMGL_NORMAL_ARRAY);
-
+		counter++;
 		//nmglFinish();
 		nmglvsSwapBuffer();
 	}
@@ -183,6 +149,11 @@ SECTION(".text_shared0") int main()
 	//halFree(vertices_DDR2);
 	//halFree(normal_DDR);
 	//halFree(normal_DDR2);
+
+#if defined(__GNUC__) && defined(PROFILER0)
+	nmprofiler_disable();
+#endif // __GNUC__
+
 	nmglvsExit_mc12101();
 	return 0x600D600D;
 } 

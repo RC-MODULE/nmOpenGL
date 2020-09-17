@@ -1,7 +1,8 @@
 
 #include "nmpp.h"
-
-
+#ifdef __NM__
+extern "C" {
+#endif
 void remap_32u(nm32u*	pSrcVec,		
 	nm32u*	pDstVec,
 	nm32s*			pRemapTable,
@@ -16,4 +17,6 @@ void remap_32u(nm32u*	pSrcVec,
 	}
 	
 }
- 
+#ifdef __NM__
+}
+#endif 

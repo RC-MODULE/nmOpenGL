@@ -16,7 +16,7 @@
 	split_v2nm32f((v2nm32f*)temp2, 1, triangles->x2, triangles->y2, count)
 
 SECTION(".text_demo3d")
-void updatePolygonsT(Polygons* poly, Triangles* triangles, int count, int segX, int segY){
+void updatePolygonsT(PolygonsOld* poly, Triangles* triangles, int count, int segX, int segY){
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
 	float* temp0 = cntxt->buffer0 + 2 * NMGL_SIZE;
 	float* temp1 = cntxt->buffer1 + 2 * NMGL_SIZE;
@@ -32,8 +32,7 @@ void updatePolygonsT(Polygons* poly, Triangles* triangles, int count, int segX, 
 	float* minX = cntxt->buffer0 + 6 * NMGL_SIZE;
 	float* maxX = cntxt->buffer1 + 6 * NMGL_SIZE;
 	float* minY = cntxt->buffer3 + 8 * NMGL_SIZE;	
-	int* dydx = (int*)cntxt->buffer3 + 9 * NMGL_SIZE;
-	nmblas_scopy(2 * WIDTH_PTRN * (HEIGHT_PTRN + 2), (float*)cntxt->patterns->table_dydx, 1, (float*)dydx, 1);
+	int* dydx = cntxt->patterns->table_dydx;
 	int segWidth = cntxt->windowInfo.x1[segX] - cntxt->windowInfo.x0[segX];
 
 	sort();

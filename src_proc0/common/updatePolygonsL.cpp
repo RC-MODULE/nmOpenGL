@@ -3,17 +3,13 @@
 
 #include "nmblas.h"
 
-#define sort() 	nmppsMerge_32f(lines->x0, lines->y0, temp0, count);	 \
-	nmppsMerge_32f(lines->x1, lines->y1, temp1, count);				 \
-	sortByY2(temp0, temp1, count);									 \
-	split_v2nm32f((v2nm32f*)temp0, 1, lines->x0, lines->y0, count);	 \
-	split_v2nm32f((v2nm32f*)temp1, 1, lines->x1, lines->y1, count);	 
 
 SECTION(".text_demo3d")
-void updatePolygonsL(Polygons* poly, Lines* lines, int count, int segX, int segY){
+void updatePolygonsL(PolygonsOld* poly, Lines* lines, int count, int segX, int segY){
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
-
-	nmppsConvert_32f32s_rounding((nm32f*)lines->colors, poly->color, 0, 4 * count);
+	poly->count += 0;
+	return;
+	/*nmppsConvert_32f32s_rounding((nm32f*)lines->colors, poly->color, 0, 4 * count);
 
 	for (int i = 0; i < count; i++) {
 		float x0, y0, x1, y1;
@@ -76,5 +72,5 @@ void updatePolygonsL(Polygons* poly, Lines* lines, int count, int segX, int segY
 
 	}
 
-	poly->count += count;
+	poly->count += count;*/
 }

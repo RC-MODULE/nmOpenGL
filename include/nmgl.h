@@ -1,12 +1,10 @@
-#ifndef __NMNMGL_H__
-#define __NMNMGL_H__
+#ifndef __NMGL_H__
+#define __NMGL_H__
 
 #include "nmgltype.h"
 
 #include "nmgldef.h"
 
-#include "demo3d_common.h"
-#define ActiveTexObjectP cntxt->texState.texUnits[cntxt->texState.activeTexUnitIndex].boundTexObject
 
 void nmglActiveTexture (NMGLenum texture);
 void nmglAlphaFunc (NMGLenum func, NMGLclampf ref);

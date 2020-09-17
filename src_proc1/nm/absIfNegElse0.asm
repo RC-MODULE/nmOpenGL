@@ -17,15 +17,16 @@ begin ".text_demo3d"
 	EndTail: label;
 	
 	ar5 = sp - 2;
-	push ar0, gr0	with gr7 = gr5;
+	push ar0, gr0;
+	push ar5, gr5;
 	push ar6, gr6;
 	ar0 = [--ar5];
 	ar6 = [--ar5];
 	gr5 = [--ar5];
 	
-	gr0 = gr5 << 27;
-	gr5 >>= 5;
-	if =0 delayed goto AfterRep32	with gr0 >>= 25;
+	gr0 = gr5 << 26;
+	gr5 >>= 6;
+	if =0 delayed goto AfterRep32	with gr0 >>= 27;
 		ar5 = NextRep32	with gr5--;
 <NextRep32>
 	if > delayed goto ar5	with gr5--;
@@ -33,7 +34,7 @@ begin ".text_demo3d"
 		rep 32 with activate ram and afifo;
 		rep 32 [ar6++] = afifo;
 <AfterRep32>
-	ar5 = StartTail	with gr5 = gr0;
+	ar5 = StartTail	with gr5 = gr0 << 2;
 	delayed goto ar5+gr5;
 		nul;
 		ar5 = EndTail;
@@ -75,6 +76,7 @@ begin ".text_demo3d"
 <EndTail>
 
 	pop ar6, gr6;
-	pop ar0, gr0	with gr5 = gr7;
+	pop ar5, gr5;
+	pop ar0, gr0;
 	return;
 end ".text_demo3d";
