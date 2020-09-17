@@ -498,6 +498,7 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			break;
 		}
 		case NMGL_LINES: {
+			
 			split_v4nm32f(vertexResult, 1, cntxt->buffer0, cntxt->buffer1, cntxt->buffer2, cntxt->buffer3, localSize);
 			if (excessVertexCount) {
 				cntxt->buffer0[localSize - 1] = cntxt->buffer0[localSize - 2];
@@ -525,6 +526,7 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			v2nm32f *minXY = (v2nm32f*)cntxt->buffer4;
 			v2nm32f *maxXY = (v2nm32f*)cntxt->buffer4 + 3 * NMGL_SIZE;
 			pushToLines_l(vertexX, vertexY, vertexZ, colorOrNormal, cntxt->lineInner, localSize);
+			
 			findMinMax2(cntxt->lineInner.x0, cntxt->lineInner.x1,
 				cntxt->buffer0, cntxt->buffer1,
 				cntxt->lineInner.size);

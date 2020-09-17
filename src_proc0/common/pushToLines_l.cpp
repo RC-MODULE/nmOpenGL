@@ -31,6 +31,18 @@ void pushToLines_l(const float *vertexX, const float *vertexY, const float *vert
 		dstColorLine[4 * i + 2] = (int)srcColor[2 * 4 * i + 2];
 		dstColorLine[4 * i + 3] = (int)srcColor[2 * 4 * i + 3];
 	}
+	if (countPrim % 2) {
+		lines.x0[countPrim] = lines.x0[countPrim - 1];
+		lines.x1[countPrim] = lines.x1[countPrim - 1];
+		lines.y0[countPrim] = lines.y0[countPrim - 1];
+		lines.y1[countPrim] = lines.y1[countPrim - 1];
+		lines.z[countPrim] = lines.z[countPrim - 1];
+		dstColorLine[4 * countPrim + 0] = dstColorLine[4 * (countPrim - 1) + 0];
+		dstColorLine[4 * countPrim + 1] = dstColorLine[4 * (countPrim - 1) + 1];
+		dstColorLine[4 * countPrim + 2] = dstColorLine[4 * (countPrim - 1) + 2];
+		dstColorLine[4 * countPrim + 3] = dstColorLine[4 * (countPrim - 1) + 3];
+		countPrim++;
+	}
 
 	lines.size = countPrim;
 }

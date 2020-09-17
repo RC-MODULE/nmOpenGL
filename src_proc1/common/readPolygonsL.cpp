@@ -11,7 +11,7 @@
 SECTION(".text_demo3d") int getAddrPtrnsL(DataForNmpu1* data) {
 	NMGL_Context_NM1 *cntxt = NMGL_Context_NM1::getContext();
 	int size = data->count;
-	int offset0 = 0;
+	/*int offset0 = 0;
 	int offset1 = 0;
 	DataForNmpu1* dataTmp = (DataForNmpu1*)cntxt->buffer0;
 	offset0 += sizeof32(DataForNmpu1);
@@ -131,13 +131,13 @@ SECTION(".text_demo3d") int getAddrPtrnsL(DataForNmpu1* data) {
 		//cntxt->valuesC[i] |= (data->color[4 * i + 3] & 0xFF) << 24;
 
 		//cntxt->valuesZ[i] = data->z[i];
-	}
+	}*/
 	
-
 	//этот кусок кода является си-реализацией этой функции и является более наглядным	
-	/*for (int i = 0; i < size; i++) {
+	for (int i = 0; i < size; i++) {
 		int dx = data->x1[i] - data->x0[i];
 		int dy = data->y1[i] - data->y0[i];
+
 		int ptrnNo, minX, maxX;
 		ptrnNo = cntxt->patterns->lineTable[dy * 2 * WIDTH_PTRN + dx + WIDTH_PTRN];
 
@@ -201,7 +201,7 @@ SECTION(".text_demo3d") int getAddrPtrnsL(DataForNmpu1* data) {
 		cntxt->valuesC[i] |= (data->color[4 * i + 3] & 0xFF) << 24;
 
 		cntxt->valuesZ[i] = data->z[i];
-	}*/
+	}
 	
 	return 0;
 }

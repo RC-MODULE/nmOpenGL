@@ -22,7 +22,7 @@ SECTION(".text_demo3d") void drawLines() {
 	msdWaitDma(1);
 
 	context->polygonsConnectors[0].incTail();
-	while (countTrangles > 0) {
+	for(int point = 0; countTrangles > 0; countTrangles -= SMALL_SIZE,	point += SMALL_SIZE){
 		int localSize = MIN(countTrangles, SMALL_SIZE);
 
 		//копирование паттернов во внутреннюю память. Паттерны копируются
@@ -82,8 +82,7 @@ SECTION(".text_demo3d") void drawLines() {
 			context->ptrnSizes + point,
 			localSize);
 
-		countTrangles -= SMALL_SIZE;
-		point += SMALL_SIZE;
+		
 	}
 
 	return;
