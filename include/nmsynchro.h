@@ -39,8 +39,8 @@ struct CommandNm1{
 	int params[7];
 };
 
-//#define PRIORITY_SIZE 256
-#define PRIORITY_SIZE 1
+#define PRIORITY_SIZE 256
+//#define PRIORITY_SIZE 1
 
 typedef HalRingBufferData<CommandNm1, PRIORITY_SIZE> NMGLSynchroData;
 

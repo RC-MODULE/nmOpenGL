@@ -123,7 +123,7 @@ void getNormalPart(Array &normal, int &point, float* dst, float* tmp, int size) 
 SECTION(".text_nmgl")
 void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 #ifdef DEBUG
-	/*printf("DrawArrays start ");
+	printf("DrawArrays start ");
 	switch (mode)
 	{
 	case NMGL_TRIANGLES:
@@ -144,7 +144,7 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 	default:
 		printf(". Invalid error. Exit DrawArrays\n");
 		return;
-	}*/
+	}
 #endif // DEBUG
 	
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
@@ -436,7 +436,7 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			
 			while (srcThreated < primCount) {
 				int currentCount = triangulate(trian3f_2.x0, (v4nm32f*)cntxt->buffer1, primCount,
-					WIDTH_PTRN, HEIGHT_PTRN,
+					WIDTH_PTRN - 1, HEIGHT_PTRN - 1,
 					NMGL_SIZE, trian3f_1.x0, (v4nm32f*)cntxt->buffer0, &srcThreated);
 				trian3f_1.x0 = trian3f_1.x0 + 0 * NMGL_SIZE;
 				trian3f_1.y0 = trian3f_1.x0 + 1 * NMGL_SIZE;

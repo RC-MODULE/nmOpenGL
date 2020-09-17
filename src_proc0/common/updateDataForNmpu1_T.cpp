@@ -58,7 +58,7 @@ void updatePolygonsT(DataForNmpu1* data, Triangles* triangles, int count, int se
 			(data->y1[i] - data->y0[i]) > 32 ||
 			(data->y2[i] - data->y0[i]) > 32 ||
 			(data->y2[i] - data->y1[i]) > 32){
-				//printf("updatePolygonsT error. counter=%i, i=%d\n", counter,i);
+				printf("updatePolygonsT error. counter=%i, i=%d\n", counter,i);
 				data->x0[i] = 0;
 				data->x1[i] = 0;
 				data->x2[i] = 0;
