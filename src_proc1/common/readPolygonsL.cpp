@@ -71,13 +71,13 @@ SECTION(".text_demo3d") int getAddrPtrnsL(DataForNmpu1* data) {
 	nmppsAndC_32u((nm32u*)temp2, 0xFFFFFFFE, (nm32u*)temp1, size);
 	nmppsMerge_32s(temp1, temp3, (nm32s*)cntxt->ptrnSizes, size);
 
-	/*nmppsCmpLt0_32s(dx, temp0, size);
-	nmppsAddC_32s(dx, WIDTH_PTRN, temp1, size);
-	nmppsAnd_32u((nm32u*)temp0, (nm32u*)temp1, (nm32u*)temp2, size);
-	absIfNegElse0(minX, temp0, size);
-	nmppsAdd_32s(temp0, temp2,  temp3, size);
-	absIfNegElse0(dataTmp->y0, temp1, size);
-	nmppsMerge_32s(temp3, temp1, (nm32s*)cntxt->ptrnInnPoints, size);*/
+	//nmppsCmpLt0_32s(dx, temp0, size);
+	//nmppsAddC_32s(dx, WIDTH_PTRN, temp1, size);
+	//nmppsAnd_32u((nm32u*)temp0, (nm32u*)temp1, (nm32u*)temp2, size);
+	//absIfNegElse0(minX, temp0, size);
+	//nmppsAdd_32s(temp0, temp2,  temp3, size);
+	//absIfNegElse0(dataTmp->y0, temp1, size);
+	//nmppsMerge_32s(temp3, temp1, (nm32s*)cntxt->ptrnInnPoints, size);
 	
 
 	nmppsConvert_32s8s(dataTmp->color, (nm8s*)cntxt->valuesC, 4 * size);
@@ -104,12 +104,12 @@ SECTION(".text_demo3d") int getAddrPtrnsL(DataForNmpu1* data) {
 		}
 		maxX[i] = MIN(cntxt->smallColorBuff.getWidth(), maxX[i]);
 		int maxY = MIN(cntxt->smallColorBuff.getWidth(), dataTmp->y1[i]);
-		/*cntxt->ptrnSizes[i].width = maxX[i] - minX[i];
-		cntxt->ptrnSizes[i].height = maxY - minY;
-		if (cntxt->ptrnSizes[i].width == 0)
-			cntxt->ptrnSizes[i].width++;
-		if (cntxt->ptrnSizes[i].height == 0)
-			cntxt->ptrnSizes[i].height++;*/
+		//cntxt->ptrnSizes[i].width = maxX[i] - minX[i];
+		//cntxt->ptrnSizes[i].height = maxY - minY;
+		//if (cntxt->ptrnSizes[i].width == 0)
+		//	cntxt->ptrnSizes[i].width++;
+		//if (cntxt->ptrnSizes[i].height == 0)
+		//	cntxt->ptrnSizes[i].height++;
 
 		//imageOffset[i] = minY * cntxt->smallColorBuff.getWidth() + minX[i];
 		int imageOffset2 = minY * cntxt->smallColorBuff.getWidth() + minX[i];
@@ -125,17 +125,17 @@ SECTION(".text_demo3d") int getAddrPtrnsL(DataForNmpu1* data) {
 		//cntxt->imagePoints[i] = nmppsAddr_32s((nm32s*)cntxt->smallColorBuff.mData, imageOffset[i]);
 		//cntxt->zBuffPoints[i] = nmppsAddr_32s((nm32s*)cntxt->smallDepthBuff.mData, imageOffset[i]);
 
-		/*cntxt->valuesC[i] = (data->color[4 * i + 0] & 0xFF);
-		cntxt->valuesC[i] |= (data->color[4 * i + 1] & 0xFF) << 8;
-		cntxt->valuesC[i] |= (data->color[4 * i + 2] & 0xFF) << 16;
-		cntxt->valuesC[i] |= (data->color[4 * i + 3] & 0xFF) << 24;
+		//cntxt->valuesC[i] = (data->color[4 * i + 0] & 0xFF);
+		//cntxt->valuesC[i] |= (data->color[4 * i + 1] & 0xFF) << 8;
+		//cntxt->valuesC[i] |= (data->color[4 * i + 2] & 0xFF) << 16;
+		//cntxt->valuesC[i] |= (data->color[4 * i + 3] & 0xFF) << 24;
 
-		cntxt->valuesZ[i] = data->z[i];*/
+		//cntxt->valuesZ[i] = data->z[i];
 	}
 	
 
-	/*//этот кусок кода является си-реализацией этой функции и является более наглядным	
-	for (int i = 0; i < size; i++) {
+	//этот кусок кода является си-реализацией этой функции и является более наглядным	
+	/*for (int i = 0; i < size; i++) {
 		int dx = data->x1[i] - data->x0[i];
 		int dy = data->y1[i] - data->y0[i];
 		int ptrnNo, minX, maxX;
@@ -182,9 +182,9 @@ SECTION(".text_demo3d") int getAddrPtrnsL(DataForNmpu1* data) {
 		if (cntxt->ptrnSizes[i].height == 0)
 			cntxt->ptrnSizes[i].height++;
 		
-		imageOffset[i] = minY * cntxt->smallColorBuff.getWidth() + minX;
-		if (imageOffset[i] % 2) {
-			imageOffset[i]--;
+		int imageOffset = minY * cntxt->smallColorBuff.getWidth() + minX;
+		if (imageOffset % 2) {
+			imageOffset--;
 			cntxt->ptrnInnPoints[i].x--;
 			cntxt->ptrnSizes[i].width++;
 		}
@@ -192,8 +192,8 @@ SECTION(".text_demo3d") int getAddrPtrnsL(DataForNmpu1* data) {
 			cntxt->ptrnSizes[i].width++;
 		}
 
-		cntxt->imagePoints[i] = nmppsAddr_32s((nm32s*)cntxt->smallColorBuff.mData, imageOffset[i]);
-		cntxt->zBuffPoints[i] = nmppsAddr_32s((nm32s*)cntxt->smallDepthBuff.mData, imageOffset[i]);
+		cntxt->imagePoints[i] = nmppsAddr_32s((nm32s*)cntxt->smallColorBuff.mData, imageOffset);
+		cntxt->zBuffPoints[i] = nmppsAddr_32s((nm32s*)cntxt->smallDepthBuff.mData, imageOffset);
 
 		cntxt->valuesC[i]  = (data->color[4 * i + 0] & 0xFF);
 		cntxt->valuesC[i] |= (data->color[4 * i + 1] & 0xFF) << 8;

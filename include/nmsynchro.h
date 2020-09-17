@@ -78,7 +78,6 @@ public:
 		command->params[4] = param4;
 		command->params[5] = param5;
 		(*connector.pHead)++;
-		//halLed(instr >> 16);
 		//halLed((connector.getHead() & 0xF) | (connector.getTail() << 4));
 		
 #ifdef DEBUG

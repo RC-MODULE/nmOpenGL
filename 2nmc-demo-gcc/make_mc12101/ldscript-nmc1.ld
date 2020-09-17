@@ -48,10 +48,14 @@ SECTIONS
   {
     *(.fini);
   } > C1_IMU0
+  .data_shared1 : ALIGN(0x8)
+  {
+    *(.data_shared1);
+  } > EMI1
   .data : ALIGN(0x8)
   {
     *(.data);
-  } > EMI1
+  } > C1_IMU0
   .data_demo3d : ALIGN(0x8)
   {
     *(.data_demo3d);
@@ -72,6 +76,10 @@ SECTIONS
   {
     *(.text_nmplm);
   } > C1_IMU0
+  .data_nmplv : ALIGN(0x8)
+  {
+    *(.data_nmplv);
+  } > C1_IMU0
   .data_nmplv_L : ALIGN(0x8)
   {
     *(.data_nmplv_L);
@@ -84,10 +92,6 @@ SECTIONS
   {
     *(.text_nmvcore);
   } > C1_IMU0
-  .data_hal_syncro : ALIGN(0x8)
-  {
-    *(.data_hal_syncro);
-  } > EMI1
   .data_imu0 : ALIGN(0x8)
   {
     *(.data_imu0);
@@ -112,10 +116,6 @@ SECTIONS
   {
     *(.data_shmem1);
   } > SHMEM1
-  .data_shared1 : ALIGN(0x8)
-  {
-    *(.data_shared1);
-  } > EMI1
   .data_shared3 : ALIGN(0x8)
   {
     *(.data_shared3);

@@ -5,8 +5,6 @@
 
 #include "stdio.h"
 
-extern  Polygons polygons[36];
-
 
 SECTION(".text_demo3d") void triangleOffset(Triangles &src, Triangles &dst, int offset) {
 	dst.x0 = src.x0 + offset;
@@ -65,11 +63,6 @@ void rasterizeT(const Triangles* triangles, const BitMask* masks){
 	for (int segY = 0, iSeg = 0; segY < cntxt->windowInfo.nRows; segY++) {
 		for (int segX = 0; segX < cntxt->windowInfo.nColumns; segX++, iSeg++) {
 			if (masks[iSeg].hasNotZeroBits != 0) {
-				/*printf("segX=%d, segY=%d\n", segX, segY);
-				printf("x0=%d, y0=%d\n", cntxt->windowInfo.x0[segX], cntxt->windowInfo.y0[segY]);
-				printf("width=%d, height=%d\n",
-					cntxt->windowInfo.x1[segX] - cntxt->windowInfo.x0[segX],
-					cntxt->windowInfo.y1[segY] - cntxt->windowInfo.y0[segY]);*/
 
 				int resultSize = readMask(masks[iSeg].bits, indices, count);
 
@@ -115,5 +108,4 @@ void rasterizeT(const Triangles* triangles, const BitMask* masks){
 			}
 		}
 	}
-	//STOPWATCH_PRINT2TBL();
 }

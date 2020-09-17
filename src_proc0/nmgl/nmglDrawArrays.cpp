@@ -123,7 +123,7 @@ void getNormalPart(Array &normal, int &point, float* dst, float* tmp, int size) 
 SECTION(".text_nmgl")
 void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 #ifdef DEBUG
-	printf("DrawArrays start ");
+	/*printf("DrawArrays start ");
 	switch (mode)
 	{
 	case NMGL_TRIANGLES:
@@ -144,10 +144,10 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 	default:
 		printf(". Invalid error. Exit DrawArrays\n");
 		return;
-	}
+	}*/
 #endif // DEBUG
+	
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
-
 	if (cntxt->vertexArray.enabled == NMGL_FALSE) {
 		return;
 	}
@@ -203,12 +203,7 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			(float*)(cntxt->ambientMul + MAX_LIGHTS), 4);
 	}
 	reverseMatrix3x3in4x4(cntxt->modelviewMatrixStack.top(), &cntxt->normalMatrix);
-
 	while (!vertexAM.isEmpty()) {
-#ifdef DEBUG
-		printf("    start pack\n");
-		printf("    coordinate transformation...");
-#endif // DEBUG
 		//int localSize = MIN(count - pointVertex, maxInnerCount);
 		int localSize = vertexAM.pop(cntxt->buffer0) / cntxt->vertexArray.size;
 		int excessVertexCount = 0;
@@ -235,7 +230,6 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 		}
 		//умножение на dидовую матрицу (Modelview matrix)
 		mul_mat4nm32f_v4nm32f(cntxt->modelviewMatrixStack.top(), (v4nm32f*)cntxt->buffer1, vertexResult, localSize);
-
 		//normal
 		if (cntxt->normalArray.enabled) {
 			if (cntxt->normalArray.size == 3) {
@@ -253,7 +247,6 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 				dotMulV_v4nm32f((v2nm32f*)cntxt->buffer1, (v4nm32f*)cntxt->buffer2, colorOrNormal, localSize);
 			}
 		}
-
 		//vertex in vertexResult
 		//normal in colorOrNormal
 		//Освещение или наложение цветов
@@ -261,7 +254,11 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			light(vertexResult, colorOrNormal, localSize);
 		}
 		else {
-			nmppsMulC_32f(cntxt->buffer0, (float*)colorOrNormal, 1, 4 * localSize);
+			cntxt->tmp.vec[0] = 1;
+			cntxt->tmp.vec[1] = 1;
+			cntxt->tmp.vec[2] = 1;
+			cntxt->tmp.vec[3] = 1;
+			set_v4nm32f(colorOrNormal, &cntxt->tmp, localSize);
 		}
 		//color
 		if (cntxt->colorArray.enabled) {
@@ -271,12 +268,12 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 				nmppsMulC_32f(cntxt->buffer0, (float*)colorOrNormal, 1.0 / 255.0, cntxt->colorArray.size * localSize);
 			}
 		}
-
 		clamp_32f((float*)colorOrNormal, 0, 1, (float*)cntxt->buffer3, 4 * localSize);
 		cntxt->tmp.vec[0] = RED_COEFF;
 		cntxt->tmp.vec[1] = GREEN_COEFF;
 		cntxt->tmp.vec[2] = BLUE_COEFF;
 		cntxt->tmp.vec[3] = ALPHA_COEFF;
+
 		mulC_v4nm32f((v4nm32f*)cntxt->buffer3, &cntxt->tmp, colorOrNormal, localSize);
 
 		//умножение на матрицу проекции (Projection matrix)
@@ -314,13 +311,7 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			pushToTriangles_t(vertexX, vertexY, vertexZ, colorOrNormal, cntxt->trianInner, localSize);
 
 			if (cntxt->isCullFace) {
-#ifdef DEBUG
-				printf("    cullface selection...");
-#endif // DEBUG
 				cullFaceSortTriangles(cntxt->trianInner);
-#ifdef DEBUG
-				printf("    ok\n");
-#endif // DEBUG
 				if (cntxt->trianInner.size == 0) {
 					break;
 				}
@@ -333,13 +324,11 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			nmppsMerge_32f(cntxt->buffer0, cntxt->buffer2, (float*)minXY, cntxt->trianInner.size);
 			nmppsMerge_32f(cntxt->buffer1, cntxt->buffer3, (float*)maxXY, cntxt->trianInner.size);
 			setSegmentMask(minXY, maxXY, cntxt->segmentMasks, cntxt->trianInner.size);
-#ifdef DEBUG
-			printf("    rasterize... \n");
-#endif // DEBUG
 			rasterizeT(&cntxt->trianInner, cntxt->segmentMasks);
 			break;
 		}
 		case NMGL_LINES:
+
 			pushToLines_l(vertexX, vertexY, vertexZ, colorOrNormal, cntxt->lineInner, localSize);
 			findMinMax2(cntxt->lineInner.x0, cntxt->lineInner.x1,
 				cntxt->buffer0, cntxt->buffer1,
@@ -350,10 +339,6 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			nmppsMerge_32f(cntxt->buffer0, cntxt->buffer2, (float*)minXY, cntxt->lineInner.size);
 			nmppsMerge_32f(cntxt->buffer1, cntxt->buffer3, (float*)maxXY, cntxt->lineInner.size);
 			setSegmentMask(minXY, maxXY, cntxt->segmentMasks, cntxt->lineInner.size);
-
-#ifdef DEBUG
-			printf("    rasterize... \n");
-#endif // DEBUG
 			rasterizeL(&cntxt->lineInner, cntxt->segmentMasks);
 			break;
 		case NMGL_POINTS:
@@ -369,9 +354,6 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			nmppsMerge_32f(cntxt->buffer0, cntxt->buffer1, (float*)maxXY, localSize);
 			cntxt->pointInner.size = localSize;
 			setSegmentMask(minXY, maxXY, cntxt->segmentMasks, localSize);
-#ifdef DEBUG
-			printf("    rasterize... \n");
-#endif // DEBUG
 			rasterizeP(&cntxt->pointInner, cntxt->segmentMasks);
 			break;
 		}
@@ -446,14 +428,12 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			nmppsMulC_AddC_32f(trian3f_1.y2, cntxt->windowInfo.viewportMulY, cntxt->windowInfo.viewportAddY, trian3f_2.y2, primCount);		//Y
 			nmppsMulC_AddC_32f(trian3f_1.z2, cntxt->windowInfo.viewportMulZ, cntxt->windowInfo.viewportAddZ, trian3f_2.z2, primCount);		//Z			
 
-			nmppsConvert_32f32s_floor(trian3f_2.x0, (int*)trian3f_1.x0, 0, 9 * primCount);
+			nmppsConvert_32f32s_rounding(trian3f_2.x0, (int*)trian3f_1.x0, 0, 9 * primCount);
 			nmppsConvert_32s32f((int*)trian3f_1.x0, trian3f_2.x0, 9 * primCount);
 			v2nm32f *minXY = (v2nm32f*)cntxt->buffer4;
 			v2nm32f *maxXY = (v2nm32f*)cntxt->buffer4 + 3 * NMGL_SIZE;
 			int srcThreated = 0;
-#ifdef DEBUG
-			printf("    rasterize... \n");
-#endif // DEBUG
+			
 			while (srcThreated < primCount) {
 				int currentCount = triangulate(trian3f_2.x0, (v4nm32f*)cntxt->buffer1, primCount,
 					WIDTH_PTRN, HEIGHT_PTRN,
@@ -467,6 +447,22 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 				trian3f_1.x2 = trian3f_1.x0 + 6 * NMGL_SIZE;
 				trian3f_1.y2 = trian3f_1.x0 + 7 * NMGL_SIZE;
 				trian3f_1.z2 = trian3f_1.x0 + 8 * NMGL_SIZE;
+				if (currentCount % 2) {					
+					trian3f_1.x0[currentCount] = trian3f_1.x0[currentCount - 1];
+					trian3f_1.y0[currentCount] = trian3f_1.y0[currentCount - 1];
+					trian3f_1.z0[currentCount] = trian3f_1.z0[currentCount - 1];
+					trian3f_1.x1[currentCount] = trian3f_1.x1[currentCount - 1];
+					trian3f_1.y1[currentCount] = trian3f_1.y1[currentCount - 1];
+					trian3f_1.z1[currentCount] = trian3f_1.z1[currentCount - 1];
+					trian3f_1.x2[currentCount] = trian3f_1.x2[currentCount - 1];
+					trian3f_1.y2[currentCount] = trian3f_1.y2[currentCount - 1];
+					trian3f_1.z2[currentCount] = trian3f_1.z2[currentCount - 1];
+					cntxt->buffer0[4 * (currentCount) + 0] = cntxt->buffer0[4 * (currentCount - 1) + 0];
+					cntxt->buffer0[4 * (currentCount) + 1] = cntxt->buffer0[4 * (currentCount - 1) + 1];
+					cntxt->buffer0[4 * (currentCount) + 2] = cntxt->buffer0[4 * (currentCount - 1) + 2];
+					cntxt->buffer0[4 * (currentCount) + 3] = cntxt->buffer0[4 * (currentCount - 1) + 3];
+					currentCount++;
+				}
 				TrianglePrimitiveArrays3f* current = &trian3f_1;
 
 				//копирование каждого третьего цвета
@@ -484,9 +480,9 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 				cntxt->trianInner.size = currentCount;
 				if (cntxt->isCullFace) {
 					cullFaceSortTriangles(cntxt->trianInner);
-				}
-				if (cntxt->trianInner.size == 0) {
-					continue;
+					if (cntxt->trianInner.size == 0) {
+						continue;
+					}
 				}
 				findMinMax3(cntxt->trianInner.x0, cntxt->trianInner.x1, cntxt->trianInner.x2,
 					cntxt->buffer0, cntxt->buffer1,
@@ -502,6 +498,30 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			break;
 		}
 		case NMGL_LINES: {
+			split_v4nm32f(vertexResult, 1, cntxt->buffer0, cntxt->buffer1, cntxt->buffer2, cntxt->buffer3, localSize);
+			if (excessVertexCount) {
+				cntxt->buffer0[localSize - 1] = cntxt->buffer0[localSize - 2];
+				cntxt->buffer1[localSize - 1] = cntxt->buffer1[localSize - 2];
+				cntxt->buffer2[localSize - 1] = cntxt->buffer2[localSize - 2];
+				cntxt->buffer3[localSize - 1] = cntxt->buffer3[localSize - 2];
+			}
+
+			//------------clipping-------------------
+
+			//------------perspective-division-----------------
+			nmppsDiv_32f(cntxt->buffer0, cntxt->buffer3, cntxt->buffer1 + 3 * NMGL_SIZE, localSize);
+			nmppsDiv_32f(cntxt->buffer1, cntxt->buffer3, cntxt->buffer2 + 3 * NMGL_SIZE, localSize);
+			nmppsDiv_32f(cntxt->buffer2, cntxt->buffer3, cntxt->buffer0 + 3 * NMGL_SIZE, localSize);
+			
+			//------------viewport------------------------
+			nmppsMulC_AddC_32f(cntxt->buffer1 + 3 * NMGL_SIZE, cntxt->windowInfo.viewportMulX, cntxt->windowInfo.viewportAddX, vertexX, localSize);		//X
+			nmppsMulC_AddC_32f(cntxt->buffer2 + 3 * NMGL_SIZE, cntxt->windowInfo.viewportMulY, cntxt->windowInfo.viewportAddY, vertexY, localSize);		//Y
+			nmppsMulC_AddC_32f(cntxt->buffer0 + 3 * NMGL_SIZE, cntxt->windowInfo.viewportMulZ, cntxt->windowInfo.viewportAddZ, vertexZ, localSize);	//Z
+
+			nmppsConvert_32f32s_floor(vertexX, (int*)cntxt->buffer0, 0, localSize);
+			nmppsConvert_32s32f((int*)cntxt->buffer0, vertexX, localSize);
+			nmppsConvert_32f32s_floor(vertexY, (int*)cntxt->buffer0, 0, localSize);
+			nmppsConvert_32s32f((int*)cntxt->buffer0, vertexY, localSize);
 			v2nm32f *minXY = (v2nm32f*)cntxt->buffer4;
 			v2nm32f *maxXY = (v2nm32f*)cntxt->buffer4 + 3 * NMGL_SIZE;
 			pushToLines_l(vertexX, vertexY, vertexZ, colorOrNormal, cntxt->lineInner, localSize);
@@ -514,10 +534,6 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			nmppsMerge_32f(cntxt->buffer0, cntxt->buffer2, (float*)minXY, cntxt->lineInner.size);
 			nmppsMerge_32f(cntxt->buffer1, cntxt->buffer3, (float*)maxXY, cntxt->lineInner.size);
 			setSegmentMask(minXY, maxXY, cntxt->segmentMasks, cntxt->lineInner.size);
-
-#ifdef DEBUG
-			printf("    rasterize... \n");
-#endif // DEBUG
 			rasterizeL(&cntxt->lineInner, cntxt->segmentMasks);
 			break;
 		}
@@ -536,21 +552,15 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			nmppsMerge_32f(cntxt->buffer0, cntxt->buffer1, (float*)maxXY, localSize);
 			cntxt->pointInner.size = localSize;
 			setSegmentMask(minXY, maxXY, cntxt->segmentMasks, localSize);
-#ifdef DEBUG
-			printf("    rasterize... \n");
-#endif // DEBUG
 			rasterizeP(&cntxt->pointInner, cntxt->segmentMasks);
 			break;
 		}
 		}
 		
 #endif
-#ifdef DEBUG
-		printf("    end pack\n");
-#endif // DEBUG
 	}
 
 #ifdef DEBUG
-	printf("DrawArrays end\n\n");
+	//printf("DrawArrays end\n\n");
 #endif // DEBUG
 }
