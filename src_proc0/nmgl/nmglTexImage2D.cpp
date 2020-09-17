@@ -79,6 +79,8 @@ void initLvls(NMGLuint name,NMGL_Context_NM0 *cntxt)
 	#endif
 
 	cntxt->texState.texObjects[name].texImages2D[0].pixels=(void*)(mipmap + (name*MIPMAP_OBJ_SIZE));
+/*sync*/cntxt->synchro.writeInstr(1, NMC1_SET_MIPMAP_LVL_POINTER,(int)(name),0,(int)((void*)(mipmap + (name*MIPMAP_OBJ_SIZE))));
+
 	for(i=1;i<=NMGL_MAX_MIPMAP_LVL;i++)
 	{
 		cntxt->texState.texObjects[name].texImages2D[i].pixels=(void*)((NMGLubyte *)cntxt->texState.texObjects[name].texImages2D[i-1].pixels+cursize);
@@ -220,6 +222,8 @@ void nmglTexImage2D(NMGLenum target, NMGLint level, NMGLint internalformat, NMGL
 				{
 					ActiveTexObjectP->texImages2D[iter].width=width;
 					ActiveTexObjectP->texImages2D[iter].height=height;
+/*sync*/cntxt->synchro.writeInstr(1, NMC1_SET_WHF,(int)(ActiveTexObjectP->name),0,width,height,internalformat);
+
 				}
 				else{
 					if( ActiveTexObjectP->texImages2D[0].width>>iter > 0  )

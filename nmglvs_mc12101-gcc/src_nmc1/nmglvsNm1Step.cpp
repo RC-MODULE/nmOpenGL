@@ -255,13 +255,44 @@ SECTION(".text_nmglvs") int nmglvsNm1Step()
 		cntxt->texState.texObjects[currentCommand.params[0]].texImages2D[currentCommand.params[1]].pixels=(void*)currentCommand.params[2];
 		DEBUG_PRINT2(("Step:for texture %d level %d got pointer %x\n",currentCommand.params[0],currentCommand.params[1],currentCommand.params[2]));
 		break;
-	}
+	}	
 	case NMC1_BIND_ACTIVE_TEX_OBJECT: {
 		NMGLenum target=currentCommand.params[0];
 		NMGLuint texture=currentCommand.params[1];
         ActiveTexObjectP=&cntxt->texState.texObjects[texture];
 		break;
 	}
+	case NMC1_SET_WHF: {
+		#define TexObj cntxt->texState.texObjects
+		NMGLuint texture=currentCommand.params[0];
+		NMGLint lvl=currentCommand.params[1];
+		NMGLsizei width0=currentCommand.params[2];
+		NMGLsizei height0=currentCommand.params[3];
+		NMGLenum format=currentCommand.params[4];
+		int i=0;
+        for(i=0;i<=NMGL_MAX_MIPMAP_LVL;i++)
+		{
+			TexObj[texture].texImages2D[lvl].internalformat=format;
+			if(width0>>i >= 1)
+			{
+				TexObj[texture].texImages2D[lvl].width=width0>>i;
+			}
+			else
+			{
+				TexObj[texture].texImages2D[lvl].width=1;
+			}
+			if(height0>>i >= 1)
+			{
+				TexObj[texture].texImages2D[lvl].height=height0>>i;
+			}
+			else
+			{
+				TexObj[texture].texImages2D[lvl].height=1;
+			}
+		}
+		break;
+	}
+
 	default:
 		break;
 	}

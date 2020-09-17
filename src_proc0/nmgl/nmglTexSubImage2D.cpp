@@ -23,7 +23,7 @@ void nmglTexSubImage2D (NMGLenum target, NMGLint level, NMGLint xoffset, NMGLint
 	if((width<0)||(height<0)) {cntxt->error=NMGL_INVALID_VALUE;return;}
 	if((xoffset<0)||(yoffset<0)||(xoffset+width > ActiveTexObjectP->texImages2D[level].width)||(yoffset+height > ActiveTexObjectP->texImages2D[level].height)) {cntxt->error=NMGL_INVALID_VALUE;return;}
 	if(format != ActiveTexObjectP->texImages2D[level].internalformat){cntxt->error=NMGL_INVALID_OPERATION;return;}
-	if(pixels == NULL){cntxt->error=NMGL_INVALID_VALUE;return;}
+	//if(pixels == NULL){cntxt->error=NMGL_INVALID_VALUE;return;}
 
 	//size=getTexelSizeUbytes(ActiveTexObjectP->texImages2D[level].internalformat);
 	
@@ -40,7 +40,7 @@ void nmglTexSubImage2D (NMGLenum target, NMGLint level, NMGLint xoffset, NMGLint
 	//xstart=yoffset*line+xoffset*size;
 //DEBUG_PRINT(("texelUbytes00=%x TheOne=%x\n",getTexelSizeUbytes(ActiveTexObjectP->texImages2D[level].internalformat)),1+getTexelSizeUbytes(ActiveTexObjectP->texImages2D[level].internalformat));
 //DEBUG_PRINT(("format is=%x should be %x\n",ActiveTexObjectP->texImages2D[level].internalformat,NMGL_RGBA));
-	xstart=(NMGLint)(yoffset * line + xoffset * tSize);
+	xstart=(NMGLubyte)(yoffset * line + xoffset * tSize);
 DEBUG_PRINT(("inside SubImage2D line=%d\n",line));
 DEBUG_PRINT(("inside SubImage2D paddings=%d\n",paddings));
 DEBUG_PRINT(("inside SubImage2D xstart=%d\n",xstart));
