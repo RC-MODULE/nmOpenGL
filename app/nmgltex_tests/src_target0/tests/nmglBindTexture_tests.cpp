@@ -11,7 +11,8 @@ extern void* cntxtAddr_nm1;
 #pragma code_section ".text_tex_tests"
 #pragma data_section ".data_tex_tests"
 #endif
-NMGL_Context_NM1 *cntxt_nm1;
+extern NMGL_Context_NM1 *cntxt_nm1;
+extern unsigned int nmpu1IsAccessible;
 extern NMGLubyte mipmap[MIPMAP_MEM_SIZE];
 extern int getTexelSizeUbytes(NMGLint format);
 int isPowerOf2(NMGLint x);
@@ -178,9 +179,6 @@ int fillMipMap( int texture,NMGLint format,NMGLint width,NMGLint height,NMGLubyt
 int run_nmglBindTexture_test()
 {	
 	printf ("\nStart nmglBindTexture tests\n\n");
-	cntxt_nm1 = (NMGL_Context_NM1*)cntxtAddr_nm1;
-		DEBUG_PRINT(("Context nm1=%x\n",cntxt_nm1));
-		if(cntxt_nm1 == 0) return -2;
 		RUN_TEST(nmglBindTexture_wrongArgs_isError);
 		RUN_TEST(nmglBindTexture_bindTexture_contextStateCorrect);
 	printf ("\nEnd nmglBindTexture tests\n");
@@ -279,8 +277,10 @@ TEST_ASSERT(_st == 0);
 	_st = objInitEq<NMGL_Context_NM0>(cntxt,0);// check zero object is initilized
 	TEST_ASSERT(_st == 0);
 
-	_st = objInitEq<NMGL_Context_NM1>(cntxt_nm1,0);// check zero object is initilized
-	TEST_ASSERT(_st == 0);
+	if (nmpu1IsAccessible){
+		_st = objInitEq<NMGL_Context_NM1>(cntxt_nm1,0);// check zero object is initilized
+		TEST_ASSERT(_st == 0);
+	}
 
 TEST_ASSERT(cmpTexObj(ActiveTexObjectP,&cntxt->texState.texObjects[0]));//check zero obj is binded
 
