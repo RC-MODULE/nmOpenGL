@@ -24,37 +24,6 @@ SECTION(".data_imu6")	ArrayManager<float> normalAM;
 SECTION(".data_imu6")	ArrayManager<v4nm32f> colorAM;
 
 
-
-struct TrianglePrimitiveArrays3f {
-	float* x0;
-	float* y0;
-	float* z0;
-	float* x1;
-	float* y1;
-	float* z1;
-	float* x2;
-	float* y2;
-	float* z2;
-};
-
-struct TrianglePrimitiveArrays4f {
-	float* x0;
-	float* y0;
-	float* z0;
-	float* w0;
-	float* x1; 
-	float* y1;
-	float* z1;
-	float* w1;
-	float* x2;
-	float* y2;
-	float* z2;
-	float* w2;
-};
-
-
-
-
 template < typename T >
 inline void copyVec(const void* src, void* dst, size_t size) {
 	nmblas_scopy(size * sizeof32(T), (float*)src, 1, (float*)dst, 1);
@@ -370,119 +339,143 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 		case NMGL_TRIANGLE_FAN:
 		case NMGL_TRIANGLE_STRIP:
 		{
-			TrianglePrimitiveArrays4f trian4f;
-			TrianglePrimitiveArrays3f trian3f_1;
-			TrianglePrimitiveArrays3f trian3f_2;
+			TrianglePointers tmp0;
+			TrianglePointers tmp1;
+			TrianglePointers tmp2;
+			//TrianglePrimitiveArrays4f trian4f;
+			//TrianglePrimitiveArrays3f trian3f_1;
+			//TrianglePrimitiveArrays3f trian3f_2;
 			localSize -= excessVertexCount;
 			int primCount = vertexPrimitiveRepack(vertexResult, colorOrNormal, cntxt->buffer0, (v4nm32f*)cntxt->buffer1, mode, localSize);
 
-			trian4f.x0 = cntxt->buffer0;
-			trian4f.y0 = cntxt->buffer0 + primCount;
-			trian4f.z0 = cntxt->buffer0 + 2 * primCount;
-			trian4f.w0 = cntxt->buffer0 + 3 * primCount;
-			trian4f.x1 = cntxt->buffer0 + 4 * primCount;
-			trian4f.y1 = cntxt->buffer0 + 5 * primCount;
-			trian4f.z1 = cntxt->buffer0 + 6 * primCount;
-			trian4f.w1 = cntxt->buffer0 + 7 * primCount;
-			trian4f.x2 = cntxt->buffer0 + 8 * primCount;
-			trian4f.y2 = cntxt->buffer0 + 9 * primCount;
-			trian4f.z2 = cntxt->buffer0 + 10 * primCount;
-			trian4f.w2 = cntxt->buffer0 + 11 * primCount;
+			//в tmp0 хранятся данные в порядке x0,y0,z0,w0,x1,y1,z1,w1,x2,y2,z2,w2 (остальные массивы неопределены)
+			//в tmp1 хранятся данные в порядке x0,y0,z0,x1,y1,z1,x2,y2,z2 (остальные массивы неопределены)
+			tmp0.v0.x = cntxt->buffer0 + 0 * primCount;
+			tmp0.v0.y = cntxt->buffer0 + 1 * primCount;
+			tmp0.v0.z = cntxt->buffer0 + 2 * primCount;			
+			tmp0.v0.w = cntxt->buffer0 + 3 * primCount;
+			tmp0.v1.x = cntxt->buffer0 + 4 * primCount;
+			tmp0.v1.y = cntxt->buffer0 + 5 * primCount;
+			tmp0.v1.z = cntxt->buffer0 + 6 * primCount;			
+			tmp0.v1.w = cntxt->buffer0 + 7 * primCount;
+			tmp0.v2.x = cntxt->buffer0 + 8 * primCount;
+			tmp0.v2.y = cntxt->buffer0 + 9 * primCount;
+			tmp0.v2.z = cntxt->buffer0 + 10 * primCount;
+			tmp0.v2.w = cntxt->buffer0 + 11 * primCount;
 
-			trian3f_1.x0 = cntxt->buffer2;
-			trian3f_1.y0 = cntxt->buffer2 + primCount;
-			trian3f_1.z0 = cntxt->buffer2 + 2 * primCount;
-			trian3f_1.x1 = cntxt->buffer2 + 3 * primCount;
-			trian3f_1.y1 = cntxt->buffer2 + 4 * primCount;
-			trian3f_1.z1 = cntxt->buffer2 + 5 * primCount;
-			trian3f_1.x2 = cntxt->buffer2 + 6 * primCount;
-			trian3f_1.y2 = cntxt->buffer2 + 7 * primCount;
-			trian3f_1.z2 = cntxt->buffer2 + 8 * primCount;
-
-			trian3f_2.x0 = cntxt->buffer3;
-			trian3f_2.y0 = cntxt->buffer3 + primCount;
-			trian3f_2.z0 = cntxt->buffer3 + 2 * primCount;
-			trian3f_2.x1 = cntxt->buffer3 + 3 * primCount;
-			trian3f_2.y1 = cntxt->buffer3 + 4 * primCount;
-			trian3f_2.z1 = cntxt->buffer3 + 5 * primCount;
-			trian3f_2.x2 = cntxt->buffer3 + 6 * primCount;
-			trian3f_2.y2 = cntxt->buffer3 + 7 * primCount;
-			trian3f_2.z2 = cntxt->buffer3 + 8 * primCount;
+			tmp1.v0.x = cntxt->buffer2 + 0 * primCount;
+			tmp1.v0.y = cntxt->buffer2 + 1 * primCount;
+			tmp1.v0.z = cntxt->buffer2 + 2 * primCount;
+			tmp1.v1.x = cntxt->buffer2 + 3 * primCount;
+			tmp1.v1.y = cntxt->buffer2 + 4 * primCount;
+			tmp1.v1.z = cntxt->buffer2 + 5 * primCount;
+			tmp1.v2.x = cntxt->buffer2 + 6 * primCount;
+			tmp1.v2.y = cntxt->buffer2 + 7 * primCount;
+			tmp1.v2.z = cntxt->buffer2 + 8 * primCount;
 
 			//------------clipping-------------------
+
 			//------------perspective-division-----------------
-			nmppsDiv_32f(trian4f.x0, trian4f.w0, trian3f_1.x0, primCount);
-			nmppsDiv_32f(trian4f.y0, trian4f.w0, trian3f_1.y0, primCount);
-			nmppsDiv_32f(trian4f.z0, trian4f.w0, trian3f_1.z0, primCount);
-			nmppsDiv_32f(trian4f.x1, trian4f.w1, trian3f_1.x1, primCount);
-			nmppsDiv_32f(trian4f.y1, trian4f.w1, trian3f_1.y1, primCount);
-			nmppsDiv_32f(trian4f.z1, trian4f.w1, trian3f_1.z1, primCount);
-			nmppsDiv_32f(trian4f.x2, trian4f.w2, trian3f_1.x2, primCount);
-			nmppsDiv_32f(trian4f.y2, trian4f.w2, trian3f_1.y2, primCount);
-			nmppsDiv_32f(trian4f.z2, trian4f.w2, trian3f_1.z2, primCount);
+			//tmp0->tmp1
+			nmppsDiv_32f(tmp0.v0.x, tmp0.v0.w, tmp1.v0.x, primCount);
+			nmppsDiv_32f(tmp0.v0.y, tmp0.v0.w, tmp1.v0.y, primCount);
+			nmppsDiv_32f(tmp0.v0.z, tmp0.v0.w, tmp1.v0.z, primCount);
+			nmppsDiv_32f(tmp0.v1.x, tmp0.v1.w, tmp1.v1.x, primCount);
+			nmppsDiv_32f(tmp0.v1.y, tmp0.v1.w, tmp1.v1.y, primCount);
+			nmppsDiv_32f(tmp0.v1.z, tmp0.v1.w, tmp1.v1.z, primCount);
+			nmppsDiv_32f(tmp0.v2.x, tmp0.v2.w, tmp1.v2.x, primCount);
+			nmppsDiv_32f(tmp0.v2.y, tmp0.v2.w, tmp1.v2.y, primCount);
+			nmppsDiv_32f(tmp0.v2.z, tmp0.v2.w, tmp1.v2.z, primCount);
 			//------------viewport------------------------		
 
-			nmppsMulC_AddC_32f(trian3f_1.x0, cntxt->windowInfo.viewportMulX, cntxt->windowInfo.viewportAddX, trian3f_2.x0, primCount);		//X
-			nmppsMulC_AddC_32f(trian3f_1.y0, cntxt->windowInfo.viewportMulY, cntxt->windowInfo.viewportAddY, trian3f_2.y0, primCount);		//Y
-			nmppsMulC_AddC_32f(trian3f_1.z0, cntxt->windowInfo.viewportMulZ, cntxt->windowInfo.viewportAddZ, trian3f_2.z0, primCount);		//Z		
+			//tmp1->tmp0
+			nmppsMulC_AddC_32f(tmp1.v0.x, cntxt->windowInfo.viewportMulX, cntxt->windowInfo.viewportAddX, tmp0.v0.x, primCount);		//X
+			nmppsMulC_AddC_32f(tmp1.v0.y, cntxt->windowInfo.viewportMulY, cntxt->windowInfo.viewportAddY, tmp0.v0.y, primCount);		//Y
+			nmppsMulC_AddC_32f(tmp1.v0.z, cntxt->windowInfo.viewportMulZ, cntxt->windowInfo.viewportAddZ, tmp0.v0.z, primCount);		//Z		
 
-			nmppsMulC_AddC_32f(trian3f_1.x1, cntxt->windowInfo.viewportMulX, cntxt->windowInfo.viewportAddX, trian3f_2.x1, primCount);		//X
-			nmppsMulC_AddC_32f(trian3f_1.y1, cntxt->windowInfo.viewportMulY, cntxt->windowInfo.viewportAddY, trian3f_2.y1, primCount);		//Y
-			nmppsMulC_AddC_32f(trian3f_1.z1, cntxt->windowInfo.viewportMulZ, cntxt->windowInfo.viewportAddZ, trian3f_2.z1, primCount);		//Z		
+			nmppsMulC_AddC_32f(tmp1.v1.x, cntxt->windowInfo.viewportMulX, cntxt->windowInfo.viewportAddX, tmp0.v1.x, primCount);		//X
+			nmppsMulC_AddC_32f(tmp1.v1.y, cntxt->windowInfo.viewportMulY, cntxt->windowInfo.viewportAddY, tmp0.v1.y, primCount);		//Y
+			nmppsMulC_AddC_32f(tmp1.v1.z, cntxt->windowInfo.viewportMulZ, cntxt->windowInfo.viewportAddZ, tmp0.v1.z, primCount);		//Z		
 
-			nmppsMulC_AddC_32f(trian3f_1.x2, cntxt->windowInfo.viewportMulX, cntxt->windowInfo.viewportAddX, trian3f_2.x2, primCount);		//X
-			nmppsMulC_AddC_32f(trian3f_1.y2, cntxt->windowInfo.viewportMulY, cntxt->windowInfo.viewportAddY, trian3f_2.y2, primCount);		//Y
-			nmppsMulC_AddC_32f(trian3f_1.z2, cntxt->windowInfo.viewportMulZ, cntxt->windowInfo.viewportAddZ, trian3f_2.z2, primCount);		//Z			
+			nmppsMulC_AddC_32f(tmp1.v2.x, cntxt->windowInfo.viewportMulX, cntxt->windowInfo.viewportAddX, tmp0.v2.x, primCount);		//X
+			nmppsMulC_AddC_32f(tmp1.v2.y, cntxt->windowInfo.viewportMulY, cntxt->windowInfo.viewportAddY, tmp0.v2.y, primCount);		//Y
+			nmppsMulC_AddC_32f(tmp1.v2.z, cntxt->windowInfo.viewportMulZ, cntxt->windowInfo.viewportAddZ, tmp0.v2.z, primCount);		//Z			
 
-			nmppsConvert_32f32s_rounding(trian3f_2.x0, (int*)trian3f_1.x0, 0, 9 * primCount);
-			nmppsConvert_32s32f((int*)trian3f_1.x0, trian3f_2.x0, 9 * primCount);
+			//в tmp0 теперь хранятся x,y в оконных координатах, z в диапазона 0..Z_BUFF_MAX, 
+			//координаты w а так же текстурные координаты s,t, оставшиеся без изменений
+
+			//округление x,y и z
+			//tmp0->tmp1
+			nmppsConvert_32f32s_rounding(tmp0.v0.x, (int*)tmp1.v0.x, 0, primCount);
+			nmppsConvert_32f32s_rounding(tmp0.v0.y, (int*)tmp1.v0.y, 0, primCount);
+			nmppsConvert_32f32s_rounding(tmp0.v0.z, (int*)tmp1.v0.z, 0, primCount);
+			nmppsConvert_32f32s_rounding(tmp0.v1.x, (int*)tmp1.v1.x, 0, primCount);
+			nmppsConvert_32f32s_rounding(tmp0.v1.y, (int*)tmp1.v1.y, 0, primCount);
+			nmppsConvert_32f32s_rounding(tmp0.v1.z, (int*)tmp1.v1.z, 0, primCount);
+			nmppsConvert_32f32s_rounding(tmp0.v2.x, (int*)tmp1.v2.x, 0, primCount);
+			nmppsConvert_32f32s_rounding(tmp0.v2.y, (int*)tmp1.v2.y, 0, primCount);
+			nmppsConvert_32f32s_rounding(tmp0.v2.z, (int*)tmp1.v2.z, 0, primCount);
+			nmppsConvert_32s32f((int*)tmp1.v0.x, tmp1.v0.x, primCount);
+			nmppsConvert_32s32f((int*)tmp1.v0.y, tmp1.v0.y, primCount);
+			nmppsConvert_32s32f((int*)tmp1.v0.z, tmp1.v0.z, primCount);
+			nmppsConvert_32s32f((int*)tmp1.v1.x, tmp1.v1.x, primCount);
+			nmppsConvert_32s32f((int*)tmp1.v1.y, tmp1.v1.y, primCount);
+			nmppsConvert_32s32f((int*)tmp1.v1.z, tmp1.v1.z, primCount);
+			nmppsConvert_32s32f((int*)tmp1.v2.x, tmp1.v2.x, primCount);
+			nmppsConvert_32s32f((int*)tmp1.v2.y, tmp1.v2.y, primCount);
+			nmppsConvert_32s32f((int*)tmp1.v2.z, tmp1.v2.z, primCount);
+
+			//данные хранятся в tmp1 (в buffer2), цвет в buffer1
 			v2nm32f *minXY = (v2nm32f*)cntxt->buffer4;
 			v2nm32f *maxXY = (v2nm32f*)cntxt->buffer4 + 3 * NMGL_SIZE;
 			int srcThreated = 0;
+
+			//переинициализация tmp0
+			tmp0.v0.x = cntxt->buffer0 + 0 * NMGL_SIZE;
+			tmp0.v0.y = cntxt->buffer0 + 1 * NMGL_SIZE;
+			tmp0.v0.z = cntxt->buffer0 + 2 * NMGL_SIZE;
+			tmp0.v1.x = cntxt->buffer0 + 3 * NMGL_SIZE;
+			tmp0.v1.y = cntxt->buffer0 + 4 * NMGL_SIZE;
+			tmp0.v1.z = cntxt->buffer0 + 5 * NMGL_SIZE;
+			tmp0.v2.x = cntxt->buffer0 + 6 * NMGL_SIZE;
+			tmp0.v2.y = cntxt->buffer0 + 7 * NMGL_SIZE;
+			tmp0.v2.z = cntxt->buffer0 + 8 * NMGL_SIZE;
 			
 			while (srcThreated < primCount) {
-				PROFILER_SIZE(primCount);
-				int currentCount = triangulate(trian3f_2.x0, (v4nm32f*)cntxt->buffer1, primCount,
+				
+				//PROFILER_SIZE(primCount);
+				int currentCount = triangulate(cntxt->buffer2, (v4nm32f*)cntxt->buffer1, primCount,
 					WIDTH_PTRN, HEIGHT_PTRN,
-					NMGL_SIZE, trian3f_1.x0, (v4nm32f*)cntxt->buffer0, &srcThreated);
-				trian3f_1.x0 = trian3f_1.x0 + 0 * NMGL_SIZE;
-				trian3f_1.y0 = trian3f_1.x0 + 1 * NMGL_SIZE;
-				trian3f_1.z0 = trian3f_1.x0 + 2 * NMGL_SIZE;
-				trian3f_1.x1 = trian3f_1.x0 + 3 * NMGL_SIZE;
-				trian3f_1.y1 = trian3f_1.x0 + 4 * NMGL_SIZE;
-				trian3f_1.z1 = trian3f_1.x0 + 5 * NMGL_SIZE;
-				trian3f_1.x2 = trian3f_1.x0 + 6 * NMGL_SIZE;
-				trian3f_1.y2 = trian3f_1.x0 + 7 * NMGL_SIZE;
-				trian3f_1.z2 = trian3f_1.x0 + 8 * NMGL_SIZE;
+					NMGL_SIZE, cntxt->buffer0, (v4nm32f*)cntxt->buffer3, &srcThreated);				
+
 				if (currentCount % 2) {					
-					trian3f_1.x0[currentCount] = trian3f_1.x0[currentCount - 1];
-					trian3f_1.y0[currentCount] = trian3f_1.y0[currentCount - 1];
-					trian3f_1.z0[currentCount] = trian3f_1.z0[currentCount - 1];
-					trian3f_1.x1[currentCount] = trian3f_1.x1[currentCount - 1];
-					trian3f_1.y1[currentCount] = trian3f_1.y1[currentCount - 1];
-					trian3f_1.z1[currentCount] = trian3f_1.z1[currentCount - 1];
-					trian3f_1.x2[currentCount] = trian3f_1.x2[currentCount - 1];
-					trian3f_1.y2[currentCount] = trian3f_1.y2[currentCount - 1];
-					trian3f_1.z2[currentCount] = trian3f_1.z2[currentCount - 1];
-					cntxt->buffer0[4 * (currentCount) + 0] = cntxt->buffer0[4 * (currentCount - 1) + 0];
-					cntxt->buffer0[4 * (currentCount) + 1] = cntxt->buffer0[4 * (currentCount - 1) + 1];
-					cntxt->buffer0[4 * (currentCount) + 2] = cntxt->buffer0[4 * (currentCount - 1) + 2];
-					cntxt->buffer0[4 * (currentCount) + 3] = cntxt->buffer0[4 * (currentCount - 1) + 3];
+					tmp0.v0.x[currentCount] = tmp0.v0.x[currentCount - 1];
+					tmp0.v0.y[currentCount] = tmp0.v0.y[currentCount - 1];
+					tmp0.v0.z[currentCount] = tmp0.v0.z[currentCount - 1];
+					tmp0.v1.x[currentCount] = tmp0.v1.x[currentCount - 1];
+					tmp0.v1.y[currentCount] = tmp0.v1.y[currentCount - 1];
+					tmp0.v1.z[currentCount] = tmp0.v1.z[currentCount - 1];
+					tmp0.v2.x[currentCount] = tmp0.v2.x[currentCount - 1];
+					tmp0.v2.y[currentCount] = tmp0.v2.y[currentCount - 1];
+					tmp0.v2.z[currentCount] = tmp0.v2.z[currentCount - 1];
+					cntxt->buffer3[4 * (currentCount) + 0] = cntxt->buffer3[4 * (currentCount - 1) + 0];
+					cntxt->buffer3[4 * (currentCount) + 1] = cntxt->buffer3[4 * (currentCount - 1) + 1];
+					cntxt->buffer3[4 * (currentCount) + 2] = cntxt->buffer3[4 * (currentCount - 1) + 2];
+					cntxt->buffer3[4 * (currentCount) + 3] = cntxt->buffer3[4 * (currentCount - 1) + 3];
 					currentCount++;
 				}
-				TrianglePrimitiveArrays3f* current = &trian3f_1;
 
 				//копирование каждого третьего цвета
-				nmblas_dcopy(2 * currentCount, (double*)cntxt->buffer0, 6, (double*)colorOrNormal, 2);
-				nmblas_dcopy(2 * currentCount, (double*)cntxt->buffer0 + 1, 6, (double*)colorOrNormal + 1, 2);
+				nmblas_dcopy(2 * currentCount, (double*)cntxt->buffer3, 6, (double*)colorOrNormal, 2);
+				nmblas_dcopy(2 * currentCount, (double*)cntxt->buffer3 + 1, 6, (double*)colorOrNormal + 1, 2);				
 
-				nmblas_scopy(currentCount, current->x0, 1, cntxt->trianInner.x0, 1);
-				nmblas_scopy(currentCount, current->y0, 1, cntxt->trianInner.y0, 1);
-				nmblas_scopy(currentCount, current->x1, 1, cntxt->trianInner.x1, 1);
-				nmblas_scopy(currentCount, current->y1, 1, cntxt->trianInner.y1, 1);
-				nmblas_scopy(currentCount, current->x2, 1, cntxt->trianInner.x2, 1);
-				nmblas_scopy(currentCount, current->y2, 1, cntxt->trianInner.y2, 1);
-				meanToInt3(current->z0, current->z1, current->z2, cntxt->trianInner.z, currentCount);
+				nmblas_scopy(currentCount, tmp0.v0.x, 1, cntxt->trianInner.x0, 1);
+				nmblas_scopy(currentCount, tmp0.v0.y, 1, cntxt->trianInner.y0, 1);
+				nmblas_scopy(currentCount, tmp0.v1.x, 1, cntxt->trianInner.x1, 1);
+				nmblas_scopy(currentCount, tmp0.v1.y, 1, cntxt->trianInner.y1, 1);
+				nmblas_scopy(currentCount, tmp0.v2.x, 1, cntxt->trianInner.x2, 1);
+				nmblas_scopy(currentCount, tmp0.v2.y, 1, cntxt->trianInner.y2, 1);
+				meanToInt3(tmp0.v0.z, tmp0.v1.z, tmp0.v2.z, cntxt->trianInner.z, currentCount);
 				nmppsConvert_32f32s_rounding((float*)colorOrNormal, (int*)cntxt->trianInner.colors, 0, 4 * currentCount);
 				cntxt->trianInner.size = currentCount;
 				if (cntxt->isCullFace) {
@@ -500,7 +493,7 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 				nmppsMerge_32f(cntxt->buffer0, cntxt->buffer2, (float*)minXY, cntxt->trianInner.size);
 				nmppsMerge_32f(cntxt->buffer1, cntxt->buffer3, (float*)maxXY, cntxt->trianInner.size);
 				setSegmentMask(minXY, maxXY, cntxt->segmentMasks, cntxt->trianInner.size);
-				PROFILER_SIZE(cntxt->trianInner.size);
+				//PROFILER_SIZE(cntxt->trianInner.size);
 				rasterizeT(&cntxt->trianInner, cntxt->segmentMasks);
 			}
 			break;
@@ -546,7 +539,7 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			nmppsMerge_32f(cntxt->buffer0, cntxt->buffer2, (float*)minXY, cntxt->lineInner.size);
 			nmppsMerge_32f(cntxt->buffer1, cntxt->buffer3, (float*)maxXY, cntxt->lineInner.size);
 			setSegmentMask(minXY, maxXY, cntxt->segmentMasks, cntxt->lineInner.size);
-			PROFILER_SIZE(cntxt->lineInner.size);
+			//PROFILER_SIZE(cntxt->lineInner.size);
 			rasterizeL(&cntxt->lineInner, cntxt->segmentMasks);
 			break;
 		}

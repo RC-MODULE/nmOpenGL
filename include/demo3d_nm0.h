@@ -64,6 +64,28 @@ public:
 	}
 };
 
+struct CombinePointers {
+	float *x;
+	float *y;
+	float *z;
+	float *w;
+	float *s;
+	float *t;
+	v4nm32f* color;
+	int stride;
+};
+
+struct TrianglePointers {
+	CombinePointers v0;
+	CombinePointers v1;
+	CombinePointers v2;
+};
+
+struct LinePointers {
+	CombinePointers v0;
+	CombinePointers v1;
+};
+
 
 struct Lines{
 	float* x0;
