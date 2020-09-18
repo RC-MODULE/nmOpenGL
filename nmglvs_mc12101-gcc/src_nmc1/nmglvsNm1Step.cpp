@@ -219,32 +219,32 @@ SECTION(".text_nmglvs") int nmglvsNm1Step()
 	}
 	case NMC1_SET_WHF: {
 		#define TexObj cntxt->texState.texObjects
-		NMGLuint texture=currentCommand.params[0];
-		NMGLint lvl=currentCommand.params[1];
-		NMGLsizei width0=currentCommand.params[2];
-		NMGLsizei height0=currentCommand.params[3];
-		NMGLenum format=currentCommand.params[4];
+		NMGLuint texture=currentCommand.params[0];		
+		NMGLsizei width0=currentCommand.params[1];
+		NMGLsizei height0=currentCommand.params[2];
+		NMGLenum format=currentCommand.params[3];
 		int i=0;
         for(i=0;i<=NMGL_MAX_MIPMAP_LVL;i++)
 		{
-			TexObj[texture].texImages2D[lvl].internalformat=format;
+			TexObj[texture].texImages2D[i].internalformat=format;
 			if(width0>>i >= 1)
 			{
-				TexObj[texture].texImages2D[lvl].width=width0>>i;
+				TexObj[texture].texImages2D[i].width=width0>>i;
 			}
 			else
 			{
-				TexObj[texture].texImages2D[lvl].width=1;
+				TexObj[texture].texImages2D[i].width=1;
 			}
 			if(height0>>i >= 1)
 			{
-				TexObj[texture].texImages2D[lvl].height=height0>>i;
+				TexObj[texture].texImages2D[i].height=height0>>i;
 			}
 			else
 			{
-				TexObj[texture].texImages2D[lvl].height=1;
+				TexObj[texture].texImages2D[i].height=1;
 			}
 		}
+		break;
 	}
 	
 	case NMC1_SET_TEX_ENV_COLOR: {

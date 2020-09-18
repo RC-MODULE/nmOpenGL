@@ -453,7 +453,6 @@ _nmglTexImage2D_prevent_internal_errors();
 //CHANGE_REPORT
 int nmglTexImage2D_wrongTarget_isError()
 {
-	ActiveTexObjectP=&cntxt->texState.texObjects[0];
 	_nmglTexImage2D_prevent_internal_errors();
 	status=init_TexImage2D_input(&input,cur_width,internalformats[0]);
 
@@ -484,6 +483,8 @@ _nmglTexImage2D_prevent_internal_errors();
 int nmglTexImage2D_wrongLevel_isError()
 {
 	_nmglTexImage2D_prevent_internal_errors();
+	status=init_TexImage2D_input(&input,cur_width,internalformats[0]);
+
 	nmglTexImage2D(input.target,-1,input.internalformat.type,input.width,input.height,0,input.internalformat.type,input.type,input.pixels);
 	TEST_ASSERT(cntxt->error==NMGL_INVALID_VALUE);
 
