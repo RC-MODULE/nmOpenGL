@@ -130,16 +130,22 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 		printf("triangles drawing\n");
 		break;
 	case NMGL_TRIANGLE_FAN:
-		printf("triangles fan drawing\n");
+		printf("triangle fan drawing\n");
 		break;
 	case NMGL_TRIANGLE_STRIP:
-		printf("triangles strip drawing\n");
+		printf("triangle strip drawing\n");
 		break;
 	case NMGL_POINTS:
 		printf("points drawing\n");
 		break;
 	case NMGL_LINES:
 		printf("lines drawing\n");
+		break;
+	case NMGL_LINE_LOOP:
+		printf("line loop drawing\n");
+		break;
+	case NMGL_LINE_STRIP:
+		printf("line strip drawing\n");
 		break;
 	default:
 		printf(". Invalid error. Exit DrawArrays\n");
@@ -435,6 +441,7 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			int srcThreated = 0;
 			
 			while (srcThreated < primCount) {
+				PROFILER_SIZE(primCount);
 				int currentCount = triangulate(trian3f_2.x0, (v4nm32f*)cntxt->buffer1, primCount,
 					WIDTH_PTRN - 1, HEIGHT_PTRN - 1,
 					NMGL_SIZE, trian3f_1.x0, (v4nm32f*)cntxt->buffer0, &srcThreated);
@@ -493,10 +500,13 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 				nmppsMerge_32f(cntxt->buffer0, cntxt->buffer2, (float*)minXY, cntxt->trianInner.size);
 				nmppsMerge_32f(cntxt->buffer1, cntxt->buffer3, (float*)maxXY, cntxt->trianInner.size);
 				setSegmentMask(minXY, maxXY, cntxt->segmentMasks, cntxt->trianInner.size);
+				PROFILER_SIZE(cntxt->trianInner.size);
 				rasterizeT(&cntxt->trianInner, cntxt->segmentMasks);
 			}
 			break;
 		}
+		case NMGL_LINE_STRIP:
+		case NMGL_LINE_LOOP:
 		case NMGL_LINES: {
 			
 			split_v4nm32f(vertexResult, 1, cntxt->buffer0, cntxt->buffer1, cntxt->buffer2, cntxt->buffer3, localSize);
@@ -525,7 +535,7 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			nmppsConvert_32s32f((int*)cntxt->buffer0, vertexY, localSize);
 			v2nm32f *minXY = (v2nm32f*)cntxt->buffer4;
 			v2nm32f *maxXY = (v2nm32f*)cntxt->buffer4 + 3 * NMGL_SIZE;
-			pushToLines_l(vertexX, vertexY, vertexZ, colorOrNormal, cntxt->lineInner, localSize);
+			pushToLines(vertexX, vertexY, vertexZ, colorOrNormal, cntxt->lineInner, mode, localSize);
 			
 			findMinMax2(cntxt->lineInner.x0, cntxt->lineInner.x1,
 				cntxt->buffer0, cntxt->buffer1,
@@ -536,6 +546,7 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			nmppsMerge_32f(cntxt->buffer0, cntxt->buffer2, (float*)minXY, cntxt->lineInner.size);
 			nmppsMerge_32f(cntxt->buffer1, cntxt->buffer3, (float*)maxXY, cntxt->lineInner.size);
 			setSegmentMask(minXY, maxXY, cntxt->segmentMasks, cntxt->lineInner.size);
+			PROFILER_SIZE(cntxt->lineInner.size);
 			rasterizeL(&cntxt->lineInner, cntxt->segmentMasks);
 			break;
 		}

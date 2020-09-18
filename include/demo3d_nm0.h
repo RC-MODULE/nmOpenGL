@@ -1064,6 +1064,7 @@ int getNormalPart(Array* array, v4nm32f* dst, float* tmpBuffer, int count);
 int getColorPart(Array* array, v4nm32f* dst, float* tmpBuffer, int count);
 
 void pushToLines_l(const float *vertexX, const float *vertexY, const float *vertexZ, const v4nm32f* color, Lines& lines, int countVertex);
+void pushToLines(const float *vertexX, const float *vertexY, const float *vertexZ, const v4nm32f* color, Lines& lines, int mode, int countVertex);
 
 void pushToTriangles_t(const float *vertexX, const float *vertexY, const float *vertexZ, const v4nm32f* color, Triangles& triangles, int countVertex);
 void reverseMatrix3x3in4x4(mat4nm32f* src, mat4nm32f* dst);
