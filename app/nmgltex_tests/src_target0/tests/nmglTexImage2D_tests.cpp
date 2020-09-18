@@ -453,6 +453,7 @@ _nmglTexImage2D_prevent_internal_errors();
 //CHANGE_REPORT
 int nmglTexImage2D_wrongTarget_isError()
 {
+	ActiveTexObjectP=&cntxt->texState.texObjects[0];
 	_nmglTexImage2D_prevent_internal_errors();
 	status=init_TexImage2D_input(&input,cur_width,internalformats[0]);
 

@@ -180,31 +180,9 @@ void nmglTexImage2D(NMGLenum target, NMGLint level, NMGLint internalformat, NMGL
 	if((internalformat !=NMGL_RGBA)&&(internalformat !=NMGL_RGB)&&(internalformat !=NMGL_ALPHA)&&(internalformat !=NMGL_LUMINANCE)&&(internalformat !=NMGL_LUMINANCE_ALPHA)){cntxt->error=NMGL_INVALID_VALUE;return;}
 
 	if( ActiveTexObjectP->imageIsSet == 1 ) 
-	{
-		
-		//TODO: maybe just add a flag; 
-		if((ActiveTexObjectP->texMinFilter == NMGL_NEAREST_MIPMAP_NEAREST) ||(ActiveTexObjectP->texMinFilter == NMGL_NEAREST_MIPMAP_LINEAR) ||(ActiveTexObjectP->texMinFilter == NMGL_LINEAR_MIPMAP_NEAREST)||(ActiveTexObjectP->texMinFilter == NMGL_LINEAR_MIPMAP_LINEAR))
-		{
-			//mipmapping is enabled
-			//if(level>NMGL_MAX_MIPMAP_LVL){cntxt->error=NMGL_INVALID_VALUE;return;}
-			if(ActiveTexObjectP->texImages2D[level].internalformat!=internalformat){cntxt->error=NMGL_INVALID_OPERATION;return;}
-			if((ActiveTexObjectP->texImages2D[level].width != width)||(ActiveTexObjectP->texImages2D[level].height != height)){cntxt->error=NMGL_INVALID_OPERATION;return;}
-			ActiveTexObjectP->texImages2D[level].width=width;//relia only;maybe delete
-			ActiveTexObjectP->texImages2D[level].height=height;//relia only;maybe delete			
-			/*
-				s=fillpixels(pixels,internalformat,width,height,ActiveTexObjectP->texImages2D[level].pixels);
-			*/
-		}
-		else{
-			//mipmapping is disabled
-			if(level != 0){cntxt->error=NMGL_INVALID_OPERATION;return;}
-			if(ActiveTexObjectP->texImages2D[0].internalformat!=internalformat){cntxt->error=NMGL_INVALID_OPERATION;return;}
-			if((ActiveTexObjectP->texImages2D[0].width!=width)||(ActiveTexObjectP->texImages2D[0].height!=height)) {cntxt->error=NMGL_INVALID_OPERATION;return;}
-			/*
-			s=fillpixels(pixels,internalformat,width,height,ActiveTexObjectP->texImages2D[0].pixels);
-			*/
-
-		}
+	{			
+		if(ActiveTexObjectP->texImages2D[level].internalformat!=internalformat){cntxt->error=NMGL_INVALID_OPERATION;return;}
+		if((ActiveTexObjectP->texImages2D[level].width != width)||(ActiveTexObjectP->texImages2D[level].height != height)){cntxt->error=NMGL_INVALID_OPERATION;return;}		
 	}
 	else
 	{
