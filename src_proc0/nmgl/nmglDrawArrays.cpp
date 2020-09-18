@@ -443,7 +443,7 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			while (srcThreated < primCount) {
 				PROFILER_SIZE(primCount);
 				int currentCount = triangulate(trian3f_2.x0, (v4nm32f*)cntxt->buffer1, primCount,
-					WIDTH_PTRN - 1, HEIGHT_PTRN - 1,
+					WIDTH_PTRN, HEIGHT_PTRN,
 					NMGL_SIZE, trian3f_1.x0, (v4nm32f*)cntxt->buffer0, &srcThreated);
 				trian3f_1.x0 = trian3f_1.x0 + 0 * NMGL_SIZE;
 				trian3f_1.y0 = trian3f_1.x0 + 1 * NMGL_SIZE;
