@@ -337,13 +337,16 @@ public:
 				if (i == j) {
 					modelviewMatrix[0].matr[i * 4 + j] = 1;
 					projectionMatrix[0].matr[i * 4 + j] = 1;
+					normalMatrix.matr[i * 4 + j] = 1;
 				}
 				else {
 					modelviewMatrix[0].matr[i * 4 + j] = 0;
 					projectionMatrix[0].matr[i * 4 + j] = 0;
+					normalMatrix.matr[i * 4 + j] = 0;
 				}
 			}
 		}
+		normalMatrix.matr[15] = 0;
 
 		windowInfo.segmentWidth = WIDTH_SEG;
 		windowInfo.segmentHeight = HEIGHT_SEG;
@@ -1078,12 +1081,44 @@ extern "C"{
 	void ternaryLt0_AddC_AddC_32f(nm32f* srcFlags, nm32f* srcVec, float valueLeft, float valueRight, float* dstVec, int size);
 	void tripleMulC_32f(float* src1, float* src2, float* src3, float C, float* dst1, float* dst2, float* dst3, int size);
 
+	int vertexPrimitiveRepack_t(const v4nm32f *srcVertex,
+		const v4nm32f *srcColor,
+		const v2nm32f *srcTex,
+		TrianglePointers *dstVertex,
+		int vertexAmount);
+	int vertexPrimitiveRepack_ts(const v4nm32f *srcVertex,
+		const v4nm32f *srcColor,
+		const v2nm32f *srcTex,
+		TrianglePointers *dstVertex,
+		int vertexAmount);
+	int vertexPrimitiveRepack_tf(const v4nm32f *srcVertex,
+		const v4nm32f *srcColor,
+		const v2nm32f *srcTex,
+		TrianglePointers *dstVertex,
+		int vertexAmount);
+	int vertexPrimitiveRepack_l(const v4nm32f *srcVertex,
+		const v4nm32f *srcColor,
+		const v2nm32f *srcTex,
+		LinePointers *dstVertex,
+		int vertexAmount);
+	int vertexPrimitiveRepack_ls(const v4nm32f *srcVertex,
+		const v4nm32f *srcColor,
+		const v2nm32f *srcTex,
+		LinePointers *dstVertex,
+		int vertexAmount);
+	int vertexPrimitiveRepack_ll(const v4nm32f *srcVertex,
+		const v4nm32f *srcColor,
+		const v2nm32f *srcTex,
+		LinePointers *dstVertex,
+		int vertexAmount);
 
 }
 
-int getVertexPart(Array* array, v4nm32f* dst, float* tmpBuffer, int count);
-int getNormalPart(Array* array, v4nm32f* dst, float* tmpBuffer, int count);
-int getColorPart(Array* array, v4nm32f* dst, float* tmpBuffer, int count);
+
+
+//int getVertexPart(Array* array, v4nm32f* dst, float* tmpBuffer, int count);
+//int getNormalPart(Array* array, v4nm32f* dst, float* tmpBuffer, int count);
+//int getColorPart(Array* array, v4nm32f* dst, float* tmpBuffer, int count);
 
 void pushToLines_l(const float *vertexX, const float *vertexY, const float *vertexZ, const v4nm32f* color, Lines& lines, int countVertex);
 void pushToLines(const float *vertexX, const float *vertexY, const float *vertexZ, const v4nm32f* color, Lines& lines, int mode, int countVertex);

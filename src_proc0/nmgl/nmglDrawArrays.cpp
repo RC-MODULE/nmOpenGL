@@ -177,7 +177,7 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			(float*)&cntxt->materialEmissive, 
 			(float*)(cntxt->ambientMul + MAX_LIGHTS), 4);
 	}
-	reverseMatrix3x3in4x4(cntxt->modelviewMatrixStack.top(), &cntxt->normalMatrix);
+	//reverseMatrix3x3in4x4(cntxt->modelviewMatrixStack.top(), &cntxt->normalMatrix);
 	while (!vertexAM.isEmpty()) {
 		//int localSize = MIN(count - pointVertex, maxInnerCount);
 		int localSize = vertexAM.pop(cntxt->buffer0) / cntxt->vertexArray.size;
