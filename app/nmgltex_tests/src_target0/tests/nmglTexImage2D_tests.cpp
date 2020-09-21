@@ -488,11 +488,11 @@ int nmglTexImage2D_wrongLevel_isError()
 	nmglTexImage2D(input.target,-1,input.internalformat.type,input.width,input.height,0,input.internalformat.type,input.type,input.pixels);
 	TEST_ASSERT(cntxt->error==NMGL_INVALID_VALUE);
 
-	_nmglTexImage2D_prevent_internal_errors();
+	//_nmglTexImage2D_prevent_internal_errors();
 	nmglTexImage2D(input.target,1,input.internalformat.type,input.width,input.height,0,input.internalformat.type,input.type,input.pixels);
 	TEST_ASSERT(cntxt->error==NMGL_INVALID_OPERATION);
 
-	_nmglTexImage2D_prevent_internal_errors();
+	//_nmglTexImage2D_prevent_internal_errors();
 	nmglTexImage2D(input.target,NMGL_MAX_MIPMAP_LVL+1,input.internalformat.type,input.width,input.height,0,input.internalformat.type,input.type,input.pixels);
 	TEST_ASSERT(cntxt->error==NMGL_INVALID_VALUE);
 
@@ -514,7 +514,7 @@ int nmglTexImage2D_wrongLevelAndSize_isError()
 	//cntxt->texState.activeTexUnitIndex=0;
 	
 	//ActiveTexObjectP=&cntxt->texState.texObjects[0];
-	ActiveTexObjectP->texMinFilter=NMGL_NEAREST_MIPMAP_NEAREST;
+	//ActiveTexObjectP->texMinFilter=NMGL_NEAREST_MIPMAP_NEAREST;
 	status=init_TexImage2D_input(&input,cur_width,internalformats[0]);//CHANGE_REPORT
 		nmglTexImage2D(input.target,input.level,input.internalformat.type,input.width,input.height,0,input.internalformat.type,input.type,input.pixels);
 	status=init_TexImage2D_input(&input,cur_width>>1,internalformats[0],1);
@@ -600,7 +600,7 @@ int nmglTexImage2D_wrongHeight_isError()
 {
 	//_nmglTexImage2D_prevent_internal_errors();
 	//status=init_TexImage2D_input(&input,cur_width,internalformats[0]);
-	
+	_nmglTexImage2D_prevent_internal_errors();
 	nmglTexImage2D(input.target,input.level,input.internalformat.type,input.width,input.height,0,input.format,input.type,input.pixels);
 	TEST_ASSERT(cntxt->error==NMGL_NO_ERROR);
 
@@ -619,7 +619,7 @@ int nmglTexImage2D_wrongBorder_isError()
 {
 	//_nmglTexImage2D_prevent_internal_errors();
 	//status=init_TexImage2D_input(&input,cur_width,internalformats[0]);
-		
+	_nmglTexImage2D_prevent_internal_errors();
 	nmglTexImage2D(input.target,input.level,input.internalformat.type,input.width,input.height,0,input.format,input.type,input.pixels);
 	TEST_ASSERT(cntxt->error==NMGL_NO_ERROR);
 	_nmglTexImage2D_prevent_internal_errors();//CHANGE_REPORT	
@@ -635,7 +635,7 @@ int nmglTexImage2D_wrongType_isError()
 {
 	//_nmglTexImage2D_prevent_internal_errors();
 	//status=init_TexImage2D_input(&input,cur_width,internalformats[0]);
-		
+	_nmglTexImage2D_prevent_internal_errors();
 	nmglTexImage2D(input.target,input.level,input.internalformat.type,input.width,input.height,0,input.format,input.type,input.pixels);
 	TEST_ASSERT(cntxt->error==NMGL_NO_ERROR);
 	_nmglTexImage2D_prevent_internal_errors();	

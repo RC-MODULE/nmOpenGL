@@ -302,8 +302,14 @@ TEST_ASSERT(cmpTexObj(ActiveTexObjectP,&cntxt->texState.texObjects[0]));//check 
 	nmglBindTexture(NMGL_TEXTURE_2D,3);
 	//TEST_ASSERT(cmpTexObj(AO,&cntxt->texState.texObjects[3]));
 
-objInitEq(cntxt,3);
-	
+_st =objInitEq<NMGL_Context_NM0>(cntxt,3);
+	TEST_ASSERT(_st == 0);
+
+	if (nmpu1IsAccessible)
+	{
+		_st = objInitEq<NMGL_Context_NM1>(cntxt_nm1,3);
+		TEST_ASSERT(_st == 0);
+	}
 
 cntxt->texState.lastTexName=0;
 return 0;
