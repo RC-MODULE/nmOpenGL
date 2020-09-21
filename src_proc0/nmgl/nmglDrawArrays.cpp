@@ -182,10 +182,10 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 		//int localSize = MIN(count - pointVertex, maxInnerCount);
 		int localSize = vertexAM.pop(cntxt->buffer0) / cntxt->vertexArray.size;
 		int excessVertexCount = 0;
-		if (localSize % 2) {
+		/*if (localSize % 2) {
 			localSize++;
 			excessVertexCount++;
-		}
+		}*/
 		switch (cntxt->vertexArray.size)
 		{
 		case 2:

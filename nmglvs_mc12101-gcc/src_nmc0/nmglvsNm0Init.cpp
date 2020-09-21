@@ -86,6 +86,7 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 		cntxt->beginEndInfo.vertex = myMallocT<v4nm32f>(BIG_NMGL_SIZE);
 		cntxt->beginEndInfo.normal = myMallocT<v4nm32f>(BIG_NMGL_SIZE);
 		cntxt->beginEndInfo.color = myMallocT<v4nm32f>(BIG_NMGL_SIZE);
+		cntxt->beginEndInfo.inBeginEnd = false;
 		cntxt->beginEndInfo.maxSize = BIG_NMGL_SIZE;
 	}
 	catch (int& e) {
