@@ -40,7 +40,7 @@ void updatePolygonsL(DataForNmpu1* data, Lines* lines, int count, int segX, int 
 	for (int i = 0; i < count; i++) {
 		if (ABS(data->x1[i] - data->x0[i]) >= 32 ||
 			data->y1[i] - data->y0[i] >= 32) {
-			printf("updatePolygonsL error. counter=%i, i=%d\n", counter, i);
+			//printf("updatePolygonsL error. counter=%i, i=%d\n", counter, i);
 			data->x0[i] = 0;
 			data->x1[i] = 0;
 			data->y0[i] = 0;

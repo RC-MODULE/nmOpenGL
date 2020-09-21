@@ -72,7 +72,7 @@ struct CombinePointers {
 	float *s;
 	float *t;
 	v4nm32f* color;
-	int stride;
+	int dummy;
 };
 
 struct TrianglePointers {
