@@ -10,11 +10,14 @@ nm32f Triangle::edgeSize(int i) const
 	Point p1 = points[edges[i].p1];
 	Point p2 = points[edges[i].p2];
 
-	nm32f dx = fabs(p1.x - p2.x);
-	nm32f dy = fabs(p1.y - p2.y);
+	//nm32f dx = fabs(p1.x - p2.x);
+	//nm32f dy = fabs(p1.y - p2.y);
+	nm32f dx = (p1.x - p2.x);
+	nm32f dy = (p1.y - p2.y);
 
 	//nm32f size = sqrt(pow(dx, 2) + pow(dy, 2));
-	nm32f size = sqrt(dx * dx + dy * dy);
+	//nm32f size = sqrt(dx * dx + dy * dy);
+	nm32f size = dx * dx + dy * dy;
 	return size;
 }
 

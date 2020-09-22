@@ -74,9 +74,9 @@ int vertexPrimitiveRepack_triangle(const v4nm32f *srcVertex, const v4nm32f *srcC
 		dstVertex[trCount + stride * 10] = dstVertex[(trCount - 1) + stride * 10];
 		dstVertex[trCount + stride * 11] = dstVertex[(trCount - 1) + stride * 11];
         
-        dstColor[trCount*3 + 0]  = srcColor[(trCount-1)*3 + 0];        
-        dstColor[trCount*3 + 1]  = srcColor[(trCount-1)*3 + 1];		
-		dstColor[trCount*3 + 2]  = srcColor[(trCount-1)*3 + 2];
+        dstColor[trCount*3 + 0]  = dstColor[(trCount-1)*3 + 0];
+        dstColor[trCount*3 + 1]  = dstColor[(trCount-1)*3 + 1];
+		dstColor[trCount*3 + 2]  = dstColor[(trCount-1)*3 + 2];
 		trCount++;
 	}
 	
@@ -154,9 +154,9 @@ int vertexPrimitiveRepack_triangle_strip(const v4nm32f *srcVertex, const v4nm32f
 		dstVertex[trCount + stride * 10] = dstVertex[(trCount - 1) + stride * 10];
 		dstVertex[trCount + stride * 11] = dstVertex[(trCount - 1) + stride * 11];
         
-        dstColor[trCount*3 + 0]  = srcColor[(trCount-1)*3 + 0];        
-        dstColor[trCount*3 + 1]  = srcColor[(trCount-1)*3 + 1];		
-		dstColor[trCount*3 + 2]  = srcColor[(trCount-1)*3 + 2];
+        dstColor[trCount * 3 + 0]  = dstColor[(trCount-1)*3 + 0];
+        dstColor[trCount * 3 + 1]  = dstColor[(trCount-1)*3 + 1];
+		dstColor[trCount * 3 + 2]  = dstColor[(trCount-1)*3 + 2];
 		trCount++;
 	}
     return trCount;
@@ -168,10 +168,10 @@ int vertexPrimitiveRepack_triangle_fan(const v4nm32f *srcVertex, const v4nm32f *
 	int stride = (trCount % 2) ? trCount + 1: trCount;
     for (int i = 0; i < trCount; i++)
     {       
-        dstVertex[i + stride * 0]  = srcVertex[0].vec[0];
-        dstVertex[i + stride * 1]  = srcVertex[0].vec[1];
-        dstVertex[i + stride * 2]  = srcVertex[0].vec[2];
-        dstVertex[i + stride * 3]  = srcVertex[0].vec[3];
+        dstVertex[i + stride * 0]  = srcVertex[i].vec[0];
+        dstVertex[i + stride * 1]  = srcVertex[i].vec[1];
+        dstVertex[i + stride * 2]  = srcVertex[i].vec[2];
+        dstVertex[i + stride * 3]  = srcVertex[i].vec[3];
 
         dstVertex[i + stride * 4]  = srcVertex[(i + 1)].vec[0];
         dstVertex[i + stride * 5]  = srcVertex[(i + 1)].vec[1];
@@ -203,9 +203,9 @@ int vertexPrimitiveRepack_triangle_fan(const v4nm32f *srcVertex, const v4nm32f *
 		dstVertex[trCount + stride * 10] = dstVertex[(trCount - 1) + stride * 10];
 		dstVertex[trCount + stride * 11] = dstVertex[(trCount - 1) + stride * 11];
         
-        dstColor[trCount*3 + 0]  = srcColor[(trCount-1)*3 + 0];        
-        dstColor[trCount*3 + 1]  = srcColor[(trCount-1)*3 + 1];		
-		dstColor[trCount*3 + 2]  = srcColor[(trCount-1)*3 + 2];
+        dstColor[trCount*3 + 0]  = dstColor[(trCount-1)*3 + 0];
+        dstColor[trCount*3 + 1]  = dstColor[(trCount-1)*3 + 1];
+		dstColor[trCount*3 + 2]  = dstColor[(trCount-1)*3 + 2];
 		trCount++;
 	}
     return trCount;

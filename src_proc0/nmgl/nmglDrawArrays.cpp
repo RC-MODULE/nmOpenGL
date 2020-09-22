@@ -387,7 +387,7 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			tmp1.v2.z = cntxt->buffer2 + 8 * primCount;
 
 			//------------clipping-------------------
-			for (int i = 0; i < 10; i++) {
+			/*for (int i = 0; i < 10; i++) {
 				clipMask[i].even.bits = (int*)cntxt->buffer2 + i * NMGL_SIZE / 32;
 				clipMask[i].odd.bits = (int*)cntxt->buffer2 + (10 + i) * NMGL_SIZE / 32;
 			}
@@ -412,12 +412,13 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 				}
 			}
 			int* indices = (int*)cntxt->buffer4;
+			//PROFILER_SIZE(primCount);
 			primCount = readDividedMask((nm1*)clipMask[9].even.bits, (nm1*)clipMask[9].even.bits, indices, primCount);
 			if (primCount==0) {
 				continue;
 			}
 			//PROFILER_SIZE(primCount);
-			clipSelect(&tmp0, cntxt->buffer1, indices, &tmp0, cntxt->buffer1, primCount);
+			clipSelect(&tmp0, cntxt->buffer1, indices, &tmp0, cntxt->buffer1, primCount);*/
 
 			//------------perspective-division-----------------
 			//tmp0->tmp1
@@ -501,12 +502,12 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 					tmp0.v2.x[currentCount] = tmp0.v2.x[currentCount - 1];
 					tmp0.v2.y[currentCount] = tmp0.v2.y[currentCount - 1];
 					tmp0.v2.z[currentCount] = tmp0.v2.z[currentCount - 1];
-					cntxt->buffer3[4 * (currentCount) + 0] = cntxt->buffer3[4 * (currentCount - 1) + 0];
-					cntxt->buffer3[4 * (currentCount) + 1] = cntxt->buffer3[4 * (currentCount - 1) + 1];
-					cntxt->buffer3[4 * (currentCount) + 2] = cntxt->buffer3[4 * (currentCount - 1) + 2];
-					cntxt->buffer3[4 * (currentCount) + 3] = cntxt->buffer3[4 * (currentCount - 1) + 3];
+					for (int i = 0; i < 12; i++) {
+						cntxt->buffer3[12 * (currentCount)+i] = cntxt->buffer3[12 * (currentCount - 1) + i];
+					}
 					currentCount++;
 				}
+
 
 				//копирование каждого третьего цвета
 				nmblas_dcopy(2 * currentCount, (double*)cntxt->buffer3, 6, (double*)colorOrNormal, 2);
