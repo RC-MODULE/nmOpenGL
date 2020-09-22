@@ -13,7 +13,8 @@ nm32f Triangle::edgeSize(int i) const
 	nm32f dx = fabs(p1.x - p2.x);
 	nm32f dy = fabs(p1.y - p2.y);
 
-	nm32f size = sqrt(pow(dx, 2) + pow(dy, 2));
+	//nm32f size = sqrt(pow(dx, 2) + pow(dy, 2));
+	nm32f size = sqrt(dx * dx + dy * dy);
 	return size;
 }
 

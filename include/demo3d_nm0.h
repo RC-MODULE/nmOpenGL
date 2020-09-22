@@ -915,6 +915,7 @@ extern "C"{
 	
 	
 	int readMask(nm1* mask, int* dstIndices, int size);
+	int readDividedMask(nm1* maskEven, nm1* maskOdd, int* dstIndices, int size);
 	int readMaskToLimitDst(nm1* mask, int* dstIndices, int* treated, int size, int maxSize);
 	void remap_32u(nm32u* pSrcVec, nm32u* pDstVec, nm32s* pRemapTable, int size);
 
@@ -1082,32 +1083,32 @@ extern "C"{
 	void ternaryLt0_AddC_AddC_32f(nm32f* srcFlags, nm32f* srcVec, float valueLeft, float valueRight, float* dstVec, int size);
 	void tripleMulC_32f(float* src1, float* src2, float* src3, float C, float* dst1, float* dst2, float* dst3, int size);
 
-	int vertexPrimitiveRepack_t(const v4nm32f *srcVertex,
+	int repackToPrimitives_t(const v4nm32f *srcVertex,
 		const v4nm32f *srcColor,
 		const v2nm32f *srcTex,
 		TrianglePointers *dstVertex,
 		int vertexAmount);
-	int vertexPrimitiveRepack_ts(const v4nm32f *srcVertex,
+	int repackToPrimitives_ts(const v4nm32f *srcVertex,
 		const v4nm32f *srcColor,
 		const v2nm32f *srcTex,
 		TrianglePointers *dstVertex,
 		int vertexAmount);
-	int vertexPrimitiveRepack_tf(const v4nm32f *srcVertex,
+	int repackToPrimitives_tf(const v4nm32f *srcVertex,
 		const v4nm32f *srcColor,
 		const v2nm32f *srcTex,
 		TrianglePointers *dstVertex,
 		int vertexAmount);
-	int vertexPrimitiveRepack_l(const v4nm32f *srcVertex,
+	int repackToPrimitives_l(const v4nm32f *srcVertex,
 		const v4nm32f *srcColor,
 		const v2nm32f *srcTex,
 		LinePointers *dstVertex,
 		int vertexAmount);
-	int vertexPrimitiveRepack_ls(const v4nm32f *srcVertex,
+	int repackToPrimitives_ls(const v4nm32f *srcVertex,
 		const v4nm32f *srcColor,
 		const v2nm32f *srcTex,
 		LinePointers *dstVertex,
 		int vertexAmount);
-	int vertexPrimitiveRepack_ll(const v4nm32f *srcVertex,
+	int repackToPrimitives_ll(const v4nm32f *srcVertex,
 		const v4nm32f *srcColor,
 		const v2nm32f *srcTex,
 		LinePointers *dstVertex,
