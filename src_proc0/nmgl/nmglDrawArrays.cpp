@@ -89,6 +89,16 @@ void getNormalPart(Array &normal, int &point, float* dst, float* tmp, int size) 
 	}
 }*/
 
+SECTION("text_demo3d") void clipSelect(TrianglePointers *src, float* srcColor, int* indices, TrianglePointers * dst, float* dstColor, int size) {
+	copyArraysByIndices((void**)&src->v0, indices, (void**)&dst->v0, 4, size);
+	copyArraysByIndices((void**)&src->v1, indices, (void**)&dst->v1, 4, size);
+	copyArraysByIndices((void**)&src->v2, indices, (void**)&dst->v2, 4, size);
+	for (int i = 0; i < size; i++) {
+		for (int j = 0; j < 12; j++) {
+			dstColor[12 * i + j] = srcColor[12 * indices[i] + j];
+		}
+	}
+}
 
 
 SECTION(".text_nmgl")
@@ -348,7 +358,7 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			//TrianglePrimitiveArrays3f trian3f_1;
 			//TrianglePrimitiveArrays3f trian3f_2;
 			localSize -= excessVertexCount;
-			PROFILER_SIZE(localSize);
+			//PROFILER_SIZE(localSize);
 			int primCount = vertexPrimitiveRepack(vertexResult, colorOrNormal, cntxt->buffer0, (v4nm32f*)cntxt->buffer1, mode, localSize);
 
 			//в tmp0 хранятся данные в порядке x0,y0,z0,w0,x1,y1,z1,w1,x2,y2,z2,w2 (остальные массивы неопределены)
@@ -377,7 +387,7 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			tmp1.v2.z = cntxt->buffer2 + 8 * primCount;
 
 			//------------clipping-------------------
-			/*for (int i = 0; i < 10; i++) {
+			for (int i = 0; i < 10; i++) {
 				clipMask[i].even.bits = (int*)cntxt->buffer2 + i * NMGL_SIZE / 32;
 				clipMask[i].odd.bits = (int*)cntxt->buffer2 + (10 + i) * NMGL_SIZE / 32;
 			}
@@ -396,14 +406,18 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			for (int i = 0; i < nMasks; i++) {
 				clipMask[9].even.bits[i] = 0;
 				clipMask[9].odd.bits[i] = 0;
-				for (int = j = 0; j < 9; j++) {
+				for (int j = 0; j < 9; j++) {
 					clipMask[9].even.bits[i] |= clipMask[j].even.bits[i];
 					clipMask[9].odd.bits[i] |= clipMask[j].odd.bits[i];
 				}
 			}
-			int* indicesEven = cntxt->buffer4;
-			int* indicesOdd = cntxt->buffer4 + NMGL_SIZE / 2;
-			int* indices = cntxt->buffer4 + NMGL_SIZE;*/
+			int* indices = (int*)cntxt->buffer4;
+			primCount = readDividedMask((nm1*)clipMask[9].even.bits, (nm1*)clipMask[9].even.bits, indices, primCount);
+			if (primCount==0) {
+				continue;
+			}
+			//PROFILER_SIZE(primCount);
+			clipSelect(&tmp0, cntxt->buffer1, indices, &tmp0, cntxt->buffer1, primCount);
 
 			//------------perspective-division-----------------
 			//tmp0->tmp1
@@ -472,12 +486,10 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			tmp0.v2.z = cntxt->buffer0 + 8 * NMGL_SIZE;
 			
 			while (srcThreated < primCount) {
-				//nmprofiler_disable();
 				//PROFILER_SIZE(primCount);
 				int currentCount = triangulate(cntxt->buffer2, (v4nm32f*)cntxt->buffer1, primCount,
 					WIDTH_PTRN, HEIGHT_PTRN,
-					NMGL_SIZE, cntxt->buffer0, (v4nm32f*)cntxt->buffer3, &srcThreated);
-				//nmprofiler_enable();			
+					NMGL_SIZE, cntxt->buffer0, (v4nm32f*)cntxt->buffer3, &srcThreated);	
 
 				if (currentCount % 2) {					
 					tmp0.v0.x[currentCount] = tmp0.v0.x[currentCount - 1];
@@ -523,9 +535,9 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 					cntxt->trianInner.size);
 				nmppsMerge_32f(cntxt->buffer0, cntxt->buffer2, (float*)minXY, cntxt->trianInner.size);
 				nmppsMerge_32f(cntxt->buffer1, cntxt->buffer3, (float*)maxXY, cntxt->trianInner.size);
-				PROFILER_SIZE(cntxt->trianInner.size);
+				//PROFILER_SIZE(cntxt->trianInner.size);
 				setSegmentMask(minXY, maxXY, cntxt->segmentMasks, cntxt->trianInner.size);
-				PROFILER_SIZE(cntxt->trianInner.size);
+				//PROFILER_SIZE(cntxt->trianInner.size);
 				rasterizeT(&cntxt->trianInner, cntxt->segmentMasks);
 			}
 			break;
@@ -571,7 +583,7 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			nmppsMerge_32f(cntxt->buffer0, cntxt->buffer2, (float*)minXY, cntxt->lineInner.size);
 			nmppsMerge_32f(cntxt->buffer1, cntxt->buffer3, (float*)maxXY, cntxt->lineInner.size);
 			setSegmentMask(minXY, maxXY, cntxt->segmentMasks, cntxt->lineInner.size);
-			PROFILER_SIZE(cntxt->lineInner.size);
+			//PROFILER_SIZE(cntxt->lineInner.size);
 			rasterizeL(&cntxt->lineInner, cntxt->segmentMasks);
 			break;
 		}
