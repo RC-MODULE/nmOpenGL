@@ -8,33 +8,14 @@ int repackToPrimitives_ts(const v4nm32f *srcVertex,	const v4nm32f *srcColor, con
 	int result = vertexAmount - 2;
     for (int i = 0; i < result; i++)
     {
-		if (i % 2)
-		{
-			dstPointers->v0.x[i] = srcVertex[(i + 0)].vec[0];
-			dstPointers->v0.y[i] = srcVertex[(i + 0)].vec[1];
-			dstPointers->v0.z[i] = srcVertex[(i + 0)].vec[2];
-			dstPointers->v0.w[i] = srcVertex[(i + 0)].vec[3];
-			dstPointers->v0.s[i] = srcTex[i + 0].v0;
-			dstPointers->v0.t[i] = srcTex[i + 0].v1;
-			dstPointers->v0.color[i] = srcColor[(i + 0)];
-
-			dstPointers->v1.x[i] = srcVertex[(i + 1)].vec[0];
-			dstPointers->v1.y[i] = srcVertex[(i + 1)].vec[1];
-			dstPointers->v1.z[i] = srcVertex[(i + 1)].vec[2];
-			dstPointers->v1.w[i] = srcVertex[(i + 1)].vec[3];
-			dstPointers->v1.s[i] = srcTex[i + 1].v0;
-			dstPointers->v1.t[i] = srcTex[i + 1].v1;
-			dstPointers->v1.color[i] = srcColor[(i + 1)];
-
-			dstPointers->v2.x[i] = srcVertex[(i + 2)].vec[0];
-			dstPointers->v2.y[i] = srcVertex[(i + 2)].vec[1];
-			dstPointers->v2.z[i] = srcVertex[(i + 2)].vec[2];
-			dstPointers->v2.w[i] = srcVertex[(i + 2)].vec[3];
-			dstPointers->v2.s[i] = srcTex[i + 2].v0;
-			dstPointers->v2.t[i] = srcTex[i + 2].v1;
-			dstPointers->v2.color[i] = srcColor[(i + 2)];
-		}
-		else {
+		// input: {0, 1, 2, 3, 4, 5, 6, 7}
+		// output: 
+		// 	odd:  {2,1,3}, {4, 3, 5}, {6,5,7}
+		// 	even: {0,1,2}, {2, 3, 4}, {4,5,6}
+		if (i % 2) {	// odd 
+			// a = srcVertex[i + 1]
+			// b = srcVertex[i]
+			// c = srcVertex[i + 2]
 			dstPointers->v0.x[i] = srcVertex[(i + 1)].vec[0];
 			dstPointers->v0.y[i] = srcVertex[(i + 1)].vec[1];
 			dstPointers->v0.z[i] = srcVertex[(i + 1)].vec[2];
@@ -50,6 +31,34 @@ int repackToPrimitives_ts(const v4nm32f *srcVertex,	const v4nm32f *srcColor, con
 			dstPointers->v1.s[i] = srcTex[i + 0].v0;
 			dstPointers->v1.t[i] = srcTex[i + 0].v1;
 			dstPointers->v1.color[i] = srcColor[(i + 0)];
+
+			dstPointers->v2.x[i] = srcVertex[(i + 2)].vec[0];
+			dstPointers->v2.y[i] = srcVertex[(i + 2)].vec[1];
+			dstPointers->v2.z[i] = srcVertex[(i + 2)].vec[2];
+			dstPointers->v2.w[i] = srcVertex[(i + 2)].vec[3];
+			dstPointers->v2.s[i] = srcTex[i + 2].v0;
+			dstPointers->v2.t[i] = srcTex[i + 2].v1;
+			dstPointers->v2.color[i] = srcColor[(i + 2)];
+		}
+		else {	//even
+			// a = srcVertex[i]
+			// b = srcVertex[i + 1]
+			// c = srcVertex[i + 2]
+			dstPointers->v0.x[i] = srcVertex[(i + 0)].vec[0];
+			dstPointers->v0.y[i] = srcVertex[(i + 0)].vec[1];
+			dstPointers->v0.z[i] = srcVertex[(i + 0)].vec[2];
+			dstPointers->v0.w[i] = srcVertex[(i + 0)].vec[3];
+			dstPointers->v0.s[i] = srcTex[i + 0].v0;
+			dstPointers->v0.t[i] = srcTex[i + 0].v1;
+			dstPointers->v0.color[i] = srcColor[(i + 0)];
+
+			dstPointers->v1.x[i] = srcVertex[(i + 1)].vec[0];
+			dstPointers->v1.y[i] = srcVertex[(i + 1)].vec[1];
+			dstPointers->v1.z[i] = srcVertex[(i + 1)].vec[2];
+			dstPointers->v1.w[i] = srcVertex[(i + 1)].vec[3];
+			dstPointers->v1.s[i] = srcTex[i + 1].v0;
+			dstPointers->v1.t[i] = srcTex[i + 1].v1;
+			dstPointers->v1.color[i] = srcColor[(i + 1)];
 
 			dstPointers->v2.x[i] = srcVertex[(i + 2)].vec[0];
 			dstPointers->v2.y[i] = srcVertex[(i + 2)].vec[1];
