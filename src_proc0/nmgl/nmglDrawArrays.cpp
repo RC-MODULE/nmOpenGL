@@ -451,15 +451,15 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 
 			//округление x,y и z
 			//tmp0->tmp1
-			nmppsConvert_32f32s_rounding(tmp0.v0.x, (int*)tmp1.v0.x, 0, primCount);
-			nmppsConvert_32f32s_rounding(tmp0.v0.y, (int*)tmp1.v0.y, 0, primCount);
-			nmppsConvert_32f32s_rounding(tmp0.v0.z, (int*)tmp1.v0.z, 0, primCount);
-			nmppsConvert_32f32s_rounding(tmp0.v1.x, (int*)tmp1.v1.x, 0, primCount);
-			nmppsConvert_32f32s_rounding(tmp0.v1.y, (int*)tmp1.v1.y, 0, primCount);
-			nmppsConvert_32f32s_rounding(tmp0.v1.z, (int*)tmp1.v1.z, 0, primCount);
-			nmppsConvert_32f32s_rounding(tmp0.v2.x, (int*)tmp1.v2.x, 0, primCount);
-			nmppsConvert_32f32s_rounding(tmp0.v2.y, (int*)tmp1.v2.y, 0, primCount);
-			nmppsConvert_32f32s_rounding(tmp0.v2.z, (int*)tmp1.v2.z, 0, primCount);
+			nmppsConvert_32f32s_floor(tmp0.v0.x, (int*)tmp1.v0.x, 0, primCount);
+			nmppsConvert_32f32s_floor(tmp0.v0.y, (int*)tmp1.v0.y, 0, primCount);
+			nmppsConvert_32f32s_floor(tmp0.v0.z, (int*)tmp1.v0.z, 0, primCount);
+			nmppsConvert_32f32s_floor(tmp0.v1.x, (int*)tmp1.v1.x, 0, primCount);
+			nmppsConvert_32f32s_floor(tmp0.v1.y, (int*)tmp1.v1.y, 0, primCount);
+			nmppsConvert_32f32s_floor(tmp0.v1.z, (int*)tmp1.v1.z, 0, primCount);
+			nmppsConvert_32f32s_floor(tmp0.v2.x, (int*)tmp1.v2.x, 0, primCount);
+			nmppsConvert_32f32s_floor(tmp0.v2.y, (int*)tmp1.v2.y, 0, primCount);
+			nmppsConvert_32f32s_floor(tmp0.v2.z, (int*)tmp1.v2.z, 0, primCount);
 			nmppsConvert_32s32f((int*)tmp1.v0.x, tmp1.v0.x, primCount);
 			nmppsConvert_32s32f((int*)tmp1.v0.y, tmp1.v0.y, primCount);
 			nmppsConvert_32s32f((int*)tmp1.v0.z, tmp1.v0.z, primCount);

@@ -75,10 +75,7 @@ static void createFillTable(int* table) {
 	}
 
 	for (int x = -WIDTH_PTRN; x < WIDTH_PTRN; x++) {
-		if(x<0)
-			table[x + WIDTH_PTRN] = OFFSETS - 1;
-		else
-			table[x + WIDTH_PTRN] = 4032;
+		table[x + WIDTH_PTRN] = OFFSETS - 1;
 	}
 	for (int y = 1; y <= HEIGHT_PTRN; y++) {
 		for (int x = -WIDTH_PTRN; x < 0; x++) {
