@@ -1116,6 +1116,8 @@ extern "C"{
 
 }
 
+int triangulate(TrianglePointers *srcVertex, int maxWidth, int maxHeight, int maxDstSize, TrianglePointers *srcVertex, int *srcTreatedCount);
+
 
 
 //int getVertexPart(Array* array, v4nm32f* dst, float* tmpBuffer, int count);
