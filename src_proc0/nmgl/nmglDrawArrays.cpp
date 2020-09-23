@@ -18,6 +18,12 @@ SECTION(".data_imu4")	float vertexZ[3 * NMGL_SIZE];
 
 SECTION(".data_imu5")	v4nm32f vertexResult[3 * NMGL_SIZE];
 SECTION(".data_imu6")	v4nm32f colorOrNormal[3 * NMGL_SIZE];
+SECTION(".data_imu6")	float texS0[NMGL_SIZE];
+SECTION(".data_imu6")	float texT0[NMGL_SIZE];
+SECTION(".data_imu6")	float texS1[NMGL_SIZE];
+SECTION(".data_imu6")	float texT1[NMGL_SIZE];
+SECTION(".data_imu6")	float texS2[NMGL_SIZE];
+SECTION(".data_imu6")	float texT2[NMGL_SIZE];
 
 SECTION(".data_imu6")	ArrayManager<float> vertexAM;
 SECTION(".data_imu6")	ArrayManager<float> normalAM;
@@ -164,8 +170,14 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 	case NMGL_LINES:
 		maxInnerCount = 2 * NMGL_SIZE;
 		break;
+	case NMGL_LINE_STRIP:
+		maxInnerCount = NMGL_SIZE + 1;
+		break;
+	case NMGL_LINE_LOOP:
+		maxInnerCount = NMGL_SIZE;
+		break;
 	case NMGL_POINTS:
-		maxInnerCount = 3 * NMGL_SIZE;
+		maxInnerCount = NMGL_SIZE;
 		break;
 	default:
 		cntxt->error = NMGL_INVALID_ENUM;
