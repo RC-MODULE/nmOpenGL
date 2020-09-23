@@ -2,6 +2,7 @@
 #define __SERVICE_H__
 
 #include "demo3d_common.h"
+#include "demo3d_nm0.h"
 #include "nmtype.h"
 
 typedef v4nm32u abgr32;
@@ -163,22 +164,26 @@ typedef struct Buffer
 	int back;
 	int front;
 	int size;
-	void *data;
+	TrianglePointers *data;
 } Buffer;
 
-static Buffer initBuf(void *data, int size);
+//static Buffer initBuf(void *data, int size);
+static Buffer initBuf(TrianglePointers *trPtr, int size);
 static int bufIsFull(Buffer *buf);
 static int bufIsEmpty(Buffer *buf);
 static int bufSize(Buffer *buf);
 static int bufSpace(Buffer *buf);
-static int pushBackVertices(Buffer *vbuf, Vertices *vert);
-static int pushFrontVertices(Buffer *vbuf, Vertices *vert);
-static int popBackVertices(Buffer *vbuf, Vertices *vert);
-static int pushBackColors(Buffer *cbuf, Colors *colors);
-static int pushFrontColors(Buffer *cbuf, Colors *colors);
-static int popBackColors(Buffer *cbuf, Colors *colors);
+//static int pushBackVertices(Buffer *vbuf, Vertices *vert);
+//static int pushFrontVertices(Buffer *vbuf, Vertices *vert);
+//static int popBackVertices(Buffer *vbuf, Vertices *vert);
+//static int pushBackColors(Buffer *cbuf, Colors *colors);
+//static int pushFrontColors(Buffer *cbuf, Colors *colors);
+//static int popBackColors(Buffer *cbuf, Colors *colors);
+static int pushBack(Buffer *buf, Vertices *vert, Colors *colors);
+static int popBack(Buffer *buf, Vertices *vert, Colors *colors);
+static int pushFront(Buffer *buf, Vertices *vert, Colors *colors);
 
-int triangulateOneTriangle(const Triangle& tr, nm32f xMax, nm32f yMax, Buffer *verticesStack, Buffer *colorsStack);
+int triangulateOneTriangle(const Triangle& tr, nm32f xMax, nm32f yMax, Buffer *buf);
 
 
 /*
