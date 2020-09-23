@@ -1116,7 +1116,7 @@ extern "C"{
 
 }
 
-int triangulate(TrianglePointers *srcVertex, int maxWidth, int maxHeight, int maxDstSize, TrianglePointers *srcVertex, int *srcTreatedCount);
+int splitTriangles(TrianglePointers *srcVertex, int maxWidth, int maxHeight, int maxDstSize, TrianglePointers *srcVertex, int *srcTreatedCount);
 
 
 
