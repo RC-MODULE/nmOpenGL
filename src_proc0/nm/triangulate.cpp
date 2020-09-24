@@ -1,8 +1,6 @@
 #include <cmath> // pow for NMC-SDK
-#include "nmpp.h"
-#include "nmblas.h"
-#include "service.h"
 
+#include "service.h"
 
 int checkAndSplitFirstLargeEdge(const Triangle& tr, nm32f xMax, nm32f yMax, Triangle &trOut1, Triangle& trOut2);
 int checkAndSplitLargestEdge(const Triangle& tr, nm32f xMax, nm32f yMax, Triangle &trOut1, Triangle& trOut2);
@@ -12,10 +10,14 @@ nm32f Triangle::edgeSize(int i) const
 	Point p1 = points[edges[i].p1];
 	Point p2 = points[edges[i].p2];
 
-	nm32f dx = fabs(p1.x - p2.x);
-	nm32f dy = fabs(p1.y - p2.y);
+	//nm32f dx = fabs(p1.x - p2.x);
+	//nm32f dy = fabs(p1.y - p2.y);
+	nm32f dx = (p1.x - p2.x);
+	nm32f dy = (p1.y - p2.y);
 
-	nm32f size = pow(dx, 2) + pow(dy, 2);
+	//nm32f size = sqrt(pow(dx, 2) + pow(dy, 2));
+	//nm32f size = sqrt(dx * dx + dy * dy);
+	nm32f size = dx * dx + dy * dy;
 	return size;
 }
 
@@ -34,12 +36,10 @@ edgeProjection Triangle::edgeGetProjection(int i) const
 static Buffer initBuf(void *data, int size)
 {
 	Buffer buf;
-
 	buf.data = data;
 	buf.back = size;
 	buf.front = -1;
 	buf.size = size;
-
 	return buf;
 }
 
@@ -69,61 +69,16 @@ static int bufSpace(Buffer *buf)
 // |-|-|-|-|-|x|x|
 // |-|-|-|-|-|x|x|
 // |-|-|-|-|-|x|x|
-static int pushBack(Buffer *buf, Vertices *vert, Colors *colors)
+static int pushBackVertices(Buffer *vbuf, Vertices *vert)
 {
-	if (bufIsFull(buf)){
+	if (bufIsFull(vbuf)){
 		return -1;
 	} else {
-		TrianglePointers *trPtr = (TrianglePointers *) buf->data; 
-		buf->back -= 1;
-		//Push A vertex
-		trPtr->v0.x[buf->back] = vert->v[0];
-		trPtr->v0.y[buf->back] = vert->v[1];
-		trPtr->v0.z[buf->back] = vert->v[2];
-		trPtr->v0.color[buf->back] = colors->c[0];
-		//Push B vertex
-		trPtr->v1.x[buf->back] = vert->v[3];
-		trPtr->v1.y[buf->back] = vert->v[4];
-		trPtr->v1.z[buf->back] = vert->v[5];
-		trPtr->v1.color[buf->back] = colors->c[1];
-		//Push C vertex
-		trPtr->v2.x[buf->back] = vert->v[6];
-		trPtr->v2.y[buf->back] = vert->v[7];
-		trPtr->v2.z[buf->back] = vert->v[8];
-		trPtr->v2.color[buf->back] = colors->c[2];
-		return 0;
-	}
-}
-
-//   return this item         
-//          |
-//          V
-// |-|-|-|-|x|x|x|
-// |-|-|-|-|x|x|x|
-// |-|-|-|-|x|x|x|
-static int popBack(Buffer *buf, Vertices *vert, Colors *colors)
-{
-	if (bufIsEmpty(buf)){
-		return -1;
-	} else {
-		TrianglePointers *trPtr = (TrianglePointers *) buf->data; 
-		//Push A vertex
-		vert->v[0] = trPtr->v0.x[buf->back];
-		vert->v[1] = trPtr->v0.y[buf->back]; 
-		vert->v[2] = trPtr->v0.z[buf->back]; 
-		colors->c[0] = trPtr->v0.color[buf->back];
-		//Push B vertex
-		vert->v[3] = trPtr->v1.x[buf->back];
-		vert->v[4] = trPtr->v1.y[buf->back]; 
-		vert->v[5] = trPtr->v1.z[buf->back]; 
-		colors->c[1] = trPtr->v1.color[buf->back];
-		//Push C vertex
-		vert->v[6] = trPtr->v2.x[buf->back];
-		vert->v[7] = trPtr->v2.y[buf->back]; 
-		vert->v[8] = trPtr->v2.z[buf->back]; 
-		colors->c[2] = trPtr->v2.color[buf->back];
-
-		buf->back += 1;
+		vbuf->back -= 1;
+		nm32f *dst = (nm32f *) vbuf->data; 
+		for (int i = 0; i < 9; ++i){
+			dst[i * vbuf->size + vbuf->back] = vert->v[i];
+		}	
 		return 0;
 	}
 }
@@ -134,44 +89,117 @@ static int popBack(Buffer *buf, Vertices *vert, Colors *colors)
 // |x|x|x|x|-|-|-|
 // |x|x|x|x|-|-|-|
 // |x|x|x|x|-|-|-|
-static int pushFront(Buffer *buf, Vertices *vert, Colors *colors)
+static int pushFrontVertices(Buffer *vbuf, Vertices *vert)
 {
-	if (bufIsFull(buf)){
+	if (bufIsFull(vbuf)){
 		return -1;
 	} else {
-		TrianglePointers *trPtr = (TrianglePointers *) buf->data; 
-		buf->front += 1;
-		//Push A vertex
-		trPtr->v0.x[buf->front] = vert->v[0];
-		trPtr->v0.y[buf->front] = vert->v[1];
-		trPtr->v0.z[buf->front] = vert->v[2];
-		trPtr->v0.color[buf->front] = colors->c[0];
-		//Push B vertex
-		trPtr->v1.x[buf->front] = vert->v[3];
-		trPtr->v1.y[buf->front] = vert->v[4];
-		trPtr->v1.z[buf->front] = vert->v[5];
-		trPtr->v1.color[buf->front] = colors->c[1];
-		//Push C vertex
-		trPtr->v2.x[buf->front] = vert->v[6];
-		trPtr->v2.y[buf->front] = vert->v[7];
-		trPtr->v2.z[buf->front] = vert->v[8];
-		trPtr->v2.color[buf->front] = colors->c[2];
+		vbuf->front += 1;
+		nm32f *dst = (nm32f *) vbuf->data; 
+		for (int i = 0; i < 9; ++i){
+			dst[i * vbuf->size + vbuf->front] = vert->v[i];
+		}	
 		return 0;
 	}
 }
 
-SECTION(".text_demo3d")
-int splitTriangles(TrianglePointers *srcVertex, 
-				   int srcCount,
-				   int maxWidth, 
-				   int maxHeight, 
-				   int maxDstSize, 
-				   TrianglePointers *dstVertex, 
-				   int *srcTreatedCount)
+//   return this item         
+//          |
+//          V
+// |-|-|-|-|x|x|x|
+// |-|-|-|-|x|x|x|
+// |-|-|-|-|x|x|x|
+static int popBackVertices(Buffer *vbuf, Vertices *vert)
+{
+	if (bufIsEmpty(vbuf)){
+		return -1;
+	} else {
+		nm32f *src = (nm32f *) vbuf->data; 
+		for (int i = 0; i < 9; ++i){
+			vert->v[i] = src[i * vbuf->size + vbuf->back];
+		}	
+		vbuf->back += 1;
+		return 0;
+	}
+}
+
+// 				|-|-|-|-|-|-|-|
+// push here ->	|-|-|-|-|-|-|-|
+// 				|x|x|x|x|x|x|x|
+// 				|x|x|x|x|x|x|x|
+static int pushBackColors(Buffer *cbuf, Colors *colors)
+{
+	if (bufIsFull(cbuf)){
+		return -1;
+	} else {
+		cbuf->back -= 1;
+		Colors *topColor = &((Colors *) cbuf->data)[cbuf->back];
+		nm32f *dst = (nm32f *) topColor;
+		for (int i = 0; i < 3; ++i){
+			for (int j = 0; j < 4; ++j){
+				dst[i * 4 + j] = colors->c[i].vec[j];
+			}
+		}
+		return 0;
+	}
+}
+
+// 				|x|x|x|x|x|x|x|
+// 				|x|x|x|x|x|x|x|
+// push here ->	|-|-|-|-|-|-|-|
+// 				|-|-|-|-|-|-|-|
+static int pushFrontColors(Buffer *cbuf, Colors *colors)
+{
+	if (bufIsFull(cbuf)){
+		return -1;
+	} else {
+		cbuf->front += 1;
+		Colors *frontColor = &((Colors *) cbuf->data)[cbuf->front];
+		nm32f *dst = (nm32f *) frontColor;
+		for (int i = 0; i < 3; ++i){
+			for (int j = 0; j < 4; ++j){
+				dst[i * 4 + j] = colors->c[i].vec[j];
+			}
+		}
+		return 0;
+	}
+}
+
+// 						|-|-|-|-|-|-|-|
+// return this item ->	|x|x|x|x|x|x|x|
+// 						|x|x|x|x|x|x|x|
+// 						|x|x|x|x|x|x|x|
+static int popBackColors(Buffer *cbuf, Colors *colors)
+{
+	if (bufIsEmpty(cbuf)){
+		return -1;
+	} else {
+		Colors *topColor = &((Colors *) cbuf->data)[cbuf->back];
+		nm32f *src = (nm32f *) topColor;
+		for (int i = 0; i < 3; ++i){
+			for (int j = 0; j < 4; ++j){
+				colors->c[i].vec[j] = src[i * 4 + j];
+			}
+		}
+		cbuf->back += 1;
+		return 0;
+	}
+}
+
+int triangulate(const nm32f *srcVertex,
+	const v4nm32f *srcColor,
+	int srcCount,
+	int maxWidth,
+	int maxHeight,
+	int maxDstSize,
+	nm32f *dstVertex,
+	v4nm32f *dstColor,
+	int *srcTreatedCount)
 {
 	int currentDstSize = 0;
 
-	Buffer buf = initBuf((void *) dstVertex, maxDstSize);
+	Buffer verticesStack = initBuf((void *) dstVertex, maxDstSize);
+	Buffer colorsStack = initBuf((void *) dstColor, maxDstSize);
 
 	int i = 0; // make this iterator local to assign it later to srcTreatedCount
 	for (i = 0; i < srcCount; ++i) {
@@ -180,25 +208,26 @@ int splitTriangles(TrianglePointers *srcVertex,
 		Point b;
 		Point c;
 
-		a.x = srcVertex->v0.x[i];
-		a.y = srcVertex->v0.y[i];
-		a.z = srcVertex->v0.z[i];
-		b.x = srcVertex->v1.x[i];
-		b.y = srcVertex->v1.y[i];
-		b.z = srcVertex->v1.z[i];
-		c.x = srcVertex->v2.x[i];
-		c.y = srcVertex->v2.y[i];
-		c.z = srcVertex->v2.z[i];
-		a.color = srcVertex->v0.color[i];
-		b.color = srcVertex->v1.color[i];
-		c.color = srcVertex->v2.color[i];
+		a.x = srcVertex[i];
+		a.y = srcVertex[i + srcCount];
+		a.z = srcVertex[i + 2 * srcCount];
+		b.x = srcVertex[3 * srcCount + i];
+		b.y = srcVertex[3 * srcCount + i + srcCount];
+		b.z = srcVertex[3 * srcCount + i + 2 * srcCount];
+		c.x = srcVertex[6 * srcCount + i];
+		c.y = srcVertex[6 * srcCount + i + srcCount];
+		c.z = srcVertex[6 * srcCount + i + 2 * srcCount];
+		a.color = srcColor[3 * i];
+		b.color = srcColor[3 * i + 1];
+		c.color = srcColor[3 * i + 2];
 		Triangle tr{a, b, c};
 
 		// Try to triangulate the triangle
-		int res = splitOneTriangle(tr, 
+		int res = triangulateOneTriangle(tr, 
 										(nm32f) maxWidth, 
 										(nm32f) maxHeight, 
-										&buf);
+										&verticesStack, 
+										&colorsStack);
 		// If the number of smaller triangles is too big
 		if (res == -1) {
 			// Finish triangulation
@@ -206,7 +235,7 @@ int splitTriangles(TrianglePointers *srcVertex,
 		} else {
 			// Update the number of the result output triangles
 			// in case of successful split
-			// (splitOneTriangle modifies output buffer, so
+			// (triangulateOneTriangle modifies output buffer, so
 			// update result size only in case of successful split)
 			currentDstSize = res;
 		}
@@ -218,39 +247,43 @@ int splitTriangles(TrianglePointers *srcVertex,
 // Return:
 // -1 - деление не удалось, в выходном буфере нет места
 // n - текущее количество треугольников в выходном буфере
-int splitOneTriangle(	const Triangle& tr, 
+int triangulateOneTriangle(	const Triangle& tr, 
 							nm32f xMax, 
 							nm32f yMax, 
-							Buffer *buf)
+							Buffer *verticesStack, 
+							Buffer *colorsStack)
 {
 	// Check the free space in output buffer
 	// (atleast for input triangle if it is OK and don't be splitted)
-	int freeSpace = bufSpace(buf);
-	if (freeSpace < 1){
+	int vsize = bufSpace(verticesStack);
+	if (vsize < 1){
 			return -1;
 	} else {
 			// do nothing here, just continue
 	}
+
+	Colors trColors = {
+						tr.points[0].color, 
+						tr.points[1].color, 
+						tr.points[2].color
+					  };	
+	pushBackColors(colorsStack, &trColors);
 
 	Vertices trVertices = {
 							tr.points[0].x, tr.points[0].y, tr.points[0].z,
 							tr.points[1].x, tr.points[1].y, tr.points[1].z,
 							tr.points[2].x, tr.points[2].y, tr.points[2].z,
 						  };	
-	Colors trColors = {
-						tr.points[0].color, 
-						tr.points[1].color, 
-						tr.points[2].color
-					  };	
-	pushBack(buf, &trVertices, &trColors);
+	pushBackVertices(verticesStack, &trVertices);
 
 	int overflow = 0; // Indicate that there is no more space in output buffer
 
-	while (!bufIsEmpty(buf) && !overflow) {
+	while (!bufIsEmpty(verticesStack) && !overflow) {
 		// Get the triangle out of the stack
 		Vertices curTrVertices;
 		Colors curTrColors;
-		popBack(buf, &curTrVertices, &curTrColors);
+		popBackVertices(verticesStack, &curTrVertices);
+		popBackColors(colorsStack, &curTrColors);
 		// Create triangle from vertices and colors
 		// to pass it to the function
 		Point a;
@@ -279,7 +312,7 @@ int splitOneTriangle(	const Triangle& tr,
 		int trIsSplitted = checkAndSplitLargestEdge(tr, xMax, yMax, trOut1, trOut2);
 		// Triangle has been splitted
 		if (trIsSplitted) {
-			if (freeSpace >= 2){
+			if (vsize >= 2){
 				Vertices trOut1Vertices = {
 											trOut1.points[0].x,
 											trOut1.points[0].y,
@@ -296,7 +329,8 @@ int splitOneTriangle(	const Triangle& tr,
 											trOut1.points[1].color,
 											trOut1.points[2].color
 										};
-				pushBack(buf, &trOut1Vertices, &trOut1Colors);
+				pushBackVertices(verticesStack, &trOut1Vertices);
+				pushBackColors(colorsStack, &trOut1Colors);
 
 				Vertices trOut2Vertices = {
 											trOut2.points[0].x,
@@ -314,7 +348,8 @@ int splitOneTriangle(	const Triangle& tr,
 											trOut2.points[1].color,
 											trOut2.points[2].color
 										};
-				pushBack(buf, &trOut2Vertices, &trOut2Colors);
+				pushBackVertices(verticesStack, &trOut2Vertices);
+				pushBackColors(colorsStack, &trOut2Colors);
 			} else {
 				// This triangle splitted is too big
 				// There is no space in output buffer
@@ -342,15 +377,16 @@ int splitOneTriangle(	const Triangle& tr,
 										tr.points[2].color
 									};
 
-			pushFront(buf, &trVertices, &trColors);
+			pushFrontVertices(verticesStack, &trVertices);
+			pushFrontColors(colorsStack, &trColors);
 		}		
 	}
 
 	// If there are no more triangles in the stack to divide
-	if (bufIsEmpty(buf))
+	if (bufIsEmpty(verticesStack))
 	{
 		// All output triangles are in output buffer
-		int ret = bufSize(buf);
+		int ret = bufSize(verticesStack);
 		return ret; 
 	} else {
 		// 'While' is finished because there are no more free space
@@ -424,23 +460,19 @@ int checkAndSplitLargestEdge(	const Triangle& tr,
 								Triangle &trOut1, 
 								Triangle& trOut2)
 {
-	// If the largest edge is too large then division is necessary 
-	edgeProjection edge0Projection = tr.edgeGetProjection(0);
-	edgeProjection edge1Projection = tr.edgeGetProjection(1);
-	edgeProjection edge2Projection = tr.edgeGetProjection(2);
-	if (edge0Projection.dx > xMax || edge0Projection.dy > yMax ||
-	    edge1Projection.dx > xMax || edge1Projection.dy > yMax ||
-	    edge2Projection.dx > xMax || edge2Projection.dy > yMax) {
-		nm32f largestEdgeSize = 0;
-		int largestEdgeID = 0;
-		// Find the largest edge
-		for (int i = 0; i < 3; ++i) {
-			nm32f currentEdgeSize = tr.edgeSize(i);
-			if (currentEdgeSize > largestEdgeSize) {
-				largestEdgeID = i;
-				largestEdgeSize = currentEdgeSize;
-			}
+	nm32f largestEdgeSize = 0;
+	int largestEdgeID = 0;
+	// Find the largest edge
+	for (int i = 0; i < 3; ++i) {
+		nm32f currentEdgeSize = tr.edgeSize(i);
+		if (currentEdgeSize > largestEdgeSize) {
+			largestEdgeID = i;
+			largestEdgeSize = currentEdgeSize;
 		}
+	}
+	// If the largest edge is too large then division is necessary 
+	edgeProjection largestEdgeProjection = tr.edgeGetProjection(largestEdgeID);
+	if (largestEdgeProjection.dx > xMax || largestEdgeProjection.dy > yMax) {
 		Point a = tr.points[tr.edges[largestEdgeID].p1];
 		Point b = tr.points[tr.edges[largestEdgeID].p2];
 		// Compute the other point of the triangle

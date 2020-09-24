@@ -164,26 +164,34 @@ typedef struct Buffer
 	int back;
 	int front;
 	int size;
-	TrianglePointers *data;
+	void *data;
 } Buffer;
 
-//static Buffer initBuf(void *data, int size);
-static Buffer initBuf(TrianglePointers *trPtr, int size);
+static Buffer initBuf(void *data, int size);
 static int bufIsFull(Buffer *buf);
 static int bufIsEmpty(Buffer *buf);
 static int bufSize(Buffer *buf);
 static int bufSpace(Buffer *buf);
-//static int pushBackVertices(Buffer *vbuf, Vertices *vert);
-//static int pushFrontVertices(Buffer *vbuf, Vertices *vert);
-//static int popBackVertices(Buffer *vbuf, Vertices *vert);
-//static int pushBackColors(Buffer *cbuf, Colors *colors);
-//static int pushFrontColors(Buffer *cbuf, Colors *colors);
-//static int popBackColors(Buffer *cbuf, Colors *colors);
+// for triangulate function
+static int pushBackVertices(Buffer *vbuf, Vertices *vert);
+static int pushFrontVertices(Buffer *vbuf, Vertices *vert);
+static int popBackVertices(Buffer *vbuf, Vertices *vert);
+static int pushBackColors(Buffer *cbuf, Colors *colors);
+static int pushFrontColors(Buffer *cbuf, Colors *colors);
+static int popBackColors(Buffer *cbuf, Colors *colors);
+// for splitTriangles function
 static int pushBack(Buffer *buf, Vertices *vert, Colors *colors);
 static int popBack(Buffer *buf, Vertices *vert, Colors *colors);
 static int pushFront(Buffer *buf, Vertices *vert, Colors *colors);
 
-int triangulateOneTriangle(const Triangle& tr, nm32f xMax, nm32f yMax, Buffer *buf);
+int triangulateOneTriangle(	const Triangle& tr, 
+							nm32f xMax, 
+							nm32f yMax, 
+							Buffer *verticesStack, 
+							Buffer *colorsStack);
+// splitOneTriangle is a version of triangulateOneTriangle with different interface
+// for splitTriangles function
+int splitOneTriangle(const Triangle& tr, nm32f xMax, nm32f yMax, Buffer *buf);
 
 
 /*
