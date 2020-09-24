@@ -17,30 +17,29 @@ SECTION(".text_demo3d")
 void setSegmentMask(v2nm32f* minXY, v2nm32f* maxXY, BitMask* masks, int size){
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
 	WindowInfo* winInfo = &cntxt->windowInfo;
-	int nRows = winInfo->nRows;
-	int nColumns = winInfo->nColumns;
+	int nSegments = winInfo->nRows * winInfo->nColumns;
 	v2nm32f* lowerLimit = winInfo->lowerLeft;
 	v2nm32f* upperLimit = winInfo->upperRight;
 
-	for (int segY = 0, iSeg = 0; segY < nRows; segY++) {
-		for (int segX = 0; segX < nColumns; segX++, iSeg++) {					
+	for (int iSeg = 0; iSeg < nSegments; iSeg++) {
 
-			int* maskXLt = (int*)cntxt->buffer0;
-			int* maskYLt = (int*)cntxt->buffer1;
-			int* maskXGt = (int*)cntxt->buffer2;
-			int* maskYGt = (int*)cntxt->buffer3;
+		int* maskXLt = (int*)cntxt->buffer0;
+		int* maskYLt = (int*)cntxt->buffer1;
+		int* maskXGt = (int*)cntxt->buffer2;
+		int* maskYGt = (int*)cntxt->buffer3;
 
-			nmppsCmpLtC_v2nm32f((v2nm32f*)minXY, upperLimit + iSeg, (nm1*)maskXLt, (nm1*)maskYLt, 1, size);
-			nmppsCmpGtC_v2nm32f((v2nm32f*)maxXY, lowerLimit + iSeg, (nm1*)maskXGt, (nm1*)maskYGt, 1, size);
-			//and4v(maskXLt, maskYLt, maskXGt, maskYGt, masks[iSeg].bits, size);
-			for (int i = 0, cnt = 0; cnt < size; i++, cnt += 32) {
-				int result = (maskXLt[i] & maskYLt[i]) & (maskXGt[i] & maskYGt[i]);
-				masks[iSeg].bits[i] = result;
-			}
-			int size32 = (size + 31) / 32;
-			unsigned int ind = firstNonZeroIndx_32s(masks[iSeg].bits, size32);
-			//если ind = -1, значит все нули и в hasNotZeroBits писать 1, иначе наоборот
-			masks[iSeg].hasNotZeroBits = ~ind >> 31;
+		nmppsCmpLtC_v2nm32f((v2nm32f*)minXY, upperLimit + iSeg, (nm1*)maskXLt, (nm1*)maskYLt, 1, size);
+		nmppsCmpGtC_v2nm32f((v2nm32f*)maxXY, lowerLimit + iSeg, (nm1*)maskXGt, (nm1*)maskYGt, 1, size);
+		//and4v(maskXLt, maskYLt, maskXGt, maskYGt, masks[iSeg].bits, size);
+		for (int i = 0, cnt = 0; cnt < size; i++, cnt += 32) {
+			int result = (maskXLt[i] & maskYLt[i]) & (maskXGt[i] & maskYGt[i]);
+			masks[iSeg].bits[i] = result;
 		}
+		int size32 = (size + 31) / 32;
+		unsigned int ind = firstNonZeroIndx_32s(masks[iSeg].bits, size32);
+		//если ind = -1, значит все нули и в hasNotZeroBits писать 1, иначе наоборот
+		masks[iSeg].hasNotZeroBits = ~ind >> 31;
+
 	}
+
 }
