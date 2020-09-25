@@ -520,79 +520,181 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 				nmblas_dcopy(2 * currentCount, (double*)cntxt->buffer3, 6, (double*)colorOrNormal, 2);
 				nmblas_dcopy(2 * currentCount, (double*)cntxt->buffer3 + 1, 6, (double*)colorOrNormal + 1, 2);				
 
-				nmblas_scopy(currentCount, tmp0.v0.x, 1, cntxt->trianInner.x0, 1);
-				nmblas_scopy(currentCount, tmp0.v0.y, 1, cntxt->trianInner.y0, 1);
-				nmblas_scopy(currentCount, tmp0.v1.x, 1, cntxt->trianInner.x1, 1);
-				nmblas_scopy(currentCount, tmp0.v1.y, 1, cntxt->trianInner.y1, 1);
-				nmblas_scopy(currentCount, tmp0.v2.x, 1, cntxt->trianInner.x2, 1);
-				nmblas_scopy(currentCount, tmp0.v2.y, 1, cntxt->trianInner.y2, 1);
-				meanToInt3(tmp0.v0.z, tmp0.v1.z, tmp0.v2.z, cntxt->trianInner.z, currentCount);
-				nmppsConvert_32f32s_rounding((float*)colorOrNormal, (int*)cntxt->trianInner.colors, 0, 4 * currentCount);
-				cntxt->trianInner.size = currentCount;
-				if (cntxt->isCullFace) {
-					cullFaceSortTriangles(cntxt->trianInner);
-					if (cntxt->trianInner.size == 0) {
-						continue;
+				if (currentCount + cntxt->trianInner.size < NMGL_SIZE) {
+					nmblas_scopy(currentCount, tmp0.v0.x, 1, cntxt->trianInner.x0 + cntxt->trianInner.size, 1);
+					nmblas_scopy(currentCount, tmp0.v0.y, 1, cntxt->trianInner.y0 + cntxt->trianInner.size, 1);
+					nmblas_scopy(currentCount, tmp0.v1.x, 1, cntxt->trianInner.x1 + cntxt->trianInner.size, 1);
+					nmblas_scopy(currentCount, tmp0.v1.y, 1, cntxt->trianInner.y1 + cntxt->trianInner.size, 1);
+					nmblas_scopy(currentCount, tmp0.v2.x, 1, cntxt->trianInner.x2 + cntxt->trianInner.size, 1);
+					nmblas_scopy(currentCount, tmp0.v2.y, 1, cntxt->trianInner.y2 + cntxt->trianInner.size, 1);
+					meanToInt3(tmp0.v0.z, tmp0.v1.z, tmp0.v2.z, cntxt->trianInner.z + cntxt->trianInner.size, currentCount);
+					nmppsConvert_32f32s_rounding((float*)colorOrNormal, (int*)cntxt->trianInner.colors + 4 * cntxt->trianInner.size, 0, 4 * currentCount);
+					cntxt->trianInner.size += currentCount;
+					if (cntxt->isCullFace) {
+						cullFaceSortTriangles(cntxt->trianInner);
+						if (cntxt->trianInner.size == 0) {
+							continue;
+						}
 					}
 				}
-				findMinMax3(cntxt->trianInner.x0, cntxt->trianInner.x1, cntxt->trianInner.x2,
-					cntxt->buffer0, cntxt->buffer1,
-					cntxt->trianInner.size);
-				findMinMax3(cntxt->trianInner.y0, cntxt->trianInner.y1, cntxt->trianInner.y2,
-					cntxt->buffer2, cntxt->buffer3,
-					cntxt->trianInner.size);
-				nmppsMerge_32f(cntxt->buffer0, cntxt->buffer2, (float*)minXY, cntxt->trianInner.size);
-				nmppsMerge_32f(cntxt->buffer1, cntxt->buffer3, (float*)maxXY, cntxt->trianInner.size);
-				//PROFILER_SIZE(cntxt->trianInner.size);
-				setSegmentMask(minXY, maxXY, cntxt->segmentMasks, cntxt->trianInner.size);
-				//PROFILER_SIZE(cntxt->trianInner.size);
-				rasterizeT(&cntxt->trianInner, cntxt->segmentMasks);
+				else {
+					int localSize = NMGL_SIZE - cntxt->trianInner.size;
+					nmblas_scopy(localSize, tmp0.v0.x, 1, cntxt->trianInner.x0 + cntxt->trianInner.size, 1);
+					nmblas_scopy(localSize, tmp0.v0.y, 1, cntxt->trianInner.y0 + cntxt->trianInner.size, 1);
+					nmblas_scopy(localSize, tmp0.v1.x, 1, cntxt->trianInner.x1 + cntxt->trianInner.size, 1);
+					nmblas_scopy(localSize, tmp0.v1.y, 1, cntxt->trianInner.y1 + cntxt->trianInner.size, 1);
+					nmblas_scopy(localSize, tmp0.v2.x, 1, cntxt->trianInner.x2 + cntxt->trianInner.size, 1);
+					nmblas_scopy(localSize, tmp0.v2.y, 1, cntxt->trianInner.y2 + cntxt->trianInner.size, 1);
+					meanToInt3(tmp0.v0.z, tmp0.v1.z, tmp0.v2.z, cntxt->trianInner.z + cntxt->trianInner.size, localSize);
+					nmppsConvert_32f32s_rounding((float*)colorOrNormal, (int*)cntxt->trianInner.colors + 4 * cntxt->trianInner.size, 0, 4 * localSize);
+					cntxt->trianInner.size += localSize;
+					if (cntxt->isCullFace) {
+						cullFaceSortTriangles(cntxt->trianInner);
+						if (cntxt->trianInner.size == 0) {
+							continue;
+						}
+					}
+					findMinMax3(cntxt->trianInner.x0, cntxt->trianInner.x1, cntxt->trianInner.x2,
+						cntxt->buffer0, cntxt->buffer1,
+						cntxt->trianInner.size);
+					findMinMax3(cntxt->trianInner.y0, cntxt->trianInner.y1, cntxt->trianInner.y2,
+						cntxt->buffer2, cntxt->buffer3,
+						cntxt->trianInner.size);
+					nmppsMerge_32f(cntxt->buffer0, cntxt->buffer2, (float*)minXY, cntxt->trianInner.size);
+					nmppsMerge_32f(cntxt->buffer1, cntxt->buffer3, (float*)maxXY, cntxt->trianInner.size);
+					//PROFILER_SIZE(cntxt->trianInner.size);
+					setSegmentMask(minXY, maxXY, cntxt->segmentMasks, cntxt->trianInner.size);
+					//PROFILER_SIZE(cntxt->trianInner.size);
+					rasterizeT(&cntxt->trianInner, cntxt->segmentMasks);
+
+					int tailCount = currentCount - localSize;
+					nmblas_scopy(tailCount, tmp0.v0.x + localSize, 1, cntxt->trianInner.x0, 1);
+					nmblas_scopy(tailCount, tmp0.v0.y + localSize, 1, cntxt->trianInner.y0, 1);
+					nmblas_scopy(tailCount, tmp0.v1.x + localSize, 1, cntxt->trianInner.x1, 1);
+					nmblas_scopy(tailCount, tmp0.v1.y + localSize, 1, cntxt->trianInner.y1, 1);
+					nmblas_scopy(tailCount, tmp0.v2.x + localSize, 1, cntxt->trianInner.x2, 1);
+					nmblas_scopy(tailCount, tmp0.v2.y + localSize, 1, cntxt->trianInner.y2, 1);
+					meanToInt3(tmp0.v0.z + localSize, tmp0.v1.z + localSize, tmp0.v2.z + localSize, cntxt->trianInner.z, tailCount);
+					nmppsConvert_32f32s_rounding((float*)(colorOrNormal + localSize), (int*)cntxt->trianInner.colors, 0, 4 * tailCount);
+					cntxt->trianInner.size = tailCount;
+				}
+				
+				
 			}
 			break;
 		}
 		case NMGL_LINE_STRIP:
 		case NMGL_LINE_LOOP:
 		case NMGL_LINES: {
-			
-			split_v4nm32f(vertexResult, 1, cntxt->buffer0, cntxt->buffer1, cntxt->buffer2, cntxt->buffer3, localSize);
-			if (excessVertexCount) {
-				cntxt->buffer0[localSize - 1] = cntxt->buffer0[localSize - 2];
-				cntxt->buffer1[localSize - 1] = cntxt->buffer1[localSize - 2];
-				cntxt->buffer2[localSize - 1] = cntxt->buffer2[localSize - 2];
-				cntxt->buffer3[localSize - 1] = cntxt->buffer3[localSize - 2];
+			LinePointers tmp;
+			LinePointers tmp2;
+			tmp.v0.x = cntxt->buffer0;
+			tmp.v0.y = cntxt->buffer0 + NMGL_SIZE;
+			tmp.v0.z = cntxt->buffer0 + 2 * NMGL_SIZE;
+			tmp.v0.w = cntxt->buffer0 + 3 * NMGL_SIZE;
+			tmp.v0.color = (v4nm32f*)cntxt->buffer1;
+			tmp.v1.x = cntxt->buffer0 + 4 * NMGL_SIZE;
+			tmp.v1.y = cntxt->buffer0 + 5 * NMGL_SIZE;
+			tmp.v1.z = cntxt->buffer0 + 6 * NMGL_SIZE;
+			tmp.v1.w = cntxt->buffer0 + 7 * NMGL_SIZE;
+			tmp.v1.color = (v4nm32f*)cntxt->buffer1 + NMGL_SIZE;
+			tmp2.v0.x = cntxt->buffer2;
+			tmp2.v0.y = cntxt->buffer2 + NMGL_SIZE;
+			tmp2.v0.z = cntxt->buffer2 + 2 * NMGL_SIZE;
+			tmp2.v0.w = cntxt->buffer2 + 3 * NMGL_SIZE;
+			tmp2.v0.color = (v4nm32f*)cntxt->buffer3;
+			tmp2.v1.x = cntxt->buffer2 + 4 * NMGL_SIZE;
+			tmp2.v1.y = cntxt->buffer2 + 5 * NMGL_SIZE;
+			tmp2.v1.z = cntxt->buffer2 + 6 * NMGL_SIZE;
+			tmp2.v1.w = cntxt->buffer2 + 7 * NMGL_SIZE;
+			tmp2.v1.color = (v4nm32f*)cntxt->buffer3 + NMGL_SIZE;
+			int currentCount = 0;
+			switch(mode) {
+			case NMGL_LINES:
+				currentCount = repackToPrimitives_l(vertexResult, colorOrNormal, texResult, &tmp, localSize);
+				break;
+			case NMGL_LINE_LOOP:
+				currentCount = repackToPrimitives_ll(vertexResult, colorOrNormal, texResult, &tmp, localSize);
+				break;
+			case NMGL_LINE_STRIP:
+				currentCount = repackToPrimitives_ls(vertexResult, colorOrNormal, texResult, &tmp, localSize);
+				break;
 			}
 
 			//------------clipping-------------------
 
 			//------------perspective-division-----------------
-			nmppsDiv_32f(cntxt->buffer0, cntxt->buffer3, cntxt->buffer1 + 3 * NMGL_SIZE, localSize);
-			nmppsDiv_32f(cntxt->buffer1, cntxt->buffer3, cntxt->buffer2 + 3 * NMGL_SIZE, localSize);
-			nmppsDiv_32f(cntxt->buffer2, cntxt->buffer3, cntxt->buffer0 + 3 * NMGL_SIZE, localSize);
+			nmppsDiv_32f(tmp.v0.x, tmp.v0.w, tmp2.v0.x, currentCount);
+			nmppsDiv_32f(tmp.v0.y, tmp.v0.w, tmp2.v0.y, currentCount);
+			nmppsDiv_32f(tmp.v0.z, tmp.v0.w, tmp2.v0.z, currentCount);
+			nmppsDiv_32f(tmp.v1.x, tmp.v1.w, tmp2.v1.x, currentCount);
+			nmppsDiv_32f(tmp.v1.y, tmp.v1.w, tmp2.v1.y, currentCount);
+			nmppsDiv_32f(tmp.v1.z, tmp.v1.w, tmp2.v1.z, currentCount);
 			
 			//------------viewport------------------------
-			nmppsMulC_AddC_32f(cntxt->buffer1 + 3 * NMGL_SIZE, cntxt->windowInfo.viewportMulX, cntxt->windowInfo.viewportAddX, vertexX, localSize);		//X
-			nmppsMulC_AddC_32f(cntxt->buffer2 + 3 * NMGL_SIZE, cntxt->windowInfo.viewportMulY, cntxt->windowInfo.viewportAddY, vertexY, localSize);		//Y
-			nmppsMulC_AddC_32f(cntxt->buffer0 + 3 * NMGL_SIZE, cntxt->windowInfo.viewportMulZ, cntxt->windowInfo.viewportAddZ, vertexZ, localSize);	//Z
+			nmppsMulC_AddC_32f(tmp2.v0.x, cntxt->windowInfo.viewportMulX, cntxt->windowInfo.viewportAddX, tmp.v0.x, currentCount);		//X
+			nmppsMulC_AddC_32f(tmp2.v0.y, cntxt->windowInfo.viewportMulY, cntxt->windowInfo.viewportAddY, tmp.v0.y, currentCount);		//Y
+			nmppsMulC_AddC_32f(tmp2.v0.z, cntxt->windowInfo.viewportMulZ, cntxt->windowInfo.viewportAddZ, tmp.v0.z, currentCount);		//Z
+			nmppsMulC_AddC_32f(tmp2.v1.x, cntxt->windowInfo.viewportMulX, cntxt->windowInfo.viewportAddX, tmp.v1.x, currentCount);		//X
+			nmppsMulC_AddC_32f(tmp2.v1.y, cntxt->windowInfo.viewportMulY, cntxt->windowInfo.viewportAddY, tmp.v1.y, currentCount);		//Y
+			nmppsMulC_AddC_32f(tmp2.v1.z, cntxt->windowInfo.viewportMulZ, cntxt->windowInfo.viewportAddZ, tmp.v1.z, currentCount);		//Z
 
-			nmppsConvert_32f32s_floor(vertexX, (int*)cntxt->buffer0, 0, localSize);
-			nmppsConvert_32s32f((int*)cntxt->buffer0, vertexX, localSize);
-			nmppsConvert_32f32s_floor(vertexY, (int*)cntxt->buffer0, 0, localSize);
-			nmppsConvert_32s32f((int*)cntxt->buffer0, vertexY, localSize);
+			nmppsConvert_32f32s_floor(tmp.v0.x, (int*)tmp2.v0.x, 0, currentCount);
+			nmppsConvert_32f32s_floor(tmp.v0.y, (int*)tmp2.v0.y, 0, currentCount);
+			nmppsConvert_32f32s_floor(tmp.v0.z, (int*)tmp2.v0.z, 0, currentCount);
+			nmppsConvert_32f32s_floor(tmp.v1.x, (int*)tmp2.v1.x, 0, currentCount);
+			nmppsConvert_32f32s_floor(tmp.v1.y, (int*)tmp2.v1.y, 0, currentCount);
+			nmppsConvert_32f32s_floor(tmp.v1.z, (int*)tmp2.v1.z, 0, currentCount);
+			nmppsConvert_32s32f((int*)tmp2.v0.x, tmp.v0.x, currentCount);
+			nmppsConvert_32s32f((int*)tmp2.v0.y, tmp.v0.y, currentCount);
+			nmppsConvert_32s32f((int*)tmp2.v0.z, tmp.v0.z, currentCount);
+			nmppsConvert_32s32f((int*)tmp2.v1.x, tmp.v1.x, currentCount);
+			nmppsConvert_32s32f((int*)tmp2.v1.y, tmp.v1.y, currentCount);
+			nmppsConvert_32s32f((int*)tmp2.v1.z, tmp.v1.z, currentCount);
+			
 			v2nm32f *minXY = (v2nm32f*)cntxt->buffer4;
 			v2nm32f *maxXY = (v2nm32f*)cntxt->buffer4 + 3 * NMGL_SIZE;
-			pushToLines(vertexX, vertexY, vertexZ, colorOrNormal, cntxt->lineInner, mode, localSize);
-			
-			findMinMax2(cntxt->lineInner.x0, cntxt->lineInner.x1,
-				cntxt->buffer0, cntxt->buffer1,
-				cntxt->lineInner.size);
-			findMinMax2(cntxt->lineInner.y0, cntxt->lineInner.y1,
-				cntxt->buffer2, cntxt->buffer3,
-				cntxt->lineInner.size);
-			nmppsMerge_32f(cntxt->buffer0, cntxt->buffer2, (float*)minXY, cntxt->lineInner.size);
-			nmppsMerge_32f(cntxt->buffer1, cntxt->buffer3, (float*)maxXY, cntxt->lineInner.size);
-			setSegmentMask(minXY, maxXY, cntxt->segmentMasks, cntxt->lineInner.size);
-			//PROFILER_SIZE(cntxt->lineInner.size);
-			rasterizeL(&cntxt->lineInner, cntxt->segmentMasks);
+			if (currentCount + cntxt->lineInner.size < NMGL_SIZE) {
+				nmblas_scopy(currentCount, tmp.v0.x, 1, cntxt->lineInner.x0 + cntxt->lineInner.size, 1);
+				nmblas_scopy(currentCount, tmp.v0.y, 1, cntxt->lineInner.y0 + cntxt->lineInner.size, 1);
+				nmblas_scopy(currentCount, tmp.v1.x, 1, cntxt->lineInner.x1 + cntxt->lineInner.size, 1);
+				nmblas_scopy(currentCount, tmp.v1.y, 1, cntxt->lineInner.y1 + cntxt->lineInner.size, 1);
+				meanToInt2(tmp.v0.z, tmp.v1.z, cntxt->lineInner.z + cntxt->lineInner.size, currentCount);
+				nmppsConvert_32f32s_rounding((float*)colorOrNormal, (int*)cntxt->lineInner.colors + 4 * cntxt->lineInner.size, 0, 4 * currentCount);
+				cntxt->lineInner.size += currentCount;
+			}
+			else {
+				int localSize = NMGL_SIZE - cntxt->lineInner.size;
+				nmblas_scopy(localSize, tmp.v0.x, 1, cntxt->lineInner.x0 + cntxt->lineInner.size, 1);
+				nmblas_scopy(localSize, tmp.v0.y, 1, cntxt->lineInner.y0 + cntxt->lineInner.size, 1);
+				nmblas_scopy(localSize, tmp.v1.x, 1, cntxt->lineInner.x1 + cntxt->lineInner.size, 1);
+				nmblas_scopy(localSize, tmp.v1.y, 1, cntxt->lineInner.y1 + cntxt->lineInner.size, 1);
+				meanToInt2(tmp.v0.z, tmp.v1.z, cntxt->lineInner.z + cntxt->lineInner.size, localSize);
+				nmppsConvert_32f32s_rounding((float*)colorOrNormal, (int*)cntxt->lineInner.colors + 4 * cntxt->lineInner.size, 0, 4 * localSize);
+				cntxt->lineInner.size += localSize;
+
+				findMinMax2(cntxt->lineInner.x0, cntxt->lineInner.x1,
+					cntxt->buffer0, cntxt->buffer1,
+					cntxt->lineInner.size);
+				findMinMax2(cntxt->lineInner.y0, cntxt->lineInner.y1,
+					cntxt->buffer2, cntxt->buffer3,
+					cntxt->lineInner.size);
+				nmppsMerge_32f(cntxt->buffer0, cntxt->buffer2, (float*)minXY, cntxt->lineInner.size);
+				nmppsMerge_32f(cntxt->buffer1, cntxt->buffer3, (float*)maxXY, cntxt->lineInner.size);
+				//PROFILER_SIZE(cntxt->trianInner.size);
+				setSegmentMask(minXY, maxXY, cntxt->segmentMasks, cntxt->lineInner.size);
+				//PROFILER_SIZE(cntxt->trianInner.size);
+				rasterizeL(&cntxt->lineInner, cntxt->segmentMasks);
+
+				int tailCount = currentCount - localSize;
+				nmblas_scopy(tailCount, tmp.v0.x + localSize, 1, cntxt->lineInner.x0, 1);
+				nmblas_scopy(tailCount, tmp.v0.y + localSize, 1, cntxt->lineInner.y0, 1);
+				nmblas_scopy(tailCount, tmp.v1.x + localSize, 1, cntxt->lineInner.x1, 1);
+				nmblas_scopy(tailCount, tmp.v1.y + localSize, 1, cntxt->lineInner.y1, 1);
+				meanToInt2(tmp.v0.z + localSize, tmp.v1.z + localSize, cntxt->lineInner.z, tailCount);
+				nmppsConvert_32f32s_rounding((float*)(colorOrNormal + localSize), (int*)cntxt->lineInner.colors, 0, 4 * tailCount);
+				cntxt->lineInner.size = tailCount;
+			}
 			break;
 		}
 		case NMGL_POINTS: {
