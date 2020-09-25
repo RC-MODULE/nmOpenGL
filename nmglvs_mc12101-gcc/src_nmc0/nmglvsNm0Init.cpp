@@ -29,13 +29,6 @@ SECTION(".data_imu3")	float nmgly2[NMGL_SIZE];
 SECTION(".data_imu4")	int nmglz_int[NMGL_SIZE];
 SECTION(".data_imu6")	v4nm32s nmgllightsValues[NMGL_SIZE];
 
-SECTION(".data_imu2")	float nmglx0_l[NMGL_SIZE];
-SECTION(".data_imu2")	float nmgly0_l[NMGL_SIZE];
-SECTION(".data_imu2")	float nmglx1_l[NMGL_SIZE];
-SECTION(".data_imu3")	float nmgly1_l[NMGL_SIZE];
-SECTION(".data_imu4")	int nmglz_int_l[NMGL_SIZE];
-SECTION(".data_imu4")	v4nm32s nmgllightsValues_l[NMGL_SIZE];
-
 SECTION(".data_imu6") int dividedMasksMemory[4][3 * NMGL_SIZE / 32];
 
 SECTION(".data_imu6") int masksBits[36][3 * NMGL_SIZE / 32];
@@ -122,12 +115,12 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 	cntxt->trianInner.maxSize = NMGL_SIZE;
 	cntxt->trianInner.size = 0;
 
-	cntxt->lineInner.x0 = nmglx0_l;
-	cntxt->lineInner.y0 = nmgly0_l;
-	cntxt->lineInner.x1 = nmglx1_l;
-	cntxt->lineInner.y1 = nmgly1_l;
-	cntxt->lineInner.z = nmglz_int_l;
-	cntxt->lineInner.colors = nmgllightsValues_l;
+	cntxt->lineInner.x0 = nmglx0;
+	cntxt->lineInner.y0 = nmgly0;
+	cntxt->lineInner.x1 = nmglx1;
+	cntxt->lineInner.y1 = nmgly1;
+	cntxt->lineInner.z = nmglz_int;
+	cntxt->lineInner.colors = nmgllightsValues;
 	cntxt->lineInner.maxSize = NMGL_SIZE;
 	cntxt->lineInner.size = 0;
 

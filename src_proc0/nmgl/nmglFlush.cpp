@@ -3,47 +3,37 @@
 
 #include <math.h>
 
+extern  Polygons polygons[36];
+void pushPoly(Polygons &innerPoly, PolygonsConnector &connector);
 
 SECTION(".text_nmgl")
 void nmglFlush (){
+
+#ifdef USED_POLYGONS_BUFFER
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
-	v2nm32f *minXY = (v2nm32f*)cntxt->buffer4;
-	v2nm32f *maxXY = (v2nm32f*)cntxt->buffer4 + 3 * NMGL_SIZE;
-	if (cntxt->lineInner.size) {
-		findMinMax2(cntxt->lineInner.x0, cntxt->lineInner.x1,
-			cntxt->buffer0, cntxt->buffer1,
-			cntxt->lineInner.size);
-		findMinMax2(cntxt->lineInner.y0, cntxt->lineInner.y1,
-			cntxt->buffer2, cntxt->buffer3,
-			cntxt->lineInner.size);
-		nmppsMerge_32f(cntxt->buffer0, cntxt->buffer2, (float*)minXY, cntxt->lineInner.size);
-		nmppsMerge_32f(cntxt->buffer1, cntxt->buffer3, (float*)maxXY, cntxt->lineInner.size);
-		//PROFILER_SIZE(cntxt->trianInner.size);
-		setSegmentMask(minXY, maxXY, cntxt->segmentMasks, cntxt->lineInner.size);
-		//PROFILER_SIZE(cntxt->trianInner.size);
-		rasterizeL(&cntxt->lineInner, cntxt->segmentMasks);
-		cntxt->lineInner.size = 0;
-	}
-	if (cntxt->trianInner.size) {
-		if (cntxt->isCullFace) {
-			cullFaceSortTriangles(cntxt->trianInner);
-			if (cntxt->trianInner.size == 0) {
-				return;
+	PolygonsConnector connector(cntxt->polygonsData);
+
+	for (int segY = 0, iSeg = 0; segY < cntxt->windowInfo.nRows; segY++) {
+		for (int segX = 0; segX < cntxt->windowInfo.nColumns; segX++, iSeg++) {
+			if (polygons[iSeg].count) {
+				cntxt->synchro.writeInstr(1, NMC1_COPY_SEG_FROM_IMAGE,
+					cntxt->windowInfo.x0[segX],
+					cntxt->windowInfo.y0[segY],
+					cntxt->windowInfo.x1[segX] - cntxt->windowInfo.x0[segX],
+					cntxt->windowInfo.y1[segY] - cntxt->windowInfo.y0[segY],
+					iSeg);
+
+				pushPoly(polygons[iSeg], connector);
+
+				cntxt->synchro.writeInstr(1,
+					NMC1_COPY_SEG_TO_IMAGE,
+					cntxt->windowInfo.x0[segX],
+					cntxt->windowInfo.y0[segY],
+					cntxt->windowInfo.x1[segX] - cntxt->windowInfo.x0[segX],
+					cntxt->windowInfo.y1[segY] - cntxt->windowInfo.y0[segY]);
 			}
 		}
-		findMinMax3(cntxt->trianInner.x0, cntxt->trianInner.x1, cntxt->trianInner.x2,
-			cntxt->buffer0, cntxt->buffer1,
-			cntxt->trianInner.size);
-		findMinMax3(cntxt->trianInner.y0, cntxt->trianInner.y1, cntxt->trianInner.y2,
-			cntxt->buffer2, cntxt->buffer3,
-			cntxt->trianInner.size);
-		nmppsMerge_32f(cntxt->buffer0, cntxt->buffer2, (float*)minXY, cntxt->trianInner.size);
-		nmppsMerge_32f(cntxt->buffer1, cntxt->buffer3, (float*)maxXY, cntxt->trianInner.size);
-		//PROFILER_SIZE(cntxt->trianInner.size);
-		setSegmentMask(minXY, maxXY, cntxt->segmentMasks, cntxt->trianInner.size);
-		//PROFILER_SIZE(cntxt->trianInner.size);
-		rasterizeT(&cntxt->trianInner, cntxt->segmentMasks);
-		cntxt->trianInner.size = 0;
 	}
-	
+#endif // USED_POLYGONS_BUFFER
+
 }
