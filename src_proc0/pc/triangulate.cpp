@@ -2,8 +2,32 @@
 
 #include "service.h"
 
-static void splitByFirstLargeEdge(const Triangle& tr, Triangle &trOut1, Triangle& trOut2);
-static void splitByLargestEdge(const Triangle& tr, Triangle &trOut1, Triangle& trOut2);
+int checkAndSplitFirstLargeEdge(const Triangle& tr, nm32f xMax, nm32f yMax, Triangle &trOut1, Triangle& trOut2);
+int checkAndSplitLargestEdge(const Triangle& tr, nm32f xMax, nm32f yMax, Triangle &trOut1, Triangle& trOut2);
+
+nm32f Triangle::edgeSize(int i) const
+{
+	Point p1 = points[edges[i].p1];
+	Point p2 = points[edges[i].p2];
+
+	nm32f dx = fabs(p1.x - p2.x);
+	nm32f dy = fabs(p1.y - p2.y);
+
+	nm32f size = sqrt(pow(dx, 2) + pow(dy, 2));
+	return size;
+}
+
+edgeProjection Triangle::edgeGetProjection(int i) const
+{
+	Point p1 = points[edges[i].p1];
+	Point p2 = points[edges[i].p2];
+	struct edgeProjection res;
+
+	res.dx = fabs(p1.x - p2.x);
+	res.dy = fabs(p1.y - p2.y);
+
+	return res;
+}
 
 static Buffer initBuf(void *data, int size)
 {
@@ -277,13 +301,13 @@ int triangulateOneTriangle(	const Triangle& tr,
 		Triangle tr{a, b, c};
 
 		// Process the triangle:
+		Triangle trOut1;
+		Triangle trOut2;
 		// Check the size and split if it is necessary
-		if (tr.isTooBig(xMax, yMax)){
-			Triangle trOut1;
-			Triangle trOut2;
-			//splitByFirstLargeEdge(triangle, trOut1, trOut2);
-			splitByLargestEdge(tr, trOut1, trOut2);
-
+		//int trIsSplitted = checkAndSplitFirstLargeEdge(triangle, xMax, yMax, trOut1, trOut2);
+		int trIsSplitted = checkAndSplitLargestEdge(tr, xMax, yMax, trOut1, trOut2);
+		// Triangle has been splitted
+		if (trIsSplitted) {
 			if (vsize >= 2){
 				Vertices trOut1Vertices = {
 											trOut1.points[0].x,
@@ -368,9 +392,11 @@ int triangulateOneTriangle(	const Triangle& tr,
 }
 
 #if 0
-int splitByFirstLargeEdge(const Triangle &tr, 
+int checkAndSplitFirstLargeEdge(const Triangle& tr, 
+								nm32f xMax, 
+								nm32f yMax, 
 								Triangle &trOut1, 
-								Triangle &trOut2)
+								Triangle& trOut2)
 {
 	Point a = tr.points[0];
 	Point b = tr.points[1];
@@ -424,14 +450,15 @@ int splitByFirstLargeEdge(const Triangle &tr,
 	return 0;
 }
 #endif
-void splitByLargestEdge(	const Triangle &tr, 
-						      Triangle &trOut1, 
-						      Triangle &trOut2)
+int checkAndSplitLargestEdge(	const Triangle& tr, 
+								nm32f xMax, 
+								nm32f yMax, 
+								Triangle &trOut1, 
+								Triangle& trOut2)
 {
-	// Find the largest edge
 	nm32f largestEdgeSize = 0;
 	int largestEdgeID = 0;
-	
+	// Find the largest edge
 	for (int i = 0; i < 3; ++i) {
 		nm32f currentEdgeSize = tr.edgeSize(i);
 		if (currentEdgeSize > largestEdgeSize) {
@@ -439,24 +466,30 @@ void splitByLargestEdge(	const Triangle &tr,
 			largestEdgeSize = currentEdgeSize;
 		}
 	}
-	
-	Point a = tr.points[tr.edges[largestEdgeID].p1];
-	Point b = tr.points[tr.edges[largestEdgeID].p2];
-	// Compute the other point of the triangle
-	// !(0b01 | 0b00) = 0b10
-	// !(0b10 | 0b00) = 0b01
-	// !(0b01 | 0b10) = 0b00
-	int cId = (~(tr.edges[largestEdgeID].p1 | tr.edges[largestEdgeID].p2)) & 0x03;
-	Point c = tr.points[cId];
-	Point d;
-	d.x = (a.x + b.x) / 2;
-	d.y = (a.y + b.y) / 2;
-	d.z = (a.z + b.z) / 2;
-	d.color.vec[0] = (a.color.vec[0] + b.color.vec[0]) / 2;
-	d.color.vec[1] = (a.color.vec[1] + b.color.vec[1]) / 2;
-	d.color.vec[2] = (a.color.vec[2] + b.color.vec[2]) / 2;
-	d.color.vec[3] = (a.color.vec[3] + b.color.vec[3]) / 2;
-	trOut1 = Triangle{ a, d, c };
-	trOut2 = Triangle{ d, b, c };
+	// If the largest edge is too large then division is necessary 
+	edgeProjection largestEdgeProjection = tr.edgeGetProjection(largestEdgeID);
+	if (largestEdgeProjection.dx > xMax || largestEdgeProjection.dy > yMax) {
+		Point a = tr.points[tr.edges[largestEdgeID].p1];
+		Point b = tr.points[tr.edges[largestEdgeID].p2];
+		// Compute the other point of the triangle
+		// !(0b01 | 0b00) = 0b10
+		// !(0b10 | 0b00) = 0b01
+		// !(0b01 | 0b10) = 0b00
+		int cId = (~(tr.edges[largestEdgeID].p1 | tr.edges[largestEdgeID].p2)) & 0x03;
+		Point c = tr.points[cId];
+		Point d;
+		d.x = (a.x + b.x) / 2;
+		d.y = (a.y + b.y) / 2;
+		d.z = (a.z + b.z) / 2;
+		d.color.vec[0] = (a.color.vec[0] + b.color.vec[0]) / 2;
+		d.color.vec[1] = (a.color.vec[1] + b.color.vec[1]) / 2;
+		d.color.vec[2] = (a.color.vec[2] + b.color.vec[2]) / 2;
+		d.color.vec[3] = (a.color.vec[3] + b.color.vec[3]) / 2;
+		trOut1 = Triangle{ a, c, d };
+		trOut2 = Triangle{ b, c, d };
+		return 1;
+	} else {
+		return 0;
+	}
 }
 
