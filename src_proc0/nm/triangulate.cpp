@@ -2,36 +2,8 @@
 
 #include "service.h"
 
-int checkAndSplitFirstLargeEdge(const Triangle& tr, nm32f xMax, nm32f yMax, Triangle &trOut1, Triangle& trOut2);
-int checkAndSplitLargestEdge(const Triangle& tr, nm32f xMax, nm32f yMax, Triangle &trOut1, Triangle& trOut2);
-
-nm32f Triangle::edgeSize(int i) const
-{
-	Point p1 = points[edges[i].p1];
-	Point p2 = points[edges[i].p2];
-
-	//nm32f dx = fabs(p1.x - p2.x);
-	//nm32f dy = fabs(p1.y - p2.y);
-	nm32f dx = (p1.x - p2.x);
-	nm32f dy = (p1.y - p2.y);
-
-	//nm32f size = sqrt(pow(dx, 2) + pow(dy, 2));
-	//nm32f size = sqrt(dx * dx + dy * dy);
-	nm32f size = dx * dx + dy * dy;
-	return size;
-}
-
-edgeProjection Triangle::edgeGetProjection(int i) const
-{
-	Point p1 = points[edges[i].p1];
-	Point p2 = points[edges[i].p2];
-	struct edgeProjection res;
-
-	res.dx = fabs(p1.x - p2.x);
-	res.dy = fabs(p1.y - p2.y);
-
-	return res;
-}
+static int checkAndSplitFirstLargeEdge(const Triangle& tr, nm32f xMax, nm32f yMax, Triangle &trOut1, Triangle& trOut2);
+static int checkAndSplitLargestEdge(const Triangle& tr, nm32f xMax, nm32f yMax, Triangle &trOut1, Triangle& trOut2);
 
 static Buffer initBuf(void *data, int size)
 {
@@ -460,19 +432,19 @@ int checkAndSplitLargestEdge(	const Triangle& tr,
 								Triangle &trOut1, 
 								Triangle& trOut2)
 {
-	nm32f largestEdgeSize = 0;
-	int largestEdgeID = 0;
-	// Find the largest edge
-	for (int i = 0; i < 3; ++i) {
-		nm32f currentEdgeSize = tr.edgeSize(i);
-		if (currentEdgeSize > largestEdgeSize) {
-			largestEdgeID = i;
-			largestEdgeSize = currentEdgeSize;
+	if (tr.isTooBig(xMax, yMax)) {
+		// Find the largest edge
+		nm32f largestEdgeSize = 0;
+		int largestEdgeID = 0;
+
+		for (int i = 0; i < 3; ++i) {
+			nm32f currentEdgeSize = tr.edgeSize(i);
+			if (currentEdgeSize > largestEdgeSize) {
+				largestEdgeID = i;
+				largestEdgeSize = currentEdgeSize;
+			}
 		}
-	}
-	// If the largest edge is too large then division is necessary 
-	edgeProjection largestEdgeProjection = tr.edgeGetProjection(largestEdgeID);
-	if (largestEdgeProjection.dx > xMax || largestEdgeProjection.dy > yMax) {
+
 		Point a = tr.points[tr.edges[largestEdgeID].p1];
 		Point b = tr.points[tr.edges[largestEdgeID].p2];
 		// Compute the other point of the triangle
@@ -489,8 +461,8 @@ int checkAndSplitLargestEdge(	const Triangle& tr,
 		d.color.vec[1] = (a.color.vec[1] + b.color.vec[1]) / 2;
 		d.color.vec[2] = (a.color.vec[2] + b.color.vec[2]) / 2;
 		d.color.vec[3] = (a.color.vec[3] + b.color.vec[3]) / 2;
-		trOut1 = Triangle{ a, c, d };
-		trOut2 = Triangle{ b, c, d };
+		trOut1 = Triangle{ a, d, c };
+		trOut2 = Triangle{ d, b, c };
 		return 1;
 	} else {
 		return 0;
