@@ -75,7 +75,7 @@ SECTIONS
   .data : ALIGN(0x8)
   {
     *(.data);
-  } > EMI0
+  } > C0_IMU0
   .data_imu0 : ALIGN(0x8)
   {
     *(.data_imu0);
