@@ -75,8 +75,8 @@ SECTION(".text_shared0") int main()
 	nmglMatrixMode(NMGL_MODELVIEW);
 	nmglLoadIdentity();
 	nmglMatrixMode(NMGL_PROJECTION);
-	//nmglOrthof(-384, 384, -384, 384, -384, 384);
-	nmglOrthof(-384, 384, -384, 384, -100, 100);
+	nmglOrthof(-384, 384, -384, 384, -384, 384);
+	//nmglOrthof(-384, 384, -384, 384, -100, 100);
 	//nmglFrustumf(-384, 384, -384, 384, 0, 100);
 	nmglMatrixMode(NMGL_MODELVIEW);
 

@@ -12,10 +12,6 @@
 
 #include "nmprofiler.h"
 
-SECTION(".data_imu5")	float vertexX[3 * NMGL_SIZE];
-SECTION(".data_imu6")	float vertexY[3 * NMGL_SIZE];
-SECTION(".data_imu4")	float vertexZ[3 * NMGL_SIZE];
-
 SECTION(".data_imu5")	v4nm32f vertexResult[3 * NMGL_SIZE];
 SECTION(".data_imu6")	v4nm32f colorOrNormal[3 * NMGL_SIZE];
 SECTION(".data_imu6")	v2nm32f texResult[3 * NMGL_SIZE];
@@ -570,17 +566,17 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			nmppsDiv_32f(cntxt->buffer2, cntxt->buffer3, cntxt->buffer0 + 3 * NMGL_SIZE, localSize);
 			
 			//------------viewport------------------------
-			nmppsMulC_AddC_32f(cntxt->buffer1 + 3 * NMGL_SIZE, cntxt->windowInfo.viewportMulX, cntxt->windowInfo.viewportAddX, vertexX, localSize);		//X
-			nmppsMulC_AddC_32f(cntxt->buffer2 + 3 * NMGL_SIZE, cntxt->windowInfo.viewportMulY, cntxt->windowInfo.viewportAddY, vertexY, localSize);		//Y
-			nmppsMulC_AddC_32f(cntxt->buffer0 + 3 * NMGL_SIZE, cntxt->windowInfo.viewportMulZ, cntxt->windowInfo.viewportAddZ, vertexZ, localSize);	//Z
+			nmppsMulC_AddC_32f(cntxt->buffer1 + 3 * NMGL_SIZE, cntxt->windowInfo.viewportMulX, cntxt->windowInfo.viewportAddX, cntxt->buffer0, localSize);		//X
+			nmppsMulC_AddC_32f(cntxt->buffer2 + 3 * NMGL_SIZE, cntxt->windowInfo.viewportMulY, cntxt->windowInfo.viewportAddY, cntxt->buffer1, localSize);		//Y
+			nmppsMulC_AddC_32f(cntxt->buffer0 + 3 * NMGL_SIZE, cntxt->windowInfo.viewportMulZ, cntxt->windowInfo.viewportAddZ, cntxt->buffer2, localSize);	//Z
 
-			nmppsConvert_32f32s_floor(vertexX, (int*)cntxt->buffer0, 0, localSize);
-			nmppsConvert_32s32f((int*)cntxt->buffer0, vertexX, localSize);
-			nmppsConvert_32f32s_floor(vertexY, (int*)cntxt->buffer0, 0, localSize);
-			nmppsConvert_32s32f((int*)cntxt->buffer0, vertexY, localSize);
+			nmppsConvert_32f32s_floor(cntxt->buffer0, (int*)cntxt->buffer3, 0, localSize);
+			nmppsConvert_32s32f((int*)cntxt->buffer3, cntxt->buffer0, localSize);
+			nmppsConvert_32f32s_floor(cntxt->buffer1, (int*)cntxt->buffer3, 0, localSize);
+			nmppsConvert_32s32f((int*)cntxt->buffer3, cntxt->buffer1, localSize);
 			v2nm32f *minXY = (v2nm32f*)cntxt->buffer4;
 			v2nm32f *maxXY = (v2nm32f*)cntxt->buffer4 + 3 * NMGL_SIZE;
-			pushToLines(vertexX, vertexY, vertexZ, colorOrNormal, cntxt->lineInner, mode, localSize);
+			pushToLines(cntxt->buffer0, cntxt->buffer1, cntxt->buffer2, colorOrNormal, cntxt->lineInner, mode, localSize);
 			
 			findMinMax2(cntxt->lineInner.x0, cntxt->lineInner.x1,
 				cntxt->buffer0, cntxt->buffer1,
@@ -598,16 +594,26 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 		case NMGL_POINTS: {
 			v2nm32f *minXY = (v2nm32f*)cntxt->buffer4;
 			v2nm32f *maxXY = (v2nm32f*)cntxt->buffer4 + 3 * NMGL_SIZE;
-			nmblas_scopy(localSize, vertexX, 1, cntxt->pointInner.x0, 1);
-			nmblas_scopy(localSize, vertexY, 1, cntxt->pointInner.y0, 1);
+
+			split_v4nm32f(vertexResult, 1, cntxt->buffer0, cntxt->buffer1, cntxt->buffer2, cntxt->buffer3, localSize);
+
+			nmppsDiv_32f(cntxt->buffer0, cntxt->buffer3, cntxt->buffer1 + NMGL_SIZE, localSize);
+			nmppsDiv_32f(cntxt->buffer1, cntxt->buffer3, cntxt->buffer2 + NMGL_SIZE, localSize);
+			nmppsDiv_32f(cntxt->buffer2, cntxt->buffer3, cntxt->buffer0 + NMGL_SIZE, localSize);
+
+			nmppsMulC_AddC_32f(cntxt->buffer1 + NMGL_SIZE, cntxt->windowInfo.viewportMulX, cntxt->windowInfo.viewportAddX, cntxt->pointInner.x0, localSize);		//X
+			nmppsMulC_AddC_32f(cntxt->buffer2 + NMGL_SIZE, cntxt->windowInfo.viewportMulY, cntxt->windowInfo.viewportAddY, cntxt->pointInner.y0, localSize);		//Y
+			nmppsMulC_AddC_32f(cntxt->buffer0 + NMGL_SIZE, cntxt->windowInfo.viewportMulZ, cntxt->windowInfo.viewportAddZ, cntxt->buffer0, localSize);	//Z
+			nmppsConvert_32f32s_rounding(cntxt->buffer0, cntxt->pointInner.z, 0, localSize);
 			nmppsConvert_32f32s_rounding((float*)colorOrNormal, (int*)cntxt->pointInner.colors, 0, 4 * localSize);
-			nmppsConvert_32f32s_rounding(vertexZ, cntxt->pointInner.z, 0, localSize);
-			nmppsSubC_32f(vertexX, cntxt->buffer0, cntxt->pointRadius, localSize);
-			nmppsSubC_32f(vertexY, cntxt->buffer1, cntxt->pointRadius, localSize);
+
+			nmppsSubC_32f(cntxt->pointInner.x0, cntxt->buffer0, cntxt->pointRadius, localSize);
+			nmppsSubC_32f(cntxt->pointInner.y0, cntxt->buffer1, cntxt->pointRadius, localSize);
 			nmppsMerge_32f(cntxt->buffer0, cntxt->buffer1, (float*)minXY, localSize);
-			nmppsAddC_32f(vertexX, cntxt->buffer0, cntxt->pointRadius, localSize);
-			nmppsAddC_32f(vertexY, cntxt->buffer1, cntxt->pointRadius, localSize);
+			nmppsAddC_32f(cntxt->pointInner.x0, cntxt->buffer0, cntxt->pointRadius, localSize);
+			nmppsAddC_32f(cntxt->pointInner.y0, cntxt->buffer1, cntxt->pointRadius, localSize);
 			nmppsMerge_32f(cntxt->buffer0, cntxt->buffer1, (float*)maxXY, localSize);
+
 			cntxt->pointInner.size = localSize;
 			setSegmentMask(minXY, maxXY, cntxt->segmentMasks, localSize);
 			rasterizeP(&cntxt->pointInner, cntxt->segmentMasks);
