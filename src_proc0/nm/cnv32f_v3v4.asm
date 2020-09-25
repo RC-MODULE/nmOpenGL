@@ -1,4 +1,4 @@
-//void cnv32f_v3v4(nm32f* src_v3nm32f, nm32f* dst_v4nm32f, float value4, int size) 
+//void cnv32f_v3v4(nm32f* src_v3nm32f, float value4, nm32f* dst_v4nm32f, int size) 
 
 global _cnv32f_v3v4: label;
 
@@ -17,11 +17,18 @@ begin ".text_demo3d"
 	ar6 = [--ar5]	with gr6++;
 	gr1 = [--ar5]	with gr6 <<= 3;			//gr6 = 8
 	gr7 = [--ar5];
+
+	ar1 = gr1 	with gr2 = gr7 - 1;
 	
-	ar1 = gr1	with gr7>>=1;
-	ar5 = ar7;
+	ar0 += 4	with gr4 = gr7 << 31;
+	ar6 += 6	with gr2;
+	if <= delayed goto EndProgram;	//если размер равен 0 или 1, то прыжок на скалярную часть
+		ar5 = ar7	with gr7>>=1;
+		push ar1, gr1;
+	ar0 -= 4;
+	ar6 -= 6;
 	
-	push ar1, gr1;
+	
 	fpu rep 32 .packer = [ar5] with .double <= .float;
 	fpu 2 rep 32 (vreg2, vreg3) = .packer;			//fpu 2 vreg3 = value
 	gr0 = 6;
@@ -104,8 +111,22 @@ begin ".text_demo3d"
 	fpu 2 .packer = (vreg2,vreg3) with .float <= .double;
 	fpu rep vlen [ar6++gr6] = .packer;
 <EndProgram>	
-
-	pop ar1, gr1;
+//последний элемент, если размер нечетный
+	gr4;
+	if =0 delayed goto EndEnd;
+		pop ar1, gr1;
+		nul;
+	ar0 -= 4;
+	ar6 -= 6;
+	gr7 = [ar0++];
+	[ar6++] = gr7;
+	gr7 = [ar0++];
+	[ar6++] = gr7;
+	gr7 = [ar0++];
+	[ar6++] = gr7;
+	[ar6++] = gr1;
+<EndEnd>
+	
 	pop ar6, gr6;
 	pop ar5, gr5;
 	pop ar4, gr4;

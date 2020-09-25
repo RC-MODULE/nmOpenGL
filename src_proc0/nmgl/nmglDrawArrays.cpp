@@ -196,18 +196,10 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 	while (!vertexAM.isEmpty()) {
 		//int localSize = MIN(count - pointVertex, maxInnerCount);
 		int localSize = vertexAM.pop(cntxt->buffer0) / cntxt->vertexArray.size;
-		int excessVertexCount = 0;
-		/*if (localSize % 2) {
-			localSize++;
-			excessVertexCount++;
-		}*/
 		switch (cntxt->vertexArray.size)
 		{
 		case 2:
-			nmblas_dcopy(localSize, (double*)cntxt->buffer0, 1, (double*)cntxt->buffer1, 2);
-			cntxt->buffer0[0] = 0;
-			cntxt->buffer0[1] = 1;
-			nmblas_dcopy(localSize, (double*)cntxt->buffer0, 0, (double*)(cntxt->buffer1 + 2), 2);
+			cnv32f_v2v4((v2nm32f*)cntxt->buffer0, (v4nm32f*)cntxt->buffer1, 0, 1, localSize);
 			break;
 		case 3:
 			cnv32f_v3v4(cntxt->buffer0, cntxt->buffer1, 1, localSize);
@@ -357,10 +349,6 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			TrianglePointers tmp0;
 			TrianglePointers tmp1;
 			TrianglePointers tmp2;
-			//TrianglePrimitiveArrays4f trian4f;
-			//TrianglePrimitiveArrays3f trian3f_1;
-			//TrianglePrimitiveArrays3f trian3f_2;
-			localSize -= excessVertexCount;
 			//PROFILER_SIZE(localSize);
 			int primCount = vertexPrimitiveRepack(vertexResult, colorOrNormal, cntxt->buffer0, (v4nm32f*)cntxt->buffer1, mode, localSize);
 
@@ -390,38 +378,6 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			tmp1.v2.z = cntxt->buffer2 + 8 * primCount;
 
 			//------------clipping-------------------
-			/*for (int i = 0; i < 10; i++) {
-				clipMask[i].even.bits = (int*)cntxt->buffer2 + i * NMGL_SIZE / 32;
-				clipMask[i].odd.bits = (int*)cntxt->buffer2 + (10 + i) * NMGL_SIZE / 32;
-			}
-			nmppsCmpGteLteMirrorV_32f(tmp0.v0.x, tmp0.v0.w, clipMask[0].even.bits, clipMask[0].odd.bits, primCount);
-			nmppsCmpGteLteMirrorV_32f(tmp0.v0.y, tmp0.v0.w, clipMask[1].even.bits, clipMask[1].odd.bits, primCount);
-			nmppsCmpGteLteMirrorV_32f(tmp0.v0.z, tmp0.v0.w, clipMask[2].even.bits, clipMask[2].odd.bits, primCount);
-
-			nmppsCmpGteLteMirrorV_32f(tmp0.v1.x, tmp0.v1.w, clipMask[3].even.bits, clipMask[3].odd.bits, primCount);
-			nmppsCmpGteLteMirrorV_32f(tmp0.v1.y, tmp0.v1.w, clipMask[4].even.bits, clipMask[4].odd.bits, primCount);
-			nmppsCmpGteLteMirrorV_32f(tmp0.v1.z, tmp0.v1.w, clipMask[5].even.bits, clipMask[5].odd.bits, primCount);
-
-			nmppsCmpGteLteMirrorV_32f(tmp0.v2.x, tmp0.v2.w, clipMask[6].even.bits, clipMask[6].odd.bits, primCount);
-			nmppsCmpGteLteMirrorV_32f(tmp0.v2.y, tmp0.v2.w, clipMask[7].even.bits, clipMask[7].odd.bits, primCount);
-			nmppsCmpGteLteMirrorV_32f(tmp0.v2.z, tmp0.v2.w, clipMask[8].even.bits, clipMask[8].odd.bits, primCount);
-			int nMasks = (primCount + 31) / 32;
-			for (int i = 0; i < nMasks; i++) {
-				clipMask[9].even.bits[i] = 0;
-				clipMask[9].odd.bits[i] = 0;
-				for (int j = 0; j < 9; j++) {
-					clipMask[9].even.bits[i] |= clipMask[j].even.bits[i];
-					clipMask[9].odd.bits[i] |= clipMask[j].odd.bits[i];
-				}
-			}
-			int* indices = (int*)cntxt->buffer4;
-			//PROFILER_SIZE(primCount);
-			primCount = readDividedMask((nm1*)clipMask[9].even.bits, (nm1*)clipMask[9].even.bits, indices, primCount);
-			if (primCount==0) {
-				continue;
-			}
-			//PROFILER_SIZE(primCount);
-			clipSelect(&tmp0, cntxt->buffer1, indices, &tmp0, cntxt->buffer1, primCount);*/
 
 			//------------perspective-division-----------------
 			//tmp0->tmp1
@@ -549,14 +505,19 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 		case NMGL_LINE_STRIP:
 		case NMGL_LINE_LOOP:
 		case NMGL_LINES: {
-			
-			split_v4nm32f(vertexResult, 1, cntxt->buffer0, cntxt->buffer1, cntxt->buffer2, cntxt->buffer3, localSize);
-			if (excessVertexCount) {
+			if (localSize % 2) {
+				localSize++;
+				split_v4nm32f(vertexResult, 1, cntxt->buffer0, cntxt->buffer1, cntxt->buffer2, cntxt->buffer3, localSize);
 				cntxt->buffer0[localSize - 1] = cntxt->buffer0[localSize - 2];
 				cntxt->buffer1[localSize - 1] = cntxt->buffer1[localSize - 2];
 				cntxt->buffer2[localSize - 1] = cntxt->buffer2[localSize - 2];
 				cntxt->buffer3[localSize - 1] = cntxt->buffer3[localSize - 2];
 			}
+			else {
+				split_v4nm32f(vertexResult, 1, cntxt->buffer0, cntxt->buffer1, cntxt->buffer2, cntxt->buffer3, localSize);
+			}
+			
+			
 
 			//------------clipping-------------------
 

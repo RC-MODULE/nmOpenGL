@@ -484,7 +484,7 @@ extern "C"{
 	 *  \endxmlonly
 	 */
 	 //! \{
-	void cnv32f_v2v4(const v2nm32f* srcVec, int stride, float value3, float value4, v4nm32f* dstVec, int size);
+	void cnv32f_v2v4(const v2nm32f* srcVec, v4nm32f* dstVec, float value3, float value4, int size);
 	 //! \}
 	 
 	 /**
