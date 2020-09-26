@@ -41,6 +41,28 @@ SECTION(".data_shared") float twoTriangles[24 * 4] = {
 	125, 95, 0, 1,
 };
 
+extern "C" TexImage2D teximage_256_256;
+extern "C" TexImage2D teximage_128_128;
+extern "C" TexImage2D teximage_64_64;
+extern "C" TexImage2D teximage_32_32;
+extern "C" TexImage2D teximage_16_16;
+extern "C" TexImage2D teximage_8_8;
+extern "C" TexImage2D teximage_4_4;
+extern "C" TexImage2D teximage_2_2;
+extern "C" TexImage2D teximage_1_1;
+extern "C" TexImage2D teximage_mytexture;
+
+TexImage2D* texImages[9] = {&teximage_256_256,
+							&teximage_128_128,
+							&teximage_64_64,
+							&teximage_32_32,
+							&teximage_16_16,
+							&teximage_8_8,
+							&teximage_4_4,
+							&teximage_2_2,
+							&teximage_1_1
+						};
+
 #include "standalone_model.h"
 
 SECTION(".text_shared") int main()
@@ -131,6 +153,28 @@ SECTION(".text_shared") int main()
 	float angle = 0;
 	NMGLenum error;
 	unsigned time;
+	
+	nmglTexParameteri(NMGL_TEXTURE_2D, NMGL_TEXTURE_MIN_FILTER, NMGL_NEAREST);
+	nmglTexParameteri(NMGL_TEXTURE_2D, NMGL_TEXTURE_MAG_FILTER, NMGL_NEAREST);
+	nmglTexParameteri(NMGL_TEXTURE_2D, NMGL_TEXTURE_WRAP_S, NMGL_REPEAT);
+	nmglTexParameteri(NMGL_TEXTURE_2D, NMGL_TEXTURE_WRAP_T, NMGL_REPEAT);
+
+	//glTexImage2D(GL_TEXTURE_2D, 0,GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+	nmglTexImage2D(NMGL_TEXTURE_2D, 0,NMGL_RGB, texImages[0]->width, texImages[0]->height, 0, NMGL_RGB, NMGL_UNSIGNED_BYTE, texImages[0]->pixels);
+	nmglTexImage2D(NMGL_TEXTURE_2D, 1,NMGL_RGB, texImages[1]->width, texImages[1]->height, 0, NMGL_RGB, NMGL_UNSIGNED_BYTE, texImages[1]->pixels);
+	nmglTexImage2D(NMGL_TEXTURE_2D, 2,NMGL_RGB, texImages[2]->width, texImages[2]->height, 0, NMGL_RGB, NMGL_UNSIGNED_BYTE, texImages[2]->pixels);
+	nmglTexImage2D(NMGL_TEXTURE_2D, 3,NMGL_RGB, texImages[3]->width, texImages[3]->height, 0, NMGL_RGB, NMGL_UNSIGNED_BYTE, texImages[3]->pixels);
+	nmglTexImage2D(NMGL_TEXTURE_2D, 4,NMGL_RGB, texImages[4]->width, texImages[4]->height, 0, NMGL_RGB, NMGL_UNSIGNED_BYTE, texImages[4]->pixels);
+	nmglTexImage2D(NMGL_TEXTURE_2D, 5,NMGL_RGB, texImages[5]->width, texImages[5]->height, 0, NMGL_RGB, NMGL_UNSIGNED_BYTE, texImages[5]->pixels);
+	nmglTexImage2D(NMGL_TEXTURE_2D, 6,NMGL_RGB, texImages[6]->width, texImages[6]->height, 0, NMGL_RGB, NMGL_UNSIGNED_BYTE, texImages[6]->pixels);
+	nmglTexImage2D(NMGL_TEXTURE_2D, 7,NMGL_RGB, texImages[7]->width, texImages[7]->height, 0, NMGL_RGB, NMGL_UNSIGNED_BYTE, texImages[7]->pixels);
+	nmglTexImage2D(NMGL_TEXTURE_2D, 8,NMGL_RGB, texImages[8]->width, texImages[8]->height, 0, NMGL_RGB, NMGL_UNSIGNED_BYTE, texImages[8]->pixels);
+	
+	nmglTexEnvi(NMGL_TEXTURE_ENV, NMGL_TEXTURE_ENV_MODE, NMGL_REPLACE);
+	
+	NMGLfloat texenv_color[4] = {0.0, 0.0, 0.0, 0.0};
+	nmglTexEnvfv(NMGL_TEXTURE_ENV, NMGL_TEXTURE_ENV_COLOR, (NMGLfloat*)texenv_color);
+	
 	while(nmglvsNm0Run()){
 		nmglEnableClientState(NMGL_VERTEX_ARRAY);
 		nmglEnableClientState(NMGL_NORMAL_ARRAY);

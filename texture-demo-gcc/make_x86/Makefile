@@ -37,7 +37,11 @@ $(HOST).vcxproj $(TARGET0).vcxproj $(TARGET1).vcxproj:
 
 
 run: 
-	$(MAKE) -j4 runhost runtarget0  runtarget1 
+	start "" "bin\debug\$(HOST)"
+	sleep 1 
+	start "" "bin\debug\$(TARGET0)"
+	sleep 1 
+	start "" "bin\debug\$(TARGET1)"
 
 runhost: $(HOST)
 	bin\debug\$(HOST)

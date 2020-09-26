@@ -9,16 +9,16 @@
 #include "nmgltex_nm1.h"
 #include "nmgltex_common.h"
 
-extern "C" TexImage2D teximage_256_256;
-extern "C" TexImage2D teximage_mytexture;
-extern "C" TexImage2D teximage_128_128;
-extern "C" TexImage2D teximage_64_64;
-extern "C" TexImage2D teximage_32_32;
-extern "C" TexImage2D teximage_16_16;
-extern "C" TexImage2D teximage_8_8;
-extern "C" TexImage2D teximage_4_4;
-extern "C" TexImage2D teximage_2_2;
-extern "C" TexImage2D teximage_1_1;
+// extern "C" TexImage2D teximage_256_256;
+// extern "C" TexImage2D teximage_mytexture;
+// extern "C" TexImage2D teximage_128_128;
+// extern "C" TexImage2D teximage_64_64;
+// extern "C" TexImage2D teximage_32_32;
+// extern "C" TexImage2D teximage_16_16;
+// extern "C" TexImage2D teximage_8_8;
+// extern "C" TexImage2D teximage_4_4;
+// extern "C" TexImage2D teximage_2_2;
+// extern "C" TexImage2D teximage_1_1;
 
 SECTION (".data_shmem1") TrianglesInfo triangles;
 
@@ -148,43 +148,6 @@ SECTION(".text_demo3dExt") void drawTriangles(NMGL_Context_NM1* context) {
 			localSize);
 
 		//mulBuffer теперь хранит цвет
-
-#ifdef TEXTURE_ENABLED //for test
-        //Массив данных о треугольниках (координаты вершин, текстурные координаты и т.д.)
-        
-        context->texState.activeTexUnitIndex = 0;
-        unsigned int activeTexUnitIndex = context->texState.activeTexUnitIndex;
-    
-        context->texState.texUnits[activeTexUnitIndex].boundTexObject = &context->texState.texObjects[0];
-        TexObject* boundTexObject = context->texState.texUnits[activeTexUnitIndex].boundTexObject;
-        
-        boundTexObject->texImages2D[0] = teximage_256_256;
-        //boundTexObject->texImages2D[0] = teximage_mytexture;
-        boundTexObject->texImages2D[1] = teximage_128_128;
-        boundTexObject->texImages2D[2] = teximage_64_64;
-        boundTexObject->texImages2D[3] = teximage_32_32;
-        boundTexObject->texImages2D[4] = teximage_16_16;
-        boundTexObject->texImages2D[5] = teximage_8_8;
-        boundTexObject->texImages2D[6] = teximage_4_4;
-        boundTexObject->texImages2D[7] = teximage_2_2;
-        boundTexObject->texImages2D[8] = teximage_1_1;
-
-        boundTexObject->texMinFilter = NMGL_NEAREST; //default NEAREST_MIPMAP_LINEAR
-        boundTexObject->texMagFilter = NMGL_NEAREST; //default LINEAR
-        boundTexObject->texWrapS = NMGL_REPEAT; // default REPEAT
-        boundTexObject->texWrapT = NMGL_REPEAT;// default REPEAT
-
-        context->texState.texUnits[activeTexUnitIndex].texFunctionName = NMGL_REPLACE; //default = NMGL_MODULATE
-        
-        //default texEnvColor = (0.0f, 0.0f, 0.0f, 0.0f)
-        context->texState.texUnits[activeTexUnitIndex].texEnvColor[0] = 0.0f;
-        context->texState.texUnits[activeTexUnitIndex].texEnvColor[1] = 0.0f;
-        context->texState.texUnits[activeTexUnitIndex].texEnvColor[2] = 0.0f;
-        context->texState.texUnits[activeTexUnitIndex].texEnvColor[3] = 0.0f;
-
-        context->texState.unpackAlignment = 4;
-        // printPattern(patterns, pSrcTriangle, TRIANGLE_AMOUNT);
-#endif //TEXTURE_ENABLED
 
 #ifdef TEXTURE_ENABLED
 		if (context->texState.textureEnabled){

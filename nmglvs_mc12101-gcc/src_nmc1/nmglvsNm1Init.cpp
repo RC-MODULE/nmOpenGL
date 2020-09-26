@@ -169,7 +169,7 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
     cntxt.zEye2 = zEye2;
 #endif //TEXTURE_ENABLED
 
-
+	cntxt.texState.init();
 
 	cntxt.t0 = clock();
 	return 0;

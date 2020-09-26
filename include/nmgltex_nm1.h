@@ -75,7 +75,7 @@ struct NMGL_Context_NM1_Texture {
 		clientActiveTexUnitIndex = 0;
 		//texcoordArray
 		//curTexCoords
-		//unpackAlignment
+		unpackAlignment = 1;
 		INIT_TEX_UNITS();
 		INIT_TEX_OBJECTS();
 	}

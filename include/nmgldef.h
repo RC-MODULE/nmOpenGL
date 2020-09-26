@@ -337,8 +337,12 @@
 
 #ifdef DEBUG 
 #define DEBUG_PRINT(x) printf x  
+#define DEBUG_PRINT1(x) if (DEBUG_LEVEL == 1) printf x  
+#define DEBUG_PRINT2(x) if (DEBUG_LEVEL == 2) printf x  
 #else 
 #define DEBUG_PRINT(x) do {} while (0)
+#define DEBUG_PRINT1(x) do {} while (0)
+#define DEBUG_PRINT2(x) do {} while (0)
 #endif
 	
 #endif
