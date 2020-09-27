@@ -96,7 +96,7 @@ int getPixelValue(unsigned int x, unsigned int y, TexImage2D image, color * pixe
     void * pixels = image.pixels;
     NMGLint format = image.internalformat;
     NMGLenum type = NMGL_UNSIGNED_BYTE;//TODO: if constant internal type then 'type' variable is unnecessary
-	int alignment = cntxt.texState.unpackAlignment;
+	int alignment = 1; //texImage2D loads texture so that unpackAlignment is 1
 
 #ifdef DEBUG
 		// if (alignment)
@@ -349,8 +349,8 @@ void textureTriangle(Pattern* patterns,
     // printf ("Start textureTriangle\n"); 
 #endif //DEBUG
     
-    //Активный текстурный модуль
-    unsigned int activeTexUnitIndex = cntxt.texState.activeTexUnitIndex;
+    //Текущий текстурный модуль
+    unsigned int activeTexUnitIndex = 0; //only one texture unit is supported at now
     
     //Текстурный объект, привязанный к активному текстурному модулю
     TexObject* boundTexObject = cntxt.texState.texUnits[activeTexUnitIndex].boundTexObject;
