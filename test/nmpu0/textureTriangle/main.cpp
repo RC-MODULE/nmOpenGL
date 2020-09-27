@@ -162,28 +162,28 @@ SECTION(".text_demo3d")
 int main ()
 {
 	
-	NMGL_Context_NM0 *test_cntxt;// = (NMGL_Context_NM0*)halMalloc32(sizeof32(NMGL_Context_NM0));
-	NMGLSynchroData* synchroData;
-	PolygonsArray* polygonsData;
-	setHeap(8);
-	synchroData = myMallocT<NMGLSynchroData>();
-	synchroData->init();
-
-	setHeap(7);
-	NMGL_Context_NM0::create(synchroData);	
+	NMGL_Context_NM0 *test_cntxt;
+	NMGLSynchroData synchroData;
+	synchroData.init();
+	NMGL_Context_NM0::create(&synchroData);	
 	test_cntxt = NMGL_Context_NM0::getContext();
-	test_cntxt->init(synchroData);
-
-
+	test_cntxt->init(&synchroData);
 	
     //Массивы растеризованных и закрашенных треугольников
-    nm32s pSrcTriangle [WIDTH_PTRN * HEIGHT_PTRN * TRIANGLE_AMOUNT]; //
-    nm32s pDstTriangle [WIDTH_PTRN * HEIGHT_PTRN * TRIANGLE_AMOUNT]; 
+	nm32s pSrcTriangle[WIDTH_PTRN * HEIGHT_PTRN * TRIANGLE_AMOUNT];
+	nm32s pDstTriangle [WIDTH_PTRN * HEIGHT_PTRN * TRIANGLE_AMOUNT]; 
     
-    //Массив значений цветов для 
-    nm32s valueC [TRIANGLE_AMOUNT] = {0xffff0000, 0xff00ff00}; //0xARGB
-    
-    //Информация о размещении видимой части треугольников в сегменте
+    //Массив значений цветов для треугольников, один цвет на треугольник
+    v4nm32s colors [TRIANGLE_AMOUNT];
+	((nm32s*)colors)[0] = (nm32s)255;
+	((nm32s*)colors)[1] = (nm32s)0;
+	((nm32s*)colors)[2] = (nm32s)255;
+	((nm32s*)colors)[3] = (nm32s)255;
+    ((nm32s*)colors)[4] = (nm32s)255;
+	((nm32s*)colors)[5] = (nm32s)255;
+	((nm32s*)colors)[6] = (nm32s)0;
+	((nm32s*)colors)[7] = (nm32s)255;
+ //Информация о размещении видимой части треугольников в сегменте
     Rectangle windows [TRIANGLE_AMOUNT];
     
     int count = TRIANGLE_AMOUNT;
@@ -194,23 +194,23 @@ int main ()
 
     windows[0].x = -1;
     windows[0].y = 0;
-    windows[0].width = 26;
-    windows[0].height = 25;
+    windows[0].width = 32;
+    windows[0].height = 32;
   
     windows[1].x = -1;
     windows[1].y = 0;
-    windows[1].width = 26;
-    windows[1].height = 25;
+    windows[1].width = 32;
+    windows[1].height = 32;
 
     //setup triangles parameters
     
-    // float x0[TRIANGLE_AMOUNT] = {0.0f, 0.0f};
-    // float y0[TRIANGLE_AMOUNT] = {10.0f, 10.0f};
-    // float x1[TRIANGLE_AMOUNT] = {15.0f, 15.0f};
-    // float y1[TRIANGLE_AMOUNT] = {30.0f, 30.0f};
-    // float x2[TRIANGLE_AMOUNT] = {26.0f, 26.0f};
-    // float y2[TRIANGLE_AMOUNT] = {5.0f, 5.0f};
-    
+     //float x0[TRIANGLE_AMOUNT] = {0.0f, 0.0f};
+     //float y0[TRIANGLE_AMOUNT] = {10.0f, 10.0f};
+     //float x1[TRIANGLE_AMOUNT] = {15.0f, 15.0f};
+     //float y1[TRIANGLE_AMOUNT] = {30.0f, 30.0f};
+     //float x2[TRIANGLE_AMOUNT] = {26.0f, 26.0f};
+     //float y2[TRIANGLE_AMOUNT] = {5.0f, 5.0f};
+   
     float x0[TRIANGLE_AMOUNT] = {399.0f, 399.0f};
     float y0[TRIANGLE_AMOUNT] = {354.0f, 354.0f};
     float x1[TRIANGLE_AMOUNT] = {384.0f, 384.0f};
@@ -218,99 +218,79 @@ int main ()
     float x2[TRIANGLE_AMOUNT] = {410.0f, 410.0f};
     float y2[TRIANGLE_AMOUNT] = {379.0f, 379.0f};
     
-//    test_cntxt->texState.segX0 = 384;
-//    test_cntxt->texState.segY0 = 256;
-//    test_cntxt->texState.segWidth = 128;
-    
-//    test_cntxt->smallColorBuff.data = 0x0;
-    nm32s* PROI[TRIANGLE_AMOUNT] = {0,0};
-    int pointInImage[TRIANGLE_AMOUNT] = {0,0};
-    
-    for (i = 0; i < TRIANGLE_AMOUNT; i++)
-    {
-        pointInImage[i] = 12544;
-        //PROI[i] = (int*)test_cntxt->smallColorBuff.data + pointInImage[i];
-        PROI[i] = (int*)0;
-    }
-    
     float s0[TRIANGLE_AMOUNT] = {0.0f, 0.0f};
     float t0[TRIANGLE_AMOUNT] = {0.0f, 0.0f};
     float s1[TRIANGLE_AMOUNT] = {0.5f, 0.5f};
     float t1[TRIANGLE_AMOUNT] = {0.5f, 0.5f};
     float s2[TRIANGLE_AMOUNT] = {0.5f, 0.5f};
     float t2[TRIANGLE_AMOUNT] = {0.0f, 0.0f};
-   
+
     float z[TRIANGLE_AMOUNT] = {1.0f, 1.0f}; //minus (z in camera space)
     
 	for (int counter = 0; counter < 3; counter++)
 	{
 		printf ("%d\n", counter);
-    triangles.x0 = x0;
-    triangles.y0 = y0;
-    triangles.x1 = x1;
-    triangles.y1 = y1;
-    triangles.x2 = x2;
-    triangles.y2 = y2;
+		triangles.x0 = x0;
+		triangles.y0 = y0;
+		triangles.x1 = x1;
+		triangles.y1 = y1;
+		triangles.x2 = x2;
+		triangles.y2 = y2;
  
-    triangles.s0 = s0;
-    triangles.t0 = t0;
-    triangles.s1 = s1;
-    triangles.t1 = t1;
-    triangles.s2 = s2;
-    triangles.t2 = t2;
+		triangles.s0 = s0;
+		triangles.t0 = t0;
+		triangles.s1 = s1;
+		triangles.t1 = t1;
+		triangles.s2 = s2;
+		triangles.t2 = t2;
     
-    triangles.z0 = z;
-    triangles.z1 = z;
-    triangles.z2 = z;
-    triangles.size = TRIANGLE_AMOUNT;
- 
-    //Активный текстурный модуль
-    test_cntxt->texState.activeTexUnitIndex = 0;
-    unsigned int activeTexUnitIndex = test_cntxt->texState.activeTexUnitIndex;
-    
-    //Текстурный объект, привязанный к активному текстурному модулю
-    test_cntxt->texState.texUnits[activeTexUnitIndex].boundTexObject = &test_cntxt->texState.texObjects[0];
-    TexObject* boundTexObject = test_cntxt->texState.texUnits[activeTexUnitIndex].boundTexObject;
-
-	boundTexObject->texImages2D[0] = teximage_mytexture;
-	boundTexObject->texImages2D[1] = teximage_128_128;
-	boundTexObject->texImages2D[2] = teximage_64_64;
-	boundTexObject->texImages2D[3] = teximage_32_32;
-	boundTexObject->texImages2D[4] = teximage_16_16;
-	boundTexObject->texImages2D[5] = teximage_8_8;
-	boundTexObject->texImages2D[6] = teximage_4_4;
-	boundTexObject->texImages2D[7] = teximage_2_2;
-	boundTexObject->texImages2D[8] = teximage_1_1;
+		triangles.z0 = z;
+		triangles.z1 = z;
+		triangles.z2 = z;
 	
-    boundTexObject->texMinFilter = NMGL_NEAREST; //default NEAREST_MIPMAP_LINEAR
-    boundTexObject->texMagFilter = NMGL_NEAREST; //default LINEAR
-    boundTexObject->texWrapS = NMGL_REPEAT; // default REPEAT
-    boundTexObject->texWrapT = NMGL_REPEAT;// default REPEAT
+		triangles.colors = colors;
+			
+		//Активный текстурный модуль
+		test_cntxt->texState.activeTexUnitIndex = 0;
+		unsigned int activeTexUnitIndex = test_cntxt->texState.activeTexUnitIndex;
+    
+		//Текстурный объект, привязанный к активному текстурному модулю
+		test_cntxt->texState.texUnits[activeTexUnitIndex].boundTexObject = &test_cntxt->texState.texObjects[0];
+		TexObject* boundTexObject = test_cntxt->texState.texUnits[activeTexUnitIndex].boundTexObject;
 
-    test_cntxt->texState.texUnits[activeTexUnitIndex].texFunctionName = NMGL_REPLACE; //default = NMGL_MODULATE
-    
-    //default texEnvColor = (0.0f, 0.0f, 0.0f, 0.0f)
-    test_cntxt->texState.texUnits[activeTexUnitIndex].texEnvColor[0] = 0.0f;
-    test_cntxt->texState.texUnits[activeTexUnitIndex].texEnvColor[1] = 0.0f;
-    test_cntxt->texState.texUnits[activeTexUnitIndex].texEnvColor[2] = 0.0f;
-    test_cntxt->texState.texUnits[activeTexUnitIndex].texEnvColor[3] = 0.0f;
+		boundTexObject->texImages2D[0] = teximage_mytexture;
+		boundTexObject->texImages2D[1] = teximage_128_128;
+		boundTexObject->texImages2D[2] = teximage_64_64;
+		boundTexObject->texImages2D[3] = teximage_32_32;
+		boundTexObject->texImages2D[4] = teximage_16_16;
+		boundTexObject->texImages2D[5] = teximage_8_8;
+		boundTexObject->texImages2D[6] = teximage_4_4;
+		boundTexObject->texImages2D[7] = teximage_2_2;
+		boundTexObject->texImages2D[8] = teximage_1_1;
+	
+		boundTexObject->texMinFilter = NMGL_NEAREST; //default NEAREST_MIPMAP_LINEAR
+		boundTexObject->texMagFilter = NMGL_NEAREST; //default LINEAR
+		boundTexObject->texWrapS = NMGL_REPEAT; // default REPEAT
+		boundTexObject->texWrapT = NMGL_REPEAT;// default REPEAT
 
-    test_cntxt->texState.unpackAlignment = 4;
-    // printPattern(patterns, pSrcTriangle, TRIANGLE_AMOUNT);
+		test_cntxt->texState.texUnits[activeTexUnitIndex].texFunctionName = NMGL_REPLACE; //default = NMGL_MODULATE
     
-    
-//    //fill triangles with colors
-//    mMulCVxN_2s_RGB8888(patterns, windows, (v4nm8s*)valueC, pSrcTriangle, TRIANGLE_AMOUNT);
-    
-//    //texture triangles
-//    textureTriangle(patterns, &triangles, PROI, windows, pSrcTriangle, pDstTriangle, count);
+		//default texEnvColor = (0.0f, 0.0f, 0.0f, 0.0f)
+		test_cntxt->texState.texUnits[activeTexUnitIndex].texEnvColor[0] = 0.0f;
+		test_cntxt->texState.texUnits[activeTexUnitIndex].texEnvColor[1] = 0.0f;
+		test_cntxt->texState.texUnits[activeTexUnitIndex].texEnvColor[2] = 0.0f;
+		test_cntxt->texState.texUnits[activeTexUnitIndex].texEnvColor[3] = 0.0f;
 
-	return 0;
+		test_cntxt->texState.unpackAlignment = 4;
+		//printPattern(patterns, pSrcTriangle, TRIANGLE_AMOUNT);
+    
+//		//fill triangles with colors
+//		mMulCVxN_2s_RGB8888(patterns, windows, (v4nm8s*)valueC, pSrcTriangle, TRIANGLE_AMOUNT);
+    
+		//texture triangles
+		textureTriangle(&triangles, pDstTriangle, count);
 }
-
-    
-
-
+	
 #ifndef __NM__
 
     //convert result to image_t to compare with etalon    

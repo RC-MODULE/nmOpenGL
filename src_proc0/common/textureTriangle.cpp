@@ -8,12 +8,11 @@
 #include <float.h> //TODO: only FLT_EPSILON is used from float.h
 
 #define TEXTURE_TRIANGLE_SECTION ".text"
+#define TEXTURE_ENABLED
 
 #ifdef TEXTURE_ENABLED
 #define USE_BARYCENTRIC
 // #define PERSPECTIVE_CORRECT
-
-extern NMGL_Context_NM1 cntxt; 
 
 // typedef enum { NEAREST, LINEAR, NEAREST_MIPMAP_NEAREST, NEAREST_MIPMAP_LINEAR, LINEAR_MIPMAP_NEAREST, LINEAR_MIPMAP_LINEAR } filter_mode_t;
 // typedef enum { REPEAT, CLAMP_TO_EDGE } wrap_mode_t;
@@ -59,6 +58,18 @@ SECTION(TEXTURE_TRIANGLE_SECTION)
 int min (int a, int b)
 {
     return (b < a) ? b : a;
+}
+
+SECTION(TEXTURE_TRIANGLE_SECTION)
+int minf(float a, float b)
+{
+	return (b < a) ? b : a;
+}
+
+SECTION(TEXTURE_TRIANGLE_SECTION)
+int maxf(float a, float b)
+{
+	return (b > a) ? b : a;
 }
 
 /* Compare two floats, 1 if are equal, 0 - otherwise */
@@ -335,16 +346,13 @@ color getPixelNearest(Vec2f st, TexImage2D texture)
 #endif //TEXTURE_ENABLED
 
 SECTION(TEXTURE_TRIANGLE_SECTION)
-void textureTriangle(Pattern* patterns, 
-                 TrianglesInfo* triangles,
-                 nm32s** pROI,
-                 Rectangle* windows, 
-                 nm32s* pSrcTriangle, 
-                 nm32s* pDstTriangle, 
-                 int count)
+void textureTriangle(TrianglesInfo* triangles, nm32s* pDstTriangle, int count)
 {
 #ifdef TEXTURE_ENABLED
 
+
+	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
+	 
 #ifdef DEBUG
     // printf ("Start textureTriangle\n"); 
 #endif //DEBUG
@@ -353,7 +361,7 @@ void textureTriangle(Pattern* patterns,
     unsigned int activeTexUnitIndex = 0; //only one texture unit is supported at now
     
     //Текстурный объект, привязанный к активному текстурному модулю
-    TexObject* boundTexObject = cntxt.texState.texUnits[activeTexUnitIndex].boundTexObject;
+    TexObject* boundTexObject = cntxt->texState.texUnits[activeTexUnitIndex].boundTexObject;
     
     float scaleFactor = 1.0;
 	borderColor.r = 0.0f;
@@ -369,10 +377,10 @@ void textureTriangle(Pattern* patterns,
     //texEnvColor consists of rgb + alpha
     Vec3f texEnvColor;
     float texEnvColorAlpha;
-	texEnvColor.x = cntxt.texState.texUnits[activeTexUnitIndex].texEnvColor[0];
-	texEnvColor.y = cntxt.texState.texUnits[activeTexUnitIndex].texEnvColor[1];
-	texEnvColor.z = cntxt.texState.texUnits[activeTexUnitIndex].texEnvColor[2];
-	texEnvColorAlpha = cntxt.texState.texUnits[activeTexUnitIndex].texEnvColor[3];
+	texEnvColor.x = cntxt->texState.texUnits[activeTexUnitIndex].texEnvColor[0];
+	texEnvColor.y = cntxt->texState.texUnits[activeTexUnitIndex].texEnvColor[1];
+	texEnvColor.z = cntxt->texState.texUnits[activeTexUnitIndex].texEnvColor[2];
+	texEnvColorAlpha = cntxt->texState.texUnits[activeTexUnitIndex].texEnvColor[3];
 
 	//primitive color (glColor3f)
 	Vec3f vertexRGB;
@@ -387,7 +395,7 @@ void textureTriangle(Pattern* patterns,
     NMGLint textureWrapS = boundTexObject->texWrapS; // default NMGL_REPEAT
     NMGLint textureWrapT = boundTexObject->texWrapT; // default NMGL_REPEAT
 
-    NMGLint texEnvMode = cntxt.texState.texUnits[activeTexUnitIndex].texFunctionName; //default = NMGL_MODULATE
+    NMGLint texEnvMode = cntxt->texState.texUnits[activeTexUnitIndex].texFunctionName; //default = NMGL_MODULATE
 
     NMGLint texBaseInternalFormat = boundTexObject->texImages2D[0].internalformat;//use level 0 texture format to select texture function
     
@@ -399,30 +407,13 @@ void textureTriangle(Pattern* patterns,
     
     long long int temp;
     nm32s* dst = pDstTriangle;
-    nm32s* src = pSrcTriangle;
     int winX0 = 0;
     int winY0 = 0;
     
     for(int cnt=0;cnt<count;cnt++){
-        nm64s* pattern = (nm64s*) (patterns + cnt);
-        pattern += windows[cnt].y;
+        nm32s* dstTriagle = (nm32s*) (pDstTriangle + WIDTH_PTRN * HEIGHT_PTRN * cnt);
         
-        int width = windows[cnt].width;
-
-        if (windows[cnt].x < 0) {
-            width += windows[cnt].x;
-        }
-        
-#ifdef __NM__
-		int winOffset = ((int)(pROI[cnt]) - (int)cntxt.smallColorBuff.data) /*>> 2*/;//>> 2 = divide by sizeof int = 4 bytes
-#else //__NM__
-		int winOffset = ((int)(pROI[cnt]) - (int)cntxt.smallColorBuff.data) >> 2;//>> 2 = divide by sizeof int = 4 bytes
-#endif //__NM__
-																			   //TODO:remove magic number 2
-		winY0 = cntxt.texState.segY0 + (winOffset >> 7); //>> 7 = divide by segment width 
-														 //TODO: remove magic number 7
-		winX0 = cntxt.texState.segX0 + (winOffset & (cntxt.texState.segWidth-1));//get reminder  of division by segment width
-        
+    
 //start calculate pixel value for texturing
         
         float area = 0;
@@ -443,7 +434,18 @@ void textureTriangle(Pattern* patterns,
         float z0 = triangles->z0[cnt];
         float z1 = triangles->z1[cnt];
         float z2 = triangles->z2[cnt];
+		
+        v4nm32s colors = triangles->colors[cnt];
         
+		winY0 = minf(y0, minf(y1, y2)); //TODO: here should be minx of triangle 
+		winX0 = minf(x0, minf(x1, x2)); //TODO: here should be miny of triangle
+
+		unsigned int maxX = maxf(x0, maxf(x1, x2));
+		unsigned int maxY = maxf(y0, maxf(y1, y2));
+
+		unsigned int primHeight = maxY - winY0;
+		unsigned int primWidth = maxX - winX0;
+		
 #ifdef PERSPECTIVE_CORRECT        
 		// Compute some coefficients.
 		// Used for:
@@ -529,25 +531,13 @@ void textureTriangle(Pattern* patterns,
         int pixelCnt = 0;
 #endif //USE_BARYCENTRIC
         
-        for(int y = 0; y < windows[cnt].height; y++){
-            temp = pattern[y];
-            nm32s* pDst = (nm32s*)(dst + y * windows[cnt].width);
-            nm32s* pSrc = (nm32s*)(src + y * windows[cnt].width);
-            if (windows[cnt].x < 0) {
-                for(int i = 0; i > windows[cnt].x; i--){
-                    pDst[0] = 0x00000000;
-                    pDst+=1;
-                    pSrc+=1;
-                }
-            }
-            else {
-                temp >>= (windows[cnt].x * 2);
-            }
-            
-            for(int x = 0; x < width; x++){
-                int mul = temp & 0x3;
+        for(int y = 0; y < primHeight; y++){
 
-                if (mul > 0)//pixel belongs to triangle
+            nm32s* pDst = (nm32s*)(dstTriagle + y * WIDTH_PTRN);
+            
+            for(int x = 0; x < primWidth; x++){
+
+                if (1)//for every pixel of pattern
                 {
                     //Calculate x and y of current pixel as float values
                     //relative to triangle vertex coordinates inside segment
@@ -811,16 +801,9 @@ void textureTriangle(Pattern* patterns,
 						float ac; 
 						float av;
                         
-						//(nm32s)pSrc[0] = 0xARGB
-                        vertexRGB.x = ((pSrc[0] >> 16 ) & 0xff)/255.0;//r
-                        vertexRGB.y = ((pSrc[0] >> 8) & 0xff)/255.0;//g
-                        vertexRGB.z = (pSrc[0] & 0xff)/255.0;//b
-                        vertexAlpha = (((pSrc[0]) >> 24) & 0xff)/255.0;//a
-
-						//TODO: extra assignment. name vertexRGB is umbiguous and unnecessary.
-						cf.x = vertexRGB.x;
-						cf.y = vertexRGB.y;
-						cf.z = vertexRGB.z;
+						cf.x = (float)(colors.vec[0] & 0x00000000ffffffff)/255.0;//r;
+						cf.y = (float)((colors.vec[0] >> 32) & 0x00000000ffffffff)/255.0;//g;
+						cf.z = (float)(colors.vec[1] & 0x00000000ffffffff)/255.0;//b
 
 						cs.x = (float)pixelValue.r/255.0;
 						cs.y = (float)pixelValue.g/255.0;
@@ -834,7 +817,7 @@ void textureTriangle(Pattern* patterns,
 						cv.y = 0.0;
 						cv.z = 0.0;
 
-						af = vertexAlpha;
+						af = (float)((colors.vec[1] >> 32) & 0x00000000ffffffff)/255.0;//a;
 						as = (float)pixelValue.a/255.0;  
 						ac = texEnvColorAlpha;
 						av = 0.0;
@@ -1048,17 +1031,11 @@ void textureTriangle(Pattern* patterns,
 					color = color | (((nm32s)(cv.x * 255) & 0xff) << 16); //r
                     color = color | (((nm32s)(cv.y * 255) & 0xff) << 8);//g
                     color = color | (((nm32s)(cv.z * 255) & 0xff));//b
-                    // pDst[0] = mul * pSrc[0];
-                    pDst[0] = mul * color;
+                    pDst[0] = color;
                 }
-
                 pDst += 1;
-                pSrc += 1;
-                temp >>= 2;
             }
         }
-        src += windows[cnt].height * windows[cnt].width;
-        dst += windows[cnt].height * windows[cnt].width;
     }
 #ifdef DEBUG
     // printf ("End textureTriangle\n");     
