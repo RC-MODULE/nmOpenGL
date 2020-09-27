@@ -118,7 +118,6 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
     cntxt.trianInner.zEye0 = zEye0;
     cntxt.trianInner.zEye1 = zEye1;
     cntxt.trianInner.zEye2 = zEye2;
-    cntxt.texState.textureEnabled = 1;
 #endif
 
 	cntxt.trianInner.colors = lightsValues;

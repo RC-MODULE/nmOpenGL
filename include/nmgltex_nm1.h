@@ -76,6 +76,7 @@ struct NMGL_Context_NM1_Texture {
 		//texcoordArray
 		//curTexCoords
 		unpackAlignment = 1;
+		textureEnabled = 0;
 		INIT_TEX_UNITS();
 		INIT_TEX_OBJECTS();
 	}

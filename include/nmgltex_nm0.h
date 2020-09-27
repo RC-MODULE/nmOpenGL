@@ -81,6 +81,7 @@ struct NMGL_Context_NM0_Texture {
 		clientActiveTexUnitIndex = 0;
 		lastTexName = 0;
 		unpackAlignment = 4;
+		textureEnabled = 0;
 		for (int i = 0; i < NMGL_MAX_TEX_UNITS; i++)
 		{
 			texcoordArray[i].pointer = 0;

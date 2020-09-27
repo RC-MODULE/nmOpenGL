@@ -149,7 +149,6 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 	cntxt.imagePoints = imagePoints;
 
 #ifdef TEXTURE_ENABLED
-    cntxt.texState.textureEnabled = 1;
     cntxt.x0 = x0;
     cntxt.y0 = y0;
     cntxt.x1 = x1;

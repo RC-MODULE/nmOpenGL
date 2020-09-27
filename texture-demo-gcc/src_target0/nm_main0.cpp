@@ -175,6 +175,9 @@ SECTION(".text_shared") int main()
 	NMGLfloat texenv_color[4] = {0.0, 0.0, 0.0, 0.0};
 	nmglTexEnvfv(NMGL_TEXTURE_ENV, NMGL_TEXTURE_ENV_COLOR, (NMGLfloat*)texenv_color);
 	
+	nmglEnable(NMGL_TEXTURE_2D);
+//	nmglDisable(NMGL_TEXTURE_2D);
+	
 	while(nmglvsNm0Run()){
 		nmglEnableClientState(NMGL_VERTEX_ARRAY);
 		nmglEnableClientState(NMGL_NORMAL_ARRAY);
