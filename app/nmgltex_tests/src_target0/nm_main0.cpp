@@ -3,12 +3,22 @@
 #include "nmgl_tex_tests_config.h"
 #include "nmglvs_nmc0.h"
 #include <iostream>
-
+//#include "time.h"
 #include "demo3d_nm1.h"
 extern void* cntxtAddr_nm1;
 NMGL_Context_NM1 *cntxt_nm1;
 unsigned int nmpu1IsAccessible;
 
+#define tstdtl 5
+#define ENABLE_STATISTICS
+#ifdef ENABLE_STATISTICS
+	SECTION(".data_imu0") float imu0data[tstdtl];
+	SECTION(".data_shmem0") float shmemdata[tstdtl];
+	SECTION(".data_DDR") float ddrdata[tstdtl];
+	SECTION(".data_imu0") int imu0datai[tstdtl];
+	SECTION(".data_shmem0") int shmemdatai[tstdtl];
+	SECTION(".data_DDR") int ddrdatai[tstdtl];
+#endif
 float triangles[24]{
 	0,0,
 	0,31,
@@ -30,9 +40,104 @@ float color[48]{
 	1,0,1, 1,
 	
 };
+//#if 0
+void make_mem_statistics()
+{
+	
+	//#define TSTDATA(x,y,z) SECTION(x) y z[tstdtl]
 
+	
+	float ave_ddr_time=0.0;
+	float ave_imu_time=0.0;
+	float ave_shmem_time=0.0;
+	int i=0;
+	float frz=0.0;
+	int irz=0;
+	long sum=0;
+	clock_t clks=0;
+	
+	for (i=1;i<=tstdtl;i++)
+	{
+		clks=clock();		
+		irz=imu0datai[i-1];
+		clks=clock()-clks;
+		printf("clks diff=%d\n",clks);
+		sum+=clks;
+		ave_imu_time=sum/i;
+		printf("ave_imu_time=%f\n",ave_imu_time);
+	}
+	sum=0;
+	ave_imu_time=0;
+	printf("\n shmem int\n");
+	for (i=1;i<=tstdtl;i++)
+	{
+		clks=clock();		
+		irz=shmemdatai[i-1];
+		clks=clock()-clks;
+		printf("clks diff=%d\n",clks);
+		sum+=clks;
+		ave_shmem_time=sum/i;
+		printf("ave_shmem_time=%f\n",ave_shmem_time);
+	}
+	sum=0;
+	ave_shmem_time=0;
+	printf("\n DDR int\n");
+	for (i=1;i<=tstdtl;i++)
+	{
+		clks=clock();		
+		irz=ddrdatai[i-1];
+		clks=clock()-clks;
+		printf("clks diff=%d\n",clks);
+		sum+=clks;
+		ave_ddr_time=sum/i;
+		printf("ave_ddr_time=%f\n",ave_ddr_time);
+	}
+	sum=0;
+	ave_ddr_time=0;
+printf("\n imu0 float\n");
+	for (i=1;i<=tstdtl;i++)
+	{
+		clks=clock();		
+		frz=imu0data[i-1];
+		clks=clock()-clks;
+		printf("clks diff=%d\n",clks);
+		sum+=clks;
+		ave_imu_time=sum/i;
+		printf("ave_imu_time=%f\n",ave_imu_time);
+	}
+	sum=0;
+	ave_imu_time=0;
+	printf("\n shmem float\n");
+	for (i=1;i<=tstdtl;i++)
+	{
+		clks=clock();		
+		frz=shmemdata[i-1];
+		clks=clock()-clks;
+		printf("clks diff=%d\n",clks);
+		sum+=clks;
+		ave_shmem_time=sum/i;
+		printf("ave_shmem_time=%f\n",ave_shmem_time);
+	}
+	sum=0;
+	ave_shmem_time=0;
+	printf("\n DDR float\n");
+	for (i=1;i<=tstdtl;i++)
+	{
+		clks=clock();		
+		frz=ddrdata[i-1];
+		clks=clock()-clks;
+		printf("clks diff=%d\n",clks);
+		sum+=clks;
+		ave_ddr_time=sum/i;
+		printf("ave_ddr_time=%f\n",ave_ddr_time);
+	}
+}
+//#endif
 int main()
 {
+	#ifdef ENABLE_STATISTICS
+	make_mem_statistics();
+	#endif
 	nmglvsNm0Init();
 
 	nmglClearColor(0, 0, 0.4f, 1.0f);
@@ -56,6 +161,7 @@ int main()
 	*/
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
 	NMGLint texture_names[NMGL_MAX_TEX_OBJECTS];
+	clock_t clks=0;
 	/*
 	printf("Initial nm0 context fields:\n");
 	
@@ -70,10 +176,8 @@ int main()
 	*/
 
 //=========RUNNING=TESTS======================================================
-
-	printf("\n***** Start nmgl texture functions tests *****\n");
-
-	cntxt_nm1 = (NMGL_Context_NM1*)cntxtAddr_nm1;
+printf("\n***** Start nmgl texture functions tests *****\n");
+cntxt_nm1 = (NMGL_Context_NM1*)cntxtAddr_nm1;
 	nmpu1IsAccessible = 0;
 	DEBUG_PRINT(("Context nm1=%x\n",cntxt_nm1));
 	if(cntxt_nm1 == 0) {
@@ -85,7 +189,6 @@ int main()
 	else {
 		nmpu1IsAccessible = 1;
 	}
-
 #ifdef TEST_NMGL_GEN_TEXTURES
 	run_nmglGenTextures_test();
 #endif
@@ -120,7 +223,15 @@ int main()
 #endif
 
 #ifdef TEST_NMGL_TEX_SUB_IMAGE_2D
+	#ifdef ENABLE_STATISTICS
+		clks=clock();
+		printf("clks before=0x%x\n",(int)clks);
+	#endif
 	run_nmglTexSubImage2D_test();
+	#ifdef ENABLE_STATISTICS
+		clks=clock();
+		printf("clks after=0x%x\n",(int)clks);
+	#endif
 #endif
 
 #ifdef TEST_NMGL_GET_TEX_ENV_FV
@@ -146,9 +257,7 @@ int main()
 #ifdef TEST_NMGL_TEX_COORD_POINTER
 	run_nmglTexCoordPointer_test();
 #endif
-
-	printf("\n***** End nmgl texture functions tests *****\n");
-	
+printf("\n***** End nmgl texture functions tests *****\n");
 while(nmglvsNm0Run()){
 		nmglClear(NMGL_COLOR_BUFFER_BIT);
 
