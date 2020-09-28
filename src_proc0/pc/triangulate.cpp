@@ -456,7 +456,7 @@ void splitByLargestEdge(	const Triangle &tr,
 	d.color.vec[1] = (a.color.vec[1] + b.color.vec[1]) / 2;
 	d.color.vec[2] = (a.color.vec[2] + b.color.vec[2]) / 2;
 	d.color.vec[3] = (a.color.vec[3] + b.color.vec[3]) / 2;
-	trOut1 = Triangle{ a, d, c };
-	trOut2 = Triangle{ d, b, c };
+	trOut1 = Triangle{ c, a, d };
+	trOut2 = Triangle{ c, d, b };
 }
 
