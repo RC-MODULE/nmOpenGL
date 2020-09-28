@@ -433,8 +433,8 @@ int checkAndSplitLargestEdge(	const Triangle& tr,
 		d.color.vec[1] = (a.color.vec[1] + b.color.vec[1]) / 2;
 		d.color.vec[2] = (a.color.vec[2] + b.color.vec[2]) / 2;
 		d.color.vec[3] = (a.color.vec[3] + b.color.vec[3]) / 2;
-		trOut1 = Triangle{ a, c, d };
-		trOut2 = Triangle{ b, c, d };
+		trOut1 = Triangle{ c, a, d };
+		trOut2 = Triangle{ c, d, b };
 		return 1;
 	} else {
 		return 0;
