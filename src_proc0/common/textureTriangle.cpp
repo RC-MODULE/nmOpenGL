@@ -56,6 +56,8 @@ SECTION(".data_imu0") float initVecy[32] = {0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0
 										0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 
 										0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 
 										0.5, 0.5};
+SECTION(".data_imu0") float vecxf[32];
+SECTION(".data_imu0") float vecyf[32];
 SECTION(".data_imu0") float vecx[32];
 SECTION(".data_imu0") float vecy[32];
 SECTION(".data_imu0") float vecs[32];
@@ -67,6 +69,11 @@ SECTION(".data_imu0") float ones[32] = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 
 										1.0, 1.0};
 
 SECTION(".data_imu0") float oneOverDenominator [32];
+SECTION(".data_imu0") float derivOneOverDenom [32];
+SECTION(".data_imu0") float vecdudx [32];
+SECTION(".data_imu0") float vecdudy [32];
+SECTION(".data_imu0") float vecdvdx [32];
+SECTION(".data_imu0") float vecdvdy [32];
 
 SECTION(".data_imu0") float buf0[32];
 SECTION(".data_imu0") float buf1[32];
@@ -559,10 +566,10 @@ void textureTriangle(TrianglesInfo* triangles, nm32s* pDstTriangle, int count)
         int pixelCnt = 0;
 #endif //USE_BARYCENTRIC
         
-		nmblas_scopy(primWidth, initVecx, 1, vecx, 1);
-		nmblas_scopy(primWidth, initVecy, 1, vecy, 1);
-		nmppsAddC_32f(vecx, vecx, winX0, primWidth);
-		nmppsAddC_32f(vecy, vecy, winY0, primWidth);
+		nmblas_scopy(primWidth, initVecx, 1, vecxf, 1);
+		nmblas_scopy(primWidth, initVecy, 1, vecyf, 1);
+		nmppsAddC_32f(vecxf, vecxf, winX0, primWidth);
+		nmppsAddC_32f(vecyf, vecyf, winY0, primWidth);
 		
         for(int y = 0; y < primHeight; y++){
 
@@ -570,27 +577,92 @@ void textureTriangle(TrianglesInfo* triangles, nm32s* pDstTriangle, int count)
             
 #ifdef PERSPECTIVE_CORRECT
 			//float oneOverDenominator = 1 / (A2*xf + B2*yf + D2);
-			nmppsMulC_AddC_32f(vecy, B2, D2, buf0, primWidth);
-			nmppsMulC_AddV_32f(vecx, buf0, buf0, A2, primWidth);
+			nmppsMulC_AddC_32f(vecyf, B2, D2, buf0, primWidth);
+			nmppsMulC_AddV_32f(vecxf, buf0, buf0, A2, primWidth);
 			nmppsDiv_32f(ones, buf0, oneOverDenominator, primWidth);
 			
 			//float s = (A1_s*xf + B1_s*yf + D1_s) * oneOverDenominator;
-			nmppsMulC_AddC_32f(vecy, B1_s, D1_s, buf0, primWidth);
-			nmppsMulC_AddV_32f(vecx, buf0, vecs, A1_s, primWidth);
+			nmppsMulC_AddC_32f(vecyf, B1_s, D1_s, buf0, primWidth);
+			nmppsMulC_AddV_32f(vecxf, buf0, vecs, A1_s, primWidth);
 			nmppsMul_AddC_32f(vecs, oneOverDenominator, 0.0, vecs, primWidth);
 			
 			//float t = (A1_t*xf + B1_t*yf + D1_t) * oneOverDenominator;
-			nmppsMulC_AddC_32f(vecy, B1_t, D1_t, buf0, primWidth);
-			nmppsMulC_AddV_32f(vecx, buf0, vect, A1_t, primWidth);
+			nmppsMulC_AddC_32f(vecyf, B1_t, D1_t, buf0, primWidth);
+			nmppsMulC_AddV_32f(vecxf, buf0, vect, A1_t, primWidth);
 			nmppsMul_AddC_32f(vect, oneOverDenominator, 0.0, vect, primWidth);
 #else //PERSPECTIVE_CORRECT                    
 			//s = A_s*xf + B_s*yf + D_s;
-			nmppsMulC_AddC_32f(vecy, B_s, D_s, buf0, primWidth);
-			nmppsMulC_AddV_32f(vecx, buf0, vecs, A_s, primWidth);
+			nmppsMulC_AddC_32f(vecyf, B_s, D_s, buf0, primWidth);
+			nmppsMulC_AddV_32f(vecxf, buf0, vecs, A_s, primWidth);
 			
 			//t = A_t*xf + B_t*yf + D_t;
-			nmppsMulC_AddC_32f(vecy, B_t, D_t, buf0, primWidth);
-			nmppsMulC_AddV_32f(vecx, buf0, vect, A_t, primWidth);
+			nmppsMulC_AddC_32f(vecyf, B_t, D_t, buf0, primWidth);
+			nmppsMulC_AddV_32f(vecxf, buf0, vect, A_t, primWidth);
+#endif //PERSPECTIVE_CORRECT
+
+/* Calculate minification vs. magnification switchover point */
+
+			if ((textureMagFilter == NMGL_LINEAR) && ((textureMinFilter == NMGL_NEAREST_MIPMAP_NEAREST) || (textureMinFilter == NMGL_NEAREST_MIPMAP_LINEAR)))
+				c = 0.5f;
+			else
+				c = 0.0f;
+
+/*************************************************************/
+
+/*Calculate partial derivative for u(x,y) and v(x,y). level 0 texture are using to calculate scale factor*/
+
+#ifdef PERSPECTIVE_CORRECT
+			//float derivOneOverDenom = 1.0 / ((A2*x + B2*y + D2)*(A2*x + B2*y + D2));//TODO: may be xf, yf should be used
+			nmppsSubC_32f(vecyf, vecy, 0.5, primWidth);
+			nmppsMulC_AddC_32f(vecy, B2, D2, buf0, primWidth);
+			nmppsMulC_AddV_32f(vecx, buf0, buf0, A2, primWidth);
+			nmppsMul_AddC_32f(buf0, buf0, 0.0, buf0, primWidth);
+			nmppsDiv_32f(ones, buf0, derivOneOverDenom, primWidth);
+
+			float tmp0 = 0.0;
+			float tmp1 = 0.0;
+			
+			//float dudx = (float)boundTexObject->texImages2D[0].width*((A1_s*B2 - A2*B1_s)*y + A1_s*D2 - A2*D1_s)*derivOneOverDenom;
+			tmp0 = A1_s*B2 - A2*B1_s;
+			tmp1 = A1_s*D2 - A2*D1_s;
+			nmppsMulC_AddC_32f(vecy, tmp0, tmp1, buf0, primWidth);
+			nmppsMul_AddC_32f(buf0, derivOneOverDenom, 0.0, buf0, primWidth);
+			nmppsMulC_AddC_32f(buf0, (float)boundTexObject->texImages2D[0].width, 0.0, vecdudx, primWidth);
+			
+			//float dudy = (float)boundTexObject->texImages2D[0].width*((B1_s*A2 - B2*A1_s)*x + B1_s*D2 - B2*D1_s)*derivOneOverDenom;
+			tmp0 = B1_s*A2 - B2*A1_s;
+			tmp1 = B1_s*D2 - B2*D1_s;
+			nmppsMulC_AddC_32f(vecx, tmp0, tmp1, buf0, primWidth);
+			nmppsMul_AddC_32f(buf0, derivOneOverDenom, 0.0, buf0, primWidth);
+			nmppsMulC_AddC_32f(buf0, (float)boundTexObject->texImages2D[0].width, 0.0, vecdudy, primWidth);
+			
+			//float dvdx = (float)boundTexObject->texImages2D[0].height*((A1_t*B2 - A2*B1_t)*y + A1_t*D2 - A2*D1_t)*derivOneOverDenom;
+			tmp0 = A1_t*B2 - A2*B1_t;
+			tmp1 = A1_t*D2 - A2*D1_t;
+			nmppsMulC_AddC_32f(vecy, tmp0, tmp1, buf0, primWidth);
+			nmppsMul_AddC_32f(buf0, derivOneOverDenom, 0.0, buf0, primWidth);
+			nmppsMulC_AddC_32f(buf0, (float)boundTexObject->texImages2D[0].height, 0.0, vecdvdx, primWidth);
+			
+			//float dvdy = (float)boundTexObject->texImages2D[0].height*((B1_t*A2 - B2*A1_t)*x + B1_t*D2 - B2*D1_t)*derivOneOverDenom;
+			tmp0 = B1_t*A2 - B2*A1_t;
+			tmp1 = B1_t*D2 - B2*D1_t;
+			nmppsMulC_AddC_32f(vecx, tmp0, tmp1, buf0, primWidth);
+			nmppsMul_AddC_32f(buf0, derivOneOverDenom, 0.0, buf0, primWidth);
+			nmppsMulC_AddC_32f(buf0, (float)boundTexObject->texImages2D[0].height, 0.0, vecdvdy, primWidth);					
+			
+#else //PERSPECTIVE_CORRECT  
+			//float dudx = (float)boundTexObject->texImages2D[0].width*A_s;
+			nmppsMulC_AddC_32f(ones, (float)boundTexObject->texImages2D[0].width*A_s, 0.0, vecdudx, primWidth);
+			
+			//float dudy = (float)boundTexObject->texImages2D[0].width*B_s;
+			nmppsMulC_AddC_32f(ones, (float)boundTexObject->texImages2D[0].width*B_s, 0.0, vecdudy, primWidth);
+			
+			//float dvdx = (float)boundTexObject->texImages2D[0].height*A_t;
+			nmppsMulC_AddC_32f(ones, (float)boundTexObject->texImages2D[0].height*A_t, 0.0, vecdvdx, primWidth);
+			
+			//float dvdy = (float)boundTexObject->texImages2D[0].height*B_t;
+			nmppsMulC_AddC_32f(ones, (float)boundTexObject->texImages2D[0].height*B_t, 0.0, vecdvdy, primWidth);
+			
 #endif //PERSPECTIVE_CORRECT
 
             for(int x = 0; x < primWidth; x++){
@@ -600,40 +672,20 @@ void textureTriangle(TrianglesInfo* triangles, nm32s* pDstTriangle, int count)
                     Vec2f st;
                     st.x = vecs[x];
                     st.y = vect[x];
-
-/* Calculate minification vs. magnification switchover point */
-
-						if ((textureMagFilter == NMGL_LINEAR) && ((textureMinFilter == NMGL_NEAREST_MIPMAP_NEAREST) || (textureMinFilter == NMGL_NEAREST_MIPMAP_LINEAR)))
-							c = 0.5f;
-						else
-							c = 0.0f;
-
-						/*************************************************************/
-
-/*Calculate partial derivative for u(x,y) and v(x,y). level 0 texture are using to calculate scale factor*/
-
-#ifdef PERSPECTIVE_CORRECT
-						float derivOneOverDenom = 1.0 / ((A2*x + B2*y + D2)*(A2*x + B2*y + D2));//TODO: may be xf, yf should be used
-						float dudx = (float)boundTexObject->texImages2D[0].width*((A1_s*B2 - A2*B1_s)*y + A1_s*D2 - A2*D1_s)*derivOneOverDenom;
-						float dudy = (float)boundTexObject->texImages2D[0].width*((B1_s*A2 - B2*A1_s)*x + B1_s*D2 - B2*D1_s)*derivOneOverDenom;
-						float dvdx = (float)boundTexObject->texImages2D[0].height*((A1_t*B2 - A2*B1_t)*y + A1_t*D2 - A2*D1_t)*derivOneOverDenom;
-						float dvdy = (float)boundTexObject->texImages2D[0].height*((B1_t*A2 - B2*A1_t)*x + B1_t*D2 - B2*D1_t)*derivOneOverDenom;
-#else //PERSPECTIVE_CORRECT  
-						float dudx = (float)boundTexObject->texImages2D[0].width*A_s;
-						float dudy = (float)boundTexObject->texImages2D[0].width*B_s;
-						float dvdx = (float)boundTexObject->texImages2D[0].height*A_t;
-						float dvdy = (float)boundTexObject->texImages2D[0].height*B_t;
-#endif //PERSPECTIVE_CORRECT
+					float dudx = vecdudx[x];
+					float dudy = vecdudy[x];
+					float dvdx = vecdvdx[x];
+					float dvdy = vecdvdy[x];
 
 /*Calculate scale factor*/
 #ifdef SCALE_FACTOR_IDEAL
-						scaleFactor = fmax(sqrtf(dudx*dudx + dvdx*dvdx), sqrtf(dudy*dudy + dvdy*dvdy));
+					scaleFactor = fmax(sqrtf(dudx*dudx + dvdx*dvdx), sqrtf(dudy*dudy + dvdy*dvdy));
 #else
-						float mu = fmax(fabs(dudx), fabs(dudy));
-						float mv = fmax(fabs(dvdx), fabs(dvdy));
-						scaleFactor = fmax(mu, mv);
+					float mu = fmax(fabs(dudx), fabs(dudy));
+					float mv = fmax(fabs(dvdx), fabs(dvdy));
+					scaleFactor = fmax(mu, mv);
 #endif
-						//printf("Scale factor = %f\n", scaleFactor);
+					//printf("Scale factor = %f\n", scaleFactor);
 
 /*Calculate level of detail*/
 
@@ -1031,7 +1083,7 @@ void textureTriangle(TrianglesInfo* triangles, nm32s* pDstTriangle, int count)
                 }
                 pDst += 1;
             }
-            nmppsAddC_32f(vecy, vecy, 1.0, primWidth);
+            nmppsAddC_32f(vecyf, vecyf, 1.0, primWidth);
         }
     }
 #ifdef DEBUG
