@@ -11,7 +11,6 @@
 #define TEXTURE_ENABLED
 
 #ifdef TEXTURE_ENABLED
-// #define USE_BARYCENTRIC
 // #define PERSPECTIVE_CORRECT
 
 // typedef enum { NEAREST, LINEAR, NEAREST_MIPMAP_NEAREST, NEAREST_MIPMAP_LINEAR, LINEAR_MIPMAP_NEAREST, LINEAR_MIPMAP_LINEAR } filter_mode_t;
@@ -48,22 +47,22 @@ int textureBaseLevel = 0;
 int textureMaxLevel = 1000;
 color borderColor;
 
-SECTION(".data_imu0") float initVecx[32] = {0.5,   1.5,  2.5,  3.5,  4.5,  5.5,  6.5,  7.5,  8.5,  9.5, 
+SECTION(".data_imu0") float initVecx [32] = {0.5,   1.5,  2.5,  3.5,  4.5,  5.5,  6.5,  7.5,  8.5,  9.5, 
 										10.5, 11.5, 12.5, 13.5, 14.5, 15.5, 16.5, 17.5, 18.5, 19.5,
 										20.5, 21.5, 22.5, 23.5, 24.5, 25.5, 26.5, 27.5, 28.5, 29.5,
 										30.5, 31.5};
-SECTION(".data_imu0") float initVecy[32] = {0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 
+SECTION(".data_imu0") float initVecy [32] = {0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 
 										0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 
 										0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 
 										0.5, 0.5};
-SECTION(".data_imu0") float vecxf[32];
-SECTION(".data_imu0") float vecyf[32];
-SECTION(".data_imu0") float vecx[32];
-SECTION(".data_imu0") float vecy[32];
-SECTION(".data_imu0") float vecs[32];
-SECTION(".data_imu0") float vect[32];
+SECTION(".data_imu0") float vecxf [32];
+SECTION(".data_imu0") float vecyf [32];
+SECTION(".data_imu0") float vecx [32];
+SECTION(".data_imu0") float vecy [32];
+SECTION(".data_imu0") float vecs [32];
+SECTION(".data_imu0") float vect [32];
 
-SECTION(".data_imu0") float ones[32] = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 
+SECTION(".data_imu0") float ones [32] = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 
 										1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 
 										1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 
 										1.0, 1.0};
@@ -75,18 +74,26 @@ SECTION(".data_imu0") float vecdudy [32];
 SECTION(".data_imu0") float vecdvdx [32];
 SECTION(".data_imu0") float vecdvdy [32];
 
+//texture source color (color from texture array, one tex unit - one texture)
 SECTION(".data_imu0") float veccsx [32];
 SECTION(".data_imu0") float veccsy [32];
 SECTION(".data_imu0") float veccsz [32];
-SECTION(".data_imu0") float veccsa [32];
+SECTION(".data_imu0") float vecas [32];
 
-SECTION(".data_imu0") float buf0[32];
-SECTION(".data_imu0") float buf1[32];
-SECTION(".data_imu0") float buf2[32];
-SECTION(".data_imu0") float buf3[32];
+SECTION(".data_imu0") float veccvx [32];
+SECTION(".data_imu0") float veccvy [32];
+SECTION(".data_imu0") float veccvz [32];
+SECTION(".data_imu0") float vecav [32];
 
-SECTION(".data_imu0") float rl_s[32];
-SECTION(".data_imu0") float rl_t[32];
+SECTION(".data_imu0") float veccfx [32];
+SECTION(".data_imu0") float veccfy [32];
+SECTION(".data_imu0") float veccfz [32];
+SECTION(".data_imu0") float vecaf [32];
+
+SECTION(".data_imu0") float buf0 [32];
+SECTION(".data_imu0") float buf1 [32];
+SECTION(".data_imu0") float buf2 [32];
+SECTION(".data_imu0") float buf3 [32];
 
 SECTION(TEXTURE_TRIANGLE_SECTION)
 int max (int a, int b)
@@ -562,14 +569,6 @@ void textureTriangle(TrianglesInfo* triangles, nm32s* pDstTriangle, int count)
         t1 *= z1;
         t2 *= z2;
 #endif //PERSPECTIVE_CORRECT
-
-#ifdef USE_BARYCENTRIC
-        // Area of triangle.
-        // Part of calculation attribute values using barycentric coordinates.
-        edgeFunction(x0, y0, x1, y1, x2, y2, &area);
-        float oneOverArea = 1.0/area;
-        int pixelCnt = 0;
-#endif //USE_BARYCENTRIC
         
 		nmblas_scopy(primWidth, initVecx, 1, vecxf, 1);
 		nmblas_scopy(primWidth, initVecy, 1, vecyf, 1);
@@ -849,81 +848,106 @@ void textureTriangle(TrianglesInfo* triangles, nm32s* pDstTriangle, int count)
 				veccsx[x] = cs.x;
 				veccsy[x] = cs.y;
 				veccsz[x] = cs.z;
-				veccsa[x] = as;
+				vecas[x] = as;
 			}
-						
+			
+			Vec3f cf; //primary color components of the incoming fragment (primary color of PRIMITIVE pixel OR fragment color from previous texture unit)
+					  //Not framebuffer color.Framebuffer color can be used at another stage called Blending (glBlendFunc...)
+			float af; 
+			cf.x = (float)(colors.vec[0] & 0x00000000ffffffff)/255.0;//r;
+			cf.y = (float)((colors.vec[0] >> 32) & 0x00000000ffffffff)/255.0;//g;
+			cf.z = (float)(colors.vec[1] & 0x00000000ffffffff)/255.0;//b
+			af = (float)((colors.vec[1] >> 32) & 0x00000000ffffffff)/255.0;//a;
+			
 			for(int x = 0; x < primWidth; x++){
+				veccfx[x] = cf.x;
+				veccfy[x] = cf.y;
+				veccfz[x] = cf.z;
+				vecaf[x] = af;
+			}
+
+			Vec3f cc; //texture environment color (unique for each texture unit)
+			float ac; 
+			cc.x = texEnvColor.x;
+			cc.y = texEnvColor.y;
+			cc.z = texEnvColor.z;
+			ac = texEnvColorAlpha;
 						
-				//Apply texture finction
+			//Apply texture function
 
-				Vec3f cs; //texture source color (color from texture array, one tex unit - one texture)
-				float as;
-				
-				cs.x = veccsx[x];
-				cs.y = veccsy[x];
-				cs.z = veccsz[x];
-				as = veccsa[x];  
-
-				Vec3f cf; //primary color components of the incoming fragment (primary color of PRIMITIVE pixel OR fragment color from previous texture unit)
-						  //Not framebuffer color.Framebuffer color can be used at another stage called Blending (glBlendFunc...)
-				float af; 
-				cf.x = (float)(colors.vec[0] & 0x00000000ffffffff)/255.0;//r;
-				cf.y = (float)((colors.vec[0] >> 32) & 0x00000000ffffffff)/255.0;//g;
-				cf.z = (float)(colors.vec[1] & 0x00000000ffffffff)/255.0;//b
-				af = (float)((colors.vec[1] >> 32) & 0x00000000ffffffff)/255.0;//a;
-
-				Vec3f cc; //texture environment color (unique for each texture unit)
-				float ac; 
-				cc.x = texEnvColor.x;
-				cc.y = texEnvColor.y;
-				cc.z = texEnvColor.z;
-				ac = texEnvColorAlpha;
-
-				Vec3f cv; //primary color components computed by the texture function (to another OpenGL stages or to next texture unit)
-				float av;
-				cv.x = 0.0;
-				cv.y = 0.0;
-				cv.z = 0.0;
-				av = 0.0;
-
-				switch (texBaseInternalFormat)
-				{
+			switch (texBaseInternalFormat)
+			{
 				case NMGL_RGB:
 					switch (texEnvMode)
 					{
 						case NMGL_REPLACE:
-							cv.x = cs.x;
-							cv.y = cs.y;
-							cv.z = cs.z;
-							av = af;
+							//cv.x = cs.x;
+							nmblas_scopy(primWidth, veccsx, 1, veccvx, 1);
+							//cv.y = cs.y;
+							nmblas_scopy(primWidth, veccsy, 1, veccvy, 1);
+							//cv.z = cs.z;
+							nmblas_scopy(primWidth, veccsz, 1, veccvz, 1);
+							//av = af;
+							nmblas_scopy(primWidth, vecaf, 1, vecav, 1);
 							break;
 
 						case NMGL_MODULATE:
-							cv.x = cf.x * cs.x;
-							cv.y = cf.y * cs.y;
-							cv.z = cf.z * cs.z;
-							av = af;
+							//cv.x = cf.x * cs.x;
+							nmppsMul_32f(veccfx, veccsx, veccvx, primWidth);
+							//cv.y = cf.y * cs.y;
+							nmppsMul_32f(veccfy, veccsy, veccvy, primWidth);
+							//cv.z = cf.z * cs.z;
+							nmppsMul_32f(veccfz, veccsz, veccvz, primWidth);
+							//av = af;
+							nmblas_scopy(primWidth, vecaf, 1, vecav, 1);
+							
 							break;
 
 						case NMGL_DECAL:
-							cv.x = cs.x;
-							cv.y = cs.y;
-							cv.z = cs.z;
-							av = af;
+							//cv.x = cs.x;
+							nmblas_scopy(primWidth, veccsx, 1, veccvx, 1);
+							//cv.y = cs.y;
+							nmblas_scopy(primWidth, veccsy, 1, veccvy, 1);
+							//cv.z = cs.z;
+							nmblas_scopy(primWidth, veccsz, 1, veccvz, 1);						
+							//av = af;
+							nmblas_scopy(primWidth, vecaf, 1, vecav, 1);
+							
 							break;
 
 						case NMGL_BLEND:
-							cv.x = cf.x * (1.0 - cs.x) + cc.x * cs.x;
-							cv.y = cf.y * (1.0 - cs.y) + cc.y * cs.y;
-							cv.z = cf.z * (1.0 - cs.z) + cc.z * cs.z;
-							av = af;
+							//cv.x = cf.x * (1.0 - cs.x) + cc.x * cs.x;
+							nmppsSub_32f(ones, veccsx, buf0, primWidth);
+							nmppsMul_32f (veccfx, buf0, buf0, primWidth);
+							nmppsMulC_32f(veccsx, buf1, cc.x, primWidth);
+							nmppsAdd_32f(buf0, buf1, veccvx, primWidth);
+							
+							//cv.y = cf.y * (1.0 - cs.y) + cc.y * cs.y;
+							nmppsSub_32f(ones, veccsy, buf0, primWidth);
+							nmppsMul_32f (veccfy, buf0, buf0, primWidth);
+							nmppsMulC_32f(veccsy, buf1, cc.y, primWidth);
+							nmppsAdd_32f(buf0, buf1, veccvy, primWidth);
+							
+							//cv.z = cf.z * (1.0 - cs.z) + cc.z * cs.z;
+							nmppsSub_32f(ones, veccsz, buf0, primWidth);
+							nmppsMul_32f (veccfz, buf0, buf0, primWidth);
+							nmppsMulC_32f(veccsz, buf1, cc.z, primWidth);
+							nmppsAdd_32f(buf0, buf1, veccvz, primWidth);
+							
+							//av = af;
+							nmblas_scopy(primWidth, vecaf, 1, vecav, 1);
+							
 							break;
 
 						case NMGL_ADD:
-							cv.x = cf.x + cs.x;
-							cv.y = cf.y + cs.y;
-							cv.z = cf.z + cs.z;
-							av = af;
+							//cv.x = cf.x + cs.x;
+							nmppsAdd_32f(veccfx, veccsx, veccvx, primWidth);
+							//cv.y = cf.y + cs.y;
+							nmppsAdd_32f(veccfy, veccsy, veccvy, primWidth);
+							//cv.z = cf.z + cs.z;
+							nmppsAdd_32f(veccfz, veccsz, veccvz, primWidth);
+							//av = af;
+							nmblas_scopy(primWidth, vecaf, 1, vecav, 1);
 							break;
 					}
 					break;
@@ -931,38 +955,82 @@ void textureTriangle(TrianglesInfo* triangles, nm32s* pDstTriangle, int count)
 					switch (texEnvMode)
 					{
 						case NMGL_REPLACE:
-							cv.x = cs.x;
-							cv.y = cs.y;
-							cv.z = cs.z;
-							av = as;
+							//cv.x = cs.x;
+							nmblas_scopy(primWidth, veccsx, 1, veccvx, 1);
+							//cv.y = cs.y;
+							nmblas_scopy(primWidth, veccsy, 1, veccvy, 1);
+							//cv.z = cs.z;
+							nmblas_scopy(primWidth, veccsz, 1, veccvz, 1);	
+							//av = as;
+							nmblas_scopy(primWidth, vecas, 1, vecav, 1);	
 							break;
 
 						case NMGL_MODULATE:
-							cv.x = cf.x * cs.x;
-							cv.y = cf.y * cs.y;
-							cv.z = cf.z * cs.z;
-							av = af * as;
+							//cv.x = cf.x * cs.x;
+							nmppsMul_32f(veccfx, veccsx, veccvx, primWidth);
+							//cv.y = cf.y * cs.y;
+							nmppsMul_32f(veccfy, veccsy, veccvy, primWidth);
+							//cv.z = cf.z * cs.z;
+							nmppsMul_32f(veccfz, veccsz, veccvz, primWidth);
+							//av = af * as;
+							nmppsMul_32f(vecaf, vecas, vecav, primWidth);
 							break;
 
 						case NMGL_DECAL:
-							cv.x = cf.x * (1.0 - as) + cs.x * as;
-							cv.y = cf.y * (1.0 - as) + cs.y * as;
-							cv.z = cf.z * (1.0 - as) + cs.z * as;
-							av = af;
+							//cv.x = cf.x * (1.0 - as) + cs.x * as;
+							nmppsSub_32f(ones, vecas, buf0, primWidth);
+							nmppsMul_32f (veccfx, buf0, buf0, primWidth);
+							nmppsMul_32f(veccsx, vecas, buf1, primWidth);
+							nmppsAdd_32f(buf0, buf1, veccvx, primWidth);
+							
+							//cv.y = cf.y * (1.0 - as) + cs.y * as;
+							nmppsSub_32f(ones, vecas, buf0, primWidth);
+							nmppsMul_32f (veccfy, buf0, buf0, primWidth);
+							nmppsMul_32f(veccsy, vecas, buf1, primWidth);
+							nmppsAdd_32f(buf0, buf1, veccvy, primWidth);
+							
+							//cv.z = cf.z * (1.0 - as) + cs.z * as;
+							nmppsSub_32f(ones, vecas, buf0, primWidth);
+							nmppsMul_32f (veccfz, buf0, buf0, primWidth);
+							nmppsMul_32f(veccsz, vecas, buf1, primWidth);
+							nmppsAdd_32f(buf0, buf1, veccvz, primWidth);
+							
+							//av = af;
+							nmblas_scopy(primWidth, vecaf, 1, vecav, 1);
 							break;
 
 						case NMGL_BLEND:
-							cv.x = cf.x * (1.0 - cs.x) + cc.x * cs.x;
-							cv.y = cf.y * (1.0 - cs.y) + cc.y * cs.y;
-							cv.z = cf.z * (1.0 - cs.z) + cc.z * cs.z;
-							av = af * as;
+							//cv.x = cf.x * (1.0 - cs.x) + cc.x * cs.x;
+							nmppsSub_32f(ones, veccsx, buf0, primWidth);
+							nmppsMul_32f (veccfx, buf0, buf0, primWidth);
+							nmppsMulC_32f(veccsx, buf1, cc.x, primWidth);
+							nmppsAdd_32f(buf0, buf1, veccvx, primWidth);
+							
+							//cv.y = cf.y * (1.0 - cs.y) + cc.y * cs.y;
+							nmppsSub_32f(ones, veccsy, buf0, primWidth);
+							nmppsMul_32f (veccfy, buf0, buf0, primWidth);
+							nmppsMulC_32f(veccsy, buf1, cc.y, primWidth);
+							nmppsAdd_32f(buf0, buf1, veccvy, primWidth);
+							
+							//cv.z = cf.z * (1.0 - cs.z) + cc.z * cs.z;
+							nmppsSub_32f(ones, veccsz, buf0, primWidth);
+							nmppsMul_32f (veccfz, buf0, buf0, primWidth);
+							nmppsMulC_32f(veccsz, buf1, cc.z, primWidth);
+							nmppsAdd_32f(buf0, buf1, veccvz, primWidth);
+							
+							//av = af * as;
+							nmppsMul_32f(vecaf, vecas, vecav, primWidth);
 							break;
 
 						case NMGL_ADD:
-							cv.x = cf.x + cs.x;
-							cv.y = cf.y + cs.y;
-							cv.z = cf.z + cs.z;
-							av = af * as;
+							//cv.x = cf.x + cs.x;
+							nmppsAdd_32f(veccfx, veccsx, veccvx, primWidth);
+							//cv.y = cf.y + cs.y;
+							nmppsAdd_32f(veccfy, veccsy, veccvy, primWidth);
+							//cv.z = cf.z + cs.z;
+							nmppsAdd_32f(veccfz, veccsz, veccvz, primWidth);
+							//av = af * as;
+							nmppsMul_32f(vecaf, vecas, vecav, primWidth);
 							break;
 					}
 					break;
@@ -971,38 +1039,58 @@ void textureTriangle(TrianglesInfo* triangles, nm32s* pDstTriangle, int count)
 					switch (texEnvMode)
 					{
 						case NMGL_REPLACE:
-							cv.x = cf.x;
-							cv.y = cf.y;
-							cv.z = cf.z;
-							av = as;
+							//cv.x = cf.x;
+							nmblas_scopy(primWidth, veccfx, 1, veccvx, 1);
+							//cv.y = cf.y;
+							nmblas_scopy(primWidth, veccfy, 1, veccvy, 1);
+							//cv.z = cf.z;
+							nmblas_scopy(primWidth, veccfz, 1, veccvz, 1);
+							//av = as;
+							nmblas_scopy(primWidth, vecas, 1, vecav, 1);
 							break;
 
 						case NMGL_MODULATE:
-							cv.x = cf.x;
-							cv.y = cf.y;
-							cv.z = cf.z;
-							av = af * as;
+							//cv.x = cf.x;
+							nmblas_scopy(primWidth, veccfx, 1, veccvx, 1);
+							//cv.y = cf.y;
+							nmblas_scopy(primWidth, veccfy, 1, veccvy, 1);
+							//cv.z = cf.z;
+							nmblas_scopy(primWidth, veccfz, 1, veccvz, 1);
+							//av = af * as;
+							nmppsMul_32f(vecaf, vecas, vecav, primWidth);
 							break;
 
 						case NMGL_DECAL://undefined
-							cv.x = 1.0;
-							cv.y = 1.0;
-							cv.z = 1.0;
-							av = 1.0;
+							//cv.x = 1.0;
+							nmblas_scopy(primWidth, ones, 1, veccvx, 1);
+							//cv.y = 1.0;
+							nmblas_scopy(primWidth, ones, 1, veccvy, 1);
+							//cv.z = 1.0;
+							nmblas_scopy(primWidth, ones, 1, veccvz, 1);
+							//av = 1.0;
+							nmblas_scopy(primWidth, ones, 1, vecav, 1);
 							break;
 
 						case NMGL_BLEND:
-							cv.x = cf.x;
-							cv.y = cf.y;
-							cv.z = cf.z;
-							av = af * as;
+							//cv.x = cf.x;
+							nmblas_scopy(primWidth, veccfx, 1, veccvx, 1);
+							//cv.y = cf.y;
+							nmblas_scopy(primWidth, veccfy, 1, veccvy, 1);
+							//cv.z = cf.z;
+							nmblas_scopy(primWidth, veccfz, 1, veccvz, 1);
+							//av = af * as;
+							nmppsMul_32f(vecaf, vecas, vecav, primWidth);
 							break;
 
 						case NMGL_ADD:
-								cv.x = cf.x;
-							cv.y = cf.y;
-							cv.z = cf.z;
-							av = af * as;
+							//cv.x = cf.x;
+							nmblas_scopy(primWidth, veccfx, 1, veccvx, 1);
+							//cv.y = cf.y;
+							nmblas_scopy(primWidth, veccfy, 1, veccvy, 1);
+							//cv.z = cf.z;
+							nmblas_scopy(primWidth, veccfz, 1, veccvz, 1);
+							//av = af * as;
+							nmppsMul_32f(vecaf, vecas, vecav, primWidth);
 							break;
 					}
 					break;
@@ -1010,38 +1098,70 @@ void textureTriangle(TrianglesInfo* triangles, nm32s* pDstTriangle, int count)
 					switch (texEnvMode)
 					{
 						case NMGL_REPLACE:
-							cv.x = cs.x;
-							cv.y = cs.y;
-							cv.z = cs.z;
-							av = af;
+							//cv.x = cs.x;
+							nmblas_scopy(primWidth, veccsx, 1, veccvx, 1);
+							//cv.y = cs.y;
+							nmblas_scopy(primWidth, veccsy, 1, veccvy, 1);
+							//cv.z = cs.z;
+							nmblas_scopy(primWidth, veccsz, 1, veccvz, 1);	
+							//av = af;
+							nmblas_scopy(primWidth, vecaf, 1, vecav, 1);
 							break;
 
 						case NMGL_MODULATE:
-							cv.x = cf.x * cs.x;
-							cv.y = cf.y * cs.y;
-							cv.z = cf.z * cs.z;
-							av = af;
+							//cv.x = cf.x * cs.x;
+							nmppsMul_32f(veccfx, veccsx, veccvx, primWidth);
+							//cv.y = cf.y * cs.y;
+							nmppsMul_32f(veccfy, veccsy, veccvy, primWidth);
+							//cv.z = cf.z * cs.z;
+							nmppsMul_32f(veccfz, veccsz, veccvz, primWidth);
+							//av = af;
+							nmblas_scopy(primWidth, vecaf, 1, vecav, 1);
 							break;
 
 						case NMGL_DECAL://undefined
-							cv.x = 1.0;
-							cv.y = 1.0;
-							cv.z = 1.0;
-							av = 1.0;
+							//cv.x = 1.0;
+							nmblas_scopy(primWidth, ones, 1, veccvx, 1);
+							//cv.y = 1.0;
+							nmblas_scopy(primWidth, ones, 1, veccvy, 1);
+							//cv.z = 1.0;
+							nmblas_scopy(primWidth, ones, 1, veccvz, 1);
+							//av = 1.0;
+							nmblas_scopy(primWidth, ones, 1, vecav, 1);
 							break;
 
 						case NMGL_BLEND:
-							cv.x = cf.x * (1.0 - cs.x) + cc.x * cs.x;
-							cv.y = cf.y * (1.0 - cs.y) + cc.y * cs.y;
-							cv.z = cf.z * (1.0 - cs.z) + cc.z * cs.z;
-							av = af;
+							//cv.x = cf.x * (1.0 - cs.x) + cc.x * cs.x;
+							nmppsSub_32f(ones, veccsx, buf0, primWidth);
+							nmppsMul_32f (veccfx, buf0, buf0, primWidth);
+							nmppsMulC_32f(veccsx, buf1, cc.x, primWidth);
+							nmppsAdd_32f(buf0, buf1, veccvx, primWidth);
+							
+							//cv.y = cf.y * (1.0 - cs.y) + cc.y * cs.y;
+							nmppsSub_32f(ones, veccsy, buf0, primWidth);
+							nmppsMul_32f (veccfy, buf0, buf0, primWidth);
+							nmppsMulC_32f(veccsy, buf1, cc.y, primWidth);
+							nmppsAdd_32f(buf0, buf1, veccvy, primWidth);
+							
+							//cv.z = cf.z * (1.0 - cs.z) + cc.z * cs.z;
+							nmppsSub_32f(ones, veccsz, buf0, primWidth);
+							nmppsMul_32f (veccfz, buf0, buf0, primWidth);
+							nmppsMulC_32f(veccsz, buf1, cc.z, primWidth);
+							nmppsAdd_32f(buf0, buf1, veccvz, primWidth);
+							
+							//av = af;
+							nmblas_scopy(primWidth, vecaf, 1, vecav, 1);
 							break;
 
 						case NMGL_ADD:
-							cv.x = cf.x + cs.x;
-							cv.y = cf.y + cs.y;
-							cv.z = cf.z + cs.z;
-							av = af;
+							//cv.x = cf.x + cs.x;
+							nmppsAdd_32f(veccfx, veccsx, veccvx, primWidth);
+							//cv.y = cf.y + cs.y;
+							nmppsAdd_32f(veccfy, veccsy, veccvy, primWidth);
+							//cv.z = cf.z + cs.z;
+							nmppsAdd_32f(veccfz, veccsz, veccvz, primWidth);
+							//av = af;
+							nmblas_scopy(primWidth, vecaf, 1, vecav, 1);
 							break;
 					}
 					break;
@@ -1049,45 +1169,86 @@ void textureTriangle(TrianglesInfo* triangles, nm32s* pDstTriangle, int count)
 					switch (texEnvMode)
 					{
 						case NMGL_REPLACE:
-							cv.x = cs.x;
-							cv.y = cs.y;
-							cv.z = cs.z;
-							av = as;
+							//cv.x = cs.x;
+							nmblas_scopy(primWidth, veccsx, 1, veccvx, 1);
+							//cv.y = cs.y;
+							nmblas_scopy(primWidth, veccsy, 1, veccvy, 1);
+							//cv.z = cs.z;
+							nmblas_scopy(primWidth, veccsz, 1, veccvz, 1);
+							//av = as;
+							nmblas_scopy(primWidth, vecas, 1, vecav, 1);	
 							break;
 
 						case NMGL_MODULATE:
-							cv.x = cf.x * cs.x;
-							cv.y = cf.y * cs.y;
-							cv.z = cf.z * cs.z;
-							av = af * as;
+							//cv.x = cf.x * cs.x;
+							nmppsMul_32f(veccfx, veccsx, veccvx, primWidth);
+							//cv.y = cf.y * cs.y;
+							nmppsMul_32f(veccfy, veccsy, veccvy, primWidth);
+							//cv.z = cf.z * cs.z;
+							nmppsMul_32f(veccfz, veccsz, veccvz, primWidth);
+							//av = af * as;
+							nmppsMul_32f(vecaf, vecas, vecav, primWidth);
 							break;
 
 						case NMGL_DECAL://undefined
-							cv.x = 1.0;
-							cv.y = 1.0;
-							cv.z = 1.0;
-							av = 1.0;
+							//cv.x = 1.0;
+							nmblas_scopy(primWidth, ones, 1, veccvx, 1);
+							//cv.y = 1.0;
+							nmblas_scopy(primWidth, ones, 1, veccvy, 1);
+							//cv.z = 1.0;
+							nmblas_scopy(primWidth, ones, 1, veccvz, 1);
+							//av = 1.0;
+							nmblas_scopy(primWidth, ones, 1, vecav, 1);
 							break;
 
 						case NMGL_BLEND:
-							cv.x = cf.x * (1.0 - cs.x) + cc.x * cs.x;
-							cv.y = cf.y * (1.0 - cs.y) + cc.y * cs.y;
-							cv.z = cf.z * (1.0 - cs.z) + cc.z * cs.z;
-							av = af * as;
+							//cv.x = cf.x * (1.0 - cs.x) + cc.x * cs.x;
+							nmppsSub_32f(ones, veccsx, buf0, primWidth);
+							nmppsMul_32f (veccfx, buf0, buf0, primWidth);
+							nmppsMulC_32f(veccsx, buf1, cc.x, primWidth);
+							nmppsAdd_32f(buf0, buf1, veccvx, primWidth);
+							
+							//cv.y = cf.y * (1.0 - cs.y) + cc.y * cs.y;
+							nmppsSub_32f(ones, veccsy, buf0, primWidth);
+							nmppsMul_32f (veccfy, buf0, buf0, primWidth);
+							nmppsMulC_32f(veccsy, buf1, cc.y, primWidth);
+							nmppsAdd_32f(buf0, buf1, veccvy, primWidth);
+							
+							//cv.z = cf.z * (1.0 - cs.z) + cc.z * cs.z;
+							nmppsSub_32f(ones, veccsz, buf0, primWidth);
+							nmppsMul_32f (veccfz, buf0, buf0, primWidth);
+							nmppsMulC_32f(veccsz, buf1, cc.z, primWidth);
+							nmppsAdd_32f(buf0, buf1, veccvz, primWidth);
+							
+							//av = af * as;
+							nmppsMul_32f(vecaf, vecas, vecav, primWidth);
 							break;
 
 						case NMGL_ADD:
-							cv.x = cf.x + cs.x;
-							cv.y = cf.y + cs.y;
-							cv.z = cf.z + cs.z;
-							av = af * as;
+							//cv.x = cf.x + cs.x;
+							nmppsAdd_32f(veccfx, veccsx, veccvx, primWidth);
+							//cv.y = cf.y + cs.y;
+							nmppsAdd_32f(veccfy, veccsy, veccvy, primWidth);
+							//cv.z = cf.z + cs.z;
+							nmppsAdd_32f(veccfz, veccsz, veccvz, primWidth);
+							//av = af * as;
+							nmppsMul_32f(vecaf, vecas, vecav, primWidth);
 							break;
 					}
 					break;
-					default:
+					
+				default:
 					printf ("Unsupported internal format\n");
 					break;
-				}
+			}
+
+			for(int x = 0; x < primWidth; x++){
+				Vec3f cv; //primary color components computed by the texture function (to another OpenGL stages or to next texture unit)
+				float av;
+				cv.x = veccvx[x];
+				cv.y = veccvy[x];
+				cv.z = veccvz[x];
+				av = vecav[x];
 					  
 				nm32s color = 0;
 				//(nm32s)pDst[0] = 0xARGB
