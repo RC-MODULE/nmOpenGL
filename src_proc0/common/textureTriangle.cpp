@@ -11,7 +11,7 @@
 #define TEXTURE_ENABLED
 
 #ifdef TEXTURE_ENABLED
-#define USE_BARYCENTRIC
+// #define USE_BARYCENTRIC
 // #define PERSPECTIVE_CORRECT
 
 // typedef enum { NEAREST, LINEAR, NEAREST_MIPMAP_NEAREST, NEAREST_MIPMAP_LINEAR, LINEAR_MIPMAP_NEAREST, LINEAR_MIPMAP_LINEAR } filter_mode_t;
@@ -60,10 +60,21 @@ SECTION(".data_imu0") float vecx[32];
 SECTION(".data_imu0") float vecy[32];
 SECTION(".data_imu0") float vecs[32];
 SECTION(".data_imu0") float vect[32];
+
+SECTION(".data_imu0") float ones[32] = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 
+										1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 
+										1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 
+										1.0, 1.0};
+
+SECTION(".data_imu0") float oneOverDenominator [32];
+
 SECTION(".data_imu0") float buf0[32];
 SECTION(".data_imu0") float buf1[32];
 SECTION(".data_imu0") float buf2[32];
 SECTION(".data_imu0") float buf3[32];
+
+SECTION(".data_imu0") float rl_s[32];
+SECTION(".data_imu0") float rl_t[32];
 
 SECTION(TEXTURE_TRIANGLE_SECTION)
 int max (int a, int b)
@@ -557,75 +568,38 @@ void textureTriangle(TrianglesInfo* triangles, nm32s* pDstTriangle, int count)
 
             nm32s* pDst = (nm32s*)(dstTriagle + y * WIDTH_PTRN);
             
+#ifdef PERSPECTIVE_CORRECT
+			//float oneOverDenominator = 1 / (A2*xf + B2*yf + D2);
+			nmppsMulC_AddC_32f(vecy, B2, D2, buf0, primWidth);
+			nmppsMulC_AddV_32f(vecx, buf0, buf0, A2, primWidth);
+			nmppsDiv_32f(ones, buf0, oneOverDenominator, primWidth);
+			
+			//float s = (A1_s*xf + B1_s*yf + D1_s) * oneOverDenominator;
+			nmppsMulC_AddC_32f(vecy, B1_s, D1_s, buf0, primWidth);
+			nmppsMulC_AddV_32f(vecx, buf0, vecs, A1_s, primWidth);
+			nmppsMul_AddC_32f(vecs, oneOverDenominator, 0.0, vecs, primWidth);
+			
+			//float t = (A1_t*xf + B1_t*yf + D1_t) * oneOverDenominator;
+			nmppsMulC_AddC_32f(vecy, B1_t, D1_t, buf0, primWidth);
+			nmppsMulC_AddV_32f(vecx, buf0, vect, A1_t, primWidth);
+			nmppsMul_AddC_32f(vect, oneOverDenominator, 0.0, vect, primWidth);
+#else //PERSPECTIVE_CORRECT                    
+			//s = A_s*xf + B_s*yf + D_s;
+			nmppsMulC_AddC_32f(vecy, B_s, D_s, buf0, primWidth);
+			nmppsMulC_AddV_32f(vecx, buf0, vecs, A_s, primWidth);
+			
+			//t = A_t*xf + B_t*yf + D_t;
+			nmppsMulC_AddC_32f(vecy, B_t, D_t, buf0, primWidth);
+			nmppsMulC_AddV_32f(vecx, buf0, vect, A_t, primWidth);
+#endif //PERSPECTIVE_CORRECT
+
             for(int x = 0; x < primWidth; x++){
 
                 if (1)//for every pixel of pattern
                 {
-                    //Calculate x and y of current pixel as float values
-                    //relative to triangle vertex coordinates inside segment
-                    float xf = vecx[x]; 
-                    float yf = vecy[x];//TODO: Барицентрические координаты не соответствуют растеризованной картинке,
-                                               //то есть растеризованные по шаблону пиксели не должны быть растеризованы, 
-											   //если использовать барицентрические координаты.
-                                               //Но так как они растеризованы, то для них вычисляются неверные барицентрические
-											   //координаты и неправильные значения текстурных координат
-                                               //Нужно как-то соотнести алгоритм растеризации и вычисление текстурных координат
-                    float s = 0.0;
-                    float t = 0.0;
-#ifdef USE_BARYCENTRIC
-                    float w0 = 0;
-                    float w1 = 0;
-                    float w2 = 0;
-                    //TODO: it works only for triangle in CW order
-                    edgeFunction(x1, y1, x2, y2, xf, yf, &w0);
-                    edgeFunction(x2, y2, x0, y0, xf, yf, &w1);
-                    edgeFunction(x0, y0, x1, y1, xf, yf, &w2);
-                    
-                    w0 = w0*oneOverArea;
-                    w1 = w1*oneOverArea;
-                    w2 = w2*oneOverArea;
-                    
-                    // printf ("\n\n pixelCnt = %d xf = %f yf = %f\n", pixelCnt++, xf, yf);
-                    // if (w0 < 0)
-                    // {
-                        // printf ("w0 < 0 w0 = %f\n", w0);
-                    // }
-                    
-                    // if (w1 < 0)
-                    // {
-                        // printf ("w1 < 0 w1 = %f\n", w1);
-                    // }
-                    
-                    // if (w2 < 0)
-                    // {
-                        // printf ("w2 < 0 w2 = %f\n", w2);
-                    // }
-#ifdef PERSPECTIVE_CORRECT
-                    //Part of calculation of perspective correct attribute values using barycentric coordinates.
-                    float oneOverZ = z0 * w0 + z1 * w1 + z2 * w2;
-                    float z = 1 / oneOverZ;
-#endif //PERSPECTIVE_CORRECT
-                    s = s0 * w0 + s1 * w1 + s2 * w2;
-                    t = t0 * w0 + t1 * w1 + t2 * w2;
-#ifdef PERSPECTIVE_CORRECT
-                    s *= z;
-                    t *= z;
-#endif //PERSPECTIVE_CORRECT
-#else //USE_BARYCENTRIC
-#ifdef PERSPECTIVE_CORRECT
-                    float oneOverDenominator = 1 / (A2*xf + B2*yf + D2);
-                    float rl_s = (A1_s*xf + B1_s*yf + D1_s) * oneOverDenominator;
-                    float rl_t = (A1_t*xf + B1_t*yf + D1_t) * oneOverDenominator;
-                    s = rl_s;
-                    t = rl_t;
-#else //PERSPECTIVE_CORRECT                    
-                    s = A_s*xf + B_s*yf + D_s;
-                    t = A_t*xf + B_t*yf + D_t;
-#endif //PERSPECTIVE_CORRECT
-#endif //USE_BARYCENTRIC
                     Vec2f st;
-                    st.x = s;
-                    st.y = t;
+                    st.x = vecs[x];
+                    st.y = vect[x];
 
 /* Calculate minification vs. magnification switchover point */
 
