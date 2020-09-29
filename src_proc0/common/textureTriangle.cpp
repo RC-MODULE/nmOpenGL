@@ -75,6 +75,11 @@ SECTION(".data_imu0") float vecdudy [32];
 SECTION(".data_imu0") float vecdvdx [32];
 SECTION(".data_imu0") float vecdvdy [32];
 
+SECTION(".data_imu0") float veccsx [32];
+SECTION(".data_imu0") float veccsy [32];
+SECTION(".data_imu0") float veccsz [32];
+SECTION(".data_imu0") float veccsa [32];
+
 SECTION(".data_imu0") float buf0[32];
 SECTION(".data_imu0") float buf1[32];
 SECTION(".data_imu0") float buf2[32];
@@ -667,420 +672,430 @@ void textureTriangle(TrianglesInfo* triangles, nm32s* pDstTriangle, int count)
 
             for(int x = 0; x < primWidth; x++){
 
-                if (1)//for every pixel of pattern
-                {
-                    Vec2f st;
-                    st.x = vecs[x];
-                    st.y = vect[x];
-					float dudx = vecdudx[x];
-					float dudy = vecdudy[x];
-					float dvdx = vecdvdx[x];
-					float dvdy = vecdvdy[x];
+				Vec2f st;
+				st.x = vecs[x];
+				st.y = vect[x];
+				float dudx = vecdudx[x];
+				float dudy = vecdudy[x];
+				float dvdx = vecdvdx[x];
+				float dvdy = vecdvdy[x];
 
 /*Calculate scale factor*/
 #ifdef SCALE_FACTOR_IDEAL
-					scaleFactor = fmax(sqrtf(dudx*dudx + dvdx*dvdx), sqrtf(dudy*dudy + dvdy*dvdy));
+				scaleFactor = fmax(sqrtf(dudx*dudx + dvdx*dvdx), sqrtf(dudy*dudy + dvdy*dvdy));
 #else
-					float mu = fmax(fabs(dudx), fabs(dudy));
-					float mv = fmax(fabs(dvdx), fabs(dvdy));
-					scaleFactor = fmax(mu, mv);
+				float mu = fmax(fabs(dudx), fabs(dudy));
+				float mv = fmax(fabs(dvdx), fabs(dvdy));
+				scaleFactor = fmax(mu, mv);
 #endif
 					//printf("Scale factor = %f\n", scaleFactor);
 
 /*Calculate level of detail*/
 
-						float lod = 0.0;
-						float lod_ = log2f(scaleFactor);
+				float lod = 0.0;
+				float lod_ = log2f(scaleFactor);
 
-						if (NMGL_TEX_MIN_LOD > NMGL_TEX_MAX_LOD)
-						{
-							printf("Error. NMGL_TEX_MIN_LOD > NMGL_TEX_MAX_LOD. LOD is undefined. Exit\n");
-							return;
-						}
-						else if (lod_ > NMGL_TEX_MAX_LOD)
-							lod = NMGL_TEX_MAX_LOD;
-						else if (lod_ < NMGL_TEX_MIN_LOD)
-							lod = NMGL_TEX_MIN_LOD;
-						else
-							lod = lod_;
+				if (NMGL_TEX_MIN_LOD > NMGL_TEX_MAX_LOD)
+				{
+					printf("Error. NMGL_TEX_MIN_LOD > NMGL_TEX_MAX_LOD. LOD is undefined. Exit\n");
+					return;
+				}
+				else if (lod_ > NMGL_TEX_MAX_LOD)
+					lod = NMGL_TEX_MAX_LOD;
+				else if (lod_ < NMGL_TEX_MIN_LOD)
+					lod = NMGL_TEX_MIN_LOD;
+				else
+					lod = lod_;
 
-						//if ((lod < c) || (equalf(lod,c) == 1))
-						if (lod <= c) 
-							minMagFlag = MAGNIFICATION;
-						else 
-							minMagFlag = MINIFICATION;
+				//if ((lod < c) || (equalf(lod,c) == 1))
+				if (lod <= c) 
+					minMagFlag = MAGNIFICATION;
+				else 
+					minMagFlag = MINIFICATION;
 
-						//printf("Level of detail = %f\n", lod);
-						//printf("c = %f\n", c);
+				//printf("Level of detail = %f\n", lod);
+				//printf("c = %f\n", c);
 
-						//if(minMagFlag == MAGNIFICATION)
-						//	printf("minMagFlag = MAGNIFICATION\n");
-						//else
-						//	printf("minMagFlag = MINIFICATION\n");
+				//if(minMagFlag == MAGNIFICATION)
+				//	printf("minMagFlag = MAGNIFICATION\n");
+				//else
+				//	printf("minMagFlag = MINIFICATION\n");
 
 //						getchar();
 
-						unsigned int d = 0;
-						unsigned int d1 = 0;
-						unsigned int d2 = 0;
+				unsigned int d = 0;
+				unsigned int d1 = 0;
+				unsigned int d2 = 0;
 
 
-						if (((minMagFlag == MINIFICATION) && (textureMinFilter == NMGL_NEAREST)) ||
-							((minMagFlag == MAGNIFICATION) && (textureMagFilter == NMGL_NEAREST)))
-						{
+				if (((minMagFlag == MINIFICATION) && (textureMinFilter == NMGL_NEAREST)) ||
+					((minMagFlag == MAGNIFICATION) && (textureMagFilter == NMGL_NEAREST)))
+				{
 
-							//Not mipmapping. So wrap texture coordinates for texture of level 0 
-							st.x = wrapCoord(textureWrapS, boundTexObject->texImages2D[0].width, st.x);
-							st.y = wrapCoord(textureWrapT, boundTexObject->texImages2D[0].height, st.y);
+					//Not mipmapping. So wrap texture coordinates for texture of level 0 
+					st.x = wrapCoord(textureWrapS, boundTexObject->texImages2D[0].width, st.x);
+					st.y = wrapCoord(textureWrapT, boundTexObject->texImages2D[0].height, st.y);
 
-							pixelValue = getPixelNearest(st, boundTexObject->texImages2D[0]);
-						}
-						else if (((minMagFlag == MINIFICATION) && (textureMinFilter == NMGL_LINEAR)) ||
-							((minMagFlag == MAGNIFICATION) && (textureMagFilter == NMGL_LINEAR)))
-						{
+					pixelValue = getPixelNearest(st, boundTexObject->texImages2D[0]);
+				}
+				else if (((minMagFlag == MINIFICATION) && (textureMinFilter == NMGL_LINEAR)) ||
+					((minMagFlag == MAGNIFICATION) && (textureMagFilter == NMGL_LINEAR)))
+				{
 
-							//Not mipmapping. So wrap texture coordinates for texture of level 0 
-							st.x = wrapCoord(textureWrapS, boundTexObject->texImages2D[0].width, st.x);
-							st.y = wrapCoord(textureWrapT, boundTexObject->texImages2D[0].height, st.y);
+					//Not mipmapping. So wrap texture coordinates for texture of level 0 
+					st.x = wrapCoord(textureWrapS, boundTexObject->texImages2D[0].width, st.x);
+					st.y = wrapCoord(textureWrapT, boundTexObject->texImages2D[0].height, st.y);
 
-							pixelValue = getPixelLinear(st, textureWrapS, textureWrapT, boundTexObject->texImages2D[0]);
-						}
-						else if ((minMagFlag == MINIFICATION) && ((textureMinFilter == NMGL_NEAREST_MIPMAP_NEAREST) || (textureMinFilter == NMGL_LINEAR_MIPMAP_NEAREST)))
-						{
-							d = 0;
-							if (lod < 0.5f || (equalf(lod,0.5f) == 1))
-								d = NMGL_TEX_BASE_LEVEL;
-							else if ((NMGL_TEX_BASE_LEVEL + lod) <= ((float)q + 0.5f))
-								d = ceil(NMGL_TEX_BASE_LEVEL + lod + 0.5f) - 1.0f;
-							else if ((NMGL_TEX_BASE_LEVEL + lod) > ((float)q + 0.5f))
-								d = q;
-							else
-							{
-								printf("mipmap:NMGL_NEAREST_MIPMAP_NEAREST: d is undefined\n");
-								getchar();
-							}
+					pixelValue = getPixelLinear(st, textureWrapS, textureWrapT, boundTexObject->texImages2D[0]);
+				}
+				else if ((minMagFlag == MINIFICATION) && ((textureMinFilter == NMGL_NEAREST_MIPMAP_NEAREST) || (textureMinFilter == NMGL_LINEAR_MIPMAP_NEAREST)))
+				{
+					d = 0;
+					if (lod < 0.5f || (equalf(lod,0.5f) == 1))
+						d = NMGL_TEX_BASE_LEVEL;
+					else if ((NMGL_TEX_BASE_LEVEL + lod) <= ((float)q + 0.5f))
+						d = ceil(NMGL_TEX_BASE_LEVEL + lod + 0.5f) - 1.0f;
+					else if ((NMGL_TEX_BASE_LEVEL + lod) > ((float)q + 0.5f))
+						d = q;
+					else
+					{
+						printf("mipmap:NMGL_NEAREST_MIPMAP_NEAREST: d is undefined\n");
+						getchar();
+					}
 
-							//Mipmapping. So wrap texture coordinates for texture of selected level d 
-							st.x = wrapCoord(textureWrapS,boundTexObject->texImages2D[d].width, st.x);
-							st.y = wrapCoord(textureWrapT,boundTexObject->texImages2D[d].height, st.y);
+					//Mipmapping. So wrap texture coordinates for texture of selected level d 
+					st.x = wrapCoord(textureWrapS,boundTexObject->texImages2D[d].width, st.x);
+					st.y = wrapCoord(textureWrapT,boundTexObject->texImages2D[d].height, st.y);
 
-							if (textureMinFilter == NMGL_NEAREST_MIPMAP_NEAREST)
-								pixelValue = getPixelNearest(st, boundTexObject->texImages2D[d]);
-							else if (textureMinFilter == NMGL_LINEAR_MIPMAP_NEAREST)
-								pixelValue = getPixelLinear(st, textureWrapS, textureWrapT, boundTexObject->texImages2D[d]);
-							else
-							{
-								printf("textureMinFilter has unsupported value for mipmapping\n");
-								getchar();
-							}
+					if (textureMinFilter == NMGL_NEAREST_MIPMAP_NEAREST)
+						pixelValue = getPixelNearest(st, boundTexObject->texImages2D[d]);
+					else if (textureMinFilter == NMGL_LINEAR_MIPMAP_NEAREST)
+						pixelValue = getPixelLinear(st, textureWrapS, textureWrapT, boundTexObject->texImages2D[d]);
+					else
+					{
+						printf("textureMinFilter has unsupported value for mipmapping\n");
+						getchar();
+					}
 
-						}
-						else if ((minMagFlag == MINIFICATION) && ((textureMinFilter == NMGL_NEAREST_MIPMAP_LINEAR) || (textureMinFilter == NMGL_LINEAR_MIPMAP_LINEAR)))
-						{
-							d1 = 0;
-							d2 = 0;
-							color t1;
-							color t2;
+				}
+				else if ((minMagFlag == MINIFICATION) && ((textureMinFilter == NMGL_NEAREST_MIPMAP_LINEAR) || (textureMinFilter == NMGL_LINEAR_MIPMAP_LINEAR)))
+				{
+					d1 = 0;
+					d2 = 0;
+					color t1;
+					color t2;
 
-							if (borderWidth + lod >= q)
-								d1 = q;
-							else
-								d1 = floor(borderWidth + lod);
+					if (borderWidth + lod >= q)
+						d1 = q;
+					else
+						d1 = floor(borderWidth + lod);
 
-							if (borderWidth + lod >= q)
-								d2 = q;
-							else
-								d2 = d1 + 1;
+					if (borderWidth + lod >= q)
+						d2 = q;
+					else
+						d2 = d1 + 1;
 
-							//Mipmapping. So wrap texture coordinates for texture of selected level d1 and d2
-							Vec2f st1;
-							Vec2f st2;
+					//Mipmapping. So wrap texture coordinates for texture of selected level d1 and d2
+					Vec2f st1;
+					Vec2f st2;
 
-							// st1 = st;
-							// st2 = st;
+					// st1 = st;
+					// st2 = st;
 
-							st1.x = wrapCoord(textureWrapS,boundTexObject->texImages2D[d1].width,st.x);
-							st1.y = wrapCoord(textureWrapT,boundTexObject->texImages2D[d1].height,st.y);
-							st2.x = wrapCoord(textureWrapS,boundTexObject->texImages2D[d2].width,st.x);
-							st2.y = wrapCoord(textureWrapT,boundTexObject->texImages2D[d2].height,st.y);
+					st1.x = wrapCoord(textureWrapS,boundTexObject->texImages2D[d1].width,st.x);
+					st1.y = wrapCoord(textureWrapT,boundTexObject->texImages2D[d1].height,st.y);
+					st2.x = wrapCoord(textureWrapS,boundTexObject->texImages2D[d2].width,st.x);
+					st2.y = wrapCoord(textureWrapT,boundTexObject->texImages2D[d2].height,st.y);
 
-							if (textureMinFilter == NMGL_NEAREST_MIPMAP_LINEAR)
-							{
-								t1 = getPixelNearest(st1, boundTexObject->texImages2D[d1]);
-								t2 = getPixelNearest(st2, boundTexObject->texImages2D[d2]);
-							}
-							else if (textureMinFilter == NMGL_LINEAR_MIPMAP_LINEAR)
-							{
-								t1 = getPixelLinear(st1, textureWrapS, textureWrapT, boundTexObject->texImages2D[d1]);
-								t2 = getPixelLinear(st2, textureWrapS, textureWrapT, boundTexObject->texImages2D[d2]);
-							}
-							else
-							{
-								printf("textureMinFilter has unsupported value for mipmapping\n");
-								getchar();
-							}
-							
-							double intpart = 0.0;
-							float frac_lod = modf(lod, &intpart);
+					if (textureMinFilter == NMGL_NEAREST_MIPMAP_LINEAR)
+					{
+						t1 = getPixelNearest(st1, boundTexObject->texImages2D[d1]);
+						t2 = getPixelNearest(st2, boundTexObject->texImages2D[d2]);
+					}
+					else if (textureMinFilter == NMGL_LINEAR_MIPMAP_LINEAR)
+					{
+						t1 = getPixelLinear(st1, textureWrapS, textureWrapT, boundTexObject->texImages2D[d1]);
+						t2 = getPixelLinear(st2, textureWrapS, textureWrapT, boundTexObject->texImages2D[d2]);
+					}
+					else
+					{
+						printf("textureMinFilter has unsupported value for mipmapping\n");
+						getchar();
+					}
+					
+					double intpart = 0.0;
+					float frac_lod = modf(lod, &intpart);
 
-							pixelValue.r = (1.0 - frac_lod)*t1.r + frac_lod*t2.r;
-							pixelValue.g = (1.0 - frac_lod)*t1.g + frac_lod*t2.g;
-							pixelValue.b = (1.0 - frac_lod)*t1.b + frac_lod*t2.b;
-							pixelValue.a = (1.0 - frac_lod)*t1.a + frac_lod*t2.a;
-						}
-						else
-						{
-							printf("Unsupported parameter combination. Exit.\n");
-							getchar();
-                            return;
-						}
-                        
-						//Apply texture finction
-						//RGB value
-						Vec3f cf; //primary color components of the incoming fragment (primary color of PRIMITIVE pixel OR fragment color from previous texture unit)
-								  //Not framebuffer color.Framebuffer color can be used at another stage called Blending (glBlendFunc...)
-						Vec3f cs; //texture source color (color from texture array, one tex unit - one texture)
-						Vec3f cc; //texture environment color (unique for each texture unit)
-						Vec3f cv; //primary color components computed by the texture function (to another OpenGL stages or to next texture unit)
+					pixelValue.r = (1.0 - frac_lod)*t1.r + frac_lod*t2.r;
+					pixelValue.g = (1.0 - frac_lod)*t1.g + frac_lod*t2.g;
+					pixelValue.b = (1.0 - frac_lod)*t1.b + frac_lod*t2.b;
+					pixelValue.a = (1.0 - frac_lod)*t1.a + frac_lod*t2.a;
+				}
+				else
+				{
+					printf("Unsupported parameter combination. Exit.\n");
+					getchar();
+					return;
+				}
+				
+				Vec3f cs; //texture source color (color from texture array, one tex unit - one texture)
+				float as;
+				
+				cs.x = (float)pixelValue.r/255.0;
+				cs.y = (float)pixelValue.g/255.0;
+				cs.z = (float)pixelValue.b/255.0;
+				as = (float)pixelValue.a/255.0;  
+				
+				veccsx[x] = cs.x;
+				veccsy[x] = cs.y;
+				veccsz[x] = cs.z;
+				veccsa[x] = as;
+			}
+						
+			for(int x = 0; x < primWidth; x++){
+						
+				//Apply texture finction
 
-						//Alpha value
-						float af; 
-						float as;
-						float ac; 
-						float av;
-                        
-						cf.x = (float)(colors.vec[0] & 0x00000000ffffffff)/255.0;//r;
-						cf.y = (float)((colors.vec[0] >> 32) & 0x00000000ffffffff)/255.0;//g;
-						cf.z = (float)(colors.vec[1] & 0x00000000ffffffff)/255.0;//b
+				Vec3f cs; //texture source color (color from texture array, one tex unit - one texture)
+				float as;
+				
+				cs.x = veccsx[x];
+				cs.y = veccsy[x];
+				cs.z = veccsz[x];
+				as = veccsa[x];  
 
-						cs.x = (float)pixelValue.r/255.0;
-						cs.y = (float)pixelValue.g/255.0;
-						cs.z = (float)pixelValue.b/255.0;
+				Vec3f cf; //primary color components of the incoming fragment (primary color of PRIMITIVE pixel OR fragment color from previous texture unit)
+						  //Not framebuffer color.Framebuffer color can be used at another stage called Blending (glBlendFunc...)
+				float af; 
+				cf.x = (float)(colors.vec[0] & 0x00000000ffffffff)/255.0;//r;
+				cf.y = (float)((colors.vec[0] >> 32) & 0x00000000ffffffff)/255.0;//g;
+				cf.z = (float)(colors.vec[1] & 0x00000000ffffffff)/255.0;//b
+				af = (float)((colors.vec[1] >> 32) & 0x00000000ffffffff)/255.0;//a;
 
-						cc.x = texEnvColor.x;
-						cc.y = texEnvColor.y;
-						cc.z = texEnvColor.z;
+				Vec3f cc; //texture environment color (unique for each texture unit)
+				float ac; 
+				cc.x = texEnvColor.x;
+				cc.y = texEnvColor.y;
+				cc.z = texEnvColor.z;
+				ac = texEnvColorAlpha;
 
-						cv.x = 0.0;
-						cv.y = 0.0;
-						cv.z = 0.0;
+				Vec3f cv; //primary color components computed by the texture function (to another OpenGL stages or to next texture unit)
+				float av;
+				cv.x = 0.0;
+				cv.y = 0.0;
+				cv.z = 0.0;
+				av = 0.0;
 
-						af = (float)((colors.vec[1] >> 32) & 0x00000000ffffffff)/255.0;//a;
-						as = (float)pixelValue.a/255.0;  
-						ac = texEnvColorAlpha;
-						av = 0.0;
-
-						switch (texBaseInternalFormat)
-						{
-						case NMGL_RGB:
-							switch (texEnvMode)
-							{
-								case NMGL_REPLACE:
-									cv.x = cs.x;
-									cv.y = cs.y;
-									cv.z = cs.z;
-									av = af;
-									break;
-
-								case NMGL_MODULATE:
-									cv.x = cf.x * cs.x;
-									cv.y = cf.y * cs.y;
-									cv.z = cf.z * cs.z;
-									av = af;
-									break;
-
-								case NMGL_DECAL:
-									cv.x = cs.x;
-									cv.y = cs.y;
-									cv.z = cs.z;
-									av = af;
-									break;
-
-								case NMGL_BLEND:
-									cv.x = cf.x * (1.0 - cs.x) + cc.x * cs.x;
-									cv.y = cf.y * (1.0 - cs.y) + cc.y * cs.y;
-									cv.z = cf.z * (1.0 - cs.z) + cc.z * cs.z;
-									av = af;
-									break;
-
-								case NMGL_ADD:
-									cv.x = cf.x + cs.x;
-									cv.y = cf.y + cs.y;
-									cv.z = cf.z + cs.z;
-									av = af;
-									break;
-							}
-							break;
-						case NMGL_RGBA:
-							switch (texEnvMode)
-							{
-								case NMGL_REPLACE:
-									cv.x = cs.x;
-									cv.y = cs.y;
-									cv.z = cs.z;
-									av = as;
-									break;
-
-								case NMGL_MODULATE:
-									cv.x = cf.x * cs.x;
-									cv.y = cf.y * cs.y;
-									cv.z = cf.z * cs.z;
-									av = af * as;
-									break;
-
-								case NMGL_DECAL:
-								  	cv.x = cf.x * (1.0 - as) + cs.x * as;
-									cv.y = cf.y * (1.0 - as) + cs.y * as;
-									cv.z = cf.z * (1.0 - as) + cs.z * as;
-									av = af;
-									break;
-
-								case NMGL_BLEND:
-									cv.x = cf.x * (1.0 - cs.x) + cc.x * cs.x;
-									cv.y = cf.y * (1.0 - cs.y) + cc.y * cs.y;
-									cv.z = cf.z * (1.0 - cs.z) + cc.z * cs.z;
-									av = af * as;
-									break;
-
-								case NMGL_ADD:
-									cv.x = cf.x + cs.x;
-									cv.y = cf.y + cs.y;
-									cv.z = cf.z + cs.z;
-									av = af * as;
-									break;
-							}
+				switch (texBaseInternalFormat)
+				{
+				case NMGL_RGB:
+					switch (texEnvMode)
+					{
+						case NMGL_REPLACE:
+							cv.x = cs.x;
+							cv.y = cs.y;
+							cv.z = cs.z;
+							av = af;
 							break;
 
-						case NMGL_ALPHA:
-							switch (texEnvMode)
-							{
-								case NMGL_REPLACE:
-									cv.x = cf.x;
-									cv.y = cf.y;
-									cv.z = cf.z;
-									av = as;
-									break;
-
-								case NMGL_MODULATE:
-									cv.x = cf.x;
-									cv.y = cf.y;
-									cv.z = cf.z;
-									av = af * as;
-									break;
-
-								case NMGL_DECAL://undefined
-								  	cv.x = 1.0;
-									cv.y = 1.0;
-									cv.z = 1.0;
-									av = 1.0;
-									break;
-
-								case NMGL_BLEND:
-									cv.x = cf.x;
-									cv.y = cf.y;
-									cv.z = cf.z;
-									av = af * as;
-									break;
-
-								case NMGL_ADD:
-	 							    	cv.x = cf.x;
-									cv.y = cf.y;
-									cv.z = cf.z;
-									av = af * as;
-									break;
-							}
+						case NMGL_MODULATE:
+							cv.x = cf.x * cs.x;
+							cv.y = cf.y * cs.y;
+							cv.z = cf.z * cs.z;
+							av = af;
 							break;
-						case NMGL_LUMINANCE:
-							switch (texEnvMode)
-							{
-								case NMGL_REPLACE:
-									cv.x = cs.x;
-									cv.y = cs.y;
-									cv.z = cs.z;
-									av = af;
-									break;
 
-								case NMGL_MODULATE:
-									cv.x = cf.x * cs.x;
-									cv.y = cf.y * cs.y;
-									cv.z = cf.z * cs.z;
-									av = af;
-									break;
-
-								case NMGL_DECAL://undefined
-									cv.x = 1.0;
-									cv.y = 1.0;
-									cv.z = 1.0;
-									av = 1.0;
-									break;
-
-								case NMGL_BLEND:
-									cv.x = cf.x * (1.0 - cs.x) + cc.x * cs.x;
-									cv.y = cf.y * (1.0 - cs.y) + cc.y * cs.y;
-									cv.z = cf.z * (1.0 - cs.z) + cc.z * cs.z;
-									av = af;
-									break;
-
-								case NMGL_ADD:
-									cv.x = cf.x + cs.x;
-									cv.y = cf.y + cs.y;
-									cv.z = cf.z + cs.z;
-									av = af;
-									break;
-							}
+						case NMGL_DECAL:
+							cv.x = cs.x;
+							cv.y = cs.y;
+							cv.z = cs.z;
+							av = af;
 							break;
-						case NMGL_LUMINANCE_ALPHA:
-							switch (texEnvMode)
-							{
-								case NMGL_REPLACE:
-									cv.x = cs.x;
-									cv.y = cs.y;
-									cv.z = cs.z;
-									av = as;
-									break;
 
-								case NMGL_MODULATE:
-									cv.x = cf.x * cs.x;
-									cv.y = cf.y * cs.y;
-									cv.z = cf.z * cs.z;
-									av = af * as;
-									break;
-
-								case NMGL_DECAL://undefined
-									cv.x = 1.0;
-									cv.y = 1.0;
-									cv.z = 1.0;
-									av = 1.0;
-									break;
-
-								case NMGL_BLEND:
-									cv.x = cf.x * (1.0 - cs.x) + cc.x * cs.x;
-									cv.y = cf.y * (1.0 - cs.y) + cc.y * cs.y;
-									cv.z = cf.z * (1.0 - cs.z) + cc.z * cs.z;
-									av = af * as;
-									break;
-
-								case NMGL_ADD:
-									cv.x = cf.x + cs.x;
-									cv.y = cf.y + cs.y;
-									cv.z = cf.z + cs.z;
-									av = af * as;
-									break;
-							}
+						case NMGL_BLEND:
+							cv.x = cf.x * (1.0 - cs.x) + cc.x * cs.x;
+							cv.y = cf.y * (1.0 - cs.y) + cc.y * cs.y;
+							cv.z = cf.z * (1.0 - cs.z) + cc.z * cs.z;
+							av = af;
 							break;
-					        default:
-							printf ("Unsupported internal format\n");
+
+						case NMGL_ADD:
+							cv.x = cf.x + cs.x;
+							cv.y = cf.y + cs.y;
+							cv.z = cf.z + cs.z;
+							av = af;
 							break;
-						}
-						  
-                    nm32s color = 0;
-					//(nm32s)pDst[0] = 0xARGB
-					color = color | (((nm32s)(av * 255) & 0xff) << 24);//a
-					color = color | (((nm32s)(cv.x * 255) & 0xff) << 16); //r
-                    color = color | (((nm32s)(cv.y * 255) & 0xff) << 8);//g
-                    color = color | (((nm32s)(cv.z * 255) & 0xff));//b
-                    pDst[0] = color;
-                }
+					}
+					break;
+				case NMGL_RGBA:
+					switch (texEnvMode)
+					{
+						case NMGL_REPLACE:
+							cv.x = cs.x;
+							cv.y = cs.y;
+							cv.z = cs.z;
+							av = as;
+							break;
+
+						case NMGL_MODULATE:
+							cv.x = cf.x * cs.x;
+							cv.y = cf.y * cs.y;
+							cv.z = cf.z * cs.z;
+							av = af * as;
+							break;
+
+						case NMGL_DECAL:
+							cv.x = cf.x * (1.0 - as) + cs.x * as;
+							cv.y = cf.y * (1.0 - as) + cs.y * as;
+							cv.z = cf.z * (1.0 - as) + cs.z * as;
+							av = af;
+							break;
+
+						case NMGL_BLEND:
+							cv.x = cf.x * (1.0 - cs.x) + cc.x * cs.x;
+							cv.y = cf.y * (1.0 - cs.y) + cc.y * cs.y;
+							cv.z = cf.z * (1.0 - cs.z) + cc.z * cs.z;
+							av = af * as;
+							break;
+
+						case NMGL_ADD:
+							cv.x = cf.x + cs.x;
+							cv.y = cf.y + cs.y;
+							cv.z = cf.z + cs.z;
+							av = af * as;
+							break;
+					}
+					break;
+
+				case NMGL_ALPHA:
+					switch (texEnvMode)
+					{
+						case NMGL_REPLACE:
+							cv.x = cf.x;
+							cv.y = cf.y;
+							cv.z = cf.z;
+							av = as;
+							break;
+
+						case NMGL_MODULATE:
+							cv.x = cf.x;
+							cv.y = cf.y;
+							cv.z = cf.z;
+							av = af * as;
+							break;
+
+						case NMGL_DECAL://undefined
+							cv.x = 1.0;
+							cv.y = 1.0;
+							cv.z = 1.0;
+							av = 1.0;
+							break;
+
+						case NMGL_BLEND:
+							cv.x = cf.x;
+							cv.y = cf.y;
+							cv.z = cf.z;
+							av = af * as;
+							break;
+
+						case NMGL_ADD:
+								cv.x = cf.x;
+							cv.y = cf.y;
+							cv.z = cf.z;
+							av = af * as;
+							break;
+					}
+					break;
+				case NMGL_LUMINANCE:
+					switch (texEnvMode)
+					{
+						case NMGL_REPLACE:
+							cv.x = cs.x;
+							cv.y = cs.y;
+							cv.z = cs.z;
+							av = af;
+							break;
+
+						case NMGL_MODULATE:
+							cv.x = cf.x * cs.x;
+							cv.y = cf.y * cs.y;
+							cv.z = cf.z * cs.z;
+							av = af;
+							break;
+
+						case NMGL_DECAL://undefined
+							cv.x = 1.0;
+							cv.y = 1.0;
+							cv.z = 1.0;
+							av = 1.0;
+							break;
+
+						case NMGL_BLEND:
+							cv.x = cf.x * (1.0 - cs.x) + cc.x * cs.x;
+							cv.y = cf.y * (1.0 - cs.y) + cc.y * cs.y;
+							cv.z = cf.z * (1.0 - cs.z) + cc.z * cs.z;
+							av = af;
+							break;
+
+						case NMGL_ADD:
+							cv.x = cf.x + cs.x;
+							cv.y = cf.y + cs.y;
+							cv.z = cf.z + cs.z;
+							av = af;
+							break;
+					}
+					break;
+				case NMGL_LUMINANCE_ALPHA:
+					switch (texEnvMode)
+					{
+						case NMGL_REPLACE:
+							cv.x = cs.x;
+							cv.y = cs.y;
+							cv.z = cs.z;
+							av = as;
+							break;
+
+						case NMGL_MODULATE:
+							cv.x = cf.x * cs.x;
+							cv.y = cf.y * cs.y;
+							cv.z = cf.z * cs.z;
+							av = af * as;
+							break;
+
+						case NMGL_DECAL://undefined
+							cv.x = 1.0;
+							cv.y = 1.0;
+							cv.z = 1.0;
+							av = 1.0;
+							break;
+
+						case NMGL_BLEND:
+							cv.x = cf.x * (1.0 - cs.x) + cc.x * cs.x;
+							cv.y = cf.y * (1.0 - cs.y) + cc.y * cs.y;
+							cv.z = cf.z * (1.0 - cs.z) + cc.z * cs.z;
+							av = af * as;
+							break;
+
+						case NMGL_ADD:
+							cv.x = cf.x + cs.x;
+							cv.y = cf.y + cs.y;
+							cv.z = cf.z + cs.z;
+							av = af * as;
+							break;
+					}
+					break;
+					default:
+					printf ("Unsupported internal format\n");
+					break;
+				}
+					  
+				nm32s color = 0;
+				//(nm32s)pDst[0] = 0xARGB
+				color = color | (((nm32s)(av * 255) & 0xff) << 24);//a
+				color = color | (((nm32s)(cv.x * 255) & 0xff) << 16); //r
+				color = color | (((nm32s)(cv.y * 255) & 0xff) << 8);//g
+				color = color | (((nm32s)(cv.z * 255) & 0xff));//b
+				pDst[0] = color;
                 pDst += 1;
             }
             nmppsAddC_32f(vecyf, vecyf, 1.0, primWidth);
