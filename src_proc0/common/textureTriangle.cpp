@@ -48,6 +48,23 @@ int textureBaseLevel = 0;
 int textureMaxLevel = 1000;
 color borderColor;
 
+SECTION(".data_imu0") float initVecx[32] = {0.5,   1.5,  2.5,  3.5,  4.5,  5.5,  6.5,  7.5,  8.5,  9.5, 
+										10.5, 11.5, 12.5, 13.5, 14.5, 15.5, 16.5, 17.5, 18.5, 19.5,
+										20.5, 21.5, 22.5, 23.5, 24.5, 25.5, 26.5, 27.5, 28.5, 29.5,
+										30.5, 31.5};
+SECTION(".data_imu0") float initVecy[32] = {0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 
+										0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 
+										0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 
+										0.5, 0.5};
+SECTION(".data_imu0") float vecx[32];
+SECTION(".data_imu0") float vecy[32];
+SECTION(".data_imu0") float vecs[32];
+SECTION(".data_imu0") float vect[32];
+SECTION(".data_imu0") float buf0[32];
+SECTION(".data_imu0") float buf1[32];
+SECTION(".data_imu0") float buf2[32];
+SECTION(".data_imu0") float buf3[32];
+
 SECTION(TEXTURE_TRIANGLE_SECTION)
 int max (int a, int b)
 {
@@ -531,6 +548,11 @@ void textureTriangle(TrianglesInfo* triangles, nm32s* pDstTriangle, int count)
         int pixelCnt = 0;
 #endif //USE_BARYCENTRIC
         
+		nmblas_scopy(primWidth, initVecx, 1, vecx, 1);
+		nmblas_scopy(primWidth, initVecy, 1, vecy, 1);
+		nmppsAddC_32f(vecx, vecx, winX0, primWidth);
+		nmppsAddC_32f(vecy, vecy, winY0, primWidth);
+		
         for(int y = 0; y < primHeight; y++){
 
             nm32s* pDst = (nm32s*)(dstTriagle + y * WIDTH_PTRN);
@@ -541,8 +563,8 @@ void textureTriangle(TrianglesInfo* triangles, nm32s* pDstTriangle, int count)
                 {
                     //Calculate x and y of current pixel as float values
                     //relative to triangle vertex coordinates inside segment
-                    float xf = winX0 + x + 0.5f; 
-                    float yf = winY0 + y + 0.5f;//TODO: Барицентрические координаты не соответствуют растеризованной картинке,
+                    float xf = vecx[x]; 
+                    float yf = vecy[x];//TODO: Барицентрические координаты не соответствуют растеризованной картинке,
                                                //то есть растеризованные по шаблону пиксели не должны быть растеризованы, 
 											   //если использовать барицентрические координаты.
                                                //Но так как они растеризованы, то для них вычисляются неверные барицентрические
@@ -1035,6 +1057,7 @@ void textureTriangle(TrianglesInfo* triangles, nm32s* pDstTriangle, int count)
                 }
                 pDst += 1;
             }
+            nmppsAddC_32f(vecy, vecy, 1.0, primWidth);
         }
     }
 #ifdef DEBUG
