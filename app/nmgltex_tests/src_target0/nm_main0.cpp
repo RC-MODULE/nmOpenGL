@@ -12,12 +12,10 @@ unsigned int nmpu1IsAccessible;
 #define tstdtl 5
 #define ENABLE_STATISTICS
 #ifdef ENABLE_STATISTICS
-	SECTION(".data_imu0") float imu0data[tstdtl];
-	SECTION(".data_shmem0") float shmemdata[tstdtl];
-	SECTION(".data_DDR") float ddrdata[tstdtl];
-	SECTION(".data_imu0") int imu0datai[tstdtl];
-	SECTION(".data_shmem0") int shmemdatai[tstdtl];
-	SECTION(".data_DDR") int ddrdatai[tstdtl];
+	
+	SECTION(".data_imu0") volatile int imu0datai[tstdtl];
+	SECTION(".data_shmem0") volatile  int shmemdatai[tstdtl];
+	SECTION(".data_DDR") volatile  int ddrdatai[tstdtl];
 #endif
 float triangles[24]{
 	0,0,
@@ -52,18 +50,22 @@ void make_mem_statistics()
 	float ave_shmem_time=0.0;
 	int i=0;
 	float frz=0.0;
-	int irz=0;
+	volatile int irz=0;
 	long sum=0;
-	clock_t clks=0;
+	volatile clock_t clks=0;
+	volatile clock_t clks1=0;
+	volatile int diff=0;
+
 	
 	for (i=1;i<=tstdtl;i++)
 	{
-		clks=clock();		
+		clks=clock();				
 		irz=imu0datai[i-1];
-		clks=clock()-clks;
-		printf("clks diff=%d\n",clks);
-		sum+=clks;
-		ave_imu_time=sum/i;
+		clks1=clock();
+		diff=clks1-clks;
+		printf("clks=%d clks1=%d\tdiff=%d\n",(int)clks,(int)clks1,(int)diff);
+		sum+=diff;
+		ave_imu_time=sum/(float)i;
 		printf("ave_imu_time=%f\n",ave_imu_time);
 	}
 	sum=0;
@@ -73,10 +75,12 @@ void make_mem_statistics()
 	{
 		clks=clock();		
 		irz=shmemdatai[i-1];
-		clks=clock()-clks;
-		printf("clks diff=%d\n",clks);
-		sum+=clks;
-		ave_shmem_time=sum/i;
+		clks1=clock();
+		diff=clks1-clks;
+		printf("clks=%d clks1=%d\tdiff=%d\n",(int)clks,(int)clks1,(int)diff);
+	
+		sum+=diff;
+		ave_shmem_time=sum/(float)i;
 		printf("ave_shmem_time=%f\n",ave_shmem_time);
 	}
 	sum=0;
@@ -86,51 +90,15 @@ void make_mem_statistics()
 	{
 		clks=clock();		
 		irz=ddrdatai[i-1];
-		clks=clock()-clks;
-		printf("clks diff=%d\n",clks);
-		sum+=clks;
-		ave_ddr_time=sum/i;
+		clks1=clock();
+		diff=clks1-clks;
+		printf("clks=%d clks1=%d\tdiff=%d\n",(int)clks,(int)clks1,(int)diff);
+		
+		sum+=diff;
+		ave_ddr_time=sum/(float)i;
 		printf("ave_ddr_time=%f\n",ave_ddr_time);
 	}
-	sum=0;
-	ave_ddr_time=0;
-printf("\n imu0 float\n");
-	for (i=1;i<=tstdtl;i++)
-	{
-		clks=clock();		
-		frz=imu0data[i-1];
-		clks=clock()-clks;
-		printf("clks diff=%d\n",clks);
-		sum+=clks;
-		ave_imu_time=sum/i;
-		printf("ave_imu_time=%f\n",ave_imu_time);
-	}
-	sum=0;
-	ave_imu_time=0;
-	printf("\n shmem float\n");
-	for (i=1;i<=tstdtl;i++)
-	{
-		clks=clock();		
-		frz=shmemdata[i-1];
-		clks=clock()-clks;
-		printf("clks diff=%d\n",clks);
-		sum+=clks;
-		ave_shmem_time=sum/i;
-		printf("ave_shmem_time=%f\n",ave_shmem_time);
-	}
-	sum=0;
-	ave_shmem_time=0;
-	printf("\n DDR float\n");
-	for (i=1;i<=tstdtl;i++)
-	{
-		clks=clock();		
-		frz=ddrdata[i-1];
-		clks=clock()-clks;
-		printf("clks diff=%d\n",clks);
-		sum+=clks;
-		ave_ddr_time=sum/i;
-		printf("ave_ddr_time=%f\n",ave_ddr_time);
-	}
+
 }
 //#endif
 int main()
