@@ -7,7 +7,8 @@
 #include "nmgltex_nm0.h"
 #include "imagebuffer.h"
 
-#define BIG_NMGL_SIZE (128 * NMGL_SIZE)
+//#define BIG_NMGL_SIZE (128 * NMGL_SIZE)
+#define BIG_NMGL_SIZE (3 * NMGL_SIZE)
 
 class BitMask {
 public:
@@ -62,6 +63,28 @@ public:
 			even.put(index / 2, value);
 		}
 	}
+};
+
+struct CombinePointers {
+	float *x;
+	float *y;
+	float *z;
+	float *w;
+	float *s;
+	float *t;
+	v4nm32f* color;
+	int dummy;
+};
+
+struct TrianglePointers {
+	CombinePointers v0;
+	CombinePointers v1;
+	CombinePointers v2;
+};
+
+struct LinePointers {
+	CombinePointers v0;
+	CombinePointers v1;
 };
 
 
@@ -315,13 +338,16 @@ public:
 				if (i == j) {
 					modelviewMatrix[0].matr[i * 4 + j] = 1;
 					projectionMatrix[0].matr[i * 4 + j] = 1;
+					normalMatrix.matr[i * 4 + j] = 1;
 				}
 				else {
 					modelviewMatrix[0].matr[i * 4 + j] = 0;
 					projectionMatrix[0].matr[i * 4 + j] = 0;
+					normalMatrix.matr[i * 4 + j] = 0;
 				}
 			}
 		}
+		normalMatrix.matr[15] = 0;
 
 		windowInfo.segmentWidth = WIDTH_SEG;
 		windowInfo.segmentHeight = HEIGHT_SEG;
@@ -458,7 +484,7 @@ extern "C"{
 	 *  \endxmlonly
 	 */
 	 //! \{
-	void cnv32f_v2v4(const v2nm32f* srcVec, int stride, float value3, float value4, v4nm32f* dstVec, int size);
+	void cnv32f_v2v4(const v2nm32f* srcVec, v4nm32f* dstVec, float value3, float value4, int size);
 	 //! \}
 	 
 	 /**
@@ -889,6 +915,7 @@ extern "C"{
 	
 	
 	int readMask(nm1* mask, int* dstIndices, int size);
+	int readDividedMask(nm1* maskEven, nm1* maskOdd, int* dstIndices, int size);
 	int readMaskToLimitDst(nm1* mask, int* dstIndices, int* treated, int size, int maxSize);
 	void remap_32u(nm32u* pSrcVec, nm32u* pDstVec, nm32s* pRemapTable, int size);
 
@@ -1056,14 +1083,49 @@ extern "C"{
 	void ternaryLt0_AddC_AddC_32f(nm32f* srcFlags, nm32f* srcVec, float valueLeft, float valueRight, float* dstVec, int size);
 	void tripleMulC_32f(float* src1, float* src2, float* src3, float C, float* dst1, float* dst2, float* dst3, int size);
 
+	int repackToPrimitives_t(const v4nm32f *srcVertex,
+		const v4nm32f *srcColor,
+		const v2nm32f *srcTex,
+		TrianglePointers *dstVertex,
+		int vertexAmount);
+	int repackToPrimitives_ts(const v4nm32f *srcVertex,
+		const v4nm32f *srcColor,
+		const v2nm32f *srcTex,
+		TrianglePointers *dstVertex,
+		int vertexAmount);
+	int repackToPrimitives_tf(const v4nm32f *srcVertex,
+		const v4nm32f *srcColor,
+		const v2nm32f *srcTex,
+		TrianglePointers *dstVertex,
+		int vertexAmount);
+	int repackToPrimitives_l(const v4nm32f *srcVertex,
+		const v4nm32f *srcColor,
+		const v2nm32f *srcTex,
+		LinePointers *dstVertex,
+		int vertexAmount);
+	int repackToPrimitives_ls(const v4nm32f *srcVertex,
+		const v4nm32f *srcColor,
+		const v2nm32f *srcTex,
+		LinePointers *dstVertex,
+		int vertexAmount);
+	int repackToPrimitives_ll(const v4nm32f *srcVertex,
+		const v4nm32f *srcColor,
+		const v2nm32f *srcTex,
+		LinePointers *dstVertex,
+		int vertexAmount);
 
 }
 
-int getVertexPart(Array* array, v4nm32f* dst, float* tmpBuffer, int count);
-int getNormalPart(Array* array, v4nm32f* dst, float* tmpBuffer, int count);
-int getColorPart(Array* array, v4nm32f* dst, float* tmpBuffer, int count);
+int splitTriangles(TrianglePointers *srcVertex, int srcCount, int maxWidth, int maxHeight, int maxDstSize, TrianglePointers *dstVertex, int *srcTreatedCount);
+
+
+
+//int getVertexPart(Array* array, v4nm32f* dst, float* tmpBuffer, int count);
+//int getNormalPart(Array* array, v4nm32f* dst, float* tmpBuffer, int count);
+//int getColorPart(Array* array, v4nm32f* dst, float* tmpBuffer, int count);
 
 void pushToLines_l(const float *vertexX, const float *vertexY, const float *vertexZ, const v4nm32f* color, Lines& lines, int countVertex);
+void pushToLines(const float *vertexX, const float *vertexY, const float *vertexZ, const v4nm32f* color, Lines& lines, int mode, int countVertex);
 
 void pushToTriangles_t(const float *vertexX, const float *vertexY, const float *vertexZ, const v4nm32f* color, Triangles& triangles, int countVertex);
 void reverseMatrix3x3in4x4(mat4nm32f* src, mat4nm32f* dst);

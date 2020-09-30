@@ -10,14 +10,9 @@ int totalSum(nm32s* pVec, int size);
 
 SECTION(".text_demo3d") void drawTriangles() {
 	NMGL_Context_NM1 *context = NMGL_Context_NM1::getContext();
-
 	Polygons* poly = context->polygonsConnectors[0].ptrTail();
 
-	//nmprofiler_enable();
-	//PROFILER_SIZE(poly->count);
 	getAddrPtrnsT(context->polygonsConnectors->ptrTail());
-	//nmprofiler_disable();
-	//readPolygonsT(context->polygonsConnectors->ptrTail());
 
 	COMMON_DRAW_TYPE* mulZ = (COMMON_DRAW_TYPE*)context->buffer0;
 	COMMON_DRAW_TYPE* mulC = (COMMON_DRAW_TYPE*)context->buffer0;
@@ -28,6 +23,7 @@ SECTION(".text_demo3d") void drawTriangles() {
 	int point = 0;
 
 	msdWaitDma(1);
+	//return;
 	
 	context->polygonsConnectors[0].incTail();
 	while (countTrangles > 0) {

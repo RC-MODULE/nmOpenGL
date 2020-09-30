@@ -118,10 +118,10 @@ $(TMP_DIR)/%.o: %.asm $(ALL_H)
 	$(AS) $(AS_FLAGS) $(<) -o$(@)  $(INC_DIRS)
 	
 $(TMP_DIR)/%.o: %.cpp $(ALL_H)
-	$(CC) $(CC_FLAGS) -c $(<) -o$(@) $(INC_DIRS) -O2 -fno-builtin-printf
+	$(CC) $(CC_FLAGS) -c $(<) -o$(@) $(INC_DIRS) -O2 -fno-builtin-printf -mnmc4-float
 
 $(TMP_DIR)/%.o: %.c $(ALL_H)
-	$(CC) $(CC_FLAGS) -c $(<) -o$(@) $(INC_DIRS) -O2 -fno-builtin-printf
+	$(CC) $(CC_FLAGS) -c $(<) -o$(@) $(INC_DIRS) -O2 -fno-builtin-printf -mnmc4-float
 	
 proflist:
 	lua53 $(HAL)/script/profiler-gcc.lua .main0.map > proflist_generated0.asm 

@@ -43,7 +43,7 @@ struct CommandNm1{
 	int params[7];
 };
 
-#define PRIORITY_SIZE 512
+#define PRIORITY_SIZE 256
 //#define PRIORITY_SIZE 1
 
 typedef HalRingBufferData<CommandNm1, PRIORITY_SIZE> NMGLSynchroData;
@@ -69,9 +69,6 @@ public:
 		int param3 = 0, 
 		int param4 = 0, 
 		int param5 = 0) {
-#ifdef DEBUG
-		//printf("push: instr=0x%x, head-tail=%d, max=%d\n", instr, connector.getHead() - connector.getTail(), PRIORITY_SIZE);
-#endif // DEBUG
 		while (connector.isFull());
 		CommandNm1* command = connector.ptrHead();
 		command->instr_nmc1 = instr;
@@ -82,12 +79,7 @@ public:
 		command->params[4] = param4;
 		command->params[5] = param5;
 		(*connector.pHead)++;
-		//halLed(instr >> 16);
 		//halLed((connector.getHead() & 0xF) | (connector.getTail() << 4));
-		
-#ifdef DEBUG
-		//printf("push end: instr=0x%x, head-tail=%d, max=%d\n", instr, connector.getHead() - connector.getTail(), PRIORITY_SIZE);
-#endif // DEBUG
 	}
 
 	inline bool isEmpty() {
@@ -95,14 +87,8 @@ public:
 	}
 
 	inline void popInstr(CommandNm1 *command) {
-#ifdef DEBUG
-		//printf("pop: head-tail=%d, max=%d\n", connector.getHead() - connector.getTail(), PRIORITY_SIZE);
-#endif // DEBUG
 		connector.pop(command, 1);
 		//halLed((connector.getHead() & 0xF) | (connector.getTail() << 4));
-#ifdef DEBUG
-		//printf("pop: instr=0x%x end\n", command->instr_nmc1);
-#endif // DEBUG
 	}
 };
 
