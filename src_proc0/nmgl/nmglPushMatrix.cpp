@@ -11,6 +11,9 @@ void nmglPushMatrix() {
 		nmblas_scopy(16, (float*)&cntxt->currentMatrixStack->base[cntxt->currentMatrixStack->size], 1,
 			(float*)&cntxt->currentMatrixStack->base[cntxt->currentMatrixStack->size + 1], 1);
 		cntxt->currentMatrixStack->current++;
+		if (cntxt->currentMatrixStack->type == NMGL_MODELVIEW_MATRIX) {
+			reverseMatrix3x3in4x4(cntxt->modelviewMatrixStack.top(), &cntxt->normalMatrix);
+		}
 	}
 	else{
 		cntxt->error = NMGL_STACK_OVERFLOW;

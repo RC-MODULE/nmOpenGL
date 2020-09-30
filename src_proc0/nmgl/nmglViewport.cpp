@@ -40,4 +40,13 @@ void nmglViewport(NMGLint x, NMGLint y, NMGLsizei width, NMGLsizei height) {
 	nmppsConvert_32s32f(cntxt->windowInfo.x1, cntxt->windowInfo.x1_f, cntxt->windowInfo.nColumns);
 	nmppsConvert_32s32f(cntxt->windowInfo.y0, cntxt->windowInfo.y0_f, cntxt->windowInfo.nRows);
 	nmppsConvert_32s32f(cntxt->windowInfo.y1, cntxt->windowInfo.y1_f, cntxt->windowInfo.nRows);
+
+	for (int segY = 0, iSeg = 0; segY < cntxt->windowInfo.nRows; segY++) {
+		for (int segX = 0; segX < cntxt->windowInfo.nColumns; segX++, iSeg++) {
+			cntxt->windowInfo.lowerLeft[iSeg].v0 = cntxt->windowInfo.x0_f[segX];
+			cntxt->windowInfo.lowerLeft[iSeg].v1 = cntxt->windowInfo.y0_f[segY];
+			cntxt->windowInfo.upperRight[iSeg].v0 = cntxt->windowInfo.x1_f[segX];
+			cntxt->windowInfo.upperRight[iSeg].v1 = cntxt->windowInfo.y1_f[segY];
+		}
+	}
 }

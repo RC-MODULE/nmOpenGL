@@ -11,5 +11,9 @@ void nmglPopMatrix() {
 		return;
 	}
 	cntxt->currentMatrixStack->current--;
+
+	if (cntxt->currentMatrixStack->type == NMGL_MODELVIEW_MATRIX) {
+		reverseMatrix3x3in4x4(cntxt->modelviewMatrixStack.top(), &cntxt->normalMatrix);
+	}
 	return;
 }

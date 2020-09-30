@@ -1,7 +1,5 @@
 	
 //void readMask(nm1* srcVec, int* dstIndices, int size){
-#include "imagebuffer.h";
-//import PILMO from imagebuffer;
 
 begin ".text_demo3d"
 global _readMask: label;

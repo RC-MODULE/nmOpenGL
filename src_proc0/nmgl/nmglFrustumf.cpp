@@ -18,4 +18,8 @@ void nmglFrustumf (NMGLfloat left, NMGLfloat right, NMGLfloat bottom, NMGLfloat 
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
 	mat4nm32f* current = cntxt->currentMatrixStack->top();
 	mul_mat4nm32f_v4nm32f(current, (v4nm32f*)&temp, (v4nm32f*)current, 4);
+
+	if (cntxt->currentMatrixStack->type == NMGL_MODELVIEW_MATRIX) {
+		reverseMatrix3x3in4x4(cntxt->modelviewMatrixStack.top(), &cntxt->normalMatrix);
+	}
 }

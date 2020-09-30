@@ -10,4 +10,8 @@ void nmglLoadMatrixf(const NMGLfloat *m){
 	for(int i=0;i< 16; i++){
 		cntxt->currentMatrixStack->top()->matr[i] = m[i];
 	}
+
+	if (cntxt->currentMatrixStack->type == NMGL_MODELVIEW_MATRIX) {
+		reverseMatrix3x3in4x4(cntxt->modelviewMatrixStack.top(), &cntxt->normalMatrix);
+	}
 }

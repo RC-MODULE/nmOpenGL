@@ -98,7 +98,7 @@ SECTION(".text_demo3d") int getAddrPtrnsT(DataForNmpu1* data) {
 	if (offset0 > SIZE_BUFFER_NM1 || offset1 > SIZE_BUFFER_NM1 || offset2 > SIZE_BUFFER_NM1) {
 		printf("error!! \n");
 		printf("readPolygonsT - over size of bank\n");
-		halLedSOS(1, 5);
+		data->count = 0;
 		return 0;
 	}
 #endif // DEBUG	
@@ -144,6 +144,7 @@ SECTION(".text_demo3d") int getAddrPtrnsT(DataForNmpu1* data) {
 	nmppsMulC_32s(dy12, WIDTH_PTRN / 16, sizePackTmp12, size);
 	nmppsMulC_32s(dy01, WIDTH_PTRN / 16, sizePackTmp01, size);
 	
+
 	//while (!msdGetStatusCopy(copyId[7], 0));
 	// get ptrnNumbers	 
 	selectPaintSide(dataTmp->crossProducts, 0, NPATTERNS / 2, temp3, size);	 
@@ -169,6 +170,8 @@ SECTION(".text_demo3d") int getAddrPtrnsT(DataForNmpu1* data) {
 	nmppsMulC_32s(temp0, sizeof32(Pattern), temp1, size);
 	baseAddrOffs_32s((nm32s*)cntxt->patterns->ptrns, temp1, srcPackTmp12, size);
 
+
+
 	// get imageOffset	 
 	nmppsClipCC_32s(minX, 0, imageWidth, temp0, size);	 
 	nmppsClipCC_32s(dataTmp->y0, 0, imageHeight, temp1, size);	 
@@ -191,6 +194,8 @@ SECTION(".text_demo3d") int getAddrPtrnsT(DataForNmpu1* data) {
 	nmppsAdd_32s(temp2, temp0, temp0, size);	 
 	nmppsSub_32s(temp3, temp1, temp1, size);	 	
 	nmppsMerge_32s(temp0, temp1, (nm32s*)cntxt->ptrnSizes, size); 
+
+
 	 
 	baseAddrOffs_32s((nm32s*)cntxt->smallColorBuff.mData, imageOffset, cntxt->imagePoints, size);	 
 	baseAddrOffs_32s((nm32s*)cntxt->smallDepthBuff.mData, imageOffset, cntxt->zBuffPoints, size);

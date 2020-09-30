@@ -12,8 +12,8 @@
 	#define setHeap(n)
 #endif
 
-//#define TRIANGULATION_ENABLED
-#define USED_OLD_POLYGONS
+#define TRIANGULATION_ENABLED
+//#define USED_OLD_POLYGONS
 //#define PROFILER0
 //#define PROFILER1
 
@@ -159,6 +159,8 @@ struct WindowInfo {
 	int y0[20];
 	int x1[20];
 	int y1[20];
+	v2nm32f lowerLeft[40];
+	v2nm32f upperRight[40];
 	float x0_f[20];
 	float y0_f[20];
 	float x1_f[20];
