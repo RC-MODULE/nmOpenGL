@@ -6,17 +6,18 @@
 #include "demo3d_nm1.h"
 #include "service.h"
 
-__attribute__((section(".mem_bank0"))) long long im0[2048];
-__attribute__((section(".mem_bank1"))) long long im1[2048];
-__attribute__((section(".mem_bank2"))) long long im2[2048];
-__attribute__((section(".mem_bank3"))) long long im3[2048];
-//__attribute__((section(".mem_bank4"))) long long im4[2048];
-//__attribute__((section(".mem_bank5"))) long long im5[2048];
-//__attribute__((section(".mem_bank6"))) long long im6[2048];
-//__attribute__((section(".mem_bank7"))) long long im7[2048];
+__attribute__((section(".mem_bank0"))) long long im00[2048];
+__attribute__((section(".mem_bank0"))) long long im01[2048];
+__attribute__((section(".mem_bank1"))) long long im10[2048];
+__attribute__((section(".mem_bank1"))) long long im11[2048];
+__attribute__((section(".mem_bank1"))) long long im13[2048];
+__attribute__((section(".mem_bank2"))) long long im20[2048];
+__attribute__((section(".mem_bank2"))) long long im21[2048];
+__attribute__((section(".mem_bank3"))) long long im30[2048];
+__attribute__((section(".mem_bank3"))) long long im31[2048];
 
-__attribute__((section(".data_DDR"))) long long emi[4096];
-
+__attribute__((section(".data_DDR"))) long long emi0[4096];
+__attribute__((section(".data_DDR"))) long long emi1[4096];
 
 int main()
 {
