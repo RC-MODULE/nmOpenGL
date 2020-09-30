@@ -62,15 +62,16 @@ int main()
 	int fillCnt = 0;
 	int lineCnt = 0;
 	int pointCnt = 0;
-	int values[][2] = { {-30,0}, {-15,3}, {-15,15}, {-3,15}, { 0,30 }, { 3,15 }, { 15,15 }, { 15,3 }, { 30,0 } };
-	int d[][2] = { {0,9}, {-5, 4}, {5,5} };
+	int values[][2] = { {-30,0}, {-15,3}, {-15,15}, {-3,15}, { 0,0 }, { 3,15 }, { 15,15 }, { 15,3 }, { 30,0 } };
+	int d[][2] = { {5,4}, {4, 2}, {5,5} };
 	int i = 0;
 	while(VS_Run())	{
 		VS_SetData(1, fillPtrns + fillCnt * WIDTH_PTRN * HEIGHT_PTRN);
 		VS_SetData(2, linePtrns + lineCnt * WIDTH_PTRN * HEIGHT_PTRN);
 		VS_SetData(3, pointPtrns + pointCnt * WIDTH_PTRN * HEIGHT_PTRN);
 		VS_SetData(4, linePtrns + GET_TABLE_VALUE(lineTable, values[i][0], values[i][1]) * WIDTH_PTRN * HEIGHT_PTRN);
-		VS_SetData(5, fillPtrns + GET_TABLE_VALUE(fillTable, values[i][0], values[i][1]) * WIDTH_PTRN * HEIGHT_PTRN);
+		//VS_SetData(5, fillPtrns + GET_TABLE_VALUE(fillTable, values[i][0], values[i][1]) * WIDTH_PTRN * HEIGHT_PTRN);
+		VS_SetData(5, fillPtrns + GET_TABLE_VALUE(fillTable, d[i][0], d[i][1]) * WIDTH_PTRN * HEIGHT_PTRN);
 		int h = GET_TABLE_VALUE(lineTable, values[i][0], values[i][1]);
 		i++;
 		fillCnt++;

@@ -7,8 +7,8 @@
       kind "ConsoleApp"
       language "C++"
       files { "../*.cpp", "../../../../src_proc0/pc/*.cpp","../../../../src_proc0/pc/*.c","../../../../src_proc1/pc/*.cpp", "../../../../src_proc1/pc/*.c" }
-	  links { "nmpp-x86.lib", "hal-virtual-x86.lib", "tinyxml.lib" }
-	  libdirs { "$(NMPP)/lib", "$(HAL)/lib", "$(TINYXML)"}
+	  links { "nmpp-x86.lib", "hal-virtual-x86.lib", "tinyxml.lib", "nmopengl-x86.lib" }
+	  libdirs { "$(NMPP)/lib", "$(HAL)/lib", "$(TINYXML)", "../../../../lib"}
 	  includedirs { "../../../../include", "$(NMPP)/include", "$(HAL)/include", "$(TINYXML)"}
 
       configuration "Debug"

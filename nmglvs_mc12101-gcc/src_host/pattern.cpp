@@ -39,18 +39,18 @@ void fillPtrnsInit(unsigned char* dst, int* table_dydx, unsigned char color) {
 			}
 		}
 	}
-	for (int x = -WIDTH_PTRN; x < 0; x++) {
+	for (int x = -WIDTH_PTRN; x < WIDTH_PTRN; x++) {
 		for (int off = 0; off < OFFSETS; off++, cntRight++, cntLeft++) {
 			fillSide(dst + cntRight * size, off, 0, x + off, HEIGHT_PTRN, color, 0);
 			fillSide(dst + cntLeft  * size, off, 0, x + off, HEIGHT_PTRN, color, 1);
 		}
 	}
-	for (int x = 0; x < WIDTH_PTRN; x++) {
+	/*for (int x = 0; x < WIDTH_PTRN; x++) {
 		for (int off = 0; off < OFFSETS; off++, cntRight++, cntLeft++) {
 			fillSide(dst + cntRight * size, off, 0, x + off, HEIGHT_PTRN, color, 0);
 			fillSide(dst + cntLeft  * size, off, 0, x + off, HEIGHT_PTRN, color, 1);
 		}
-	}
+	}*/
 
 	for (int y = HEIGHT_PTRN - 1; y >= 0; y--) {
 		for (int off = 0; off < OFFSETS; off++, cntRight++, cntLeft++) {
@@ -75,10 +75,7 @@ static void createFillTable(int* table) {
 	}
 
 	for (int x = -WIDTH_PTRN; x < WIDTH_PTRN; x++) {
-		if(x<0)
-			table[x + WIDTH_PTRN] = OFFSETS - 1;
-		else
-			table[x + WIDTH_PTRN] = 4032;
+		table[x + WIDTH_PTRN] = OFFSETS - 1;
 	}
 	for (int y = 1; y <= HEIGHT_PTRN; y++) {
 		for (int x = -WIDTH_PTRN; x < 0; x++) {
@@ -93,7 +90,7 @@ static void createFillTable(int* table) {
 				table[y * 2 * WIDTH_PTRN + x + WIDTH_PTRN] = (resY) * OFFSETS - 1;
 			}
 		}
-		table[y * 2 * WIDTH_PTRN + WIDTH_PTRN] = 2080;
+		//table[y * 2 * WIDTH_PTRN + WIDTH_PTRN] = 2080;
 		for (int x = 1; x < WIDTH_PTRN; x++) {
 			double k = (double)y / (double)x;
 			int signX = (x < 0) ? -1 : 1;

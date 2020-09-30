@@ -21,7 +21,6 @@ SECTION(".data_imu0") volatile int copyImageCounterDepth;
 
 SECTION(".text_demo3d") int copyCounterColor() {
 	return copyImageCounterColor++;
-	//halLed(copyImageCounterColor);
 }
 
 SECTION(".text_demo3d") int copyCounterDepth() {
@@ -186,10 +185,8 @@ SECTION(".text_nmglvs") int nmglvsNm1Step()
 		break;
 	}
 	case NMC1_SWAP_BUFFER: {
-
 		msdWaitDma();
 		swapImage();
-
 		break;
 	}
 	case NMC1_EXIT:
