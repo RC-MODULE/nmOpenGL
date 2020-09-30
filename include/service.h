@@ -19,7 +19,7 @@ typedef v4nm32u abgr32;
 	<testperf>
  		<param name=" srcArray "> im00 </param>
  		<param name=" dstArray "> im10 </param>
- 		<param name=" count "> 0 4 8 12 16 20 24 28 32 36 40 128 256 512 </param>
+ 		<param name=" count "> 4 8 12 16 20 24 28 32 36 40 128 256 512 </param>
 	</testperf>
 	<testperf>
  		<param name=" srcArray "> im00 im10 im20 im30 </param>
@@ -44,7 +44,7 @@ extern "C" void convertABGR32_RGB565(const abgr32  *srcArray, rgb565 *dstArray, 
 	<testperf>
  		<param name=" srcArray "> im00 </param>
  		<param name=" dstArray "> im10 </param>
- 		<param name=" count "> 0 4 8 16 20 24 28 32 36 40 128 256 512 1024 2048 4096 </param>
+ 		<param name=" count "> 4 8 16 20 24 28 32 36 40 128 256 512 1024 2048 4096 </param>
 	</testperf>
 	<testperf>
  		<param name=" srcArray "> im00 im10 im20 im30 </param>
@@ -75,7 +75,7 @@ extern "C" void convertRGB565_RGB8888(const rgb565 *srcArray, rgb8888 *dstArray,
  		<param name=" dstVertex "> im20 </param>
  		<param name=" dstColor ">  im30 </param>
  		<param name=" mode "> NMGL_TRIANGLES </param>
- 		<param name=" vertCount "> 0 48 96 192 384 </param>
+ 		<param name=" vertCount "> 48 96 192 384 </param>
 	</testperf>
 	<testperf>
  		<param name=" srcVertex "> im00 </param>
@@ -83,7 +83,7 @@ extern "C" void convertRGB565_RGB8888(const rgb565 *srcArray, rgb8888 *dstArray,
  		<param name=" dstVertex "> im20 </param>
  		<param name=" dstColor ">  im30 </param>
  		<param name=" mode "> NMGL_TRIANGLE_STRIP </param>
- 		<param name=" vertCount "> 0 34 66 136 264 </param>
+ 		<param name=" vertCount "> 34 66 136 264 </param>
 	</testperf>
 	<testperf>
  		<param name=" srcVertex "> im00 </param>
@@ -91,7 +91,7 @@ extern "C" void convertRGB565_RGB8888(const rgb565 *srcArray, rgb8888 *dstArray,
  		<param name=" dstVertex "> im20 </param>
  		<param name=" dstColor ">  im30 </param>
  		<param name=" mode "> NMGL_TRIANGLE_FAN </param>
- 		<param name=" vertCount "> 0 34 66 136 264 </param>
+ 		<param name=" vertCount "> 34 66 136 264 </param>
 	</testperf>
 	<testperf>
  		<param name=" srcVertex "> im00 im10 im20 im30 im40 im50 im60 im70 </param>
@@ -140,7 +140,7 @@ extern "C" int vertexPrimitiveRepack(const v4nm32f *srcVertex, const v4nm32f *sr
  		<param name=" wArray ">		im10 </param>
  		<param name=" evenFlags ">	im20 </param>
  		<param name=" oddFlags ">	im30 </param>
- 		<param name=" size "> 0 64 128 192 256 512 768 1024 1280 1536 1792 2048 </param>
+ 		<param name=" size "> 64 128 192 256 512 768 1024 1280 1536 1792 2048 </param>
 	</testperf>
 	<testperf>
  		<param name=" srcArray ">	im00 im10 im20 im30 im40 im50 im60 im70 </param>
@@ -274,7 +274,7 @@ static void srcVertexInit(nm32f *srcVertex, int srcCount)
 	<testperf>
  		<param name=" srcVertex "> im00 </param>
  		<param name=" srcColor "> im10 </param>
- 		<param name=" srcCount "> 0 1 2 3 4 5 6 8 8 9 10 11 12 13 14 15 16 17 18 19 20 </param>
+ 		<param name=" srcCount "> 1 2 3 4 5 6 8 8 9 10 11 12 13 14 15 16 17 18 19 20 </param>
  		<param name=" maxWidth "> 2 </param>
  		<param name=" maxHeight "> 2 </param>
  		<param name=" maxDstSize "> 10 </param>
@@ -289,7 +289,7 @@ static void srcVertexInit(nm32f *srcVertex, int srcCount)
 	<testperf>
  		<param name=" srcVertex "> im00 </param>
  		<param name=" srcColor "> im10 </param>
- 		<param name=" srcCount "> 0 1 2 3 4 5 6 8 8 9 10 11 12 13 14 15 16 17 18 19 20 </param>
+ 		<param name=" srcCount "> 1 2 3 4 5 6 8 8 9 10 11 12 13 14 15 16 17 18 19 20 </param>
  		<param name=" maxWidth "> 1 </param>
  		<param name=" maxHeight "> 1 </param>
  		<param name=" maxDstSize "> 10 </param>
