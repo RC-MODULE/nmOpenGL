@@ -6,6 +6,7 @@
 #include "nmblas.h"
 #include "nmprofiler.h"
 #include "assert.h"
+#include "math.h"
 
 
 
@@ -32,6 +33,7 @@ void updatePolygonsT(DataForNmpu1* data, Triangles* triangles, int count, int se
 	nmppsSubC_32f(triangles->y0, temp1, cntxt->windowInfo.y0_f[segY], count);
 	nmppsConvert_32f32s_rounding(temp0, data->x0, 0, count);
 	nmppsConvert_32f32s_rounding(temp1, data->y0, 0, count);
+	
 	nmppsSubC_32f(triangles->x1, temp0, cntxt->windowInfo.x0_f[segX], count);
 	nmppsSubC_32f(triangles->y1, temp1, cntxt->windowInfo.y0_f[segY], count);
 	nmppsConvert_32f32s_rounding(temp0, data->x1, 0, count);

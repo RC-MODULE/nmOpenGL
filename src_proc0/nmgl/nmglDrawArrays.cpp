@@ -393,32 +393,32 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			//------------viewport------------------------		
 
 			//tmp1->tmp0
-			nmppsMulC_AddC_32f(tmp1.v0.x, cntxt->windowInfo.viewportMulX, cntxt->windowInfo.viewportAddX, tmp0.v0.x, primCount);		//X
-			nmppsMulC_AddC_32f(tmp1.v0.y, cntxt->windowInfo.viewportMulY, cntxt->windowInfo.viewportAddY, tmp0.v0.y, primCount);		//Y
-			nmppsMulC_AddC_32f(tmp1.v0.z, cntxt->windowInfo.viewportMulZ, cntxt->windowInfo.viewportAddZ, tmp0.v0.z, primCount);		//Z		
+			nmppsMulC_AddC_32f(tmp1.v0.x, cntxt->windowInfo.viewportMulX, cntxt->windowInfo.viewportAddX, tmp1.v0.x, primCount);		//X
+			nmppsMulC_AddC_32f(tmp1.v0.y, cntxt->windowInfo.viewportMulY, cntxt->windowInfo.viewportAddY, tmp1.v0.y, primCount);		//Y
+			nmppsMulC_AddC_32f(tmp1.v0.z, cntxt->windowInfo.viewportMulZ, cntxt->windowInfo.viewportAddZ, tmp1.v0.z, primCount);		//Z		
 
-			nmppsMulC_AddC_32f(tmp1.v1.x, cntxt->windowInfo.viewportMulX, cntxt->windowInfo.viewportAddX, tmp0.v1.x, primCount);		//X
-			nmppsMulC_AddC_32f(tmp1.v1.y, cntxt->windowInfo.viewportMulY, cntxt->windowInfo.viewportAddY, tmp0.v1.y, primCount);		//Y
-			nmppsMulC_AddC_32f(tmp1.v1.z, cntxt->windowInfo.viewportMulZ, cntxt->windowInfo.viewportAddZ, tmp0.v1.z, primCount);		//Z		
+			nmppsMulC_AddC_32f(tmp1.v1.x, cntxt->windowInfo.viewportMulX, cntxt->windowInfo.viewportAddX, tmp1.v1.x, primCount);		//X
+			nmppsMulC_AddC_32f(tmp1.v1.y, cntxt->windowInfo.viewportMulY, cntxt->windowInfo.viewportAddY, tmp1.v1.y, primCount);		//Y
+			nmppsMulC_AddC_32f(tmp1.v1.z, cntxt->windowInfo.viewportMulZ, cntxt->windowInfo.viewportAddZ, tmp1.v1.z, primCount);		//Z		
 
-			nmppsMulC_AddC_32f(tmp1.v2.x, cntxt->windowInfo.viewportMulX, cntxt->windowInfo.viewportAddX, tmp0.v2.x, primCount);		//X
-			nmppsMulC_AddC_32f(tmp1.v2.y, cntxt->windowInfo.viewportMulY, cntxt->windowInfo.viewportAddY, tmp0.v2.y, primCount);		//Y
-			nmppsMulC_AddC_32f(tmp1.v2.z, cntxt->windowInfo.viewportMulZ, cntxt->windowInfo.viewportAddZ, tmp0.v2.z, primCount);		//Z			
+			nmppsMulC_AddC_32f(tmp1.v2.x, cntxt->windowInfo.viewportMulX, cntxt->windowInfo.viewportAddX, tmp1.v2.x, primCount);		//X
+			nmppsMulC_AddC_32f(tmp1.v2.y, cntxt->windowInfo.viewportMulY, cntxt->windowInfo.viewportAddY, tmp1.v2.y, primCount);		//Y
+			nmppsMulC_AddC_32f(tmp1.v2.z, cntxt->windowInfo.viewportMulZ, cntxt->windowInfo.viewportAddZ, tmp1.v2.z, primCount);		//Z			
 
 			//в tmp0 теперь хранятся x,y в оконных координатах, z в диапазона 0..Z_BUFF_MAX, 
 			//координаты w а так же текстурные координаты s,t, оставшиеся без изменений
 
-			//округление x,y и z
+			/*//округление x,y и z
 			//tmp0->tmp1
-			nmppsConvert_32f32s_floor(tmp0.v0.x, (int*)tmp1.v0.x, 0, primCount);
-			nmppsConvert_32f32s_floor(tmp0.v0.y, (int*)tmp1.v0.y, 0, primCount);
-			nmppsConvert_32f32s_floor(tmp0.v0.z, (int*)tmp1.v0.z, 0, primCount);
-			nmppsConvert_32f32s_floor(tmp0.v1.x, (int*)tmp1.v1.x, 0, primCount);
-			nmppsConvert_32f32s_floor(tmp0.v1.y, (int*)tmp1.v1.y, 0, primCount);
-			nmppsConvert_32f32s_floor(tmp0.v1.z, (int*)tmp1.v1.z, 0, primCount);
-			nmppsConvert_32f32s_floor(tmp0.v2.x, (int*)tmp1.v2.x, 0, primCount);
-			nmppsConvert_32f32s_floor(tmp0.v2.y, (int*)tmp1.v2.y, 0, primCount);
-			nmppsConvert_32f32s_floor(tmp0.v2.z, (int*)tmp1.v2.z, 0, primCount);
+			nmppsConvert_32f32s_floor(tmp1.v0.x, (int*)tmp1.v0.x, 0, primCount);
+			nmppsConvert_32f32s_floor(tmp1.v0.y, (int*)tmp1.v0.y, 0, primCount);
+			nmppsConvert_32f32s_floor(tmp1.v0.z, (int*)tmp1.v0.z, 0, primCount);
+			nmppsConvert_32f32s_floor(tmp1.v1.x, (int*)tmp1.v1.x, 0, primCount);
+			nmppsConvert_32f32s_floor(tmp1.v1.y, (int*)tmp1.v1.y, 0, primCount);
+			nmppsConvert_32f32s_floor(tmp1.v1.z, (int*)tmp1.v1.z, 0, primCount);
+			nmppsConvert_32f32s_floor(tmp1.v2.x, (int*)tmp1.v2.x, 0, primCount);
+			nmppsConvert_32f32s_floor(tmp1.v2.y, (int*)tmp1.v2.y, 0, primCount);
+			nmppsConvert_32f32s_floor(tmp1.v2.z, (int*)tmp1.v2.z, 0, primCount);
 			nmppsConvert_32s32f((int*)tmp1.v0.x, tmp1.v0.x, primCount);
 			nmppsConvert_32s32f((int*)tmp1.v0.y, tmp1.v0.y, primCount);
 			nmppsConvert_32s32f((int*)tmp1.v0.z, tmp1.v0.z, primCount);
@@ -427,7 +427,7 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			nmppsConvert_32s32f((int*)tmp1.v1.z, tmp1.v1.z, primCount);
 			nmppsConvert_32s32f((int*)tmp1.v2.x, tmp1.v2.x, primCount);
 			nmppsConvert_32s32f((int*)tmp1.v2.y, tmp1.v2.y, primCount);
-			nmppsConvert_32s32f((int*)tmp1.v2.z, tmp1.v2.z, primCount);
+			nmppsConvert_32s32f((int*)tmp1.v2.z, tmp1.v2.z, primCount);*/
 
 			//данные хранятся в tmp1 (в buffer2), цвет в buffer1
 			v2nm32f *minXY = (v2nm32f*)cntxt->buffer4;
@@ -448,7 +448,7 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			while (srcThreated < primCount) {
 				//PROFILER_SIZE(primCount);
 				int currentCount = triangulate(cntxt->buffer2, (v4nm32f*)cntxt->buffer1, primCount,
-					WIDTH_PTRN, HEIGHT_PTRN,
+					WIDTH_PTRN - 1, HEIGHT_PTRN - 1,
 					NMGL_SIZE, cntxt->buffer0, (v4nm32f*)cntxt->buffer3, &srcThreated);	
 
 				if (currentCount % 2) {					
@@ -531,10 +531,10 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			nmppsMulC_AddC_32f(cntxt->buffer2 + 3 * NMGL_SIZE, cntxt->windowInfo.viewportMulY, cntxt->windowInfo.viewportAddY, cntxt->buffer1, localSize);		//Y
 			nmppsMulC_AddC_32f(cntxt->buffer0 + 3 * NMGL_SIZE, cntxt->windowInfo.viewportMulZ, cntxt->windowInfo.viewportAddZ, cntxt->buffer2, localSize);	//Z
 
-			nmppsConvert_32f32s_floor(cntxt->buffer0, (int*)cntxt->buffer3, 0, localSize);
+			/*nmppsConvert_32f32s_floor(cntxt->buffer0, (int*)cntxt->buffer3, 0, localSize);
 			nmppsConvert_32s32f((int*)cntxt->buffer3, cntxt->buffer0, localSize);
 			nmppsConvert_32f32s_floor(cntxt->buffer1, (int*)cntxt->buffer3, 0, localSize);
-			nmppsConvert_32s32f((int*)cntxt->buffer3, cntxt->buffer1, localSize);
+			nmppsConvert_32s32f((int*)cntxt->buffer3, cntxt->buffer1, localSize);*/
 			v2nm32f *minXY = (v2nm32f*)cntxt->buffer4;
 			v2nm32f *maxXY = (v2nm32f*)cntxt->buffer4 + 3 * NMGL_SIZE;
 			pushToLines(cntxt->buffer0, cntxt->buffer1, cntxt->buffer2, colorOrNormal, cntxt->lineInner, mode, localSize);

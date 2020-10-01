@@ -20,7 +20,7 @@ static void createFillTable(int* table);
 
 void fillPtrnsInit(unsigned char* dst, int* table_dydx, unsigned char color) {
 	int cntRight = 0;
-	int cntLeft = FILL_PATTERNS_AMOUNT / 2 - 1;
+	int cntLeft = FILL_PATTERNS_AMOUNT / 2;
 	const int size = WIDTH_PTRN * HEIGHT_PTRN;
 
 	for (int i = 0; i < FILL_PATTERNS_AMOUNT * size; i++) {
@@ -39,18 +39,18 @@ void fillPtrnsInit(unsigned char* dst, int* table_dydx, unsigned char color) {
 			}
 		}
 	}
-	for (int x = -WIDTH_PTRN; x < WIDTH_PTRN; x++) {
+	for (int x = -WIDTH_PTRN; x < 0; x++) {
 		for (int off = 0; off < OFFSETS; off++, cntRight++, cntLeft++) {
 			fillSide(dst + cntRight * size, off, 0, x + off, HEIGHT_PTRN, color, 0);
 			fillSide(dst + cntLeft  * size, off, 0, x + off, HEIGHT_PTRN, color, 1);
 		}
 	}
-	/*for (int x = 0; x < WIDTH_PTRN; x++) {
+	for (int x = 0; x < WIDTH_PTRN; x++) {
 		for (int off = 0; off < OFFSETS; off++, cntRight++, cntLeft++) {
 			fillSide(dst + cntRight * size, off, 0, x + off, HEIGHT_PTRN, color, 0);
 			fillSide(dst + cntLeft  * size, off, 0, x + off, HEIGHT_PTRN, color, 1);
 		}
-	}*/
+	}
 
 	for (int y = HEIGHT_PTRN - 1; y >= 0; y--) {
 		for (int off = 0; off < OFFSETS; off++, cntRight++, cntLeft++) {
@@ -74,20 +74,21 @@ static void createFillTable(int* table) {
 		table[i] = 0;
 	}
 
-	for (int x = -WIDTH_PTRN; x < WIDTH_PTRN; x++) {
-		table[x + WIDTH_PTRN] = OFFSETS - 1;
+	for (int x = 0; x < WIDTH_PTRN; x++) {
+		table[x + WIDTH_PTRN] = x;
+		table[x] = x;
 	}
 	for (int y = 1; y <= HEIGHT_PTRN; y++) {
 		for (int x = -WIDTH_PTRN; x < 0; x++) {
 			double k = (double)y / (double)x;
 			int signX = (x < 0) ? -1 : 1;
 			if (abs(x) < y) {
-				int resX = -round(HEIGHT_PTRN / k);
-				table[y * 2 * WIDTH_PTRN + x + WIDTH_PTRN] = (64 - resX) * OFFSETS - 1;
+				int resX = -floor(HEIGHT_PTRN / k);
+				table[y * 2 * WIDTH_PTRN + x + WIDTH_PTRN] = (64 - resX) * OFFSETS;
 			}
 			else {
-				int resY = -round(WIDTH_PTRN * k);
-				table[y * 2 * WIDTH_PTRN + x + WIDTH_PTRN] = (resY) * OFFSETS - 1;
+				int resY = -ceil(WIDTH_PTRN * k);
+				table[y * 2 * WIDTH_PTRN + x + WIDTH_PTRN] = (resY) * OFFSETS;
 			}
 		}
 		//table[y * 2 * WIDTH_PTRN + WIDTH_PTRN] = 2080;
@@ -95,11 +96,11 @@ static void createFillTable(int* table) {
 			double k = (double)y / (double)x;
 			int signX = (x < 0) ? -1 : 1;
 			if (abs(x) < y) {
-				int resX = round(HEIGHT_PTRN / k);
+				int resX = ceil(HEIGHT_PTRN / k);
 				table[y * 2 * WIDTH_PTRN + x + WIDTH_PTRN] = (resX) * OFFSETS + FILL_PATTERNS_AMOUNT / 4;
 			}
 			else {
-				int resY = round(WIDTH_PTRN * k);
+				int resY = ceil(WIDTH_PTRN * k);
 				table[y * 2 * WIDTH_PTRN + x + WIDTH_PTRN] = (64 - resY)* OFFSETS + FILL_PATTERNS_AMOUNT / 4;
 			}
 		}
@@ -132,8 +133,8 @@ void linePtrnsInit(unsigned char* dst, int* table, unsigned char color) {
 	for (int x = 0; x < WIDTH_PTRN; x++, cnt++) {
 		drawLine(dst + cnt * size, 0, 0, x, HEIGHT_PTRN - 1, color);
 	}
-	for (int y = HEIGHT_PTRN; y >= 0; y--, cnt++) {
-		drawLine(dst + cnt * size, 0, 0, WIDTH_PTRN, y, color);
+	for (int y = HEIGHT_PTRN - 1; y >= 0; y--, cnt++) {
+		drawLine(dst + cnt * size, 0, 0, WIDTH_PTRN - 1, y, color);
 	}
 
 
@@ -151,32 +152,31 @@ static void createLineTable(int* table) {
 	}
 	for (int y = 1; y <= HEIGHT_PTRN; y++) {
 		for (int x = -WIDTH_PTRN; x < WIDTH_PTRN; x++) {
-			if (x != 0) {
-				double k = (double)y / (double)x;
-				int signX = (x < 0) ? -1 : 1;
-				if (x < 0) {
-					if (abs(x) < y) {
-						int resX = -round(HEIGHT_PTRN / k);
-						table[y * 2 * WIDTH_PTRN + x + WIDTH_PTRN] = 64 - resX;
-					}
-					else {
-						int resY = -round(WIDTH_PTRN * k);
-						table[y * 2 * WIDTH_PTRN + x + WIDTH_PTRN] = resY;
-					}
+			if (x == 0) {
+				table[y * 2 * WIDTH_PTRN + x + WIDTH_PTRN] = LINE_PATTERNS_AMOUNT / 2 + 1;
+				continue;
+			}
+			double k = (double)y / (double)x;
+			int signX = (x < 0) ? -1 : 1;
+			if (x < 0) {
+				if (abs(x) < y) {
+					int resX = -round(HEIGHT_PTRN / k);
+					table[y * 2 * WIDTH_PTRN + x + WIDTH_PTRN] = 64 - resX;
 				}
 				else {
-					if (abs(x) < y) {
-						int resX = round(HEIGHT_PTRN / k);
-						table[y * 2 * WIDTH_PTRN + x + WIDTH_PTRN] = resX + LINE_PATTERNS_AMOUNT / 2;
-					}
-					else {
-						int resY = round(WIDTH_PTRN * k);
-						table[y * 2 * WIDTH_PTRN + x + WIDTH_PTRN] = 64 - resY + LINE_PATTERNS_AMOUNT / 2;
-					}
+					int resY = -round(WIDTH_PTRN * k);
+					table[y * 2 * WIDTH_PTRN + x + WIDTH_PTRN] = resY;
 				}
 			}
 			else {
-				table[y * 2 * WIDTH_PTRN + x + WIDTH_PTRN] = LINE_PATTERNS_AMOUNT / 2 + 1;
+				if (abs(x) < y) {
+					int resX = round(HEIGHT_PTRN / k);
+					table[y * 2 * WIDTH_PTRN + x + WIDTH_PTRN] = resX + LINE_PATTERNS_AMOUNT / 2;
+				}
+				else {
+					int resY = round(WIDTH_PTRN * k);
+					table[y * 2 * WIDTH_PTRN + x + WIDTH_PTRN] = 64 - resY + LINE_PATTERNS_AMOUNT / 2;
+				}
 			}
 		}
 	}
