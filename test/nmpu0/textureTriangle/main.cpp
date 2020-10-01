@@ -7,6 +7,7 @@
 #include <cstdlib>
 #include "nmplv/vSupport.h"
 #include "malloc32.h"
+#include "time.h"
 
 #ifndef __NM__
 #include "bmp.h"
@@ -183,12 +184,18 @@ int main ()
 	((nm32s*)colors)[5] = (nm32s)255;
 	((nm32s*)colors)[6] = (nm32s)0;
 	((nm32s*)colors)[7] = (nm32s)255;
- //Информация о размещении видимой части треугольников в сегменте
+	
+	//Информация о размещении видимой части треугольников в сегменте
     Rectangle windows [TRIANGLE_AMOUNT];
     
     int count = TRIANGLE_AMOUNT;
     int i = 0;
     int j = 0;
+	
+	clock_t clkStart=0;
+	clock_t clkEnd=0;
+	clock_t diff = 0;
+
 
 	printf ("Start textureTriangle test...\n");
 
@@ -227,9 +234,9 @@ int main ()
 
     float z[TRIANGLE_AMOUNT] = {1.0f, 1.0f}; //minus (z in camera space)
     
-	for (int counter = 0; counter < 3; counter++)
+	for (int counter = 0; counter < 1; counter++)
 	{
-		printf ("%d\n", counter);
+		//printf ("%d\n", counter);
 		triangles.x0 = x0;
 		triangles.y0 = y0;
 		triangles.x1 = x1;
@@ -267,28 +274,60 @@ int main ()
 		boundTexObject->texImages2D[6] = teximage_4_4;
 		boundTexObject->texImages2D[7] = teximage_2_2;
 		boundTexObject->texImages2D[8] = teximage_1_1;
-	
-		boundTexObject->texMinFilter = NMGL_NEAREST; //default NEAREST_MIPMAP_LINEAR
-		boundTexObject->texMagFilter = NMGL_NEAREST; //default LINEAR
-		boundTexObject->texWrapS = NMGL_REPEAT; // default REPEAT
-		boundTexObject->texWrapT = NMGL_REPEAT;// default REPEAT
 
-		test_cntxt->texState.texUnits[activeTexUnitIndex].texFunctionName = NMGL_REPLACE; //default = NMGL_MODULATE
-    
 		//default texEnvColor = (0.0f, 0.0f, 0.0f, 0.0f)
 		test_cntxt->texState.texUnits[activeTexUnitIndex].texEnvColor[0] = 0.0f;
 		test_cntxt->texState.texUnits[activeTexUnitIndex].texEnvColor[1] = 0.0f;
 		test_cntxt->texState.texUnits[activeTexUnitIndex].texEnvColor[2] = 0.0f;
 		test_cntxt->texState.texUnits[activeTexUnitIndex].texEnvColor[3] = 0.0f;
 
-		test_cntxt->texState.unpackAlignment = 4;
-		//printPattern(patterns, pSrcTriangle, TRIANGLE_AMOUNT);
-    
-//		//fill triangles with colors
-//		mMulCVxN_2s_RGB8888(patterns, windows, (v4nm8s*)valueC, pSrcTriangle, TRIANGLE_AMOUNT);
-    
-		//texture triangles
+		boundTexObject->texMagFilter = NMGL_NEAREST; //default LINEAR
+		boundTexObject->texWrapS = NMGL_REPEAT; // default REPEAT
+		boundTexObject->texWrapT = NMGL_REPEAT;// default REPEAT
+		test_cntxt->texState.texUnits[activeTexUnitIndex].texFunctionName = NMGL_BLEND; //default = NMGL_MODULATE
+	
+//texMinFilter = NMGL_NEAREST
+		printf ("texMinFilter = NMGL_NEAREST\n");
+		boundTexObject->texMinFilter = NMGL_NEAREST;
+
+		clkStart=clock();	
 		textureTriangle(&triangles, pDstTriangle, count);
+		clkEnd=clock();	
+		diff = clkEnd - clkStart;
+		printf("time = %lu\n",(long int)diff);
+
+//texMinFilter = NMGL_LINEAR
+		printf ("texMinFilter = NMGL_LINEAR\n");
+		boundTexObject->texMinFilter = NMGL_LINEAR;
+
+		clkStart=clock();	
+		textureTriangle(&triangles, pDstTriangle, count);
+		clkEnd=clock();	
+		diff = clkEnd - clkStart;
+		printf("time = %lu\n",(long int)diff);	
+	
+//texMinFilter = NMGL_NEAREST_MIPMAP_LINEAR
+		printf ("texMinFilter = NMGL_NEAREST_MIPMAP_LINEAR\n");
+		boundTexObject->texMinFilter = NMGL_NEAREST_MIPMAP_LINEAR;
+
+		clkStart=clock();	
+		textureTriangle(&triangles, pDstTriangle, count);
+		clkEnd=clock();	
+		diff = clkEnd - clkStart;
+		printf("time = %lu\n",(long int)diff);	
+	
+//texMinFilter = NMGL_LINEAR_MIPMAP_LINEAR
+		printf ("texMinFilter = NMGL_LINEAR_MIPMAP_LINEAR\n");
+		boundTexObject->texMinFilter = NMGL_LINEAR_MIPMAP_LINEAR;
+
+		clkStart=clock();	
+		textureTriangle(&triangles, pDstTriangle, count);
+		clkEnd=clock();	
+		diff = clkEnd - clkStart;
+		printf("time = %lu\n",(long int)diff);		
+		
+
+		
 }
 	
 #ifndef __NM__
