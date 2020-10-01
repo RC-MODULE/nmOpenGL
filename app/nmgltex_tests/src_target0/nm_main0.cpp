@@ -10,7 +10,7 @@ NMGL_Context_NM1 *cntxt_nm1;
 unsigned int nmpu1IsAccessible;
 
 #define tstdtl 5
-#define ENABLE_STATISTICS
+//#define ENABLE_STATISTICS
 #ifdef ENABLE_STATISTICS
 	
 	SECTION(".data_imu0") volatile int imu0datai[tstdtl];
