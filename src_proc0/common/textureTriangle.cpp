@@ -90,6 +90,10 @@ SECTION(".data_imu0") float veccfy [32];
 SECTION(".data_imu0") float veccfz [32];
 SECTION(".data_imu0") float vecaf [32];
 
+SECTION(".data_imu0") float vecmu [32];
+SECTION(".data_imu0") float vecmv [32];
+SECTION(".data_imu0") float vecScaleFactor [32];
+
 SECTION(".data_imu0") float buf0 [32];
 SECTION(".data_imu0") float buf1 [32];
 SECTION(".data_imu0") float buf2 [32];
@@ -669,25 +673,39 @@ void textureTriangle(TrianglesInfo* triangles, nm32s* pDstTriangle, int count)
 			
 #endif //PERSPECTIVE_CORRECT
 
+/*Calculate scale factor*/
+#ifndef SCALE_FACTOR_IDEAL
+			//float mu = fmax(fabs(dudx), fabs(dudy));
+			abs_32f(vecdudx, buf0, primWidth);
+			abs_32f(vecdudy, buf1, primWidth);
+			findMax2(buf0, buf1, vecmu, primWidth);
+		
+			//float mv = fmax(fabs(dvdx), fabs(dvdy));
+			abs_32f(vecdvdx, buf0, primWidth);
+			abs_32f(vecdvdy, buf1, primWidth);
+			findMax2(buf0, buf1, vecmv, primWidth);
+			
+			//scaleFactor = fmax(mu, mv);
+			findMax2(vecmu, vecmv, vecScaleFactor, primWidth);
+#endif //SCALE_FACTOR_IDEAL
+					//printf("Scale factor = %f\n", scaleFactor);
+
             for(int x = 0; x < primWidth; x++){
 
 				Vec2f st;
 				st.x = vecs[x];
 				st.y = vect[x];
-				float dudx = vecdudx[x];
-				float dudy = vecdudy[x];
-				float dvdx = vecdvdx[x];
-				float dvdy = vecdvdy[x];
 
 /*Calculate scale factor*/
 #ifdef SCALE_FACTOR_IDEAL
+				float dudx = vecdudx[x];
+				float dudy = vecdudy[x];
+				float dvdx = vecdvdx[x];
+				float dvdy = vecdvdy[x];	
 				scaleFactor = fmax(sqrtf(dudx*dudx + dvdx*dvdx), sqrtf(dudy*dudy + dvdy*dvdy));
-#else
-				float mu = fmax(fabs(dudx), fabs(dudy));
-				float mv = fmax(fabs(dvdx), fabs(dvdy));
-				scaleFactor = fmax(mu, mv);
-#endif
-					//printf("Scale factor = %f\n", scaleFactor);
+#else //SCALE_FACTOR_IDEAL
+				scaleFactor = vecScaleFactor [x];
+#endif //SCALE_FACTOR_IDEAL				
 
 /*Calculate level of detail*/
 

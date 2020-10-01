@@ -150,7 +150,10 @@ void edgeFunction(float x0, float y0, float x1, float y1, float x2, float y2, fl
 void textureTriangle(TrianglesInfo* triangles, nm32s* pDstTriangle, int count);
 
 
-
+extern "C"{
+void abs_32f(float* src, float* dst, int size);
+void findMax2(float* src1, float* src2, float* dstMax, int size);
+}
 
 //! \}
 
