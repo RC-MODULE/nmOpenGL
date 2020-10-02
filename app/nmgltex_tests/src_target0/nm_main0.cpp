@@ -3,11 +3,12 @@
 #include "nmgl_tex_tests_config.h"
 #include "nmglvs_nmc0.h"
 #include <iostream>
-
+//#include "time.h"
 #include "demo3d_nm1.h"
 extern void* cntxtAddr_nm1;
 NMGL_Context_NM1 *cntxt_nm1;
 unsigned int nmpu1IsAccessible;
+
 
 float triangles[24]{
 	0,0,
@@ -33,6 +34,7 @@ float color[48]{
 
 int main()
 {
+	
 	nmglvsNm0Init();
 
 	nmglClearColor(0, 0, 0.4f, 1.0f);
@@ -56,6 +58,7 @@ int main()
 	*/
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
 	NMGLint texture_names[NMGL_MAX_TEX_OBJECTS];
+	clock_t clks=0;
 	/*
 	printf("Initial nm0 context fields:\n");
 	
@@ -70,10 +73,8 @@ int main()
 	*/
 
 //=========RUNNING=TESTS======================================================
-
-	printf("\n***** Start nmgl texture functions tests *****\n");
-
-	cntxt_nm1 = (NMGL_Context_NM1*)cntxtAddr_nm1;
+printf("\n***** Start nmgl texture functions tests *****\n");
+cntxt_nm1 = (NMGL_Context_NM1*)cntxtAddr_nm1;
 	nmpu1IsAccessible = 0;
 	DEBUG_PRINT(("Context nm1=%x\n",cntxt_nm1));
 	if(cntxt_nm1 == 0) {
@@ -85,7 +86,6 @@ int main()
 	else {
 		nmpu1IsAccessible = 1;
 	}
-
 #ifdef TEST_NMGL_GEN_TEXTURES
 	run_nmglGenTextures_test();
 #endif
@@ -120,7 +120,15 @@ int main()
 #endif
 
 #ifdef TEST_NMGL_TEX_SUB_IMAGE_2D
+	#ifdef ENABLE_STATISTICS
+		clks=clock();
+		printf("clks before=0x%x\n",(int)clks);
+	#endif
 	run_nmglTexSubImage2D_test();
+	#ifdef ENABLE_STATISTICS
+		clks=clock();
+		printf("clks after=0x%x\n",(int)clks);
+	#endif
 #endif
 
 #ifdef TEST_NMGL_GET_TEX_ENV_FV
@@ -146,9 +154,7 @@ int main()
 #ifdef TEST_NMGL_TEX_COORD_POINTER
 	run_nmglTexCoordPointer_test();
 #endif
-
-	printf("\n***** End nmgl texture functions tests *****\n");
-	
+printf("\n***** End nmgl texture functions tests *****\n");
 while(nmglvsNm0Run()){
 		nmglClear(NMGL_COLOR_BUFFER_BIT);
 
