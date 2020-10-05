@@ -1,7 +1,7 @@
 
 #include "demo3d_nm0.h"
 #include "demo3d_nm1.h"
-#include "tests.h"
+
 #include "nmgl_tex_test_common.h"
 
 //#include <iostream>
@@ -108,7 +108,7 @@ int cmpPixelsPads(void* left_w_pads, void *right, NMGLint width, NMGLenum format
 int cmpPixelsUbytes(void* from, void *to, NMGLubyte n_pixels);
 //==============================================================================================
 
-internalformatdata internalformats[5];
+internalformatdata internalformats[6];
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -124,6 +124,8 @@ void init_internalformats()
 	internalformats[3].size=getTexelSizeUbytes(NMGL_ALPHA);
 	internalformats[4].type=NMGL_LUMINANCE_ALPHA;	
 	internalformats[4].size=getTexelSizeUbytes(NMGL_LUMINANCE_ALPHA);
+	internalformats[5].type=NMGL_COLOR_INDEX8_EXT;	
+	internalformats[5].size=getTexelSizeUbytes(NMGL_COLOR_INDEX8_EXT);
 }
 //----------------------------------------------------------------------------------------
 int cmpPixelsPads(void* left_w_pads, void *right, NMGLint width, NMGLenum format)
@@ -373,34 +375,8 @@ void _nmglTexImage2D_prevent_internal_errors()
 {
 	cntxt->error=NMGL_NO_ERROR;
 	ActiveTexObjectP->imageIsSet=0;
-	//printf("firstByte was=0x%x  mipmap size is %d\n",cntxt->texState.firstFreeTexByte,MIPMAP_TESTOBJ_SIZE);
-	//cntxt->texState.firstFreeTexByte = NULL;
-	/*
-	if ((int)cntxt->texState.firstFreeTexByte == MIPMAP_OBJ_SIZE)
-	{
-		cntxt->texState.firstFreeTexByte = NULL;
-		printf("was MIPMAP_OBJ_SIZE\n");
-	}
-	else 
-	{
-		cntxt->texState.firstFreeTexByte=(void*)((int)cntxt->texState.firstFreeTexByte - MIPMAP_OBJ_SIZE);
-		printf("was BIGGER\n");
-	}
-	*/
 }
-//----------------------------------------------------------------------------------------
-/*
-void print_input()
-{
-	DEBUG_PRINT(("=========Input Contents====================\n"));
-	DEBUG_PRINT(("Target=%d\n",input.target));	
-	DEBUG_PRINT(("InternalFormat=%d,size=%d\n",input.internalformat.type,input.internalformat.size));
-	DEBUG_PRINT(("Width=%d\n",input.width));
-	DEBUG_PRINT(("Height=%d\n",input.height));
-	DEBUG_PRINT(("Type=%d\n",input.type));
-	DEBUG_PRINT(("===========================================\n"));
-}
-*/
+
 //========================================================================================
 //===========================MAIN=========================================================
 //========================================================================================
@@ -537,11 +513,19 @@ int nmglTexImage2D_wrongInternalformatFormat_isError()
 	//_nmglTexImage2D_prevent_internal_errors();
 	int i=0,j=0;
 	
-	for(i=0;i<=4;i++)
+	for(i=0;i<=5;i++)
 	{
 		status=init_TexImage2D_input(&input,cur_width,internalformats[i]);
+		if(input.format == NMGL_COLOR_INDEX8_EXT)
+		{
+			nmglTexImage2D(input.target,input.level,NMGL_COLOR_INDEX8_EXT,input.width,input.height,0,NMGL_COLOR_INDEX,input.type,input.pixels);
+		}
+		else
+		{
+			nmglTexImage2D(input.target,input.level,input.internalformat.type,input.width,input.height,0,input.format,input.type,input.pixels);
+		}
 		
-		nmglTexImage2D(input.target,input.level,input.internalformat.type,input.width,input.height,0,input.format,input.type,input.pixels);
+		
 		TEST_ASSERT(cntxt->error==NMGL_NO_ERROR);
 		_nmglTexImage2D_prevent_internal_errors();	
 

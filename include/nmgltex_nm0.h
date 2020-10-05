@@ -3,7 +3,6 @@
 
 #include "demo3d_common.h"
 #include "nmgltex_common.h"
-
 struct NMGL_Context_NM0_Texture {
 	
 	/*

@@ -243,7 +243,12 @@ SECTION(".text_nmglvs") int nmglvsNm1Step()
 		}
 		break;
 	}
-	
+	case NMC1_SET_COLOR_PALETTE: {
+		cntxt->texState.texObjects[(int)currentCommand.params[2]].palette.colors=(NMGLubyte*)currentCommand.params[0];
+		cntxt->texState.texObjects[(int)currentCommand.params[2]].palette.width=currentCommand.params[1];				
+		break;
+	}
+
 	case NMC1_SET_TEX_ENV_COLOR: {
 		Intfloat temp;
 		for (int i = 0; i < 4; i++) {

@@ -154,6 +154,24 @@ cntxt_nm1 = (NMGL_Context_NM1*)cntxtAddr_nm1;
 #ifdef TEST_NMGL_TEX_COORD_POINTER
 	run_nmglTexCoordPointer_test();
 #endif
+
+
+#ifdef TEST_NMGL_COLOR_TABLE_EXT
+	run_nmglColorTableEXT_test();
+#endif
+
+#ifdef TEST_NMGL_COLOR_SUB_TABLE_EXT
+	run_nmglColorSubTableEXT_test();
+#endif
+
+#ifdef TEST_NMGL_GET_COLOR_TABLE_EXT
+	run_nmglGetColorTableEXT_test();
+#endif
+
+#ifdef TEST_NMGL_GET_COLOR_TABLE_PARAMETERIV_EXT
+	run_nmglGetColorTableParameterivEXT_test();
+#endif
+
 printf("\n***** End nmgl texture functions tests *****\n");
 while(nmglvsNm0Run()){
 		nmglClear(NMGL_COLOR_BUFFER_BIT);
