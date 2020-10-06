@@ -276,21 +276,21 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 		nmppsDiv_32f(cntxt->buffer2, cntxt->buffer3, cntxt->buffer0 + 3 * NMGL_SIZE, localSize);
 
 		//------------viewport------------------------
-		nmppsMulC_AddC_32f(cntxt->buffer1 + 3 * NMGL_SIZE, cntxt->windowInfo.viewportMulX, cntxt->windowInfo.viewportAddX, vertexX, localSize);		//X
-		nmppsMulC_AddC_32f(cntxt->buffer2 + 3 * NMGL_SIZE, cntxt->windowInfo.viewportMulY, cntxt->windowInfo.viewportAddY, vertexY, localSize);		//Y
-		nmppsMulC_AddC_32f(cntxt->buffer0 + 3 * NMGL_SIZE, cntxt->windowInfo.viewportMulZ, cntxt->windowInfo.viewportAddZ, vertexZ, localSize);	//Z
+		nmppsMulC_AddC_32f(cntxt->buffer1 + 3 * NMGL_SIZE, cntxt->windowInfo.viewportMulX, cntxt->windowInfo.viewportAddX, (float*)vertexResult, localSize);		//X
+		nmppsMulC_AddC_32f(cntxt->buffer2 + 3 * NMGL_SIZE, cntxt->windowInfo.viewportMulY, cntxt->windowInfo.viewportAddY, (float*)vertexResult + 3 * NMGL_SIZE, localSize);		//Y
+		nmppsMulC_AddC_32f(cntxt->buffer0 + 3 * NMGL_SIZE, cntxt->windowInfo.viewportMulZ, cntxt->windowInfo.viewportAddZ, (float*)vertexResult + 6 * NMGL_SIZE, localSize);	//Z
 
-		nmppsConvert_32f32s_floor(vertexX, (int*)cntxt->buffer0, 0, localSize);
-		nmppsConvert_32s32f((int*)cntxt->buffer0, vertexX, localSize);
-		nmppsConvert_32f32s_floor(vertexY, (int*)cntxt->buffer0, 0, localSize);
-		nmppsConvert_32s32f((int*)cntxt->buffer0, vertexY, localSize);
+		//nmppsConvert_32f32s_floor(vertexX, (int*)cntxt->buffer0, 0, localSize);
+		//nmppsConvert_32s32f((int*)cntxt->buffer0, vertexX, localSize);
+		//nmppsConvert_32f32s_floor(vertexY, (int*)cntxt->buffer0, 0, localSize);
+		//nmppsConvert_32s32f((int*)cntxt->buffer0, vertexY, localSize);
 
 		//---------------rasterize------------------------------------
 		v2nm32f *minXY = (v2nm32f*)cntxt->buffer4;
 		v2nm32f *maxXY = (v2nm32f*)cntxt->buffer4 + 3 * NMGL_SIZE;
 		switch (mode) {
 		case NMGL_TRIANGLES: {
-			pushToTriangles_t(vertexX, vertexY, vertexZ, colorOrNormal, cntxt->trianInner, localSize);
+			pushToTriangles_t((float*)vertexResult, (float*)vertexResult + 3 * NMGL_SIZE, (float*)vertexResult + 6 * NMGL_SIZE, colorOrNormal, cntxt->trianInner, localSize);
 
 			if (cntxt->isCullFace) {
 				cullFaceSortTriangles(cntxt->trianInner);
@@ -309,7 +309,7 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			rasterizeT(&cntxt->trianInner, cntxt->segmentMasks);
 			break;
 		}
-		case NMGL_LINES:
+		/*case NMGL_LINES:
 
 			pushToLines_l(vertexX, vertexY, vertexZ, colorOrNormal, cntxt->lineInner, localSize);
 			findMinMax2(cntxt->lineInner.x0, cntxt->lineInner.x1,
@@ -337,7 +337,7 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			cntxt->pointInner.size = localSize;
 			setSegmentMask(minXY, maxXY, cntxt->segmentMasks, localSize);
 			rasterizeP(&cntxt->pointInner, cntxt->segmentMasks);
-			break;
+			break;*/
 		}
 #else
 		switch (mode)
@@ -408,27 +408,6 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			//в tmp0 теперь хранятся x,y в оконных координатах, z в диапазона 0..Z_BUFF_MAX, 
 			//координаты w а так же текстурные координаты s,t, оставшиеся без изменений
 
-			/*//округление x,y и z
-			//tmp0->tmp1
-			nmppsConvert_32f32s_floor(tmp1.v0.x, (int*)tmp1.v0.x, 0, primCount);
-			nmppsConvert_32f32s_floor(tmp1.v0.y, (int*)tmp1.v0.y, 0, primCount);
-			nmppsConvert_32f32s_floor(tmp1.v0.z, (int*)tmp1.v0.z, 0, primCount);
-			nmppsConvert_32f32s_floor(tmp1.v1.x, (int*)tmp1.v1.x, 0, primCount);
-			nmppsConvert_32f32s_floor(tmp1.v1.y, (int*)tmp1.v1.y, 0, primCount);
-			nmppsConvert_32f32s_floor(tmp1.v1.z, (int*)tmp1.v1.z, 0, primCount);
-			nmppsConvert_32f32s_floor(tmp1.v2.x, (int*)tmp1.v2.x, 0, primCount);
-			nmppsConvert_32f32s_floor(tmp1.v2.y, (int*)tmp1.v2.y, 0, primCount);
-			nmppsConvert_32f32s_floor(tmp1.v2.z, (int*)tmp1.v2.z, 0, primCount);
-			nmppsConvert_32s32f((int*)tmp1.v0.x, tmp1.v0.x, primCount);
-			nmppsConvert_32s32f((int*)tmp1.v0.y, tmp1.v0.y, primCount);
-			nmppsConvert_32s32f((int*)tmp1.v0.z, tmp1.v0.z, primCount);
-			nmppsConvert_32s32f((int*)tmp1.v1.x, tmp1.v1.x, primCount);
-			nmppsConvert_32s32f((int*)tmp1.v1.y, tmp1.v1.y, primCount);
-			nmppsConvert_32s32f((int*)tmp1.v1.z, tmp1.v1.z, primCount);
-			nmppsConvert_32s32f((int*)tmp1.v2.x, tmp1.v2.x, primCount);
-			nmppsConvert_32s32f((int*)tmp1.v2.y, tmp1.v2.y, primCount);
-			nmppsConvert_32s32f((int*)tmp1.v2.z, tmp1.v2.z, primCount);*/
-
 			//данные хранятся в tmp1 (в buffer2), цвет в buffer1
 			v2nm32f *minXY = (v2nm32f*)cntxt->buffer4;
 			v2nm32f *maxXY = (v2nm32f*)cntxt->buffer4 + 3 * NMGL_SIZE;
@@ -448,7 +427,7 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			while (srcThreated < primCount) {
 				//PROFILER_SIZE(primCount);
 				int currentCount = triangulate(cntxt->buffer2, (v4nm32f*)cntxt->buffer1, primCount,
-					WIDTH_PTRN - 1, HEIGHT_PTRN - 1,
+					WIDTH_PTRN, HEIGHT_PTRN,
 					NMGL_SIZE, cntxt->buffer0, (v4nm32f*)cntxt->buffer3, &srcThreated);	
 
 				if (currentCount % 2) {					
@@ -531,10 +510,6 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			nmppsMulC_AddC_32f(cntxt->buffer2 + 3 * NMGL_SIZE, cntxt->windowInfo.viewportMulY, cntxt->windowInfo.viewportAddY, cntxt->buffer1, localSize);		//Y
 			nmppsMulC_AddC_32f(cntxt->buffer0 + 3 * NMGL_SIZE, cntxt->windowInfo.viewportMulZ, cntxt->windowInfo.viewportAddZ, cntxt->buffer2, localSize);	//Z
 
-			/*nmppsConvert_32f32s_floor(cntxt->buffer0, (int*)cntxt->buffer3, 0, localSize);
-			nmppsConvert_32s32f((int*)cntxt->buffer3, cntxt->buffer0, localSize);
-			nmppsConvert_32f32s_floor(cntxt->buffer1, (int*)cntxt->buffer3, 0, localSize);
-			nmppsConvert_32s32f((int*)cntxt->buffer3, cntxt->buffer1, localSize);*/
 			v2nm32f *minXY = (v2nm32f*)cntxt->buffer4;
 			v2nm32f *maxXY = (v2nm32f*)cntxt->buffer4 + 3 * NMGL_SIZE;
 			pushToLines(cntxt->buffer0, cntxt->buffer1, cntxt->buffer2, colorOrNormal, cntxt->lineInner, mode, localSize);
