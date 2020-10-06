@@ -32,7 +32,8 @@ int main()
 	int sizePolygons = sizeof32(Polygons);
 
 	Models models;
-	char* filePath = models.nm;
+	//char* filePath = models.nm;
+	char* filePath = "NM_32.stl";
 	
 	FILE* fmodel = fopen(filePath, "r");
 	int amount = get_amm_poligone(fmodel);
@@ -44,7 +45,7 @@ int main()
 	int normalNM = halSyncAddr(0, 0);
 	ok = halWriteMemBlock(normal, normalNM, amount * 9, 0);
 
-	filePath = models.two_sphere;
+	filePath = "2_sphere.stl";
 	fmodel = fopen(filePath, "r");
 	amount = get_amm_poligone(fmodel);
 	fmodel = fopen(filePath, "r");
