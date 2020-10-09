@@ -23,7 +23,7 @@ int main()
 	if (!VS_Init())
 		return 0;
 	VS_CreateImage("Source Image", 1, WIDTH_IMAGE, HEIGHT_IMAGE, VS_RGB32, 0);	// Create window for 8-bit source grayscale image
-	VS_OpRunForward();
+	//VS_OpRunForward();
 
 	float* vertices = new float[4000 * 12];
 	float* normal = new float[4000 * 9];
@@ -36,8 +36,10 @@ int main()
 	
 	FILE* fmodel = fopen(filePath, "r");
 	int amount = get_amm_poligone(fmodel);
+	fclose(fmodel);
 	fmodel = fopen(filePath, "r");
 	createArrayVec4(fmodel, vertices, normal, 1);
+	fclose(fmodel);
 	ok = halSync(amount, 0);
 	int verticesNM = halSyncAddr(0, 0);
 	ok = halWriteMemBlock(vertices, verticesNM, amount * 12, 0);
@@ -47,8 +49,10 @@ int main()
 	filePath = models.two_sphere;
 	fmodel = fopen(filePath, "r");
 	amount = get_amm_poligone(fmodel);
+	fclose(fmodel);
 	fmodel = fopen(filePath, "r");
 	createArrayVec4(fmodel, vertices, normal, 0.5);
+	fclose(fmodel);
 	halSync(amount, 0);
 	verticesNM = halSyncAddr(0, 0);
 	ok = halWriteMemBlock(vertices, verticesNM, amount * 12, 0);

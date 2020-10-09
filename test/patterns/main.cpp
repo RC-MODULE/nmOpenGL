@@ -8,6 +8,11 @@
 
 using namespace std;
 
+#define SCALE 20
+
+#define CENTER_PIXEL_X 0.5
+#define CENTER_PIXEL_Y 0.5
+
 void printPtrnsToTxt(unsigned char * ptrns, char* path) {
 	ofstream ptrnstream;          // поток для записи
 	ptrnstream.open(path); // окрываем файл для записи
@@ -41,12 +46,12 @@ int main()
 	if (!VS_Init())
 		return 0;
 	VS_CreateImage("fill", 1, WIDTH_PTRN, HEIGHT_PTRN, VS_RGB8, 0);	// Create window for 8-bit source grayscale image
-	VS_CreateImage("line", 2, WIDTH_PTRN, HEIGHT_PTRN, VS_RGB8, 0);	// Create window for 8-bit source grayscale image
-	VS_CreateImage("point", 3, WIDTH_PTRN, HEIGHT_PTRN, VS_RGB8, 0);	// Create window for 8-bit source grayscale image
-	VS_CreateImage("lineTableTest", 4, WIDTH_PTRN, HEIGHT_PTRN, VS_RGB8, 0);	// Create window for 8-bit source grayscale image
-	VS_CreateImage("fillTableTest", 5, WIDTH_PTRN, HEIGHT_PTRN, VS_RGB8, 0);	// Create window for 8-bit source grayscale image
-	//VS_CreateImage("antifill", 6, WIDTH_PTRN, HEIGHT_PTRN, VS_RGB8, 0);	// Create window for 8-bit source grayscale image
-	//VS_CreateImage("sumFill", 7, WIDTH_PTRN, HEIGHT_PTRN, VS_RGB8, 0);	// Create window for 8-bit source grayscale image
+	VS_CreateImage("antifill", 2, WIDTH_PTRN, HEIGHT_PTRN, VS_RGB8, 0);	// Create window for 8-bit source grayscale image
+	VS_CreateImage("line", 3, WIDTH_PTRN, HEIGHT_PTRN, VS_RGB8, 0);	// Create window for 8-bit source grayscale image
+	VS_CreateImage("point", 4, WIDTH_PTRN, HEIGHT_PTRN, VS_RGB8, 0);	// Create window for 8-bit source grayscale image
+	VS_CreateImage("lineTableTest", 5, WIDTH_PTRN, HEIGHT_PTRN, VS_RGB8, 0);	// Create window for 8-bit source grayscale image
+	VS_CreateImage("fillTableTest", 6, WIDTH_PTRN, HEIGHT_PTRN, VS_RGB8, 0);	// Create window for 8-bit source grayscale image
+	
 	
 	//VS_OpRunForward();
 
@@ -76,40 +81,32 @@ int main()
 	ptrnstream.close();
 	int yTable = 0;
 	int xTable = 0;
-	int fillCnt = 31;
+	int fillCnt = 0;
+	int antifillCnt = FILL_PATTERNS_AMOUNT / 2;
 	int lineCnt = 0;
 	int pointCnt = 0;
-	int values[][2] = { {-31,0}, {-15,3}, {-15,15}, {-3,15}, { 0,0 }, { 3,15 }, { 15,15 }, { 15,3 }, { 32,0 } };
-	int d[][2] = { {-30,4}, {30, 4}, {5,5} };
+	int check1[][2] = { {-31,0}, {-15,3}, {-15,15}, {-3,15}, { 0,0 } };
+	int check2[][2] = { { 31,0 },{ 15,3 },{ 15,15 },{ 3,15 },{ 0,0 } };
 	int i = 0;
 	while(VS_Run())	{
 		int sizePtrn = WIDTH_PTRN * HEIGHT_PTRN;
-		//int number0 = GET_TABLE_VALUE(fillTable, -xTable, yTable);
-		//int number1 = GET_TABLE_VALUE(fillTable, xTable, yTable);
-		//int number0 = GET_TABLE_VALUE(fillTable, d[0][0], d[0][1]) + 30;
-		//int number1 = GET_TABLE_VALUE(fillTable, d[1][0], d[1][1]) + FILL_PATTERNS_AMOUNT / 2;
+		//int number0 = GET_TABLE_VALUE(fillTable, 30, 4);
+		//int number1 = GET_TABLE_VALUE(fillTable, 30, 4) + FILL_PATTERNS_AMOUNT / 2;
 		int number0 = fillCnt;
 		int number1 = fillCnt + FILL_PATTERNS_AMOUNT / 2;
-		//printf("%d, %d\n", number0, number1);
-		/*for (int y = 0; y < HEIGHT_PTRN; y++) {
-			for (int x = 0; x < WIDTH_PTRN; x++) {
-				sumFill[y * WIDTH_PTRN + x] = (fillPtrns[number0 * sizePtrn + y * WIDTH_PTRN + x] +
-					fillPtrns[number1 * sizePtrn + y * WIDTH_PTRN + WIDTH_PTRN - 1 - x]) / 2;
-				//sumFill[y * WIDTH_PTRN + x] = (fillPtrns[number0 * sizePtrn + y * WIDTH_PTRN + x] +
-				//		fillPtrns[number1 * sizePtrn + y * WIDTH_PTRN + x]) / 2;
-			}
-		}*/
 		
-		VS_SetData(1, fillPtrns + fillCnt * WIDTH_PTRN * HEIGHT_PTRN);
-		VS_SetData(2, linePtrns + lineCnt * WIDTH_PTRN * HEIGHT_PTRN);
-		VS_SetData(3, pointPtrns + pointCnt * WIDTH_PTRN * HEIGHT_PTRN);
-		VS_SetData(4, linePtrns + GET_TABLE_VALUE(lineTable, values[i][0], values[i][1]) * WIDTH_PTRN * HEIGHT_PTRN);
-		VS_SetData(5, fillPtrns + GET_TABLE_VALUE(fillTable, values[i][0], values[i][1]) * WIDTH_PTRN * HEIGHT_PTRN);
-		//VS_SetData(5, fillPtrns + (8032) * WIDTH_PTRN * HEIGHT_PTRN);
+		VS_SetData(1, fillPtrns + number0 * WIDTH_PTRN * HEIGHT_PTRN);
+		VS_SetData(2, fillPtrns + number1 * WIDTH_PTRN * HEIGHT_PTRN);
+		VS_SetData(3, linePtrns + lineCnt * WIDTH_PTRN * HEIGHT_PTRN);
+		VS_SetData(4, pointPtrns + pointCnt * WIDTH_PTRN * HEIGHT_PTRN);
+		//VS_SetData(5, fillPtrns + (GET_TABLE_VALUE(fillTable, check1[i][0], check1[i][1]) + 31) * WIDTH_PTRN * HEIGHT_PTRN);
+		//VS_SetData(6, fillPtrns + GET_TABLE_VALUE(fillTable, check2[i][0], check2[i][1]) * WIDTH_PTRN * HEIGHT_PTRN);
+		VS_SetData(5, fillPtrns + (8840) * WIDTH_PTRN * HEIGHT_PTRN);
+		VS_SetData(6, fillPtrns + (3073) * WIDTH_PTRN * HEIGHT_PTRN);
 		
-		int h = GET_TABLE_VALUE(lineTable, values[i][0], values[i][1]);
+		//int h = GET_TABLE_VALUE(lineTable, values[i][0], values[i][1]);
 
-		VS_Text("fillNo = %d\r\n", fillCnt);
+		//VS_Text("fillNo = %d\r\n", fillCnt);
 		//VS_Text("lineNo = %d\r\n", lineCnt);
 		//VS_Text("pointNo = %d\r\n\r\n", pointCnt);
 
@@ -127,8 +124,10 @@ int main()
 		pointCnt++;
 		Sleep(10);
 		i = (i == 9) ? 0 : i;
-		//fillCnt = (fillCnt >= FILL_PATTERNS_AMOUNT / 2) ? 0 : fillCnt;
-		fillCnt = (fillCnt >= FILL_PATTERNS_AMOUNT) ? 0 : fillCnt;
+		if (fillCnt >= FILL_PATTERNS_AMOUNT / 2) {
+			fillCnt = 0;
+			antifillCnt = FILL_PATTERNS_AMOUNT / 2;
+		}
 		lineCnt = (lineCnt >= LINE_PATTERNS_AMOUNT) ? 0 : lineCnt;
 		pointCnt = (pointCnt >= POINT_PATTERNS_AMOUNT) ? 0 : pointCnt;
 

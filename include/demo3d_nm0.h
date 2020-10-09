@@ -266,18 +266,18 @@ public:
 		materialAmbient.vec[0] = 0.2;
 		materialAmbient.vec[1] = 0.2;
 		materialAmbient.vec[2] = 0.2;
+		materialAmbient.vec[3] = 1;
 		materialDiffuse.vec[0] = 0.8;
 		materialDiffuse.vec[1] = 0.8;
 		materialDiffuse.vec[2] = 0.8;
+		materialDiffuse.vec[3] = 1;
 		materialSpecular.vec[0] = 0;
 		materialSpecular.vec[1] = 0;
 		materialSpecular.vec[2] = 0;
+		materialSpecular.vec[3] = 1;
 		materialEmissive.vec[0] = 0;
 		materialEmissive.vec[1] = 0;
 		materialEmissive.vec[2] = 0;
-		materialAmbient.vec[3] = 1;
-		materialDiffuse.vec[3] = 1;
-		materialSpecular.vec[3] = 1;
 		materialEmissive.vec[3] = 1;
 
 		for (int i = 0; i < MAX_LIGHTS; i++) {

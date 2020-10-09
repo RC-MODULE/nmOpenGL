@@ -20,14 +20,16 @@ SECTION(".text_shared0") int main()
 
 	nmglvsNm0Init();
 
-	setHeap(10);
-	float* vertices_DDR = (float*)halMalloc32(2000 * 12);
-	float* normal_DDR = (float*)halMalloc32(2000 * 9);
-	float* vertices_DDR2 = (float*)halMalloc32(2000 * 12);
-	float* normal_DDR2 = (float*)halMalloc32(2000 * 9);
-	int ok;
 	
 #ifdef __OPEN_GL__
+
+	setHeap(10);
+	float* vertices_DDR = new float[2000 * 12];
+	float* normal_DDR = new float[2000 * 9];
+	float* vertices_DDR2 = new float[2000 * 12];
+	float* normal_DDR2 = new float[2000 * 9];
+	int ok;
+
 	Models models;
 	char* filePath = models.nm;
 
@@ -44,13 +46,20 @@ SECTION(".text_shared0") int main()
 	filePath = models.two_sphere;
 	fmodel = fopen(filePath, "r");
 	amount = get_amm_poligone(fmodel);
+	fclose(fmodel);
 	fmodel = fopen(filePath, "r");
 	createArrayVec4(fmodel, vertices_DDR2, normal_DDR2, 0.5);
-	
-
+	fclose(fmodel);
 
 	int amountPolygons2 = amount;
 #else
+
+	setHeap(10);
+	float* vertices_DDR = (float*)halMalloc32(2000 * 12);
+	float* normal_DDR = (float*)halMalloc32(2000 * 9);
+	float* vertices_DDR2 = (float*)halMalloc32(2000 * 12);
+	float* normal_DDR2 = (float*)halMalloc32(2000 * 9);
+	int ok;
 	int amountPolygons = halHostSync(0);
 
 	//Массив цветов полигонов (по 4 компоненты на вершину)
@@ -70,7 +79,7 @@ SECTION(".text_shared0") int main()
 	nmglClearColor(0, 0, 0.4f, 0.0f);
 
 	nmglEnable(NMGL_DEPTH_TEST);
-	//nmglEnable(NMGL_CULL_FACE);
+	nmglEnable(NMGL_CULL_FACE);
 
 	nmglMatrixMode(NMGL_MODELVIEW);
 	nmglLoadIdentity();
@@ -91,6 +100,7 @@ SECTION(".text_shared0") int main()
 	float materialSpec[4] = { 0,0,0,1 };
 	float materialDiffuse[4] = { 0,0,0,1 };
 	nmglMaterialf(NMGL_FRONT_AND_BACK, NMGL_SHININESS, 15);
+	//float angle = 1.72 * 38;
 	float angle = 0;
 	NMGLenum error;
 	unsigned time;
@@ -110,7 +120,7 @@ SECTION(".text_shared0") int main()
 		nmglVertexPointer(4, NMGL_FLOAT, 0, vertices_DDR);
 		nmglNormalPointer(NMGL_FLOAT, 0, normal_DDR);
 		nmglLoadIdentity();
-		//nmglScalef(0.8f, 0.8f, 0.8f);
+		nmglScalef(0.9f, 0.9f, 0.9f);
 		nmglRotatef(angle, 0.707f, 0.707f, 0);
 		materialDiffuse[0] = 1;
 		materialDiffuse[2] = 0;
@@ -121,10 +131,12 @@ SECTION(".text_shared0") int main()
 		nmglMaterialfv(NMGL_FRONT_AND_BACK, NMGL_SPECULAR, materialSpec);
 		//PROFILER_SIZE(3 * amountPolygons);
 		nmglDrawArrays(NMGL_TRIANGLES, 0, 3 * amountPolygons);
+		//nmglDrawArrays(NMGL_TRIANGLES, 0, 3 * counter);
 
 		nmglVertexPointer(4, NMGL_FLOAT, 0, vertices_DDR2);
 		nmglNormalPointer(NMGL_FLOAT, 0, normal_DDR2);
 		nmglLoadIdentity();
+		nmglScalef(0.9f, 0.9f, 0.9f);
 		materialDiffuse[0] = 0.4;
 		materialDiffuse[1] = 1;
 		materialDiffuse[2] = 1;
@@ -137,8 +149,15 @@ SECTION(".text_shared0") int main()
 		nmglTranslatef(150, 150, 0);
 		//PROFILER_SIZE(3 * amountPolygons2);
 		nmglDrawArrays(NMGL_TRIANGLES, 0, 3 * amountPolygons2);
+		//3 * 15 * amountPolygons2 / 16 = 5040
+		//3 * amountPolygons2 / 16 = 336
+		//nmglDrawArrays(NMGL_TRIANGLES, 3 * amountPolygons2 / 2, 3 * amountPolygons2 / 16);
+		//nmglDrawArrays(NMGL_TRIANGLES, 3 * amountPolygons2 / 2 + 3 * 35, 3);
+		//nmglDrawArrays(NMGL_TRIANGLES, 3 * amountPolygons2 / 2 + 3 * 97, 3);
 #ifdef __OPEN_GL__
-		angle += 0.03;
+		//angle += 0.03;
+		angle += 1.72;
+		halSleep(100);
 #else
 		angle += 1.72;
 #endif // __OPEN_GL__

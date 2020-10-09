@@ -1,4 +1,5 @@
 #include "pattern.h"
+#define _USE_MATH_DEFINES
 #include "math.h"
 #include "stdio.h"
 #include "windows.h"
@@ -10,7 +11,7 @@ using namespace std;
 #define abs(a) (((a) < 0) ? -(a) : (a))
 
 static void setPixel(unsigned char* dst, int x, int y, unsigned char color);
-static void fillRow(unsigned char* dst, int x1, int x2, int y, unsigned char color);
+//static void fillRow(unsigned char* dst, int x1, int x2, int y, unsigned char color);
 static void drawLine(unsigned char* dst, int x1, int y1, int x2, int y2, unsigned char color);
 static void fillSide(unsigned char* dst, int x1, int y1, int x2, int y2, unsigned char color, int leftSide);
 static void fillCircle(unsigned char* dst, int x0, int y0, int radius, unsigned char color);
@@ -23,45 +24,45 @@ void fillPtrnsInit(unsigned char* dst, int* table_dydx, unsigned char color) {
 	int cntLeft = FILL_PATTERNS_AMOUNT / 2;
 	const int size = WIDTH_PTRN * HEIGHT_PTRN;
 
+
 	for (int i = 0; i < FILL_PATTERNS_AMOUNT * size; i++) {
 		dst[i] = 0;
 	}
 
-	for (int y = 0; y < HEIGHT_PTRN; y++) {
+	int r = 2 * max(WIDTH_PTRN, HEIGHT_PTRN);
+	float stepA = M_PI / AMOUNT_ANGLES;
+	for (float angle = 0; angle < AMOUNT_ANGLES/2; angle++) {
 		for (int off = 0; off < OFFSETS; off++, cntRight++, cntLeft++) {
-			fillSide(dst + cntRight * size, off, 0, -(WIDTH_PTRN - 1) + off, y, color, 0);
-			fillSide(dst + cntLeft  * size, off, 0, -(WIDTH_PTRN - 1) + off, y, color, 1);
-			if (y == 0) {
-				for (int i = 0; i < size; i++) {
-					dst[cntRight * size + i] = color;
-					dst[cntLeft * size + i] = color;
+			if (angle == 0) {
+				for (int x = off; x < WIDTH_PTRN; x++) {
+					drawLine(dst + cntRight * size, x, 0, x, HEIGHT_PTRN, color);
+				}
+				for (int x = 0; x < off; x++) {
+					drawLine(dst + cntLeft * size, x, 0, x, HEIGHT_PTRN, color);
 				}
 			}
-		}
-	}
-	for (int x = -WIDTH_PTRN; x < 0; x++) {
-		for (int off = 0; off < OFFSETS; off++, cntRight++, cntLeft++) {
-			fillSide(dst + cntRight * size, off, 0, x + off, HEIGHT_PTRN, color, 0);
-			fillSide(dst + cntLeft  * size, off, 0, x + off, HEIGHT_PTRN, color, 1);
-		}
-	}
-	for (int x = 0; x < WIDTH_PTRN; x++) {
-		for (int off = 0; off < OFFSETS; off++, cntRight++, cntLeft++) {
-			fillSide(dst + cntRight * size, off, 0, x + off, HEIGHT_PTRN, color, 0);
-			fillSide(dst + cntLeft  * size, off, 0, x + off, HEIGHT_PTRN, color, 1);
+			else {
+				fillSide(dst + cntRight * size, off, 0, off + r * cos(angle * M_PI / 180), r * sin(angle * M_PI / 180), color, 1);
+				fillSide(dst + cntLeft  * size, off, 0, off + r * cos(angle * M_PI / 180), r * sin(angle * M_PI / 180), color, 0);
+			}
 		}
 	}
 
-	for (int y = HEIGHT_PTRN - 1; y >= 0; y--) {
+	for (float angle = AMOUNT_ANGLES/2; angle < AMOUNT_ANGLES; angle++) {
 		for (int off = 0; off < OFFSETS; off++, cntRight++, cntLeft++) {
-			fillSide(dst + cntRight * size, off, 0, (WIDTH_PTRN - 1) + off, y, color, 0);
-			fillSide(dst + cntLeft  * size, off, 0, (WIDTH_PTRN - 1) + off, y, color, 1);
-			if (y == 0) {
-				for (int i = 0; i < size; i++) {
-					dst[cntRight * size + i] = color;
-					dst[cntLeft * size + i] = color;
+			if (angle == AMOUNT_ANGLES/2) {
+				for (int x = off; x < WIDTH_PTRN; x++) {
+					drawLine(dst + cntRight * size, x, 0, x, HEIGHT_PTRN, color);
+				}
+				for (int x = 0; x < off; x++) {
+					drawLine(dst + cntLeft * size, x, 0, x, HEIGHT_PTRN, color);
 				}
 			}
+			else {
+				fillSide(dst + cntRight * size, off, 0, off + r * cos(angle * M_PI / 180), r * sin(angle * M_PI / 180), color, 0);
+				fillSide(dst + cntLeft  * size, off, 0, off + r * cos(angle * M_PI / 180), r * sin(angle * M_PI / 180), color, 1);
+			}
+			
 		}
 	}
 	
@@ -70,72 +71,47 @@ void fillPtrnsInit(unsigned char* dst, int* table_dydx, unsigned char color) {
 }
 
 static void createFillTable(int* table) {
-	for (int i = 0; i < SIZE_TABLE; i++) {
-		table[i] = 0;
-	}
-
-	for (int x = 0; x < WIDTH_PTRN; x++) {
-		table[x + WIDTH_PTRN] = x;
-		table[x] = x;
-	}
-	for (int y = 1; y <= HEIGHT_PTRN; y++) {
-		for (int x = -WIDTH_PTRN; x < 0; x++) {
+	for (int y = 0; y < HEIGHT_TABLE; y++) {
+		for (int x = -WIDTH_TABLE / 2; x < WIDTH_TABLE / 2; x++) {
 			double k = (double)y / (double)x;
-			int signX = (x < 0) ? -1 : 1;
-			if (abs(x) < y) {
-				int resX = -floor(HEIGHT_PTRN / k);
-				table[y * 2 * WIDTH_PTRN + x + WIDTH_PTRN] = (64 - resX) * OFFSETS;
-			}
-			else {
-				int resY = -ceil(WIDTH_PTRN * k);
-				table[y * 2 * WIDTH_PTRN + x + WIDTH_PTRN] = (resY) * OFFSETS;
-			}
-		}
-		//table[y * 2 * WIDTH_PTRN + WIDTH_PTRN] = 2080;
-		for (int x = 1; x < WIDTH_PTRN; x++) {
-			double k = (double)y / (double)x;
-			int signX = (x < 0) ? -1 : 1;
-			if (abs(x) < y) {
-				int resX = ceil(HEIGHT_PTRN / k);
-				table[y * 2 * WIDTH_PTRN + x + WIDTH_PTRN] = (resX) * OFFSETS + FILL_PATTERNS_AMOUNT / 4;
-			}
-			else {
-				int resY = ceil(WIDTH_PTRN * k);
-				table[y * 2 * WIDTH_PTRN + x + WIDTH_PTRN] = (64 - resY)* OFFSETS + FILL_PATTERNS_AMOUNT / 4;
-			}
+			float angle = round(atan2(y, x) * 180 / M_PI);
+			table[y * WIDTH_TABLE + x + WIDTH_TABLE / 2] = angle * OFFSETS;
 		}
 	}
-
-	/*//дублировнаие 31 строки в 32 строку
-	for (int i = 0; i < 2 * WIDTH_PTRN; i++) {
-		table[32 * 2 * WIDTH_PTRN + i] = table[31 * 2 * WIDTH_PTRN + i];
-	}*/
+	
 }
 
 void linePtrnsInit(unsigned char* dst, int* table, unsigned char color) {
 	int cnt = 0;
 	const int size = WIDTH_PTRN * HEIGHT_PTRN;
-
-//------------------------
 	for (int i = 0; i < LINE_PATTERNS_AMOUNT * size; i++) {
 		dst[i] = 0;
 	}
-//------------------------
 
-	for (int y = 0; y < HEIGHT_PTRN; y++, cnt++) {
-		drawLine(dst + cnt * size, WIDTH_PTRN - 1, 0, 0, y, color);
+	int r = 2 * max(WIDTH_PTRN, HEIGHT_PTRN);
+	float stepA = M_PI / AMOUNT_ANGLES;
+	for (float angle = 0; angle < AMOUNT_ANGLES / 2; angle++, cnt++) {
+		drawLine(dst + cnt * size, 0, 0, r * cos(angle * M_PI / 180), r * sin(angle * M_PI / 180), color);
+	}
+
+	for (float angle = AMOUNT_ANGLES / 2; angle < AMOUNT_ANGLES; angle++, cnt++) {
+		drawLine(dst + cnt * size, WIDTH_PTRN - 1, 0, WIDTH_PTRN - 1 + r * cos(angle * M_PI / 180), r * sin(angle * M_PI / 180), color);
+	}
+
+	/*for (int y = 0; y < HEIGHT_PTRN; y++, cnt++) {
+		drawLine(dst + cnt * size, WIDTH_PTRN, 0, 0, y, color);
 	}
 	for (int x = 0; x <= WIDTH_PTRN; x++, cnt++) {
-		drawLine(dst + cnt * size, WIDTH_PTRN - 1, 0, x, HEIGHT_PTRN - 1, color);
+		drawLine(dst + cnt * size, WIDTH_PTRN, 0, x, HEIGHT_PTRN, color);
 	}
 
 
 	for (int x = 0; x < WIDTH_PTRN; x++, cnt++) {
-		drawLine(dst + cnt * size, 0, 0, x, HEIGHT_PTRN - 1, color);
+		drawLine(dst + cnt * size, 0, 0, x, HEIGHT_PTRN, color);
 	}
 	for (int y = HEIGHT_PTRN - 1; y >= 0; y--, cnt++) {
-		drawLine(dst + cnt * size, 0, 0, WIDTH_PTRN - 1, y, color);
-	}
+		drawLine(dst + cnt * size, 0, 0, WIDTH_PTRN, y, color);
+	}*/
 
 
 	createLineTable(table);
@@ -147,7 +123,15 @@ static void createLineTable(int* table) {
 	for (int i = 0; i < SIZE_TABLE; i++) {
 		table[i] = 0;
 	}
-	for (int x = -WIDTH_PTRN; x < WIDTH_PTRN; x++) {
+	for (int y = 0; y < HEIGHT_TABLE; y++) {
+		for (int x = -WIDTH_TABLE / 2; x < WIDTH_TABLE / 2; x++) {
+			double k = (double)y / (double)x;
+			float angle = round(atan2(y, x) * 180 / M_PI);
+			table[y * WIDTH_TABLE + x + WIDTH_TABLE / 2] = angle;
+		}
+	}
+
+	/*for (int x = -WIDTH_PTRN; x < WIDTH_PTRN; x++) {
 		table[x + WIDTH_PTRN] = 0;
 	}
 	for (int y = 1; y <= HEIGHT_PTRN; y++) {
@@ -179,10 +163,6 @@ static void createLineTable(int* table) {
 				}
 			}
 		}
-	}
-	/*//дублировнаие 31 строки в 32 строку
-	for (int i = 0; i < 2 * WIDTH_PTRN; i++) {
-		table[32 * 2 * WIDTH_PTRN + i] = table[31 * 2 * WIDTH_PTRN + i];
 	}*/
 }
 
@@ -223,75 +203,52 @@ static void fillRow(unsigned char* dst, int x1, int x2, int y, unsigned char col
 
 
 static void drawLine(unsigned char* dst, int x1, int y1, int x2, int y2, unsigned char color) {
-	const int deltaX = abs(x2 - x1);
-	const int deltaY = abs(y2 - y1);
-	const int signX = x1 < x2 ? 1 : -1;
-	const int signY = y1 < y2 ? 1 : -1;
-	//
-	int error = deltaX - deltaY;
-	//
-	setPixel(dst, x2, y2, color);
-	while (x1 != x2 || y1 != y2)
-	{
-		setPixel(dst, x1, y1, color);
-		const int error2 = error * 2;
-		//
-		if (error2 > -deltaY)
-		{
-			error -= deltaY;
+	int deltaX = abs(x2 - x1);
+	int deltaY = abs(y2 - y1);
+	int signX = x1 < x2 ? 1 : -1;
+	int signY = y1 < y2 ? 1 : -1;
+
+	if (abs(deltaX) > abs(deltaY)) {
+		int deltaError = deltaY;
+		int error = 0;
+		while (x1 != x2) {
+			setPixel(dst, x1, y1, color);
+			error += deltaError;
+			if (error >= deltaX) {
+				y1 += signY;
+				error -= deltaX;
+			}
 			x1 += signX;
 		}
-		if (error2 < deltaX)
-		{
-			error += deltaX;
+	}
+	else {
+		int deltaError = deltaX;
+		int error = 0;
+		while (y1 != y2) {
+			setPixel(dst, x1, y1, color);
+			error += deltaError;
+			if (error >= deltaY) {
+				x1 += signX;
+				error -= deltaY;
+			}
 			y1 += signY;
 		}
 	}
 }
 
-static void fillSide(unsigned char* dst, int x1, int y1, int x2, int y2, unsigned char color, int leftSide) {
-	const int deltaX = abs(x2 - x1);
-	const int deltaY = abs(y2 - y1);
-	const int signX = x1 < x2 ? 1 : -1;
-	const int signY = y1 < y2 ? 1 : -1;
-	//
-	int error = deltaX - deltaY;
-	//
-	//setPixel(dst, x2, y2, color);
-	if (leftSide) 
-		fillRow(dst, 0, x2 + 1, y2, color);
-	else 
-		fillRow(dst, x2, WIDTH_PTRN, y2, color);
-
-	if (y1 == y2) {
-		return;
-	}
-	while (x1 != x2 || y1 != y2)
-	{
-		//setPixel(dst, x1, y1, color);
-		if (leftSide) 
-			fillRow(dst, 0, x1, y1, color);
-		else 
-			fillRow(dst, x1, WIDTH_PTRN, y1, color);
-		
-		const int error2 = error * 2;
-		//
-		if (error2 > -deltaY)
-		{
-			error -= deltaY;
-			x1 += signX;
-		}
-		if (error2 < deltaX)
-		{
-			error += deltaX;
-			y1 += signY;
-		}
-	}
-	//остаток изображения
-	if (signX / signY < 0 && leftSide == 0 ||
-		signX / signY > 0 && leftSide == 1) {
-		for (int y = y1; y < HEIGHT_PTRN; y++) {
-			fillRow(dst, 0, WIDTH_PTRN, y, color);
+static void fillSide(unsigned char* dst, int x1, int y1, int x2, int y2, unsigned char color, int topLeftSide) {
+	float deltaY = (y2 - y1);
+	float deltaX = (x2 - x1);
+	float k = deltaY / deltaX;
+	float b = y1 - k * x1;
+	for (int y = 0; y < HEIGHT_PTRN; y++) {
+		for (int x = 0; x < WIDTH_PTRN; x++) {
+			float yRefp = k * (float(x)) + b;
+			float yRefs = k * (float(x)) + b;
+			if (topLeftSide == 0 && (yRefp <= y) ||
+				topLeftSide == 1 && (yRefs >= y)) {
+				setPixel(dst, x, y, color);
+			}
 		}
 	}
 }
