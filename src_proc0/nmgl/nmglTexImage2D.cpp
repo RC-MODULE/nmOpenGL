@@ -212,7 +212,7 @@ void nmglTexImage2D(NMGLenum target, NMGLint level, NMGLint internalformat, NMGL
 				if(iter == 0)
 				{
 					ActiveTexObjectP->texImages2D[iter].width=width;
-					ActiveTexObjectP->texImages2D[iter].height=height;
+					ActiveTexObjectP->texImages2D[iter].height=height;					
 /*sync*/cntxt->synchro.writeInstr(1, NMC1_SET_WHF,(int)(ActiveTexObjectP->name),width,height,internalformat);
 
 				}

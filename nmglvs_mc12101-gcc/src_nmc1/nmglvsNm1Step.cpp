@@ -221,7 +221,8 @@ SECTION(".text_nmglvs") int nmglvsNm1Step()
 		NMGLsizei height0=currentCommand.params[2];
 		NMGLenum format=currentCommand.params[3];
 		int i=0;
-        for(i=0;i<=NMGL_MAX_MIPMAP_LVL;i++)
+		
+		for(i=0;i<=NMGL_MAX_MIPMAP_LVL;i++)
 		{
 			TexObj[texture].texImages2D[i].internalformat=format;
 			if(width0>>i >= 1)

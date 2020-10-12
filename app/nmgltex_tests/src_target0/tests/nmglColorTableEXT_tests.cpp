@@ -77,6 +77,9 @@ cntxt->error=NMGL_NO_ERROR;
 	nmglColorTableEXT (NMGL_TEXTURE_2D, NMGL_RGBA ,-1, NMGL_RGBA, NMGL_UNSIGNED_BYTE, data);
 	TEST_ASSERT(cntxt->error==NMGL_INVALID_VALUE);
 cntxt->error=NMGL_NO_ERROR;	
+	nmglColorTableEXT (NMGL_TEXTURE_2D, NMGL_RGBA ,-1, NMGL_RGBA, NMGL_UNSIGNED_BYTE+1, data);
+	TEST_ASSERT(cntxt->error==NMGL_INVALID_ENUM);
+cntxt->error=NMGL_NO_ERROR;	
 	nmglColorTableEXT (NMGL_TEXTURE_2D, NMGL_RGBA, NMGL_MAX_PALETTE_WIDTH, NMGL_RGBA, NMGL_UNSIGNED_BYTE, data);
 	TEST_ASSERT(cntxt->error==NMGL_NO_ERROR);
 	return 0;
@@ -94,12 +97,12 @@ int nmglColorTableEXT_setColorTable_contextCorrect()
 	cntxt->texState.activeTexUnitIndex=0;
 	cntxt->texState.texUnits[0].boundTexObject=&cntxt->texState.texObjects[0];
 
-	for (i=0;i<USED_SIDE*RGBA_TEXEL_SIZE_UBYTE;i++)
+	for (i=0;i<cwidth*RGBA_TEXEL_SIZE_UBYTE;i++)
 	{
 		*((NMGLubyte*)data+i)=0x1+i;
 	}
 	nmglColorTableEXT (NMGL_TEXTURE_2D, NMGL_RGBA, cwidth, NMGL_RGBA, NMGL_UNSIGNED_BYTE, data);
-	halSleep(500);
+	wait_for_nm1_if_available;
 DEBUG_PRINT(("cwidth=%d\n0width=%d\n1width=%d\n",cwidth,cntxt->texState.texObjects[0].palette.width,cntxt_nm1->texState.texObjects[0].palette.width));
 	TEST_ASSERT(cntxt->texState.texObjects[0].palette.width == cwidth);
 	if(nmpu1IsAccessible == 1) {TEST_ASSERT(cntxt_nm1->texState.texObjects[0].palette.width == cwidth);}

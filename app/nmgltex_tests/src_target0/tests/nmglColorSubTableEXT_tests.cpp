@@ -111,8 +111,9 @@ cntxt->error=NMGL_NO_ERROR;
 nmglColorSubTableEXT (NMGL_TEXTURE_2D, 0, NMGL_MAX_PALETTE_WIDTH, NMGL_RGBA,NMGL_UNSIGNED_BYTE+1 ,data);
 TEST_ASSERT(cntxt->error==NMGL_INVALID_ENUM);
 cntxt->error=NMGL_NO_ERROR;
-
-	TEST_ASSERT(1);
+nmglColorSubTableEXT (NMGL_TEXTURE_2D, 0, NMGL_MAX_PALETTE_WIDTH, NMGL_RGBA,NMGL_UNSIGNED_BYTE,data);
+TEST_ASSERT(cntxt->error==NMGL_NO_ERROR);
+	
 	return 0;
 }
 //------------------------------------------------------------------------------

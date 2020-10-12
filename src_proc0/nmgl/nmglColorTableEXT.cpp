@@ -2,7 +2,7 @@
 SECTION(".textures_mipmap_mem")  NMGLubyte mem_palette[NMGL_MAX_PALETTE_WIDTH*RGBA_TEXEL_SIZE_UBYTE*NMGL_MAX_TEX_OBJECTS];
 
 SECTION(".text_nmgl")
-
+extern int isPowerOf2(NMGLint x);
 //============================================================================================================
 void nmglColorTableEXT (NMGLenum target, NMGLenum internalformat, NMGLsizei width, NMGLenum format, NMGLenum type, const void *data);
 /*
@@ -23,8 +23,9 @@ void nmglColorTableEXT (NMGLenum target, NMGLenum internalformat, NMGLsizei widt
 	if (type !=NMGL_UNSIGNED_BYTE) {cntxt->error=NMGL_INVALID_ENUM;return;}
 	if(internalformat != format)  {cntxt->error=NMGL_INVALID_VALUE;return;}
 	if(internalformat !=NMGL_RGBA){cntxt->error=NMGL_INVALID_VALUE;return;}
-	if(width<=0) {cntxt->error=NMGL_INVALID_VALUE;return;}
+	if(width<=0) {cntxt->error=NMGL_INVALID_VALUE;return;}	
 	if(width>NMGL_MAX_PALETTE_WIDTH){cntxt->error=NMGL_OUT_OF_MEMORY;return;}
+	if(!isPowerOf2(width)) {cntxt->error=NMGL_INVALID_VALUE;return;}
 	ActiveTexObjectP->palette.width=width;
 	ActiveTexObjectP->palette.colors=(NMGLubyte*)(mem_palette+ActiveTexObjectP->name*NMGL_MAX_PALETTE_WIDTH*RGBA_TEXEL_SIZE_UBYTE);
 	cntxt->synchro.writeInstr(1, NMC1_SET_COLOR_PALETTE, (unsigned int)ActiveTexObjectP->palette.colors,(unsigned int)ActiveTexObjectP->palette.width,ActiveTexObjectP->name);
