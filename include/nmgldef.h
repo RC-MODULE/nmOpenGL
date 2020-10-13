@@ -221,6 +221,8 @@
 #define NMGL_RGBA                           0x1908
 #define NMGL_LUMINANCE                      0x1909
 #define NMGL_LUMINANCE_ALPHA                0x190A
+#define NMGL_COLOR_INDEX                    0x1900                
+#define NMGL_COLOR_INDEX8_EXT               0x80E5                                    
 #define NMGL_UNPACK_ALIGNMENT               0x0CF5
 #define NMGL_PACK_ALIGNMENT                 0x0D05
 #define NMGL_UNSIGNED_SHORT_4_4_4_4         0x8033
@@ -335,6 +337,15 @@
 #define NMGL_DOT3_RGB                       0x86AE
 #define NMGL_DOT3_RGBA                      0x86AF
 
+//EXT_paletted_texture
+#define NMGL_COLOR_TABLE_FORMAT_EXT         0x80D8
+#define NMGL_COLOR_TABLE_WIDTH_EXT          0x80D9
+#define NMGL_COLOR_TABLE_RED_SIZE_EXT       0x80DA
+#define NMGL_COLOR_TABLE_GREEN_SIZE_EXT     0x80DB
+#define NMGL_COLOR_TABLE_BLUE_SIZE_EXT      0x80DC
+#define NMGL_COLOR_TABLE_ALPHA_SIZE_EXT     0x80DD
+#define NMGL_COLOR_TABLE_LUMINANCE_SIZE_EXT 0x80DE
+#define NMGL_COLOR_TABLE_INTENSITY_SIZE_EXT 0x80DF
 
 #ifdef DEBUG 
 #define DEBUG_PRINT(x) printf x  

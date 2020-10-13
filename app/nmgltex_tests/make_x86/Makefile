@@ -62,5 +62,15 @@ runtarget0d: $(TARGET0)
 runtarget1d: $(TARGET1) 
 	bin\debug\$(TARGET1)
 	
+libs:
+	
+	$(MAKE) -C $(ROOT)/make/nmopengl-nmc4 -f ./Makefile clean
+	$(MAKE) -C $(ROOT)/make/nmopengl-nmc4 -f ./Makefile
+	
+	$(MAKE) -C $(ROOT)/make/nmopengl-nmc4f -f ./Makefile clean
+	$(MAKE) -C $(ROOT)/make/nmopengl-nmc4f -f ./Makefile
+	
+	$(MAKE) -C $(ROOT)/make/nmopengl-x86-x64 -f ./Makefile kill
+	$(MAKE) -C $(ROOT)/make/nmopengl-x86-x64 -f ./Makefile
 
 include $(ROOT)/clean.mk

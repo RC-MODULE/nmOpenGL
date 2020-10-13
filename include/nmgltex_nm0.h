@@ -3,7 +3,6 @@
 
 #include "demo3d_common.h"
 #include "nmgltex_common.h"
-
 struct NMGL_Context_NM0_Texture {
 	
 	/*
@@ -85,7 +84,7 @@ struct NMGL_Context_NM0_Texture {
 		INIT_TEX_UNITS();
 //==========TEX_OBJ_INIT====================================
 		INIT_TEX_OBJECTS();
-		
+		unpackAlignment=4;
 	}
 	
 };

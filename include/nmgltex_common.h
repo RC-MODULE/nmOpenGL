@@ -12,16 +12,22 @@
 #define LUMINANCE_ALPHA_TEXEL_SIZE_UBYTE   2
 #define LUMINANCE_TEXEL_SIZE_UBYTE         1
 #define ALPHA_TEXEL_SIZE_UBYTE             1                      
+#define COLOR_TEXEL_SIZE_UBYTE             1                      
 //-------------------------NOT-THIS----------------------------------------------------------------------------
 #define NMGL_MAX_TEX_SIDE (0x1<<(NMGL_MAX_MIPMAP_LVL))
 #define UBYTES_PER_TEXEL RGBA_TEXEL_SIZE_UBYTE   //each byte of texel is placed in 4-byte var (because char is 4-byte variable)
 #define MIPMAP_OBJ_SIZE ((((0x1<<(2*(NMGL_MAX_MIPMAP_LVL+1)))-1)/3)*UBYTES_PER_TEXEL) //mipmap mem size in 4byte words	
 #define MIPMAP_MEM_SIZE ((MIPMAP_OBJ_SIZE)*NMGL_MAX_TEX_OBJECTS) //mipmap mem size in NMGLubyte	
+//EXT_paletted_texture
+#define NMGL_MAX_PALETTE_WIDTH (0x1<<8)
+
+ 
+
 //============================================================================================================
 int getTexelSizeUbytes(NMGLint format);
 //============================================================================================================
 //#define DEBUG
-#define DEBUG_LEVEL 2
+#define DEBUG_LEVEL 1
 // #include "tests.h"
 /*
 * Максимальное поддерживаемое количество текстурных модулей
@@ -66,6 +72,8 @@ int getTexelSizeUbytes(NMGLint format);
 */
 #define NMGL_TEX_MAX_LEVEL 1000
 
+
+
 /**
 *  Структура для хранения изображения текстуры, загружаемой функцией nmglTexImage2D
 */
@@ -102,7 +110,14 @@ struct TexImage2D {
     */
     //NMGLint border;
 };
-
+/**
+*   Палитра цветов
+*/
+struct EXT_palette
+{
+    NMGLubyte *colors;
+    NMGLint width;
+};
 /**
 *   Текстурный объект
 */
@@ -142,8 +157,12 @@ struct TexObject{
     *   Массив текстурных изображений различных уровней детализации
     */
     TexImage2D texImages2D[NMGL_MAX_MIPMAP_LVL+1];
+    /**
+    *  Указатель на палитру цветов 
+    */
+    EXT_palette palette;
 
-
+    NMGLubyte init_palette[RGBA_TEXEL_SIZE_UBYTE];
     /*
     * Флаг, определяющий, было ли задано изображение (через glTexImage2D):
     * 0 - glTexImage2D ещё не вызывалась
@@ -224,6 +243,12 @@ typedef union Intfloat {
 			texObjects[i].texMinFilter=NMGL_NEAREST_MIPMAP_LINEAR;      \
 			texObjects[i].texMagFilter=NMGL_LINEAR;                     \
 			texObjects[i].imageIsSet=0;                                 \
+			texObjects[i].init_palette[0]=0x1;                          \
+			texObjects[i].init_palette[1]=0x1;                          \
+			texObjects[i].init_palette[2]=0x1;                          \
+			texObjects[i].init_palette[3]=0x1;                          \
+            texObjects[i].palette.width=1;                              \
+            texObjects[i].palette.colors=&texObjects[i].init_palette[0];\
 			for(int j=0;j<=NMGL_MAX_MIPMAP_LVL;j++)                     \
             {                                                           \
             texObjects[i].texImages2D[j].pixels=NULL;                   \
