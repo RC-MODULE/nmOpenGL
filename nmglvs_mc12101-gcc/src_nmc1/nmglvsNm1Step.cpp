@@ -221,7 +221,8 @@ SECTION(".text_nmglvs") int nmglvsNm1Step()
 		NMGLsizei height0=currentCommand.params[2];
 		NMGLenum format=currentCommand.params[3];
 		int i=0;
-        for(i=0;i<=NMGL_MAX_MIPMAP_LVL;i++)
+		
+		for(i=0;i<=NMGL_MAX_MIPMAP_LVL;i++)
 		{
 			TexObj[texture].texImages2D[i].internalformat=format;
 			if(width0>>i >= 1)
@@ -243,7 +244,12 @@ SECTION(".text_nmglvs") int nmglvsNm1Step()
 		}
 		break;
 	}
-	
+	case NMC1_SET_COLOR_PALETTE: {
+		cntxt->texState.texObjects[(int)currentCommand.params[2]].palette.colors=(NMGLubyte*)currentCommand.params[0];
+		cntxt->texState.texObjects[(int)currentCommand.params[2]].palette.width=currentCommand.params[1];				
+		break;
+	}
+
 	case NMC1_SET_TEX_ENV_COLOR: {
 		Intfloat temp;
 		for (int i = 0; i < 4; i++) {

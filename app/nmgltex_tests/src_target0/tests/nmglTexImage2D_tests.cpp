@@ -1,7 +1,7 @@
 
 #include "demo3d_nm0.h"
 #include "demo3d_nm1.h"
-#include "tests.h"
+
 #include "nmgl_tex_test_common.h"
 
 //#include <iostream>
@@ -74,8 +74,10 @@ pname:TEXTURE_WRAP_S,TEXTURE_WRAP_T
 #endif
 extern NMGLubyte mipmap[MIPMAP_MEM_SIZE];
 NMGL_Context_NM0 *cntxt;
-extern void* cntxtAddr_nm1;
-NMGL_Context_NM1 *nm1cntxt;
+//extern void* cntxtAddr_nm1;
+extern unsigned int nmpu1IsAccessible;
+//NMGL_Context_NM1 *nm1cntxt;
+extern NMGL_Context_NM1 *cntxt_nm1;
 //SECTION(".data_tex_tests") NMGLubyte texels[USED_SIDE*USED_SIDE*UBYTES_PER_TEXEL];
 NMGLubyte *texels;
 extern NMGLint getTexelSizeUbytes(NMGLint format);
@@ -103,12 +105,12 @@ int nmglTexImage2D_wrongType_isError();
 int nmglTexImage2D_setImage_contextSetCorrect();
 int nmglTexImage2D_varUnpackAlign_contextSetCorrect();
 //==============================================================================================
-int cmpPixelsPads(void* left_w_pads, void *right, NMGLint width, NMGLenum format);
+int cmpPixelsPads(void* left_w_pads, void *right, NMGLint width, NMGLenum format,NMGLuint name,NMGLint lvl);
 
 int cmpPixelsUbytes(void* from, void *to, NMGLubyte n_pixels);
 //==============================================================================================
 
-internalformatdata internalformats[5];
+internalformatdata internalformats[6];
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -124,9 +126,11 @@ void init_internalformats()
 	internalformats[3].size=getTexelSizeUbytes(NMGL_ALPHA);
 	internalformats[4].type=NMGL_LUMINANCE_ALPHA;	
 	internalformats[4].size=getTexelSizeUbytes(NMGL_LUMINANCE_ALPHA);
+	internalformats[5].type=NMGL_COLOR_INDEX8_EXT;	
+	internalformats[5].size=getTexelSizeUbytes(NMGL_COLOR_INDEX8_EXT);
 }
 //----------------------------------------------------------------------------------------
-int cmpPixelsPads(void* left_w_pads, void *right, NMGLint width, NMGLenum format)
+int cmpPixelsPads(void* left_w_pads, void *right, NMGLint width, NMGLenum format,NMGLuint name,NMGLint lvl)
 {
     int i=0,j=0;
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
@@ -145,11 +149,19 @@ int cmpPixelsPads(void* left_w_pads, void *right, NMGLint width, NMGLenum format
   {
 	for(i=0;i<width*line;i++)
   	{
-	  if(*((NMGLubyte*)left_w_pads+i) != *((NMGLubyte*)right+i) )
-	  {
+		if(*((NMGLubyte*)left_w_pads+i) != *((NMGLubyte*)right+i) )
+		{
 		  printf("i=%d mismatch. from/to=0x%x/0x%x ",i,*((NMGLubyte*)left_w_pads+i),	*((NMGLubyte*)right+i));
 		  return 0;
-	  }
+		}
+		if(nmpu1IsAccessible == 1)
+		{
+			if(*((NMGLubyte*)left_w_pads+i) != *((NMGLubyte*)cntxt_nm1->texState.texObjects[name].texImages2D[lvl].pixels+i))
+			{
+				printf("i=%d mismatch (nm1). from/to=0x%x/0x%x ",i,*((NMGLubyte*)left_w_pads+i),	*((NMGLubyte*)cntxt_nm1->texState.texObjects[name].texImages2D[lvl].pixels+i));
+		  		return 0;
+			}
+		}
   	}
 	return 1; 
   }
@@ -164,6 +176,14 @@ int cmpPixelsPads(void* left_w_pads, void *right, NMGLint width, NMGLenum format
 		  		printf("i=%d mismatch. from/to=0x%x/0x%x ",i,*((NMGLubyte*)left_w_pads + j*(line + pads) + i),	*((NMGLubyte*)right + j*line + i ));
 		  		return 0;
 	  		} 
+			if(nmpu1IsAccessible == 1)
+			{ 
+				if(*((NMGLubyte*)left_w_pads + j*(line + pads) + i) != *((NMGLubyte*)cntxt_nm1->texState.texObjects[name].texImages2D[lvl].pixels + j*line+i) )
+	  			{
+		  			printf("i=%d mismatch. from/to=0x%x/0x%x ",i,*((NMGLubyte*)left_w_pads + j*(line + pads) + i),	*((NMGLubyte*)cntxt_nm1->texState.texObjects[name].texImages2D[lvl].pixels + j*line + i ));
+		  			return 0;
+	  			} 
+			}
 		}
 		pads+=cpad;
 	}
@@ -314,12 +334,12 @@ void _nmglTexImage2D_init_context()
 
 	cntxt->texState.texUnits[0].boundTexObject=&cntxt->texState.texObjects[0];
 }
-
+#define NM1_obj(x) cntxt_nm1->texState.texObjects[x]
 //-----------------------------------------------------------------------------------------
 /*
 	Сравнивает входной и активный текстурные объекты 
 */
-int _nmglTexImage2D_check(NMGLint level)
+int _nmglTexImage2D_check(NMGLint level, NMGLuint name)
 {
 //#if 0	
 	if ((level>=0)&&(level<=NMGL_MAX_MIPMAP_LVL))
@@ -343,12 +363,39 @@ int _nmglTexImage2D_check(NMGLint level)
 		}
 		if (ActiveTexObjectP->texImages2D[level].height!=input.height)
 		{
-			printf("Error!Heights formats dont match!\n");
+			printf("Error!Heights dont match!\n");
 			return 1;
 		}
+		if(nmpu1IsAccessible == 1)
+		{
+			if (NM1_obj(name).target!=input.target)
+			{
+				printf("Error!(nm1)Targets dont match!\n");
+				return 1;
+			}
+		
+			if (NM1_obj(name).texImages2D[level].internalformat!=input.internalformat.type)
+			{
+				printf ("lvl=%d imputformat=0x%x nm1 format=0x%x\n",level,input.internalformat.type,NM1_obj(name).texImages2D[level].internalformat);
+				printf("Error!(nm1)Internal formats dont match!\n");
+				return 1;
+			}
+
+			if (NM1_obj(name).texImages2D[level].width!=input.width)
+			{
+				printf("Error!(nm1)Width dont match!\n");
+				return 1;
+			}
+			if (NM1_obj(name).texImages2D[level].height!=input.height)
+			{
+				printf("Error!(nm1)Heights formats dont match!\n");
+				return 1;
+			}
+		}
+
 		DEBUG_PRINT(("w=%d h=%d s=%d\n",input.width,input.height,getTexelSizeUbytes(input.internalformat.type)));
 	//	if(!cmpPixelsUbytes(input.pixels,ActiveTexObjectP->texImages2D[level].pixels,input.width*input.height*getTexelSizeUbytes(input.internalformat.type)))
-		if(!cmpPixelsPads(input.pixels,ActiveTexObjectP->texImages2D[level].pixels,input.width,input.internalformat.type))
+		if(!cmpPixelsPads(input.pixels,ActiveTexObjectP->texImages2D[level].pixels,input.width,input.internalformat.type,ActiveTexObjectP->name,level))
 		{
 			printf("Error!Pixels arrays dont match!\n");
 			return 1;
@@ -373,34 +420,8 @@ void _nmglTexImage2D_prevent_internal_errors()
 {
 	cntxt->error=NMGL_NO_ERROR;
 	ActiveTexObjectP->imageIsSet=0;
-	//printf("firstByte was=0x%x  mipmap size is %d\n",cntxt->texState.firstFreeTexByte,MIPMAP_TESTOBJ_SIZE);
-	//cntxt->texState.firstFreeTexByte = NULL;
-	/*
-	if ((int)cntxt->texState.firstFreeTexByte == MIPMAP_OBJ_SIZE)
-	{
-		cntxt->texState.firstFreeTexByte = NULL;
-		printf("was MIPMAP_OBJ_SIZE\n");
-	}
-	else 
-	{
-		cntxt->texState.firstFreeTexByte=(void*)((int)cntxt->texState.firstFreeTexByte - MIPMAP_OBJ_SIZE);
-		printf("was BIGGER\n");
-	}
-	*/
 }
-//----------------------------------------------------------------------------------------
-/*
-void print_input()
-{
-	DEBUG_PRINT(("=========Input Contents====================\n"));
-	DEBUG_PRINT(("Target=%d\n",input.target));	
-	DEBUG_PRINT(("InternalFormat=%d,size=%d\n",input.internalformat.type,input.internalformat.size));
-	DEBUG_PRINT(("Width=%d\n",input.width));
-	DEBUG_PRINT(("Height=%d\n",input.height));
-	DEBUG_PRINT(("Type=%d\n",input.type));
-	DEBUG_PRINT(("===========================================\n"));
-}
-*/
+
 //========================================================================================
 //===========================MAIN=========================================================
 //========================================================================================
@@ -408,7 +429,7 @@ void print_input()
 int run_nmglTexImage2D_test()
 {
 	cntxt = NMGL_Context_NM0::getContext();
-	nm1cntxt = (NMGL_Context_NM1*)cntxtAddr_nm1;
+	//nm1cntxt = (NMGL_Context_NM1*)cntxtAddr_nm1;
 	texels=&mipmap[MIPMAP_MEM_SIZE-MIPMAP_OBJ_SIZE];          
 	init_internalformats();
 	cur_width=USED_SIDE;	
@@ -537,11 +558,19 @@ int nmglTexImage2D_wrongInternalformatFormat_isError()
 	//_nmglTexImage2D_prevent_internal_errors();
 	int i=0,j=0;
 	
-	for(i=0;i<=4;i++)
+	for(i=0;i<=5;i++)
 	{
 		status=init_TexImage2D_input(&input,cur_width,internalformats[i]);
+		if(input.format == NMGL_COLOR_INDEX8_EXT)
+		{
+			nmglTexImage2D(input.target,input.level,NMGL_COLOR_INDEX8_EXT,input.width,input.height,0,NMGL_COLOR_INDEX,input.type,input.pixels);
+		}
+		else
+		{
+			nmglTexImage2D(input.target,input.level,input.internalformat.type,input.width,input.height,0,input.format,input.type,input.pixels);
+		}
 		
-		nmglTexImage2D(input.target,input.level,input.internalformat.type,input.width,input.height,0,input.format,input.type,input.pixels);
+		
 		TEST_ASSERT(cntxt->error==NMGL_NO_ERROR);
 		_nmglTexImage2D_prevent_internal_errors();	
 
@@ -659,7 +688,8 @@ ActiveTexObjectP=&cntxt->texState.texObjects[0];
 		//printf("cur_width=%d\n",cur_width);		
 		//printf("format=%d should be %d\n",internalformats[0].type,NMGL_RGBA);		
 		nmglTexImage2D(input.target,input.level,input.internalformat.type,input.width,input.height,0,input.format,input.type,input.pixels);
-		status=_nmglTexImage2D_check(0);
+		wait_for_nm1_if_available;
+		status=_nmglTexImage2D_check(0,ActiveTexObjectP->name);
 		
 	TEST_ASSERT(status==0);	
 	
@@ -678,7 +708,8 @@ int nmglTexImage2D_varUnpackAlign_contextSetCorrect()
 	cur_width=USED_SIDE;
 		status=init_TexImage2D_input(&input,cur_width,internalformats[0]);
 		nmglTexImage2D(input.target,input.level,input.internalformat.type,input.width,input.height,0,input.format,input.type,input.pixels);
-		status=_nmglTexImage2D_check(0);
+		wait_for_nm1_if_available;
+		status=_nmglTexImage2D_check(0,ActiveTexObjectP->name);
 		
 	TEST_ASSERT(status==0);	
 
@@ -687,14 +718,16 @@ int nmglTexImage2D_varUnpackAlign_contextSetCorrect()
 		cur_width=4;
 		status=init_TexImage2D_input(&input,cur_width,internalformats[1]);//RGB
 		nmglTexImage2D(input.target,input.level,input.internalformat.type,input.width,input.height,0,input.format,input.type,input.pixels);
-		status=_nmglTexImage2D_check(0);
+		wait_for_nm1_if_available;
+		status=_nmglTexImage2D_check(0,ActiveTexObjectP->name);
 		
 	TEST_ASSERT(status==0);
 _nmglTexImage2D_prevent_internal_errors();
 	unPack=1;
 		status=init_TexImage2D_input(&input,cur_width,internalformats[1]);//RGB
 		nmglTexImage2D(input.target,input.level,input.internalformat.type,input.width,input.height,0,input.format,input.type,input.pixels);
-		status=_nmglTexImage2D_check(0);
+		wait_for_nm1_if_available;
+		status=_nmglTexImage2D_check(0,ActiveTexObjectP->name);
 		
 	TEST_ASSERT(status==0);
 _nmglTexImage2D_prevent_internal_errors();
@@ -702,21 +735,24 @@ _nmglTexImage2D_prevent_internal_errors();
 	unPack=2;
 		status=init_TexImage2D_input(&input,cur_width,internalformats[1]);//RGB
 		nmglTexImage2D(input.target,input.level,input.internalformat.type,input.width,input.height,0,input.format,input.type,input.pixels);
-		status=_nmglTexImage2D_check(0);
+		wait_for_nm1_if_available;
+		status=_nmglTexImage2D_check(0,ActiveTexObjectP->name);
 		
 	TEST_ASSERT(status==0);
 _nmglTexImage2D_prevent_internal_errors();
 	unPack=4;
 		status=init_TexImage2D_input(&input,cur_width,internalformats[1]);//RGB
 		nmglTexImage2D(input.target,input.level,input.internalformat.type,input.width,input.height,0,input.format,input.type,input.pixels);
-		status=_nmglTexImage2D_check(0);
+		wait_for_nm1_if_available;
+		status=_nmglTexImage2D_check(0,ActiveTexObjectP->name);
 		
 	TEST_ASSERT(status==0);
 _nmglTexImage2D_prevent_internal_errors();
 	unPack=8;
 		status=init_TexImage2D_input(&input,cur_width,internalformats[1]);//RGB
 		nmglTexImage2D(input.target,input.level,input.internalformat.type,input.width,input.height,0,input.format,input.type,input.pixels);
-		status=_nmglTexImage2D_check(0);
+		wait_for_nm1_if_available;
+		status=_nmglTexImage2D_check(0,ActiveTexObjectP->name);
 		
 	TEST_ASSERT(status==0);
 _nmglTexImage2D_prevent_internal_errors();

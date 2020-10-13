@@ -16,5 +16,10 @@ int run_nmglTexParameteri_test();
 int run_nmglGenTextures_test();
 int run_nmglBindTexture_test();
 int run_nmglTexCoordPointer_test();
+//EXT_paletted_texture
+int run_nmglColorTableEXT_test();
+int run_nmglColorSubTableEXT_test();
+int run_nmglGetColorTableEXT_test();
+int run_nmglGetColorTableParameterivEXT_test();
 
 #endif /* NMGL_TEX_TESTS_ */

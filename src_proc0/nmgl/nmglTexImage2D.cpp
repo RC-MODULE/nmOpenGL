@@ -40,6 +40,10 @@ NMGLint getTexelSizeUbytes(NMGLint format)
 			return LUMINANCE_TEXEL_SIZE_UBYTE;
 		case NMGL_ALPHA:
 			return ALPHA_TEXEL_SIZE_UBYTE;
+		case NMGL_COLOR_INDEX8_EXT: 
+			return COLOR_TEXEL_SIZE_UBYTE;
+		case NMGL_COLOR_INDEX: 
+			return COLOR_TEXEL_SIZE_UBYTE;	
 		default:
 			return RGBA_TEXEL_SIZE_UBYTE;
 	}
@@ -111,6 +115,7 @@ int copyPixels(const void* pfrom,NMGLint format,NMGLint width,NMGLint height,voi
     NMGLint xw=width;
     NMGLint xh=height;
 	NMGLubyte* pfrom_cur;
+	
 	int padLength=0;
 	int unpackAlign=cntxt->texState.unpackAlignment;
     //size=4;//32bit word
@@ -132,7 +137,7 @@ int copyPixels(const void* pfrom,NMGLint format,NMGLint width,NMGLint height,voi
 	    for(i=0;i<xw*xh*size;i++)
 	    {
 	       //  DEBUG_PRINT(("ACTIVE_ARRAY="));
-	        *((NMGLubyte*)*pto+i)=*((NMGLubyte*)pfrom+i);
+	        *((NMGLubyte*)*pto+i)=*((NMGLubyte*)pfrom+i)&0xff;
 
 	       //  DEBUG_PRINT(( "%d\n", *((NMGLint*)*pto+i) ));
 	        //REMAKE if cant have byte access
@@ -149,7 +154,7 @@ int copyPixels(const void* pfrom,NMGLint format,NMGLint width,NMGLint height,voi
 	       for(i=0;i<line;i++)
 	    	{
 	       
-	        	*((NMGLubyte*)*pto+j*line+i)=*((NMGLubyte*)pfrom_cur+i);	       
+	        	*((NMGLubyte*)*pto+j*line+i)=*((NMGLubyte*)pfrom_cur+i)&0xff;	       
 	    	}
 			pfrom_cur+=(line+padLength);
 	    }
@@ -175,10 +180,18 @@ void nmglTexImage2D(NMGLenum target, NMGLint level, NMGLint internalformat, NMGL
 	if((!isPowerOf2(width))||(!isPowerOf2(height))){cntxt->error=NMGL_INVALID_VALUE;return;}
 
 
+	if((internalformat == NMGL_COLOR_INDEX8_EXT)&&(format == NMGL_COLOR_INDEX))
+	{
 
-	if(internalformat != format)  {cntxt->error=NMGL_INVALID_VALUE;return;}
-	if((internalformat !=NMGL_RGBA)&&(internalformat !=NMGL_RGB)&&(internalformat !=NMGL_ALPHA)&&(internalformat !=NMGL_LUMINANCE)&&(internalformat !=NMGL_LUMINANCE_ALPHA)){cntxt->error=NMGL_INVALID_VALUE;return;}
+	}
+	else
+	{
+		if(internalformat != format)  {cntxt->error=NMGL_INVALID_VALUE;return;}
+		if((internalformat !=NMGL_RGBA)&&(internalformat !=NMGL_RGB)&&(internalformat !=NMGL_ALPHA)&&(internalformat !=NMGL_LUMINANCE)&&(internalformat !=NMGL_LUMINANCE_ALPHA)){cntxt->error=NMGL_INVALID_VALUE;return;}
 
+	}
+	
+	
 	if( ActiveTexObjectP->imageIsSet == 1 ) 
 	{			
 		if(ActiveTexObjectP->texImages2D[level].internalformat!=internalformat){cntxt->error=NMGL_INVALID_OPERATION;return;}
@@ -199,7 +212,7 @@ void nmglTexImage2D(NMGLenum target, NMGLint level, NMGLint internalformat, NMGL
 				if(iter == 0)
 				{
 					ActiveTexObjectP->texImages2D[iter].width=width;
-					ActiveTexObjectP->texImages2D[iter].height=height;
+					ActiveTexObjectP->texImages2D[iter].height=height;					
 /*sync*/cntxt->synchro.writeInstr(1, NMC1_SET_WHF,(int)(ActiveTexObjectP->name),width,height,internalformat);
 
 				}
