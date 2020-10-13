@@ -26,6 +26,7 @@
 //Массив текстур в виде структур типа image_t
 #define TEXTURE_AMOUNT 9
 
+extern "C" TexImage2D teximage_mytexture_256_256;
 extern "C" TexImage2D teximage_256_256;
 extern "C" TexImage2D teximage_mytexture;
 extern "C" TexImage2D teximage_128_128;
@@ -192,10 +193,10 @@ int main ()
 	((nm32s*)colors)[1] = (nm32s)0;
 	((nm32s*)colors)[2] = (nm32s)255;
 	((nm32s*)colors)[3] = (nm32s)255;
-    ((nm32s*)colors)[4] = (nm32s)255;
-	((nm32s*)colors)[5] = (nm32s)255;
-	((nm32s*)colors)[6] = (nm32s)0;
-	((nm32s*)colors)[7] = (nm32s)255;
+    //((nm32s*)colors)[4] = (nm32s)255;
+	//((nm32s*)colors)[5] = (nm32s)255;
+	//((nm32s*)colors)[6] = (nm32s)0;
+	//((nm32s*)colors)[7] = (nm32s)255;
 	
 	//Информация о размещении видимой части треугольников в сегменте
     Rectangle windows [TRIANGLE_AMOUNT];
@@ -216,33 +217,26 @@ int main ()
     windows[0].width = 32;
     windows[0].height = 32;
   
-    windows[1].x = -1;
-    windows[1].y = 0;
-    windows[1].width = 32;
-    windows[1].height = 32;
+    //windows[1].x = -1;
+    //windows[1].y = 0;
+    //windows[1].width = 32;
+    //windows[1].height = 32;
 
     //setup triangles parameters
     
-    //float x0[TRIANGLE_AMOUNT] = {0.0f};
-    //float y0[TRIANGLE_AMOUNT] = {10.0f};
-    //float x1[TRIANGLE_AMOUNT] = {15.0f};
-    //float y1[TRIANGLE_AMOUNT] = {30.0f};
-    //float x2[TRIANGLE_AMOUNT] = {26.0f};
-    //float y2[TRIANGLE_AMOUNT] = {5.0f};
+    float x0[TRIANGLE_AMOUNT] = {0.0f};
+    float y0[TRIANGLE_AMOUNT] = {21.0f};
+    float x1[TRIANGLE_AMOUNT] = {15.0f};
+    float y1[TRIANGLE_AMOUNT] = {0.0f};
+    float x2[TRIANGLE_AMOUNT] = {26.0f};
+    float y2[TRIANGLE_AMOUNT] = {26.0f};
    
-    float x0[TRIANGLE_AMOUNT] = {399.0f};
-    float y0[TRIANGLE_AMOUNT] = {354.0f};
-    float x1[TRIANGLE_AMOUNT] = {384.0f};
-    float y1[TRIANGLE_AMOUNT] = {374.0f};
-    float x2[TRIANGLE_AMOUNT] = {410.0f};
-    float y2[TRIANGLE_AMOUNT] = {379.0f};
-    
-    float s0[TRIANGLE_AMOUNT] = {0.0f};
-    float t0[TRIANGLE_AMOUNT] = {0.0f};
-    float s1[TRIANGLE_AMOUNT] = {1.0f};
-    float t1[TRIANGLE_AMOUNT] = {0.0f};
-    float s2[TRIANGLE_AMOUNT] = {0.0f};
-    float t2[TRIANGLE_AMOUNT] = {2.0f};
+	float s0[TRIANGLE_AMOUNT] = {0.0f};
+    float t0[TRIANGLE_AMOUNT] = {0.3125f};
+    float s1[TRIANGLE_AMOUNT] = {0.46875f};
+    float t1[TRIANGLE_AMOUNT] = {0.9375f};
+    float s2[TRIANGLE_AMOUNT] = {0.8125f};
+    float t2[TRIANGLE_AMOUNT] = {0.15625f};
 
     float z[TRIANGLE_AMOUNT] = {1.0f}; //minus (z in camera space)
     
@@ -277,7 +271,7 @@ int main ()
 		test_cntxt->texState.texUnits[activeTexUnitIndex].boundTexObject = &test_cntxt->texState.texObjects[0];
 		TexObject* boundTexObject = test_cntxt->texState.texUnits[activeTexUnitIndex].boundTexObject;
 
-		boundTexObject->texImages2D[0] = teximage_mytexture;
+		boundTexObject->texImages2D[0] = teximage_mytexture_256_256;
 		boundTexObject->texImages2D[1] = teximage_128_128;
 		boundTexObject->texImages2D[2] = teximage_64_64;
 		boundTexObject->texImages2D[3] = teximage_32_32;
@@ -344,9 +338,13 @@ int main ()
 		boundTexObject->texMinFilter = NMGL_NEAREST;
 
 		textureTriangle(&triangles, pDstTriangle, count);
-		//extractTriangleByPattern(patterns, pDstTriangle, 1);
-		//int corr = compareImages(pDstTriangle, scenario_1, WIDTH_PTRN, HEIGHT_PTRN);
-		//printf("%d\n\r", corr);
+		extractTriangleByPattern(patterns, pDstTriangle, 1);
+		for(int i = 0; i < 32; ++i){
+			for (int j = 0; j < 32; ++j){
+				printf("%x ", pDstTriangle[32 * i + j]);
+			}
+			puts("");
+		}
 		//printPattern(patterns, 1);
 
 		
@@ -365,6 +363,8 @@ int main ()
     }
 #endif //__NM__        
 
+	int corr = compareImages(pDstTriangle, scenario_1, WIDTH_PTRN, HEIGHT_PTRN);
+	printf("%d\n\r", corr);
 	printf ("End textureTriangle test...\n");
     return 0;
 }
@@ -405,7 +405,7 @@ void extractTriangleByPattern(Pattern* patterns, nm32s *triangle, int count)
 					// Keep this pixel
 				} else {
 					// Erase this pixel
-					triangle[32 * i + j] = 0xff000000;
+					triangle[32 * j + k] = 0xff000000;
 				}
 		}
     }
