@@ -1,4 +1,4 @@
-#include "nmtype.h"
+
 #include "demo3d_common.h"
 #include "demo3d_nm0.h"
 #include "nmgltex_nm0.h"
@@ -494,8 +494,8 @@ void textureTriangle(TrianglesInfo* triangles, nm32s* pDstTriangle, int count)
 		unsigned int maxX = maxf(x0, maxf(x1, x2));
 		unsigned int maxY = maxf(y0, maxf(y1, y2));
 
-		unsigned int primHeight = maxY - winY0;
-		unsigned int primWidth = maxX - winX0;
+		unsigned int primHeight = maxY - winY0 + 1;
+		unsigned int primWidth = maxX - winX0 + 1;
 		
 #ifdef PERSPECTIVE_CORRECT        
 		// Compute some coefficients.

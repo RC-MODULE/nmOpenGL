@@ -284,7 +284,7 @@ int getColorIndex(unsigned int mask)
     //Данные источника в формате format RGBA и ARGB хранятся в файле-приёмнике всегда в формате B G R A B G R A
     //Данные источника в формате format RGB хранятся в файле-приёмнике в формате B G R B G R
     //type задаёт тип данных, используемый для хранения данных в массиве-источнике в заданном формате
-	int saveToBmp(uint8_t bitsInPixel, image_t image, char* filePath) {
+	int saveToBmp(uint8_t bitsInPixel, image_t image, const char* filePath) {
 
 		int i = 0;
 		int j = 0;

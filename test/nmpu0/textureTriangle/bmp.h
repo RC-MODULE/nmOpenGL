@@ -25,7 +25,7 @@ extern "C"
 
 	//format - формат хранения данных в массиве pixels
 	//type - тип данных для хранения формата format в массиве pixels
-	int saveToBmp(uint8_t bitsInPixel, image_t image, char* filePath);
+	int saveToBmp(uint8_t bitsInPixel, image_t image, const char* filePath);
 	unsigned int loadBMP_custom(const char * imagepath, format_t format, type_t type, image_t* image);
 
 
