@@ -108,39 +108,6 @@ SECTION(".data_imu0") Pattern patterns [TRIANGLE_AMOUNT] = {
     0x00000000, 0x00000000, 
     0x00000000, 0x00000000, 
     0x00000000, 0x00000000}, 
-    
-//    {0x50000000, 0x00000000, 
-//    0x54000000, 0x00000000, 
-//    0x54000000, 0x00000001, 
-//    0x55000000, 0x00000001, 
-//    0x55400000, 0x00000005, 
-//    0x55400000, 0x00000005, 
-//    0x55500000, 0x00000015, 
-//    0x55540000, 0x00000015, 
-//    0x55540000, 0x00000015, 
-//    0x55550000, 0x00000055, 
-//    0x55554000, 0x00000055, 
-//    0x55554000, 0x00000155, 
-//    0x55555000, 0x00000155, 
-//    0x55555400, 0x00000555, 
-//    0x55555400, 0x00000555, 
-//    0x55555500, 0x00001555, 
-//    0x55555500, 0x00001555, 
-//    0x55555540, 0x00001555, 
-//    0x55555550, 0x00005555, 
-//    0x55555550, 0x00005555, 
-//    0x55555555, 0x00015555, 
-//    0x55555540, 0x00015555, 
-//    0x55540000, 0x00055555, 
-//    0x50000000, 0x00055555, 
-//    0x00000000, 0x00055540, 
-//    0x00000000, 0x00000000, 
-//    0x00000000, 0x00000000, 
-//    0x00000000, 0x00000000, 
-//    0x00000000, 0x00000000, 
-//    0x00000000, 0x00000000, 
-//    0x00000000, 0x00000000, 
-//    0x00000000, 0x00000000},
 };
 
 int counter = 0;
@@ -179,13 +146,9 @@ int main ()
     //Массив значений цветов для треугольников, один цвет на треугольник
     v4nm32s colors [TRIANGLE_AMOUNT];
 	((nm32s*)colors)[0] = (nm32s)255;
-	((nm32s*)colors)[1] = (nm32s)0;
+	((nm32s*)colors)[1] = (nm32s)255;
 	((nm32s*)colors)[2] = (nm32s)255;
 	((nm32s*)colors)[3] = (nm32s)255;
-    //((nm32s*)colors)[4] = (nm32s)255;
-	//((nm32s*)colors)[5] = (nm32s)255;
-	//((nm32s*)colors)[6] = (nm32s)0;
-	//((nm32s*)colors)[7] = (nm32s)255;
 	
 	//Информация о размещении видимой части треугольников в сегменте
     Rectangle windows [TRIANGLE_AMOUNT];
@@ -198,7 +161,6 @@ int main ()
 	clock_t clkEnd=0;
 	clock_t diff = 0;
 
-
 	printf ("Start texturing test...\n");
 
     windows[0].x = -1;
@@ -206,27 +168,6 @@ int main ()
     windows[0].width = 32;
     windows[0].height = 32;
   
-    //windows[1].x = -1;
-    //windows[1].y = 0;
-    //windows[1].width = 32;
-    //windows[1].height = 32;
-
-    //setup triangles parameters
-#if 0    
-    float x0[TRIANGLE_AMOUNT] = {0.0f};
-    float y0[TRIANGLE_AMOUNT] = {0.0f};
-    float x1[TRIANGLE_AMOUNT] = {0.0f};
-    float y1[TRIANGLE_AMOUNT] = {31.0f};
-    float x2[TRIANGLE_AMOUNT] = {31.0f};
-    float y2[TRIANGLE_AMOUNT] = {31.0f};
-   
-	float s0[TRIANGLE_AMOUNT] = {0.0f};
-    float t0[TRIANGLE_AMOUNT] = {0.0f};
-    float s1[TRIANGLE_AMOUNT] = {0.0f};
-    float t1[TRIANGLE_AMOUNT] = {1.0f};
-    float s2[TRIANGLE_AMOUNT] = {1.0f};
-    float t2[TRIANGLE_AMOUNT] = {1.0f};
-#else
     float x0[TRIANGLE_AMOUNT] = {0.0f};
     float y0[TRIANGLE_AMOUNT] = {32.0f - 10.0f};
     float x1[TRIANGLE_AMOUNT] = {15.0f};
@@ -240,7 +181,6 @@ int main ()
     float t1[TRIANGLE_AMOUNT] = {0.9375f};
     float s2[TRIANGLE_AMOUNT] = {0.8125f};
     float t2[TRIANGLE_AMOUNT] = {0.15625f};
-#endif
 
     float z[TRIANGLE_AMOUNT] = {1.0f}; //minus (z in camera space)
     
@@ -254,12 +194,12 @@ int main ()
 		triangles.x2 = x2;
 		triangles.y2 = y2;
  
-		triangles.s0 = s0;
-		triangles.t0 = t0;
-		triangles.s1 = s1;
-		triangles.t1 = t1;
-		triangles.s2 = s2;
-		triangles.t2 = t2;
+		//triangles.s0 = s0;
+		//triangles.t0 = t0;
+		//triangles.s1 = s1;
+		//triangles.t1 = t1;
+		//triangles.s2 = s2;
+		//triangles.t2 = t2;
     
 		triangles.z0 = z;
 		triangles.z1 = z;
@@ -275,35 +215,36 @@ int main ()
 		test_cntxt->texState.texUnits[activeTexUnitIndex].boundTexObject = &test_cntxt->texState.texObjects[0];
 		TexObject* boundTexObject = test_cntxt->texState.texUnits[activeTexUnitIndex].boundTexObject;
 
-		boundTexObject->texImages2D[0] = teximage_mytexture_256_256;
-		boundTexObject->texImages2D[1] = teximage_128_128;
-		boundTexObject->texImages2D[2] = teximage_64_64;
-		boundTexObject->texImages2D[3] = teximage_32_32;
-		boundTexObject->texImages2D[4] = teximage_16_16;
-		boundTexObject->texImages2D[5] = teximage_8_8;
-		boundTexObject->texImages2D[6] = teximage_4_4;
-		boundTexObject->texImages2D[7] = teximage_2_2;
-		boundTexObject->texImages2D[8] = teximage_1_1;
 
 		//default texEnvColor = (0.0f, 0.0f, 0.0f, 0.0f)
 		test_cntxt->texState.texUnits[activeTexUnitIndex].texEnvColor[0] = 0.0f;
 		test_cntxt->texState.texUnits[activeTexUnitIndex].texEnvColor[1] = 0.0f;
 		test_cntxt->texState.texUnits[activeTexUnitIndex].texEnvColor[2] = 0.0f;
 		test_cntxt->texState.texUnits[activeTexUnitIndex].texEnvColor[3] = 0.0f;
-		// Correctness		
+
 		int refId = 0;
-		for (const auto& scenario : scenarios){
+		for (auto& scenario : scenarios){
+			triangles.s0 = &(scenario.texCoords.s0);
+			triangles.t0 = &(scenario.texCoords.t0);
+			triangles.s1 = &(scenario.texCoords.s1);
+			triangles.t1 = &(scenario.texCoords.t1);
+			triangles.s2 = &(scenario.texCoords.s2);
+			triangles.t2 = &(scenario.texCoords.t2);
+#if 1 
+			// Set texture images
+			for (int i = 0; i < scenario.texture_count; ++i){
+					boundTexObject->texImages2D[i] = *(scenario.texname[i]);
+			}
 			boundTexObject->texMagFilter = scenario.magFilter; //default LINEAR
 			boundTexObject->texMinFilter = scenario.minFilter;
 			boundTexObject->texWrapS = scenario.wrapS; // default REPEAT
 			boundTexObject->texWrapT = scenario.wrapT;// default REPEAT
-			test_cntxt->texState.texUnits[activeTexUnitIndex].texFunctionName = NMGL_REPLACE; //default = NMGL_MODULATE
+			test_cntxt->texState.texUnits[activeTexUnitIndex].texFunctionName = scenario.texFunction; //default = NMGL_MODULATE
 
 			textureTriangle(&triangles, pDstTriangle, count);
 			extractTriangleByPattern(patterns, pDstTriangle, 1);
 			double corr = compareImages(pDstTriangle, references[refId], WIDTH_PTRN, HEIGHT_PTRN);
-			refId++;
-			printf("%2s: %8.6f\n\r", scenario.name, corr);
+			printf("%2i: %8.6f\n\r", refId + 1, corr);
 			//cropRectangle(pDstTriangle, 1);
 			// Print pixels
 			//for(int i = 0; i < 32; ++i){
@@ -316,19 +257,17 @@ int main ()
 #ifndef __NM__
 			//convert result to image_t to compare with etalon    
 			char filename[256];
-			snprintf(filename, 256, "res_%s.%s", scenario.name, "bmp");
+			snprintf(filename, 256, "res_%i.%s", refId + 1, "bmp");
 			rawToImage(pDstTriangle, windows, result_images, count);
 			for (i = 0; i < count; i++)
 			{
 				saveToBmp (32, result_images[i], filename);
 			}
 #endif //__NM__        
-
+#endif
+			refId++;
 		}
-
-		
-}
-	
+	}
 	printf ("End texturing test...\n");
     return 0;
 }

@@ -5,7 +5,7 @@
 	#include "nmgldef.h"
 	#include "nmgltex_common.h"
 	#include "nmgladapter.h"
-	#define TEXTURE(x) teximage_ ## x
+	#define TEXTURE(x) &teximage_ ## x
 	extern "C" TexImage2D teximage_mytexture_256_256;
 	extern "C" TexImage2D teximage_256_256;
 	extern "C" TexImage2D teximage_mytexture;
@@ -28,20 +28,30 @@
 #define SECTION(sec)
 #endif // __GNUC__
 
+struct TextureCoords {
+	float s0;
+	float t0;
+	float s1;
+	float t1;
+	float s2;
+	float t2;
+};
+
 struct Scenario {
-	const char *name;
+	TextureCoords texCoords;
 	GLint wrapS;
 	GLint wrapT;
 	GLint minFilter;
 	GLint magFilter;
+	GLint texFunction;
 	int texture_count;
 #if defined(__NMGLDEF_H__) || defined(__NM__) || defined(_MSC_VER)
-	TexImage2D texname[9];
+	TexImage2D *texname[9];
 #else
 	const char *texname[9];
 #endif
 };
 
-extern Scenario scenarios[48];
+extern Scenario scenarios[17];
 
 #endif //__SCENARIOS_H__
