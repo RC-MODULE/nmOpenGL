@@ -46,19 +46,25 @@ ROOT = ../..
 
 #============== PROJECT & BUILD CONFIGURATION ==========
 #
-DEBUG ?= n
 
 include $(ROOT)/global.mk
 include 		 nmc4vars_win.mk
 #-------------- target & input dirs -------------------
 PROFILE			 = ../src_target1/proflist_generated1.asm
 PROJECT          = main1
+ifdef DEBUG
+PROJECT 		 = main1d
+endif
 OUT_DIR          = .
 TARGET           = $(OUT_DIR)/$(PROJECT).abs
 INC_DIRS         = -I"$(NMPP)/include" -I$(HAL)/include -I$(ROOT)/include
 SRC_DIRS         = $(ROOT)/nmglvs_mc12101-gcc/src_nmc1 $(ROOT)/src_proc1/common $(ROOT)/src_proc $(ROOT)/src_proc1/nm ../src_target1
 LIB_DIRS         = -L "$(NMC_GCC_TOOLPATH)/nmc4-ide/lib" -L"$(NMPP)/lib" -L"$(HAL)/lib"
+ifdef DEBUG
+TMP_DIR          = Debug
+else
 TMP_DIR          = Release
+endif
 #-------------- RELEASE/ALL config -------------------
 CC 				 = nmc-g++
 CC_FLAGS		 = -O2 -fno-builtin-printf -std=c++11
@@ -148,7 +154,7 @@ profile:
 #========================== Visual Studio  ===================
 export ALL_CPP ALL_ASM ALL_C ALL_H
 
-PROVIDER = host-x86
+PROVIDER = host-x64
 
 $(PROVIDER).vcxproj :	premake5.lua 
 	premake5 vs2015

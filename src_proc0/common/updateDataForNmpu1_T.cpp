@@ -93,29 +93,75 @@ void updatePolygonsT(DataForNmpu1* data, Triangles* triangles, int count, int se
 	nmppsSub_32f(triangles->y2, triangles->y0, temp3, count);
 	nmppsMul_Mul_Sub_32f(temp1, temp2, temp3, temp0, (float*)data->crossProducts, count);
 
-	for (int i = 0; i < count; i++) {
-		float errorX = 0;
-		float errorY = 0;
+	float* x0Local = cntxt->buffer0 + 3 * NMGL_SIZE;
+	float* y0Local = cntxt->buffer0 + 4 * NMGL_SIZE;
+	float* dx01 = cntxt->buffer1 + 3 * NMGL_SIZE;
+	float* dy01 = cntxt->buffer1 + 4 * NMGL_SIZE;
+	float* dx12 = cntxt->buffer1 + 5 * NMGL_SIZE;
+	float* dy12 = cntxt->buffer1 + 6 * NMGL_SIZE;
+	float* x0LocalFloor = cntxt->buffer0 + 5 * NMGL_SIZE;
+	float* y0LocalFloor = cntxt->buffer0 + 6 * NMGL_SIZE;
+	int* cnvTemp0 = (int*)cntxt->buffer3 + 7 * NMGL_SIZE;
+	int* cnvTemp1 = (int*)cntxt->buffer3 + 8 * NMGL_SIZE;
+
+	
+	nmppsSubC_32f(triangles->x0, x0Local, cntxt->windowInfo.x0_f[segX], count);				
+	nmppsSubC_32f(triangles->y0, y0Local, cntxt->windowInfo.y0_f[segY], count);				
+	nmppsConvert_32f32s_floor(triangles->x0, cnvTemp0, 0, count);
+	nmppsConvert_32f32s_floor(triangles->y0, cnvTemp1, 0, count);
+	nmppsConvert_32s32f(cnvTemp0, triangles->x0, count);
+	nmppsConvert_32s32f(cnvTemp1, triangles->y0, count);
+	nmppsConvert_32f32s_floor(x0Local, data->x0, 0, count);	
+	nmppsConvert_32f32s_floor(y0Local, data->y0, 0, count);	
+	nmppsConvert_32f32s_floor(x0Local, cnvTemp0, 0, count);
+	nmppsConvert_32f32s_floor(y0Local, cnvTemp1, 0, count);
+	nmppsConvert_32s32f(cnvTemp0, x0LocalFloor, count);
+	nmppsConvert_32s32f(cnvTemp1, y0LocalFloor, count);
+	
+
+	nmppsSub_32f(triangles->x1, triangles->x0, temp0, count);
+	nmppsAdd_32f(temp0, x0LocalFloor, temp1, count);
+	nmppsConvert_32f32s_floor(temp1, data->x1, 0, count);
+	nmppsSub_32f(triangles->y1, triangles->y0, temp0, count);
+	nmppsAdd_32f(temp0, y0LocalFloor, temp1, count);
+	nmppsConvert_32f32s_floor(temp1, data->y1, 0, count);
+
+	nmppsSub_32f(triangles->x2, triangles->x0, temp0, count);
+	nmppsAdd_32f(temp0, x0LocalFloor, temp1, count);
+	nmppsConvert_32f32s_floor(temp1, data->x2, 0, count);
+	nmppsSub_32f(triangles->y2, triangles->y0, temp0, count);
+	nmppsAdd_32f(temp0, y0LocalFloor, temp1, count);
+	nmppsConvert_32f32s_floor(temp1, data->y2, 0, count);
+	
+
+	/*nmblas_scopy(count, cntxt->buffer1, 1, (float*)data->x0, 1);							
+	nmppsSub_32f(cntxt->buffer0, triangles->x0, cntxt->buffer2, count);						//errorX = (x0 - x0Seg) - floor(x0 - x0Seg)
+	nmppsSub_32f(triangles->x1, triangles->x0, cntxt->buffer0, count);						// dx01
+	nmppsAdd_32f(cntxt->buffer0, cntxt->buffer2, cntxt-> buffer1, count);					// dx01 + errorX
+	nmppsAdd_32f(cntxt->buffer0, cntxt->buffer2, cntxt->buffer1, count);					// (dx01 + errorX) + (x0 - x0Seg)
+
+
+	nmppsConvert_32f32s_floor(triangles->x0, cntxt->buffer0, 0, count);
+	nmppsConvert_32f32s_floor(triangles->y0, cntxt->buffer1, 0, count);
+	nmppsConvert_32s32f(cntxt->buffer0, cntxt->buffer2, count);
+	nmppsConvert_32s32f(cntxt->buffer0, cntxt->buffer2, count);*/
+
+	/*for (int i = 0; i < count; i++) {
+		//cntxt->buffer0[i] = errorX
+		//cntxt->buffer1[i] = errorY
 		int x0 = (int)floor(triangles->x0[i] - cntxt->windowInfo.x0_f[segX]);
 		int y0 = (int)floor(triangles->y0[i] - cntxt->windowInfo.y0_f[segY]);
-		errorX = triangles->x0[i] - floor(triangles->x0[i]);
-		errorY = triangles->y0[i] - floor(triangles->y0[i]);
 		data->x0[i] = x0;
 		data->y0[i] = y0;
-		int dx01 = (int)floor(triangles->x1[i] - triangles->x0[i] + errorX );
-		int dy01 = (int)floor(triangles->y1[i] - triangles->y0[i] + errorY );
-		errorX = triangles->x1[i] - floor(triangles->x1[i]);
-		errorY = triangles->y1[i] - floor(triangles->y1[i]);
+		int dx01 = (int)floor(triangles->x1[i] - floor(triangles->x0[i]));
+		int dy01 = (int)floor(triangles->y1[i] - floor(triangles->x0[i]));
 		data->x1[i] = x0 + dx01;
 		data->y1[i] = y0 + dy01;
-		int dx12 = (int)floor(triangles->x2[i] - triangles->x1[i] + errorX);
-		int dy12 = (int)floor(triangles->y2[i] - triangles->y1[i] + errorY);
-		data->x2[i] = data->x1[i] + dx12;
-		data->y2[i] = data->y1[i] + dy12;
-	}
-	//modifiedVertex(triangles->x0, triangles->y0, triangles->x1, triangles->y1, count);
-	//modifiedVertex(triangles->x1, triangles->y1, triangles->x2, triangles->y2, count);
-	//modifiedVertex(triangles->x0, triangles->y0, triangles->x2, triangles->y2, count);
+		int dx12 = (int)floor(triangles->x2[i] - floor(triangles->x0[i]));
+		int dy12 = (int)floor(triangles->y2[i] - floor(triangles->x0[i]));
+		data->x2[i] = x0 + dx12;
+		data->y2[i] = y0 + dy12;
+	}*/
 
 	
 	/*nmppsSubC_32f(triangles->x0, temp0, cntxt->windowInfo.x0_f[segX], count);
@@ -137,7 +183,7 @@ void updatePolygonsT(DataForNmpu1* data, Triangles* triangles, int count, int se
 	nmblas_scopy (count, (float*)triangles->z, 1, (float*)data->z, 1);
 	nmblas_scopy(4 * count, (float*)triangles->colors, 1, (float*)data->color, 1);
 
-//#ifdef DEBUG
+#ifdef DEBUG
 	static unsigned int counter = 0;
 	for (int i = 0; i < count; i++) {
 		if(	ABS((data->x1[i] - data->x0[i])) > 32 ||
@@ -156,7 +202,7 @@ void updatePolygonsT(DataForNmpu1* data, Triangles* triangles, int count, int se
 			}
 	}
 	counter++;
-//#endif // DEBUG
+#endif // DEBUG
 
 	
 	data->count = count;

@@ -4,7 +4,7 @@
 solution "demo3d-mc12101"
    configurations { "Debug", "Release" }
    startproject "mc12101-host"
-   platforms{"x86","x64"}
+   platforms { "x64" }
 
    -- A project defines one build target
    project "mc12101-host"
@@ -15,7 +15,7 @@ solution "demo3d-mc12101"
 		includedirs { "$(MC12101)/include","$(HAL)/include","$(VSHELL)/include","$(NMPP)/include","../../include"}
 		configuration {"Debug","x86"}
 			links { "mc12101load.lib","vshell.lib","nmpp-x86d.lib","hal-mc12101-x86d.lib","mc12101-nmc4-0","mc12101-nmc4-1"}
-			targetsuffix ("-x86d")
+			targetsuffix ("-x86")
 			architecture "x32"
 			defines { "DEBUG"}
 			symbols  "On" 
@@ -27,7 +27,7 @@ solution "demo3d-mc12101"
 			symbols  "Off" 
 		configuration {"Debug","x64"}
 			links { "mc12101load.lib","vshell.lib","nmpp-x64d.lib","hal-mc12101-x64d.lib","mc12101-nmc4-0","mc12101-nmc4-1"}
-			targetsuffix ("-x64d")
+			targetsuffix ("-x64")
 			architecture "x64"
 			defines { "DEBUG"}
 			symbols  "On" 
@@ -46,14 +46,14 @@ solution "demo3d-mc12101"
 	 
 	  configuration "Debug"
 		   defines { "DEBUG"}
-		   buildcommands {"make DEBUG=y -f Makefile0 -j4"}
-		   rebuildcommands {"make -B DEBUG=y -f Makefile0  -j4"}
+		   buildcommands {"make DEBUG=y -f Makefile0"}
+		   rebuildcommands {"make -B DEBUG=y -f Makefile0"}
 		   cleancommands {"make clean"}
 		   
 	  configuration "Release"
 		   defines { "NDEBUG"}
-		   buildcommands {"make -f Makefile0 -j4"}
-		   rebuildcommands {"make -B -f Makefile0 -j4"}
+		   buildcommands {"make -f Makefile0"}
+		   rebuildcommands {"make -B -f Makefile"}
 		   cleancommands {"make clean"}		   
 		   
 	project "mc12101-nmc4-1"
@@ -64,14 +64,14 @@ solution "demo3d-mc12101"
 	 
 	  configuration "Debug"
 		   defines { "DEBUG"}
-		   buildcommands {"make DEBUG=y -f Makefile1 -j4"}
-		   rebuildcommands {"make -B DEBUG=y -f Makefile1  -j4"}
+		   buildcommands {"make DEBUG=y -f Makefile1"}
+		   rebuildcommands {"make -B DEBUG=y -f Makefile1"}
 		   cleancommands {"make clean"}
 		   
 	  configuration "Release"
 		   defines { "NDEBUG"}
-		   buildcommands {"make -f Makefile1  -j4"}
-		   rebuildcommands {"make -B -f Makefile1  -j4"}
+		   buildcommands {"make -f Makefile1"}
+		   rebuildcommands {"make -B -f Makefile1"}
 		   cleancommands {"make clean"}		   
 		   
 		  

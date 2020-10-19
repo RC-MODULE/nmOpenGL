@@ -7,8 +7,13 @@
 
 #define NUM_NM_CORES 2
 
+#ifdef DEBUG
+#define PROGRAM "main0d.abs"
+#define PROGRAM1 "main1d.abs"
+#else
 #define PROGRAM "main0.abs"
 #define PROGRAM1 "main1.abs"
+#endif
 
 struct Models{
 	char* sphere = "../../models/sphere_31.stl";

@@ -49,11 +49,7 @@ DEBUG ?= n
 
 ARCH             =nmc4
 #--------------  target & input dirs -------------------
-ifeq ($(DEBUG),y)
-PROJECT          = libnmopengl-$(ARCH)fd
-else
 PROJECT          = libnmopengl-$(ARCH)f
-endif
 TMP_DIR          = Release
 OUT_DIR          = $(ROOT)/lib
 TARGET           = $(OUT_DIR)/$(PROJECT).a
@@ -68,7 +64,7 @@ CC               = nmc-g++
 LD               = nmc-ld
 AR               = nmc-ar
 AS               = asm
-CC_FLAGS 	     = -m$(ARCH) $(INC_DIRS)  -std=c++11 -c -O2
+CC_FLAGS 	     = -m$(ARCH) $(INC_DIRS)  -std=c++11 -c -O2 -mnmc4-float
 AR_FLAGS         = rcs $(TARGET)
 AS_FLAGS         =-$(ARCH) -nm2ms  -split_sir -W-111 -W-109 $(INC_DIRS) 
 

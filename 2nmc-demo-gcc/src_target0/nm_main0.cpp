@@ -5,7 +5,7 @@
 #include "nmpp.h"
 #include "nmgl.h"
 #include "nmglvs_nmc0.h"
-//#include "nmprofiler.h"
+#include "nmprofiler.h"
 
 SECTION(".text_shared0") int main()
 {
@@ -79,7 +79,7 @@ SECTION(".text_shared0") int main()
 	nmglClearColor(0, 0, 0.4f, 0.0f);
 
 	nmglEnable(NMGL_DEPTH_TEST);
-	nmglEnable(NMGL_CULL_FACE);
+	//nmglEnable(NMGL_CULL_FACE);
 
 	nmglMatrixMode(NMGL_MODELVIEW);
 	nmglLoadIdentity();
@@ -120,7 +120,7 @@ SECTION(".text_shared0") int main()
 		nmglVertexPointer(4, NMGL_FLOAT, 0, vertices_DDR);
 		nmglNormalPointer(NMGL_FLOAT, 0, normal_DDR);
 		nmglLoadIdentity();
-		nmglScalef(0.9f, 0.9f, 0.9f);
+		//nmglScalef(0.9f, 0.9f, 0.9f);
 		nmglRotatef(angle, 0.707f, 0.707f, 0);
 		materialDiffuse[0] = 1;
 		materialDiffuse[2] = 0;
@@ -131,12 +131,11 @@ SECTION(".text_shared0") int main()
 		nmglMaterialfv(NMGL_FRONT_AND_BACK, NMGL_SPECULAR, materialSpec);
 		//PROFILER_SIZE(3 * amountPolygons);
 		nmglDrawArrays(NMGL_TRIANGLES, 0, 3 * amountPolygons);
-		//nmglDrawArrays(NMGL_TRIANGLES, 0, 3 * counter);
 
 		nmglVertexPointer(4, NMGL_FLOAT, 0, vertices_DDR2);
 		nmglNormalPointer(NMGL_FLOAT, 0, normal_DDR2);
 		nmglLoadIdentity();
-		nmglScalef(0.9f, 0.9f, 0.9f);
+		//nmglScalef(0.9f, 0.9f, 0.9f);
 		materialDiffuse[0] = 0.4;
 		materialDiffuse[1] = 1;
 		materialDiffuse[2] = 1;
@@ -149,11 +148,6 @@ SECTION(".text_shared0") int main()
 		nmglTranslatef(150, 150, 0);
 		//PROFILER_SIZE(3 * amountPolygons2);
 		nmglDrawArrays(NMGL_TRIANGLES, 0, 3 * amountPolygons2);
-		//3 * 15 * amountPolygons2 / 16 = 5040
-		//3 * amountPolygons2 / 16 = 336
-		//nmglDrawArrays(NMGL_TRIANGLES, 3 * amountPolygons2 / 2, 3 * amountPolygons2 / 16);
-		//nmglDrawArrays(NMGL_TRIANGLES, 3 * amountPolygons2 / 2 + 3 * 35, 3);
-		//nmglDrawArrays(NMGL_TRIANGLES, 3 * amountPolygons2 / 2 + 3 * 97, 3);
 #ifdef __OPEN_GL__
 		//angle += 0.03;
 		angle += 1.72;

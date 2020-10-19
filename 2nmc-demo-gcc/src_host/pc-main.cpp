@@ -23,7 +23,7 @@ int main()
 	if (!VS_Init())
 		return 0;
 	VS_CreateImage("Source Image", 1, WIDTH_IMAGE, HEIGHT_IMAGE, VS_RGB32, 0);	// Create window for 8-bit source grayscale image
-	//VS_OpRunForward();
+	VS_OpRunForward();
 
 	float* vertices = new float[4000 * 12];
 	float* normal = new float[4000 * 9];
@@ -78,6 +78,7 @@ int main()
 		if (counter>=10 && flag) {
 //#ifdef PROFILER0
 			//halProfilerPrint2xml("main0.map", 0, "../perf0.xml");
+			//return 0;
 //#endif // PROFILER0
 //#ifdef PROFILER1
 			//halProfilerPrint2xml("main1.map", 1, "../perf1.xml");
