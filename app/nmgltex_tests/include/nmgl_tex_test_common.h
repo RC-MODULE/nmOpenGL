@@ -26,6 +26,9 @@ typedef struct TexImage2D_data
 	NMGLenum type;//UNSIGNED_BYTE
 	void *pixels;
 } TexImage2D_data;
+#define WAIT_PERIOD 200
+#define wait_for_nm1_if_available if(nmpu1IsAccessible == 1) halSleep(WAIT_PERIOD)
+
 #ifdef DEBUG
 
 #define lvl(x) cntxt->texState.texObjects[objname].texImages2D[x]

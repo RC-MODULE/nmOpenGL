@@ -113,4 +113,10 @@ void nmglTexImage2D(NMGLenum target, NMGLint level, NMGLint internalformat, NMGL
 void nmglTexSubImage2D (NMGLenum target, NMGLint level, NMGLint xoffset, NMGLint yoffset, NMGLsizei width, NMGLsizei height, NMGLenum format, NMGLenum type, const void *pixels);
 void nmglTexCoordPointer (NMGLint size, NMGLenum type, NMGLsizei stride, const void *pointer);
 
+/*EXT_paletted_texture*/
+void nmglColorSubTableEXT (NMGLenum target, NMGLsizei start, NMGLsizei count, NMGLenum format, NMGLenum type, const void *data);
+void nmglColorTableEXT (NMGLenum target, NMGLenum internalformat, NMGLsizei width, NMGLenum format, NMGLenum type, const void *data);
+void nmglGetColorTableEXT (NMGLenum target, NMGLenum format, NMGLenum type,void *data);
+void nmglGetColorTableParameterivEXT (NMGLenum target, NMGLenum pname, NMGLint *params);
+
 #endif
