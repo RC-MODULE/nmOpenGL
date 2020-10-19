@@ -168,11 +168,11 @@ int main ()
     windows[0].height = 32;
   
     float x0[TRIANGLE_AMOUNT] = {0.0f, 0.0f,  0.0f,  0.0f,  0.0f};
-    float y0[TRIANGLE_AMOUNT] = {0.0f, 0.0f,  0.0f,  0.0f, 32.0f - 10.0f - 1.0f};
+    float y0[TRIANGLE_AMOUNT] = {0.0f, 0.0f,  0.0f,  0.0f, 32.0f - 10.0f};
     float x1[TRIANGLE_AMOUNT] = {0.0f, 0.0f,  0.0f,  0.0f, 15.0f};
-    float y1[TRIANGLE_AMOUNT] = {3.0f, 7.0f, 15.0f, 31.0f, 32.0f - 30.0f - 1.0f};
+    float y1[TRIANGLE_AMOUNT] = {3.0f, 7.0f, 15.0f, 31.0f, 32.0f - 30.0f};
     float x2[TRIANGLE_AMOUNT] = {3.0f, 7.0f, 15.0f, 31.0f, 26.0f};
-    float y2[TRIANGLE_AMOUNT] = {0.0f, 0.0f,  0.0f,  0.0f, 32.0f - 5.0f - 1.0f};
+    float y2[TRIANGLE_AMOUNT] = {0.0f, 0.0f,  0.0f,  0.0f, 32.0f - 5.0f};
    
 	float s0[TRIANGLE_AMOUNT] = {0.0f, 0.0f,  0.0f,  0.0f, 0.0f};
     float t0[TRIANGLE_AMOUNT] = {1.0f, 1.0f,  1.0f,  1.0f, 0.3125f};
@@ -182,7 +182,7 @@ int main ()
     float t2[TRIANGLE_AMOUNT] = {1.0f, 1.0f,  1.0f,  1.0f, 0.15625f};
 
     float z[TRIANGLE_AMOUNT] = {1.0f, 1.0f, 1.0f, 1.0f, 1.0f}; //minus (z in camera space)
-    unsigned int pixelCount[TRIANGLE_AMOUNT] = {16, 64, 256, 1024, 650}; //minus (z in camera space)
+    unsigned int pixelCount[TRIANGLE_AMOUNT] = {8, 32, 128, 512, 298}; //minus (z in camera space)
     
 	//Активный текстурный модуль
 	test_cntxt->texState.activeTexUnitIndex = 0;
@@ -242,10 +242,19 @@ int main ()
 			clock_t end_time = 0;
 			end_time = clock();
 
+
 			// Correctness tests: the last set of coordinates 
 			// with scenario texcoords
 			if (i == TRIANGLE_AMOUNT - 1){
 				extractTriangleByPattern(patterns, pDstTriangle, 1);
+#ifndef __NM__
+				// Save to bmp file on x86    
+				// before correction test because it corrupts images
+				char filename[256];
+				snprintf(filename, 256, "%i_res.%s", refId + 1, "bmp");
+				rawToImage(pDstTriangle, windows, result_images, 1);
+				saveToBmp (32, result_images[0], filename);
+#endif //__NM__        
 				corr = compareImages(pDstTriangle, references[refId], WIDTH_PTRN, HEIGHT_PTRN);
 			}
 			
@@ -257,13 +266,6 @@ int main ()
 			} else {
 				printf("%8.6f", corr * 100);
 			}
-#ifndef __NM__
-			// Save to bmp file on x86    
-			char filename[256];
-			snprintf(filename, 256, "%i_res.%s", refId + 1, "bmp");
-			rawToImage(pDstTriangle, windows, result_images, 1);
-			saveToBmp (32, result_images[0], filename);
-#endif //__NM__        
 		}
 		puts("");
 		refId++;
