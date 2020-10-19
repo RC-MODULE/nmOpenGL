@@ -1,10 +1,10 @@
+#include <cstdio>
+#include <cstdlib>
 #include "nmtype.h"
 #include "nmgldef.h"
-#include <cstdio>
 #include "nmgltex_common.h"
 #include "nmgltex_nm0.h"
 #include "demo3d_nm0.h"
-#include <cstdlib>
 #include "nmplv/vSupport.h"
 #include "malloc32.h"
 #include "time.h"
@@ -23,14 +23,14 @@
 #define SECTION(sec)
 #endif // __GNUC__
 
-#define TRIANGLE_AMOUNT 1
+#define TRIANGLE_AMOUNT 5 
 
 //Массив текстур в виде структур типа image_t
 #define TEXTURE_AMOUNT 9
 
 #ifndef __NM__
 //массив изображений после текстурирования
-image_t result_images [TRIANGLE_AMOUNT]; 
+image_t result_images [1]; 
 
 
 /**
@@ -75,7 +75,7 @@ SECTION(".data_imu0") TrianglesInfo triangles;
 // 2-ой int - младшая половина 64-битной 1-ой строки паттерна
 // 3-ой int - младшая половина 64-битной 2-ой строки паттерна
 // 0-ая строка паттерна - верхняя строка
-SECTION(".data_imu0") Pattern patterns [TRIANGLE_AMOUNT] = { 
+SECTION(".data_imu0") Pattern patterns [1] = { 
     {0x50000000, 0x00000000, 
     0x54000000, 0x00000000, 
     0x54000000, 0x00000001, 
@@ -140,20 +140,19 @@ int main ()
 	test_cntxt->init(&synchroData);
 	
     //Массивы растеризованных и закрашенных треугольников
-	nm32s pSrcTriangle[WIDTH_PTRN * HEIGHT_PTRN * TRIANGLE_AMOUNT];
-	nm32s pDstTriangle [WIDTH_PTRN * HEIGHT_PTRN * TRIANGLE_AMOUNT]; 
+	nm32s pSrcTriangle[WIDTH_PTRN * HEIGHT_PTRN * 1];
+	nm32s pDstTriangle [WIDTH_PTRN * HEIGHT_PTRN * 1]; 
     
     //Массив значений цветов для треугольников, один цвет на треугольник
-    v4nm32s colors [TRIANGLE_AMOUNT];
+    v4nm32s colors [1];
 	((nm32s*)colors)[0] = (nm32s)255;
 	((nm32s*)colors)[1] = (nm32s)255;
 	((nm32s*)colors)[2] = (nm32s)255;
 	((nm32s*)colors)[3] = (nm32s)255;
 	
 	//Информация о размещении видимой части треугольников в сегменте
-    Rectangle windows [TRIANGLE_AMOUNT];
+    Rectangle windows [1];
     
-    int count = TRIANGLE_AMOUNT;
     int i = 0;
     int j = 0;
 	
@@ -168,105 +167,106 @@ int main ()
     windows[0].width = 32;
     windows[0].height = 32;
   
-    float x0[TRIANGLE_AMOUNT] = {0.0f};
-    float y0[TRIANGLE_AMOUNT] = {32.0f - 10.0f};
-    float x1[TRIANGLE_AMOUNT] = {15.0f};
-    float y1[TRIANGLE_AMOUNT] = {32.0f - 30.0f};
-    float x2[TRIANGLE_AMOUNT] = {26.0f};
-    float y2[TRIANGLE_AMOUNT] = {32.0f - 5.0f};
+    float x0[TRIANGLE_AMOUNT] = {0.0f, 0.0f,  0.0f,  0.0f,  0.0f};
+    float y0[TRIANGLE_AMOUNT] = {0.0f, 0.0f,  0.0f,  0.0f, 32.0f - 10.0f - 1.0f};
+    float x1[TRIANGLE_AMOUNT] = {0.0f, 0.0f,  0.0f,  0.0f, 15.0f};
+    float y1[TRIANGLE_AMOUNT] = {3.0f, 7.0f, 15.0f, 31.0f, 32.0f - 30.0f - 1.0f};
+    float x2[TRIANGLE_AMOUNT] = {3.0f, 7.0f, 15.0f, 31.0f, 26.0f};
+    float y2[TRIANGLE_AMOUNT] = {0.0f, 0.0f,  0.0f,  0.0f, 32.0f - 5.0f - 1.0f};
    
-	float s0[TRIANGLE_AMOUNT] = {0.0f};
-    float t0[TRIANGLE_AMOUNT] = {0.3125f};
-    float s1[TRIANGLE_AMOUNT] = {0.46875f};
-    float t1[TRIANGLE_AMOUNT] = {0.9375f};
-    float s2[TRIANGLE_AMOUNT] = {0.8125f};
-    float t2[TRIANGLE_AMOUNT] = {0.15625f};
+	float s0[TRIANGLE_AMOUNT] = {0.0f, 0.0f,  0.0f,  0.0f, 0.0f};
+    float t0[TRIANGLE_AMOUNT] = {1.0f, 1.0f,  1.0f,  1.0f, 0.3125f};
+    float s1[TRIANGLE_AMOUNT] = {0.0f, 0.0f,  0.0f,  0.0f, 0.46875f};
+    float t1[TRIANGLE_AMOUNT] = {0.0f, 0.0f,  0.0f,  0.0f, 0.9375f};
+    float s2[TRIANGLE_AMOUNT] = {1.0f, 1.0f,  1.0f,  1.0f, 0.8125f};
+    float t2[TRIANGLE_AMOUNT] = {1.0f, 1.0f,  1.0f,  1.0f, 0.15625f};
 
-    float z[TRIANGLE_AMOUNT] = {1.0f}; //minus (z in camera space)
+    float z[TRIANGLE_AMOUNT] = {1.0f, 1.0f, 1.0f, 1.0f, 1.0f}; //minus (z in camera space)
+    unsigned int pixelCount[TRIANGLE_AMOUNT] = {16, 64, 256, 1024, 650}; //minus (z in camera space)
     
-	for (int counter = 0; counter < 1; counter++)
-	{
-		//printf ("%d\n", counter);
-		triangles.x0 = x0;
-		triangles.y0 = y0;
-		triangles.x1 = x1;
-		triangles.y1 = y1;
-		triangles.x2 = x2;
-		triangles.y2 = y2;
- 
-		//triangles.s0 = s0;
-		//triangles.t0 = t0;
-		//triangles.s1 = s1;
-		//triangles.t1 = t1;
-		//triangles.s2 = s2;
-		//triangles.t2 = t2;
-    
-		triangles.z0 = z;
-		triangles.z1 = z;
-		triangles.z2 = z;
-	
-		triangles.colors = colors;
-			
-		//Активный текстурный модуль
-		test_cntxt->texState.activeTexUnitIndex = 0;
-		unsigned int activeTexUnitIndex = test_cntxt->texState.activeTexUnitIndex;
-    
-		//Текстурный объект, привязанный к активному текстурному модулю
-		test_cntxt->texState.texUnits[activeTexUnitIndex].boundTexObject = &test_cntxt->texState.texObjects[0];
-		TexObject* boundTexObject = test_cntxt->texState.texUnits[activeTexUnitIndex].boundTexObject;
+	//Активный текстурный модуль
+	test_cntxt->texState.activeTexUnitIndex = 0;
+	unsigned int activeTexUnitIndex = test_cntxt->texState.activeTexUnitIndex;
 
+	//Текстурный объект, привязанный к активному текстурному модулю
+	test_cntxt->texState.texUnits[activeTexUnitIndex].boundTexObject = &test_cntxt->texState.texObjects[0];
+	TexObject* boundTexObject = test_cntxt->texState.texUnits[activeTexUnitIndex].boundTexObject;
 
-		//default texEnvColor = (0.0f, 0.0f, 0.0f, 0.0f)
-		test_cntxt->texState.texUnits[activeTexUnitIndex].texEnvColor[0] = 0.0f;
-		test_cntxt->texState.texUnits[activeTexUnitIndex].texEnvColor[1] = 0.0f;
-		test_cntxt->texState.texUnits[activeTexUnitIndex].texEnvColor[2] = 0.0f;
-		test_cntxt->texState.texUnits[activeTexUnitIndex].texEnvColor[3] = 0.0f;
+	//default texEnvColor is (0.0f, 0.0f, 0.0f, 0.0f)
+	test_cntxt->texState.texUnits[activeTexUnitIndex].texEnvColor[0] = 0.0f;
+	test_cntxt->texState.texUnits[activeTexUnitIndex].texEnvColor[1] = 0.0f;
+	test_cntxt->texState.texUnits[activeTexUnitIndex].texEnvColor[2] = 0.0f;
+	test_cntxt->texState.texUnits[activeTexUnitIndex].texEnvColor[3] = 0.0f;
 
-		int refId = 0;
-		for (auto& scenario : scenarios){
-			triangles.s0 = &(scenario.texCoords.s0);
-			triangles.t0 = &(scenario.texCoords.t0);
-			triangles.s1 = &(scenario.texCoords.s1);
-			triangles.t1 = &(scenario.texCoords.t1);
-			triangles.s2 = &(scenario.texCoords.s2);
-			triangles.t2 = &(scenario.texCoords.t2);
-#if 1 
-			// Set texture images
-			for (int i = 0; i < scenario.texture_count; ++i){
-					boundTexObject->texImages2D[i] = *(scenario.texname[i]);
-			}
-			boundTexObject->texMagFilter = scenario.magFilter; //default LINEAR
-			boundTexObject->texMinFilter = scenario.minFilter;
-			boundTexObject->texWrapS = scenario.wrapS; // default REPEAT
-			boundTexObject->texWrapT = scenario.wrapT;// default REPEAT
-			test_cntxt->texState.texUnits[activeTexUnitIndex].texFunctionName = scenario.texFunction; //default = NMGL_MODULATE
-
-			textureTriangle(&triangles, pDstTriangle, count);
-			extractTriangleByPattern(patterns, pDstTriangle, 1);
-			double corr = compareImages(pDstTriangle, references[refId], WIDTH_PTRN, HEIGHT_PTRN);
-			printf("%2i: %8.6f\n\r", refId + 1, corr);
-			//cropRectangle(pDstTriangle, 1);
-			// Print pixels
-			//for(int i = 0; i < 32; ++i){
-			//	for (int j = 0; j < 32; ++j){
-			//		printf("%x ", pDstTriangle[32 * i + j]);
-			//	}
-			//	puts("");
-			//}
-			//printPattern(patterns, 1);
-#ifndef __NM__
-			//convert result to image_t to compare with etalon    
-			char filename[256];
-			snprintf(filename, 256, "res_%i.%s", refId + 1, "bmp");
-			rawToImage(pDstTriangle, windows, result_images, count);
-			for (i = 0; i < count; i++)
-			{
-				saveToBmp (32, result_images[i], filename);
-			}
-#endif //__NM__        
-#endif
-			refId++;
+	int refId = 0;
+	for (auto& scenario : scenarios){
+		printf("%2i: ", refId + 1);
+		// Set texture images
+		for (int i = 0; i < scenario.texture_count; ++i){
+			boundTexObject->texImages2D[i] = *(scenario.texname[i]);
 		}
+
+		boundTexObject->texMagFilter = scenario.magFilter; 	//default LINEAR
+		boundTexObject->texMinFilter = scenario.minFilter;
+		boundTexObject->texWrapS = scenario.wrapS; 			// default REPEAT
+		boundTexObject->texWrapT = scenario.wrapT;			// default REPEAT
+		test_cntxt->texState.texUnits[activeTexUnitIndex].texFunctionName = scenario.texFunction; //default = NMGL_MODULATE
+		
+		// Performance tests: TRIANGLE_AMOUNT triangles
+		int i = 0;
+		for (i = 0; i < TRIANGLE_AMOUNT; ++i){
+			double corr = -1.0;		// -1.0 - correctness is not calculated
+			triangles.x0 = &x0[i];
+			triangles.y0 = &y0[i];
+			triangles.x1 = &x1[i];
+			triangles.y1 = &y1[i];
+			triangles.x2 = &x2[i];
+			triangles.y2 = &y2[i];
+
+			triangles.s0 = (i < TRIANGLE_AMOUNT - 1) ? &s0[i] : &(scenario.texCoords.s0);
+			triangles.t0 = (i < TRIANGLE_AMOUNT - 1) ? &t0[i] : &(scenario.texCoords.t0);
+			triangles.s1 = (i < TRIANGLE_AMOUNT - 1) ? &s1[i] : &(scenario.texCoords.s1);
+			triangles.t1 = (i < TRIANGLE_AMOUNT - 1) ? &t1[i] : &(scenario.texCoords.t1);
+			triangles.s2 = (i < TRIANGLE_AMOUNT - 1) ? &s2[i] : &(scenario.texCoords.s2);
+			triangles.t2 = (i < TRIANGLE_AMOUNT - 1) ? &t2[i] : &(scenario.texCoords.t2);
+
+			triangles.z0 = &z[i];
+			triangles.z1 = &z[i];
+			triangles.z2 = &z[i];
+
+			triangles.colors = colors;
+
+			clock_t start_time = 0;
+			start_time = clock();
+			textureTriangle(&triangles, pDstTriangle, 1);
+			clock_t end_time = 0;
+			end_time = clock();
+
+			// Correctness tests: the last set of coordinates 
+			// with scenario texcoords
+			if (i == TRIANGLE_AMOUNT - 1){
+				extractTriangleByPattern(patterns, pDstTriangle, 1);
+				corr = compareImages(pDstTriangle, references[refId], WIDTH_PTRN, HEIGHT_PTRN);
+			}
+			
+			// Output result
+			printf("\t%10i/", (int)(end_time - start_time));
+			printf("%6i/", (int)(end_time - start_time)/pixelCount[i]);
+			if (corr < 0){
+				printf("-", (double)(end_time - start_time));
+			} else {
+				printf("%8.6f", corr * 100);
+			}
+#ifndef __NM__
+			// Save to bmp file on x86    
+			char filename[256];
+			snprintf(filename, 256, "%i_res.%s", refId + 1, "bmp");
+			rawToImage(pDstTriangle, windows, result_images, 1);
+			saveToBmp (32, result_images[0], filename);
+#endif //__NM__        
+		}
+		puts("");
+		refId++;
 	}
 	printf ("End texturing test...\n");
     return 0;
