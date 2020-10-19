@@ -281,10 +281,10 @@ SECTION(TEXTURE_TRIANGLE_SECTION)
 color getPixelLinear(Vec2f st, NMGLint textureWrapS, NMGLint textureWrapT, TexImage2D texture)
 {
 
-	unsigned int i0 = 0;
-	unsigned int j0 = 0;
-	unsigned int i1 = 0;
-	unsigned int j1 = 0;
+	int i0 = 0;
+	int j0 = 0;
+	int i1 = 0;
+	int j1 = 0;
 	color pixelValue;
 	
 	float u = texture.width*st.x; //2^n = textureWidth
@@ -316,9 +316,8 @@ color getPixelLinear(Vec2f st, NMGLint textureWrapS, NMGLint textureWrapT, TexIm
 	else
 		j1 = j0plus1;
 
-	double intpart = 0.0;
-	float alpha = modf(u - 0.5, &intpart);
-	float beta = modf(v - 0.5, &intpart);
+	float alpha = (u - 0.5) - floor(u - 0.5); //frac(u - 0.5)
+	float beta = (v - 0.5) - floor(v - 0.5); //frac(v - 0.5)
 
 	color pixel_i0j0;
 	color pixel_i1j0;
@@ -760,8 +759,11 @@ void textureTriangle(TrianglesInfo* triangles, nm32s* pDstTriangle, int count)
 				{
 
 					//Not mipmapping. So wrap texture coordinates for texture of level 0 
-					st.x = wrapCoord(textureWrapS, boundTexObject->texImages2D[0].width, st.x);
-					st.y = wrapCoord(textureWrapT, boundTexObject->texImages2D[0].height, st.y);
+					if (textureWrapS == NMGL_CLAMP_TO_EDGE)
+						st.x = wrapCoord(textureWrapS, boundTexObject->texImages2D[0].width, st.x);
+					
+					if (textureWrapT == NMGL_CLAMP_TO_EDGE)
+						st.y = wrapCoord(textureWrapT, boundTexObject->texImages2D[0].height, st.y);
 
 					pixelValue = getPixelLinear(st, textureWrapS, textureWrapT, boundTexObject->texImages2D[0]);
 				}
@@ -780,14 +782,24 @@ void textureTriangle(TrianglesInfo* triangles, nm32s* pDstTriangle, int count)
 						getchar();
 					}
 
-					//Mipmapping. So wrap texture coordinates for texture of selected level d 
-					st.x = wrapCoord(textureWrapS,boundTexObject->texImages2D[d].width, st.x);
-					st.y = wrapCoord(textureWrapT,boundTexObject->texImages2D[d].height, st.y);
-
 					if (textureMinFilter == NMGL_NEAREST_MIPMAP_NEAREST)
+					{
+						//Mipmapping. So wrap texture coordinates for texture of selected level d 
+						st.x = wrapCoord(textureWrapS,boundTexObject->texImages2D[d].width, st.x);
+						st.y = wrapCoord(textureWrapT,boundTexObject->texImages2D[d].height, st.y);
 						pixelValue = getPixelNearest(st, boundTexObject->texImages2D[d]);
+					}
 					else if (textureMinFilter == NMGL_LINEAR_MIPMAP_NEAREST)
+					{
+						//Mipmapping. So wrap texture coordinates for texture of selected level d 
+						if (textureWrapS == NMGL_CLAMP_TO_EDGE)
+							st.x = wrapCoord(textureWrapS,boundTexObject->texImages2D[d].width, st.x);
+						
+						if (textureWrapT == NMGL_CLAMP_TO_EDGE)
+							st.y = wrapCoord(textureWrapT,boundTexObject->texImages2D[d].height, st.y);
+						
 						pixelValue = getPixelLinear(st, textureWrapS, textureWrapT, boundTexObject->texImages2D[d]);
+					}
 					else
 					{
 						printf("textureMinFilter has unsupported value for mipmapping\n");
@@ -812,25 +824,35 @@ void textureTriangle(TrianglesInfo* triangles, nm32s* pDstTriangle, int count)
 					else
 						d2 = d1 + 1;
 
-					//Mipmapping. So wrap texture coordinates for texture of selected level d1 and d2
-					Vec2f st1;
-					Vec2f st2;
-
-					// st1 = st;
-					// st2 = st;
-
-					st1.x = wrapCoord(textureWrapS,boundTexObject->texImages2D[d1].width,st.x);
-					st1.y = wrapCoord(textureWrapT,boundTexObject->texImages2D[d1].height,st.y);
-					st2.x = wrapCoord(textureWrapS,boundTexObject->texImages2D[d2].width,st.x);
-					st2.y = wrapCoord(textureWrapT,boundTexObject->texImages2D[d2].height,st.y);
+					Vec2f st1 = st;
+					Vec2f st2 = st;
 
 					if (textureMinFilter == NMGL_NEAREST_MIPMAP_LINEAR)
 					{
+						//Mipmapping. So wrap texture coordinates for texture of selected level d1 and d2
+						st1.x = wrapCoord(textureWrapS,boundTexObject->texImages2D[d1].width,st.x);
+						st1.y = wrapCoord(textureWrapT,boundTexObject->texImages2D[d1].height,st.y);
+						st2.x = wrapCoord(textureWrapS,boundTexObject->texImages2D[d2].width,st.x);
+						st2.y = wrapCoord(textureWrapT,boundTexObject->texImages2D[d2].height,st.y);
+						
 						t1 = getPixelNearest(st1, boundTexObject->texImages2D[d1]);
 						t2 = getPixelNearest(st2, boundTexObject->texImages2D[d2]);
 					}
 					else if (textureMinFilter == NMGL_LINEAR_MIPMAP_LINEAR)
 					{
+						//Mipmapping. So wrap texture coordinates for texture of selected level d1 and d2
+						if (textureWrapS == NMGL_CLAMP_TO_EDGE)
+						{
+							st1.x = wrapCoord(textureWrapS,boundTexObject->texImages2D[d1].width, st.x);
+							st2.x = wrapCoord(textureWrapS,boundTexObject->texImages2D[d2].width, st.x);
+						}
+						
+						if (textureWrapT == NMGL_CLAMP_TO_EDGE)
+						{
+							st1.y = wrapCoord(textureWrapT,boundTexObject->texImages2D[d1].height, st.y);
+							st2.y = wrapCoord(textureWrapT,boundTexObject->texImages2D[d2].height, st.y);
+						}
+						
 						t1 = getPixelLinear(st1, textureWrapS, textureWrapT, boundTexObject->texImages2D[d1]);
 						t2 = getPixelLinear(st2, textureWrapS, textureWrapT, boundTexObject->texImages2D[d2]);
 					}
@@ -840,8 +862,7 @@ void textureTriangle(TrianglesInfo* triangles, nm32s* pDstTriangle, int count)
 						getchar();
 					}
 					
-					double intpart = 0.0;
-					float frac_lod = modf(lod, &intpart);
+					float frac_lod = lod - floor(lod);
 
 					pixelValue.r = (1.0 - frac_lod)*t1.r + frac_lod*t2.r;
 					pixelValue.g = (1.0 - frac_lod)*t1.g + frac_lod*t2.g;
@@ -1267,7 +1288,13 @@ void textureTriangle(TrianglesInfo* triangles, nm32s* pDstTriangle, int count)
 				cv.y = veccvy[x];
 				cv.z = veccvz[x];
 				av = vecav[x];
-					  
+				
+				//Clamp  to 1.0f before color sum (3.9, gl 1.3)
+				if (cv.x > 1.0f) cv.x = 1.0f;
+				if (cv.y > 1.0f) cv.y = 1.0f;
+				if (cv.z > 1.0f) cv.z = 1.0f;
+				if (av > 1.0f) av = 1.0f;
+
 				nm32s color = 0;
 				//(nm32s)pDst[0] = 0xARGB
 				color = color | (((nm32s)(av * 255) & 0xff) << 24);//a
