@@ -1288,7 +1288,13 @@ void textureTriangle(TrianglesInfo* triangles, nm32s* pDstTriangle, int count)
 				cv.y = veccvy[x];
 				cv.z = veccvz[x];
 				av = vecav[x];
-					  
+				
+				//Clamp  to 1.0f before color sum (3.9, gl 1.3)
+				if (cv.x > 1.0f) cv.x = 1.0f;
+				if (cv.y > 1.0f) cv.y = 1.0f;
+				if (cv.z > 1.0f) cv.z = 1.0f;
+				if (av > 1.0f) av = 1.0f;
+
 				nm32s color = 0;
 				//(nm32s)pDst[0] = 0xARGB
 				color = color | (((nm32s)(av * 255) & 0xff) << 24);//a
