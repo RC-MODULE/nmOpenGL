@@ -58,7 +58,7 @@ vs2005: $(HOST).vcproj
 
 vs2015:	$(HOST).vcxproj
 	"$(VS140COMNTOOLS)vsvars32" && msbuild $(HOST).vcxproj /p:Configuration=Release /p:Platform=x64
-	"$(VS140COMNTOOLS)vsvars32" && msbuild $(HOST).vcxproj /p:Configuration=Debug /p:Platform=x64
+#	"$(VS140COMNTOOLS)vsvars32" && msbuild $(HOST).vcxproj /p:Configuration=Debug /p:Platform=x64
 
 $(HOST).vcproj:
 	premake5 vs2005

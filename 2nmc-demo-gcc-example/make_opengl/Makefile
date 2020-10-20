@@ -7,7 +7,7 @@ include $(ROOT)/global.mk
 .SUFFIXES:
 
 
-TARGET   = opengl-x86
+TARGET   = opengl
 
 VS ?=vs2015
 ALL: $(VS)

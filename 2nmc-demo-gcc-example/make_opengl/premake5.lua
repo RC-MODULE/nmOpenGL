@@ -1,12 +1,12 @@
 #!lua
 
 
-solution "opengl-x86"
+solution "opengl"
    configurations { "Debug", "Release" }
    --platforms{"x64","x86"}
 
    -- A project defines one build target
-   project "opengl-x86"
+   project "opengl"
       kind "ConsoleApp"
 	  language "C++"
       files { "../../nmglvs_opengl/*.*", "../src_target0/*.cpp" }

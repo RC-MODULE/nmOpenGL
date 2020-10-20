@@ -18,6 +18,7 @@
 
 #define setHeap(a)
 
+#define PROFILER_SIZE()	
 
 struct Models {
 	char* sphere = "../../models/sphere_31.stl";
