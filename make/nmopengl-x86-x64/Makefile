@@ -3,20 +3,17 @@ include $(ROOT)/global.mk
 #-include ../local.mk
 
 .SUFFIXES:
+PLATFORM ?= x64
 PROJECT  = nmopengl
-PROJECT_X86   = $(PROJECT)-x86
-TARGET_X86 = $(OUT_DIR)/$(PROJECT_X86).lib
 OUT_DIR = $(ROOT)/lib
 
 
 #--------------- X86 build --------------------------------	
 vs2015:	$(PROJECT_X86).vcxproj
-	"$(VS140COMNTOOLS)vsvars32" && msbuild $(PROJECT_X86).vcxproj /p:Configuration=Debug
-	"$(VS140COMNTOOLS)vsvars32" && msbuild $(PROJECT_X86).vcxproj /p:Configuration=Release
-
-	
-vs2005: $(PROJECT_X86).vcproj
-	"$(VS80COMNTOOLS)vsvars32" && vcbuild $(PROJECT_X86).vcproj "Debug"
+	"$(VS140COMNTOOLS)vsvars32" && msbuild $(PROJECT).vcxproj /p:Configuration=Debug      /p:Platform=x64
+	"$(VS140COMNTOOLS)vsvars32" && msbuild $(PROJECT).vcxproj /p:Configuration=Release    /p:Platform=x64
+	"$(VS140COMNTOOLS)vsvars32" && msbuild $(PROJECT).vcxproj /p:Configuration=Debug      /p:Platform=x86
+	"$(VS140COMNTOOLS)vsvars32" && msbuild $(PROJECT).vcxproj /p:Configuration=Release    /p:Platform=x86
 
 
 	
