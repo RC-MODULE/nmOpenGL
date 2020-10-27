@@ -12,6 +12,9 @@ data ".data_demo3d"        //секция инициализированных �
 	vertCount: word;				// number of input vertexes (used only in GL_TRIANGLES)
 	tmpAddress: word;				// used to remember address of y or w row
 	retVal: word;					// return value
+	dstVertex: word;
+	dstColorEnd: word;
+	parity: word;	// 1 if number of output triangles is odd
 end ".data_demo3d";  
 
 // Copies n rgba (64-bit) words from src to dst
@@ -126,23 +129,10 @@ macro extractPair(coordAddr1, coordAddr2, delta)
 	fpu 0 .matrix vreg2 = vreg4 * .trans (vreg0, vreg1);
 	fpu 0 rep vlen [ar2++] = vreg2;	
 	// Extract second coordinate of the pair (y or w)
-	// In case of odd number of triangles, y and w coordinates are written at odd 
-	// address. 
-	// !!! It is not possible to write from vreg to memory at the odd address. 
-	// 64-bit data are written at even address only (compiler ensures this)
 	ar5 = M01;
 	fpu 0 rep vlen vreg4 = [ar5];
 	fpu 0 .matrix vreg2 = vreg4 * .trans (vreg0, vreg1);
-	// Check if number of triangles is odd
-	// If it is then ar4 is odd and copy y and w coordinates through the buf
-	gr7 = gr1;
-	gr3 = 1;
-	gr7 = gr7 and gr3;
-	if > goto indirectCopy; 
-	fpu 0 rep vlen [ar4++] = vreg2;	// else copy directly from the vreg
-	goto endLoop;
-<indirectCopy>
-	copyVregAtOddAddress(vreg2, ar4, gr2);
+	fpu 0 rep vlen [ar4++] = vreg2;	
 <endLoop>	
 	gr0  = gr0 - gr2;
 	if > goto getLoop;
@@ -175,6 +165,7 @@ begin ".text_demo3d"			// начало секции кода
     gr4 = [--ar5];  // intput: mode
     gr6 = [--ar5];  // intput: count of input vertexes 
     [vertCount] = gr6;	// Used in GL_TRIANGLES
+	[dstVertex] = ar2;
 
 	gr0 = 0;
 	[retVal] = gr0;
@@ -204,7 +195,16 @@ begin ".text_demo3d"			// начало секции кода
 	delayed call IDiv32;
 	push gr6;
 	push gr0;
-	gr1 = gr7;
+	gr1 = gr7;	// gr1 = IDiv32(gr6/3)
+	
+	// Set parity flag
+	gr3 = 1;
+	gr7 = gr7 and gr3;
+	[parity] = gr7;
+	// Round gr1 to nearest even (+1 in case of odd, the same in case of even)
+	gr1 = gr1 + 1;
+	gr1 >>= 1;
+	gr1 <<= 1;
 	//gr0 = 3;				
 	//IDIV32(gr1, gr6, gr0);	// gr1 - res, gr6 - division, gr0 - divider
 							// This macro modifies ar5 and gr7
@@ -258,9 +258,10 @@ begin ".text_demo3d"			// начало секции кода
 	vlen = gr3;
 	fpu 0 rep vlen vreg0 = [ar1++];	// copy from input colors into vreg
 	fpu 0 rep vlen [ar3++] = vreg0; // copy from vreg into output colors	
+	[dstColorEnd] = ar3;
 	gr0  = gr0 - gr2;
 	if > goto colLoop;
-	goto Exit;
+	goto checkParity;
 
 <GL_TRIANGLE_STRIP>
 	// Выгрузка координат x точек A всех треугольников для mode=GL_TRIANGLE_STRIP
@@ -268,6 +269,16 @@ begin ".text_demo3d"			// начало секции кода
 	// GL_TRIANGLE_STRIP: (vertCount - 2)
 	gr0 = 2;				
 	gr1 = gr6 - gr0;	
+	
+	// Set parity flag
+	gr7 = gr1;
+	gr3 = 1;
+	gr7 = gr7 and gr3;
+	[parity] = gr7;
+	// Round gr1 to nearest even (+1 in case of odd, the same in case of even)
+	gr1 = gr1 + 1;
+	gr1 >>= 1;
+	gr1 <<= 1;
 	[retVal] = gr1;
 	// Get xy coordinates of A points
 	gr0 = gr1;	// gr0 - loop counter	
@@ -306,6 +317,10 @@ begin ".text_demo3d"			// начало секции кода
 	gr0 = gr1 >> 1;
 	gr2 += gr0;			//gr2 = gr0/2 + gr1 & 1
 	copyCol(ar1, ar3, 8, 24, gr2);
+	//////////////////// Save dstColorEnd 
+	ar4 -= 12;
+	[dstColorEnd] = ar4;
+	////////////////////
 	gr0 = 1;
 	gr2 = gr1 and gr0;
 	gr0 = gr1 >> 1;
@@ -324,7 +339,8 @@ begin ".text_demo3d"			// начало секции кода
 	copyCol(ar1 + 4, ar3 + 16, 8, 24, gr0);
 	// Copy colors of C vertexes
 	copyCol(ar1 + 8, ar3 + 8, 4, 12, gr1);
-	goto Exit;
+	goto checkParity;
+	//goto Exit;
 
 <GL_TRIANGLE_FAN>
 	// Выгрузка координат x точек A всех треугольников для mode=GL_TRIANGLE_FAN
@@ -332,6 +348,15 @@ begin ".text_demo3d"			// начало секции кода
 	// GL_TRIANGLE_FAN: (vertCount - 2)
 	gr0 = 2;				
 	gr1 = gr6 - gr0;	
+	// Set parity flag
+	gr7 = gr1;
+	gr3 = 1;
+	gr7 = gr7 and gr3;
+	[parity] = gr7;
+	// Round gr1 to nearest even (+1 in case of odd, the same in case of even)
+	gr1 = gr1 + 1;
+	gr1 >>= 1;
+	gr1 <<= 1;
 	[retVal] = gr1;
 	// Get xy coordinates of A points
 	gr0 = gr1;	// gr0 - loop counter	
@@ -366,8 +391,36 @@ begin ".text_demo3d"			// начало секции кода
 	
 	// Extract colors
 	copyCol(ar1, ar3, 0, 12, gr1);
+	//////////////////// Save dstColorEnd 
+	ar4 -= 12;
+	[dstColorEnd] = ar4;
+	////////////////////
 	copyCol(ar1 + 4, ar3 + 4, 4, 12, gr1);
 	copyCol(ar1 + 8, ar3 + 8, 4, 12, gr1);
+
+<checkParity>
+	// !!! In case of odd output triangles extend the output with the last triangle
+	// Check if number of triangles is odd
+	gr4 = [parity];
+	gr4;
+	if =0 goto Exit; 
+	ar4 = [dstVertex] with gr4 = gr1 - 1;
+	ar4 = ar4 + gr4 with gr4 = gr1; 	// last element (n) in the row
+	ar2 = ar4 - 1 with gr2 = gr1;	 	// penultimate element (n - 1) in the row 
+
+	.repeat 12;
+	gr3 = [ar2++gr2];
+	[ar4++gr4] = gr3;
+	.endrepeat;
+
+	ar4 = [dstColorEnd];
+	ar2 = ar4;
+	ar2 -= 12;
+
+	.repeat 12;
+	gr3 = [ar2++];
+	[ar4++] = gr3;
+	.endrepeat;
 
 <Exit>
 	gr7 = [retVal];
