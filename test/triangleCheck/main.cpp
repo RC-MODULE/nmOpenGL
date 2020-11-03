@@ -54,45 +54,33 @@ static void drawLine(int* dst, int x1, int y1, int x2, int y2, int color) {
 }
 
 static void fillSide(int* dst, int x1, int y1, int x2, int y2, int color, int topLeftSide, int nID) {
-	/*for (int i = 0; i < SIDE_PTRN * SIDE_PTRN; i++) {
-		dst[i] = 0;
-	}
-	drawLine(dst, x1, y1, x2, y2, color);
-
-	if (topLeftSide) {
-		for (int y = 0; y < SIDE_PTRN; y++) {
-			int xCol = 0;
-			while (dst[y * SIDE_PTRN + xCol] != color && xCol < SIDE_PTRN) {
-				xCol++;
-			}
-			for (int x = 0; x < xCol; x++) {
-				setPixel(dst, x, y, color, nID);
-			}
-		}
-	}
-	else {
-		for (int y = 0; y < SIDE_PTRN; y++) {
-			int xCol = 0;
-			while (dst[y * SIDE_PTRN + xCol] != color && xCol < SIDE_PTRN) {
-				xCol++;
-			}
-			for (int x = xCol; x < SIDE_PTRN; x++) {
-				setPixel(dst, x, y, color, nID);
-			}
-		}
-	
-	}*/
 	float deltaY = (y2 - y1);
 	float deltaX = (x2 - x1);
 	float k = deltaY / deltaX;
 	float b = y1 - k * x1;
 	for (int y = 0; y < SIDE_PTRN; y++) {
 		for (int x = 0; x < SIDE_PTRN; x++) {
-			float yRefp = k * (float(x) + 0.5) + b;
-			float yRefs = k * (float(x) + 0.5) + b;
-			if (topLeftSide == 0 && (yRefp - 0.5 <= y) ||
-				topLeftSide == 1 && (yRefs - 0.5 > y)) {
-				setPixel(dst, x, y, color, nID);
+			if (fabs(deltaX) > fabs(deltaY)) {
+				float yRefp = k * ((float)x) + b;
+				float yRefs = k * ((float)x) + b;
+				if (topLeftSide == 0 && (yRefp <= y + 0.5) ||
+					topLeftSide == 1 && (yRefs >= y + 0.5)) {
+					setPixel(dst, x, y, color, nID);
+				}
+				else {
+					setPixel(dst, x, y, 0, nID);
+				}
+			}
+			else {
+				float xRefp = ((float)(y - b)) / k;
+				float xRefs = ((float)(y - b)) / k;
+				if (deltaY / deltaX < 0 && topLeftSide == 0 && (xRefp <= x + 0.5) ||
+					deltaY / deltaX < 1 && topLeftSide == 1 && (xRefp >= x + 0.5)) {
+					setPixel(dst, x, y, color, nID);
+				}
+				else {
+					setPixel(dst, x, y, 0, nID);
+				}
 			}
 		}
 	}
@@ -100,10 +88,10 @@ static void fillSide(int* dst, int x1, int y1, int x2, int y2, int color, int to
 
 void lineRef(int nID, int x1, int y1, int x2, int y2, int color) {
 	VS_Line(nID, 
-		x1 * SCALE,// - SCALE / 2, 
-		y1 * SCALE,// - SCALE / 2, 
-		x2 * SCALE,// - SCALE / 2, 
-		y2 * SCALE,// - SCALE / 2, 
+		x1 * SCALE,// + SCALE / 2, 
+		y1 * SCALE,// + SCALE / 2, 
+		x2 * SCALE,// + SCALE / 2, 
+		y2 * SCALE,// + SCALE / 2, 
 		color);
 }
 
@@ -166,27 +154,12 @@ int main()
 		//сетка
 		int offsetX = CENTER_PIXEL_X * SCALE;
 		int offsetY = CENTER_PIXEL_Y * SCALE;
-		//correctTriangle(dst, 0, 0.5, 30, 0.5, 15, 4.5, VS_GRAY, VS_WHITE);
-		float stepK = (M_PI / 180);
-		
-		//correctTriangle(dst, 0, 0, 32, 0, 15, 4, VS_GRAY, VS_WHITE);
-		x0 = (angle < M_PI / 2) ? 0 : SIDE_PTRN - 1;
-		//fillSide(dst, x0, y0, 2 * SIDE_PTRN * cos(angle), 2 * SIDE_PTRN * sin(angle), VS_GRAY, 1, 2);
-		//fillSide(dst, x0, y0, 2 * SIDE_PTRN * cos(angle), 2 * SIDE_PTRN * sin(angle), VS_GRAY, 0, 2);
-		fillSide(dst, 8, 0, 8-1, 9, VS_GRAY, 1, 2);
-		fillSide(dst, 1, 0, 1-1, 9, VS_GRAY, 0, 2);
-		//drawLine(dst, x0, y0, 2 * SIDE_PTRN * cos(angle), 2 * SIDE_PTRN * sin(angle), VS_GRAY);
-		lineRef(1, 8, 0, 8 - 1, 9, VS_WHITE);
-		lineRef(2, 1, 0, 1 - 1, 9, VS_WHITE);
-		angle += stepK;
-		y++;
-		if (y == SIDE_PTRN) {
-			x--;
-			if (x == 0) {
-				x = SIDE_PTRN;
-				y = 0;
-			}
-		}
+		float arctg = atan2(4, 31);
+		float h = arctg * 180 / M_PI;
+		//fillSide(dst, 0, 0, 31, 4, VS_GRAY, 1, 1);
+		//lineRef(1, 0, 0, 31, 4,VS_WHITE);
+		fillSide(dst, 0, 0, 4, 31, VS_GRAY, 1, 1);
+		lineRef(1, 0, 0, 4, 31,VS_WHITE);
 		
 
 		//сетка пикселей

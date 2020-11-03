@@ -1,7 +1,6 @@
 
 default: config_nmpu0
 	
-run:
 
 all_mc12101: configure0 configure1
 	testperf run

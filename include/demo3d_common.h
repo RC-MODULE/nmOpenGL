@@ -12,7 +12,13 @@
 	#define setHeap(n)
 #endif
 
-//#define TRIANGULATION_ENABLED
+#ifndef __GNUC__
+	#define PROFILER_SIZE(n)
+	#define nmprofiler_enable()
+	#define nmprofiler_disable()
+#endif
+
+#define TRIANGULATION_ENABLED
 //#define USED_OLD_POLYGONS
 //#define PROFILER0
 //#define PROFILER1

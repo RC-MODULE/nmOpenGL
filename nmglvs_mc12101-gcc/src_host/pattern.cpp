@@ -6,7 +6,6 @@
 #include <iostream>
 #include <fstream>
 using namespace std;
-#define PI 3.14159265359
 
 #define abs(a) (((a) < 0) ? -(a) : (a))
 
@@ -29,9 +28,9 @@ void fillPtrnsInit(unsigned char* dst, int* table_dydx, unsigned char color) {
 		dst[i] = 0;
 	}
 
-	int r = 2 * max(WIDTH_PTRN, HEIGHT_PTRN);
+	int r = max(WIDTH_PTRN, HEIGHT_PTRN);
 	float stepA = M_PI / AMOUNT_ANGLES;
-	for (float angle = 0; angle < AMOUNT_ANGLES/2; angle++) {
+	for (float angle = 0; angle < AMOUNT_ANGLES/4; angle++) {
 		for (int off = 0; off < OFFSETS; off++, cntRight++, cntLeft++) {
 			if (angle == 0) {
 				for (int x = off; x < WIDTH_PTRN; x++) {
@@ -42,13 +41,19 @@ void fillPtrnsInit(unsigned char* dst, int* table_dydx, unsigned char color) {
 				}
 			}
 			else {
-				fillSide(dst + cntRight * size, off, 0, off + r * cos(angle * M_PI / 180), r * sin(angle * M_PI / 180), color, 1);
-				fillSide(dst + cntLeft  * size, off, 0, off + r * cos(angle * M_PI / 180), r * sin(angle * M_PI / 180), color, 0);
+				fillSide(dst + cntRight * size, off, 0, off + r * cos(angle * stepA), r * sin(angle * stepA), color, 1);
+				fillSide(dst + cntLeft  * size, off, 0, off + r * cos(angle * stepA), r * sin(angle * stepA), color, 0);
 			}
 		}
 	}
+	for (float angle = AMOUNT_ANGLES / 4; angle < AMOUNT_ANGLES / 2; angle++) {
+		for (int off = 0; off < OFFSETS; off++, cntRight++, cntLeft++) {
+			fillSide(dst + cntRight * size, off, 0, off + r * cos(angle * stepA), r * sin(angle * stepA), color, 0);
+			fillSide(dst + cntLeft  * size, off, 0, off + r * cos(angle * stepA), r * sin(angle * stepA), color, 1);
+		}
+	}
 
-	for (float angle = AMOUNT_ANGLES/2; angle < AMOUNT_ANGLES; angle++) {
+	for (float angle = AMOUNT_ANGLES / 2; angle < 3 * AMOUNT_ANGLES / 4; angle++) {
 		for (int off = 0; off < OFFSETS; off++, cntRight++, cntLeft++) {
 			if (angle == AMOUNT_ANGLES/2) {
 				for (int x = off; x < WIDTH_PTRN; x++) {
@@ -59,10 +64,17 @@ void fillPtrnsInit(unsigned char* dst, int* table_dydx, unsigned char color) {
 				}
 			}
 			else {
-				fillSide(dst + cntRight * size, off, 0, off + r * cos(angle * M_PI / 180), r * sin(angle * M_PI / 180), color, 0);
-				fillSide(dst + cntLeft  * size, off, 0, off + r * cos(angle * M_PI / 180), r * sin(angle * M_PI / 180), color, 1);
+				fillSide(dst + cntRight * size, off, 0, off + r * cos(angle * stepA), r * sin(angle * stepA), color, 0);
+				fillSide(dst + cntLeft  * size, off, 0, off + r * cos(angle * stepA), r * sin(angle * stepA), color, 1);
 			}
 			
+		}
+	}
+
+	for (float angle = 3 * AMOUNT_ANGLES / 4; angle < AMOUNT_ANGLES; angle++) {
+		for (int off = 0; off < OFFSETS; off++, cntRight++, cntLeft++) {
+			fillSide(dst + cntRight * size, off, 0, off + r * cos(angle * stepA), r * sin(angle * stepA), color, 0);
+			fillSide(dst + cntLeft  * size, off, 0, off + r * cos(angle * stepA), r * sin(angle * stepA), color, 1);
 		}
 	}
 	
@@ -72,10 +84,13 @@ void fillPtrnsInit(unsigned char* dst, int* table_dydx, unsigned char color) {
 
 static void createFillTable(int* table) {
 	for (int y = 0; y < HEIGHT_TABLE; y++) {
-		for (int x = -WIDTH_TABLE / 2; x < WIDTH_TABLE / 2; x++) {
-			double k = (double)y / (double)x;
-			float angle = round(atan2(y, x) * 180 / M_PI);
-			table[y * WIDTH_TABLE + x + WIDTH_TABLE / 2] = angle * OFFSETS;
+		for (int x = -WIDTH_TABLE / 2; x < 0; x++) {
+			float number = floor(atan2(y, x) * AMOUNT_ANGLES / M_PI);
+			table[y * WIDTH_TABLE + x + WIDTH_TABLE / 2] = number * OFFSETS;
+		}
+		for (int x = 0; x < WIDTH_TABLE / 2; x++) {
+			float number = ceil(atan2(y, x) * AMOUNT_ANGLES / M_PI);
+			table[y * WIDTH_TABLE + x + WIDTH_TABLE / 2] = number * OFFSETS;
 		}
 	}
 	
@@ -87,32 +102,15 @@ void linePtrnsInit(unsigned char* dst, int* table, unsigned char color) {
 	for (int i = 0; i < LINE_PATTERNS_AMOUNT * size; i++) {
 		dst[i] = 0;
 	}
-
-	int r = 2 * max(WIDTH_PTRN, HEIGHT_PTRN);
 	float stepA = M_PI / AMOUNT_ANGLES;
+	int r = 2 * max(WIDTH_PTRN, HEIGHT_PTRN);
 	for (float angle = 0; angle < AMOUNT_ANGLES / 2; angle++, cnt++) {
-		drawLine(dst + cnt * size, 0, 0, r * cos(angle * M_PI / 180), r * sin(angle * M_PI / 180), color);
+		drawLine(dst + cnt * size, 0, 0, r * cos(angle * stepA), r * sin(angle * stepA), color);
 	}
 
 	for (float angle = AMOUNT_ANGLES / 2; angle < AMOUNT_ANGLES; angle++, cnt++) {
-		drawLine(dst + cnt * size, WIDTH_PTRN - 1, 0, WIDTH_PTRN - 1 + r * cos(angle * M_PI / 180), r * sin(angle * M_PI / 180), color);
+		drawLine(dst + cnt * size, WIDTH_PTRN, 0, WIDTH_PTRN - 1 + r * cos(angle * stepA), r * sin(angle * stepA), color);
 	}
-
-	/*for (int y = 0; y < HEIGHT_PTRN; y++, cnt++) {
-		drawLine(dst + cnt * size, WIDTH_PTRN, 0, 0, y, color);
-	}
-	for (int x = 0; x <= WIDTH_PTRN; x++, cnt++) {
-		drawLine(dst + cnt * size, WIDTH_PTRN, 0, x, HEIGHT_PTRN, color);
-	}
-
-
-	for (int x = 0; x < WIDTH_PTRN; x++, cnt++) {
-		drawLine(dst + cnt * size, 0, 0, x, HEIGHT_PTRN, color);
-	}
-	for (int y = HEIGHT_PTRN - 1; y >= 0; y--, cnt++) {
-		drawLine(dst + cnt * size, 0, 0, WIDTH_PTRN, y, color);
-	}*/
-
 
 	createLineTable(table);
 	
@@ -125,45 +123,10 @@ static void createLineTable(int* table) {
 	}
 	for (int y = 0; y < HEIGHT_TABLE; y++) {
 		for (int x = -WIDTH_TABLE / 2; x < WIDTH_TABLE / 2; x++) {
-			double k = (double)y / (double)x;
-			float angle = round(atan2(y, x) * 180 / M_PI);
+			float angle = round(atan2(y, x) * AMOUNT_ANGLES / M_PI);
 			table[y * WIDTH_TABLE + x + WIDTH_TABLE / 2] = angle;
 		}
 	}
-
-	/*for (int x = -WIDTH_PTRN; x < WIDTH_PTRN; x++) {
-		table[x + WIDTH_PTRN] = 0;
-	}
-	for (int y = 1; y <= HEIGHT_PTRN; y++) {
-		for (int x = -WIDTH_PTRN; x < WIDTH_PTRN; x++) {
-			if (x == 0) {
-				table[y * 2 * WIDTH_PTRN + x + WIDTH_PTRN] = LINE_PATTERNS_AMOUNT / 2 + 1;
-				continue;
-			}
-			double k = (double)y / (double)x;
-			int signX = (x < 0) ? -1 : 1;
-			if (x < 0) {
-				if (abs(x) < y) {
-					int resX = -round(HEIGHT_PTRN / k);
-					table[y * 2 * WIDTH_PTRN + x + WIDTH_PTRN] = 64 - resX;
-				}
-				else {
-					int resY = -round(WIDTH_PTRN * k);
-					table[y * 2 * WIDTH_PTRN + x + WIDTH_PTRN] = resY;
-				}
-			}
-			else {
-				if (abs(x) < y) {
-					int resX = round(HEIGHT_PTRN / k);
-					table[y * 2 * WIDTH_PTRN + x + WIDTH_PTRN] = resX + LINE_PATTERNS_AMOUNT / 2;
-				}
-				else {
-					int resY = round(WIDTH_PTRN * k);
-					table[y * 2 * WIDTH_PTRN + x + WIDTH_PTRN] = 64 - resY + LINE_PATTERNS_AMOUNT / 2;
-				}
-			}
-		}
-	}*/
 }
 
 void pointPtrnsInit(unsigned char* dst, unsigned char color) {
@@ -243,11 +206,27 @@ static void fillSide(unsigned char* dst, int x1, int y1, int x2, int y2, unsigne
 	float b = y1 - k * x1;
 	for (int y = 0; y < HEIGHT_PTRN; y++) {
 		for (int x = 0; x < WIDTH_PTRN; x++) {
-			float yRefp = k * (float(x)) + b;
-			float yRefs = k * (float(x)) + b;
-			if (topLeftSide == 0 && (yRefp <= y) ||
-				topLeftSide == 1 && (yRefs >= y)) {
-				setPixel(dst, x, y, color);
+			if (fabs(deltaX) > fabs(deltaY)) {
+				float yRefp = k * ((float)x) + b;
+				float yRefs = k * ((float)x) + b;
+				if (topLeftSide == 0 && (yRefp <= y + 0.5) ||
+					topLeftSide == 1 && (yRefs >= y - 0.5)) {
+					setPixel(dst, x, y, color);
+				}
+				else {
+					setPixel(dst, x, y, 0);
+				}
+			}
+			else {
+				float xRefp = ((float)(y - b)) / k;
+				float xRefs = ((float)(y - b)) / k;
+				if (topLeftSide == 0 && (xRefp <= x + 0.5) ||
+					topLeftSide == 1 && (xRefp >= x - 0.5)) {
+					setPixel(dst, x, y, color);
+				}
+				else {
+					setPixel(dst, x, y, 0);
+				}
 			}
 		}
 	}

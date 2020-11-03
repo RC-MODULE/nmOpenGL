@@ -12,6 +12,7 @@ SECTION(".text_demo3d") void drawTriangles() {
 	NMGL_Context_NM1 *context = NMGL_Context_NM1::getContext();
 	Polygons* poly = context->polygonsConnectors[0].ptrTail();
 
+	PROFILER_SIZE(poly->count);
 	getAddrPtrnsT(context->polygonsConnectors->ptrTail());
 
 	COMMON_DRAW_TYPE* mulZ = (COMMON_DRAW_TYPE*)context->buffer0;
@@ -29,6 +30,7 @@ SECTION(".text_demo3d") void drawTriangles() {
 	while (countTrangles > 0) {
 		int localSize = MIN(countTrangles, SMALL_SIZE);
 		int point_x3 = point * 3;
+		int fullSize = totalSum(context->nSizePtrn32, localSize);
 
 		//копирование паттернов во внутреннюю память. Паттерны копируются
 		//не полностью, чтобы сэкономить время на пересылку
@@ -39,6 +41,7 @@ SECTION(".text_demo3d") void drawTriangles() {
 		//объединение паттернов сторон в паттерн треугольника
 		//объединение происходит не полностью (только значимой части) для
 		//оптимизации
+		PROFILER_SIZE(fullSize);
 		mAndVxN_32u((nm32u**)context->ppPtrns1_2s, 
 			(nm32u**)context->ppPtrns2_2s, 
 			(nm32u**)context->ppPtrnsCombined_2s, 
@@ -56,6 +59,7 @@ SECTION(".text_demo3d") void drawTriangles() {
 		}
 		else {
 			//умножение бинарных масок на Z
+			PROFILER_SIZE(fullSize);
 			MUL_Z_FUNC(
 				context->polyImgTmp,
 				context->ptrnInnPoints + point,
@@ -68,6 +72,7 @@ SECTION(".text_demo3d") void drawTriangles() {
 			//mulZ теперь хранит z-треугольники
 
 			//функция теста глубины
+			PROFILER_SIZE(fullSize);
 			DEPTH_FUNC((COMMON_DRAW_TYPE**)(context->zBuffPoints + point),
 				WIDTH_SEG,
 				mulZ,
@@ -77,6 +82,7 @@ SECTION(".text_demo3d") void drawTriangles() {
 		}
 
 		//color v4nm8s in imgOffset
+		PROFILER_SIZE(fullSize);
 		MUL_C_FUNC(
 			context->polyImgTmp,
 			context->ptrnInnPoints + point,
@@ -89,6 +95,7 @@ SECTION(".text_demo3d") void drawTriangles() {
 
 		//функция накладывает маску на буфер с цветами 
 		//и копирует треугольник в изображение
+		PROFILER_SIZE(fullSize);
 		MASK_FUNC(mulC,
 			zMaskBuffer,
 			(COMMON_DRAW_TYPE**)(context->imagePoints + point), WIDTH_SEG,

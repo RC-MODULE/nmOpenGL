@@ -232,7 +232,9 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 		//vertex in vertexResult
 		//normal in colorOrNormal
 		//Освещение или наложение цветов
+		//nmprofiler_enable();
 		if (cntxt->isLighting) {
+			PROFILER_SIZE(localSize);
 			light(vertexResult, colorOrNormal, localSize);
 		}
 		else {
@@ -242,6 +244,7 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			cntxt->tmp.vec[3] = 1;
 			set_v4nm32f(colorOrNormal, &cntxt->tmp, localSize);
 		}
+		//nmprofiler_disable();
 		//color
 		if (cntxt->colorArray.enabled) {
 			colorAM.pop(colorOrNormal);
@@ -279,11 +282,6 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 		nmppsMulC_AddC_32f(cntxt->buffer1 + 3 * NMGL_SIZE, cntxt->windowInfo.viewportMulX, cntxt->windowInfo.viewportAddX, (float*)vertexResult, localSize);		//X
 		nmppsMulC_AddC_32f(cntxt->buffer2 + 3 * NMGL_SIZE, cntxt->windowInfo.viewportMulY, cntxt->windowInfo.viewportAddY, (float*)vertexResult + 3 * NMGL_SIZE, localSize);		//Y
 		nmppsMulC_AddC_32f(cntxt->buffer0 + 3 * NMGL_SIZE, cntxt->windowInfo.viewportMulZ, cntxt->windowInfo.viewportAddZ, (float*)vertexResult + 6 * NMGL_SIZE, localSize);	//Z
-
-		//nmppsConvert_32f32s_floor(vertexX, (int*)cntxt->buffer0, 0, localSize);
-		//nmppsConvert_32s32f((int*)cntxt->buffer0, vertexX, localSize);
-		//nmppsConvert_32f32s_floor(vertexY, (int*)cntxt->buffer0, 0, localSize);
-		//nmppsConvert_32s32f((int*)cntxt->buffer0, vertexY, localSize);
 
 		//---------------rasterize------------------------------------
 		v2nm32f *minXY = (v2nm32f*)cntxt->buffer4;
@@ -349,7 +347,7 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			TrianglePointers tmp0;
 			TrianglePointers tmp1;
 			TrianglePointers tmp2;
-			//PROFILER_SIZE(localSize);
+			PROFILER_SIZE(localSize);
 			int primCount = vertexPrimitiveRepack(vertexResult, colorOrNormal, cntxt->buffer0, (v4nm32f*)cntxt->buffer1, mode, localSize);
 
 			//в tmp0 хранятся данные в порядке x0,y0,z0,w0,x1,y1,z1,w1,x2,y2,z2,w2 (остальные массивы неопределены)
@@ -426,6 +424,7 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			
 			while (srcThreated < primCount) {
 				//PROFILER_SIZE(primCount);
+				PROFILER_SIZE(primCount);
 				int currentCount = triangulate(cntxt->buffer2, (v4nm32f*)cntxt->buffer1, primCount,
 					WIDTH_PTRN, HEIGHT_PTRN,
 					NMGL_SIZE, cntxt->buffer0, (v4nm32f*)cntxt->buffer3, &srcThreated);	
@@ -461,6 +460,7 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 				nmppsConvert_32f32s_rounding((float*)colorOrNormal, (int*)cntxt->trianInner.colors, 0, 4 * currentCount);
 				cntxt->trianInner.size = currentCount;
 				if (cntxt->isCullFace) {
+					PROFILER_SIZE(cntxt->trianInner.size);
 					cullFaceSortTriangles(cntxt->trianInner);
 					if (cntxt->trianInner.size == 0) {
 						continue;
@@ -474,9 +474,9 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 					cntxt->trianInner.size);
 				nmppsMerge_32f(cntxt->buffer0, cntxt->buffer2, (float*)minXY, cntxt->trianInner.size);
 				nmppsMerge_32f(cntxt->buffer1, cntxt->buffer3, (float*)maxXY, cntxt->trianInner.size);
-				//PROFILER_SIZE(cntxt->trianInner.size);
+				PROFILER_SIZE(cntxt->trianInner.size);
 				setSegmentMask(minXY, maxXY, cntxt->segmentMasks, cntxt->trianInner.size);
-				//PROFILER_SIZE(cntxt->trianInner.size);
+				PROFILER_SIZE(cntxt->trianInner.size);
 				rasterizeT(&cntxt->trianInner, cntxt->segmentMasks);
 			}
 			break;

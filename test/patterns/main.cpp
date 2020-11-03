@@ -101,8 +101,8 @@ int main()
 		VS_SetData(4, pointPtrns + pointCnt * WIDTH_PTRN * HEIGHT_PTRN);
 		//VS_SetData(5, fillPtrns + (GET_TABLE_VALUE(fillTable, check1[i][0], check1[i][1]) + 31) * WIDTH_PTRN * HEIGHT_PTRN);
 		//VS_SetData(6, fillPtrns + GET_TABLE_VALUE(fillTable, check2[i][0], check2[i][1]) * WIDTH_PTRN * HEIGHT_PTRN);
-		VS_SetData(5, fillPtrns + (8840) * WIDTH_PTRN * HEIGHT_PTRN);
-		VS_SetData(6, fillPtrns + (3073) * WIDTH_PTRN * HEIGHT_PTRN);
+		VS_SetData(5, fillPtrns + GET_TABLE_VALUE(fillTable, 31, 4) * WIDTH_PTRN * HEIGHT_PTRN);
+		VS_SetData(6, fillPtrns + (3840) * WIDTH_PTRN * HEIGHT_PTRN);
 		
 		//int h = GET_TABLE_VALUE(lineTable, values[i][0], values[i][1]);
 

@@ -10,8 +10,8 @@
 SECTION(".text_shared0") int main()
 {
 	halSleep(3000);
-	//nmprofiler_init();
-	//nmprofiler_enable();
+	nmprofiler_init();
+	//nmprofiler_disable();
 
 #if defined(__GNUC__) && defined(PROFILER0)
 	nmprofiler_init();
@@ -79,7 +79,7 @@ SECTION(".text_shared0") int main()
 	nmglClearColor(0, 0, 0.4f, 0.0f);
 
 	nmglEnable(NMGL_DEPTH_TEST);
-	//nmglEnable(NMGL_CULL_FACE);
+	nmglEnable(NMGL_CULL_FACE);
 
 	nmglMatrixMode(NMGL_MODELVIEW);
 	nmglLoadIdentity();
@@ -129,7 +129,7 @@ SECTION(".text_shared0") int main()
 		materialSpec[1] = 0.6;
 		materialSpec[2] = 0.6;
 		nmglMaterialfv(NMGL_FRONT_AND_BACK, NMGL_SPECULAR, materialSpec);
-		//PROFILER_SIZE(3 * amountPolygons);
+		PROFILER_SIZE(amountPolygons);
 		nmglDrawArrays(NMGL_TRIANGLES, 0, 3 * amountPolygons);
 
 		nmglVertexPointer(4, NMGL_FLOAT, 0, vertices_DDR2);
@@ -146,7 +146,7 @@ SECTION(".text_shared0") int main()
 		nmglMaterialfv(NMGL_FRONT_AND_BACK, NMGL_SPECULAR, materialSpec);
 		nmglRotatef(angle, 0.707, 0.707, 0);
 		nmglTranslatef(150, 150, 0);
-		//PROFILER_SIZE(3 * amountPolygons2);
+		PROFILER_SIZE(amountPolygons2);
 		nmglDrawArrays(NMGL_TRIANGLES, 0, 3 * amountPolygons2);
 #ifdef __OPEN_GL__
 		//angle += 0.03;
@@ -156,9 +156,15 @@ SECTION(".text_shared0") int main()
 		angle += 1.72;
 #endif // __OPEN_GL__
 
+
 		nmglDisableClientState(NMGL_VERTEX_ARRAY);
 		nmglDisableClientState(NMGL_NORMAL_ARRAY);
 		counter++;
+		if (counter == 256) {
+			//PROFILER_PRINT2TBL();
+			nmprofiler_disable();
+			//return 0;
+		}
 		//nmglFinish();
 		nmglvsSwapBuffer();
 	}

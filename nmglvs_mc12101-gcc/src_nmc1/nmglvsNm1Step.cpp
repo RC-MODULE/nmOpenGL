@@ -68,6 +68,7 @@ SECTION(".text_nmglvs") int nmglvsNm1Step()
 					cntxt->colorBuffer.setCursor(x, y);
 					int width = MIN(widthSeg, widthImage - x);
 					int height = MIN(heightSeg, heightImage - y);
+					PROFILER_SIZE(width * height);
 					cntxt->smallClearColorBuff.pushWindow(cntxt->colorBuffer, width, height, copyCounterColor);
 				}
 			}
@@ -79,6 +80,7 @@ SECTION(".text_nmglvs") int nmglvsNm1Step()
 					cntxt->depthBuffer.setCursor(x, y);
 					int width = MIN(widthSeg, widthImage - x);
 					int height = MIN(heightSeg, heightImage - y);
+					PROFILER_SIZE(width * height);
 					cntxt->smallClearDepthBuff.pushWindow(cntxt->depthBuffer, width, height, copyCounterDepth);
 				}
 			}
@@ -92,7 +94,9 @@ SECTION(".text_nmglvs") int nmglvsNm1Step()
 					cntxt->depthBuffer.setCursor(x, y);
 					int width = MIN(widthSeg, widthImage - x);
 					int height = MIN(heightSeg, heightImage - y);
+					PROFILER_SIZE(width * height);
 					cntxt->smallClearColorBuff.pushWindow(cntxt->colorBuffer, width, height, copyCounterColor);
+					PROFILER_SIZE(width * height);
 					cntxt->smallClearDepthBuff.pushWindow(cntxt->depthBuffer, width, height, copyCounterDepth);
 				}
 			}
@@ -115,11 +119,13 @@ SECTION(".text_nmglvs") int nmglvsNm1Step()
 			cntxt->depthBuffer.setCursor(x0, y0);
 			cntxt->smallDepthBuff.setCursor(0, 0);
 			while (copyImageCounterDepth <= numOfSeg);
+			PROFILER_SIZE(width * height);
 			cntxt->depthBuffer.pushWindow(cntxt->smallDepthBuff, width, height);
 		}
 		cntxt->colorBuffer.setCursor(x0, y0);
 		cntxt->smallColorBuff.setCursor(0, 0);
 		while (copyImageCounterColor <= numOfSeg);
+		PROFILER_SIZE(width * height);
 		cntxt->colorBuffer.pushWindow(cntxt->smallColorBuff, width, height);
 		break;
 	}
@@ -132,15 +138,19 @@ SECTION(".text_nmglvs") int nmglvsNm1Step()
 		if (cntxt->depthBuffer.enabled == NMGL_TRUE) {
 			cntxt->depthBuffer.setCursor(x0, y0);
 			cntxt->smallDepthBuff.setCursor(0, 0);
+			PROFILER_SIZE(width * height);
 			cntxt->depthBuffer.popWindow(cntxt->smallDepthBuff, width, height);
 		}
 		cntxt->colorBuffer.setCursor(x0, y0);
 		cntxt->smallColorBuff.setCursor(0, 0);
+		PROFILER_SIZE(width * height);
 		cntxt->colorBuffer.popWindow(cntxt->smallColorBuff, width, height);
 		break;
 	}
 
 	case NMC1_DRAW_TRIANGLES: {
+		Polygons* poly = cntxt->polygonsConnectors[0].ptrTail();
+		PROFILER_SIZE(poly->count)
 		drawTriangles();
 		break;
 	}
