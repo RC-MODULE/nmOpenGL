@@ -9,6 +9,7 @@ typedef v4nm32u abgr32;
 
 /**
 \defgroup convertABGR32_RGB565_f convertABGR32_RGB565
+\ingroup service_api
 \brief Преобразование формата ABGR32-32-32-32 в формат RGB565 
 \param srcArray [in] Входной массив элементов в формате ABGR32
 \param dstArray [in] Выходной массив элементов в формате RGB565
@@ -34,6 +35,7 @@ extern "C" void convertABGR32_RGB565(const abgr32  *srcArray, rgb565 *dstArray, 
 
 /**
 \defgroup convertRGB565_RGB8888_f convertRGB565_RGB8888
+\ingroup service_api
 \brief Преобразование формата RGB565 в формат RGB8888 
 \param srcArray [in] Входной массив элементов в формате RGB565
 \param dstArray [in] Выходной массив элементов в формате RGB8888
@@ -59,6 +61,7 @@ extern "C" void convertRGB565_RGB8888(const rgb565 *srcArray, rgb8888 *dstArray,
 
 /**
 \defgroup vertexPrimitiveRepack_f vertexPrimitiveRepack
+\ingroup service_api
 \brief Переупаковка вершин в формат GL_TRIANGLES 
 \param srcVertex [in] Входной массив вершин
 \param srcColor [in] Входной массив цветов 
@@ -125,6 +128,7 @@ extern "C" int vertexPrimitiveRepack(const v4nm32f *srcVertex, const v4nm32f *sr
 
 /**
 \defgroup nmppsCmpGteLteMirrorV_32f_f nmppsCmpGteLteMirrorV_32f
+\ingroup service_api
 \brief Проверка принадлежности элементов одного массива соответствующим  
 \ диапазонам, заданным вторым массивом
 \param srcArray [in] Входной массив элементов
@@ -258,6 +262,7 @@ static void srcVertexInit(nm32f *srcVertex, int srcCount)
 
 /**
 \defgroup triangulate_f triangulate
+\ingroup service_api
 \brief Разбиение большого треугольника на маленькие (триангуляция)
 \param srcVertex [in] Массив вершин входных треугольников
 \param srcColor [in] Массив цветов входных треугольников

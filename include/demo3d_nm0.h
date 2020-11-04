@@ -367,6 +367,7 @@ extern "C"{
 	
 	/**
 	 *  \defgroup addC_v4nm32f addC_v4nm32f
+	 *  \ingroup service_api
 	 *  \brief Функция сложения массива 4-мерных векторов с 4-мерным вектором
 	 *  
 	 *  \param pSrcV [in] Входной массив 4-хмерных векторов
@@ -392,6 +393,7 @@ extern "C"{
 
 	/**
 	 *  \defgroup baseLighti baseLighti
+	 *  \ingroup service_api
 	 *  \brief Функция вычисления основной части освещения
 	 *  
 	 *  \param ambient [in] Указатель на амбиентную составляющую источника освещения
@@ -431,6 +433,7 @@ extern "C"{
 	
 	/**
 	 *  \defgroup clamp clamp
+	 *  \ingroup service_api
 	 *  \brief Функция приведения чисел к фиксированному диапазону
 	 *  
 	 *  \param pSrcVec [in] Входной массив
@@ -458,6 +461,7 @@ extern "C"{
 		
 	/**
 	 *  \defgroup cnv32f_v2v4 cnv32f_v2v4
+	 *  \ingroup service_api
 	 *  \brief Функция конвертации двухмерного вектора в четырехмерный 
 	 *  с заданными значениями третьей и четвертой компоненты
 	 *  
@@ -488,6 +492,7 @@ extern "C"{
 	 
 	 /**
 	 *  \defgroup cnv32f_v3v4 cnv32f_v3v4
+	 *  \ingroup service_api
 	 *  \brief Функция конвертации трехмерного вектора в четырехмерный 
 	 *  
 	 *  \param src [in] Входный массив
@@ -513,6 +518,7 @@ extern "C"{
 	
 	/**
 	 *  \defgroup Group Group name
+	 *  \ingroup service_api
 	 *  \brief Brief description
 	 *  
 	 *  \param srcPointers [in] Description for srcPointers
@@ -539,6 +545,7 @@ extern "C"{
 
 	/**
 	 *  \defgroup dotC_gt0 dotC_gt0
+	 *  \ingroup service_api
 	 *  \brief Функция скалярного произведения массивa векторов и постоянного вектора с последующимся занулением отрицательных значений
 	 *  
 	 *  \param srcVec [in] Входной массив векторов
@@ -565,6 +572,7 @@ extern "C"{
 	
 	/**
 	 *  \defgroup dotV_gt0 dotV_gt0
+	 *  \ingroup service_api
 	 *  \brief Функция скалярного произведения массивов векторов с последующимся занулением отрицательных значений
 	 *  
 	 *  \param srcVec1 [in] Первый входной массив
@@ -592,6 +600,7 @@ extern "C"{
 	
 	/**
 	 *  \defgroup dotMulC_AddC dotMulC_AddC
+	 *  \ingroup service_api
 	 *  \brief Функция умножения постоянного 4-хмерного вектора на массив продублированных констант с прибавлением другого постоянного вектора.
 	 *  Массив констант должен быть продублированным
 	 *  
@@ -620,6 +629,7 @@ extern "C"{
 
 	 /**
 	 *  \defgroup dotMulC_AddC dotMulC_AddC
+	 *  \ingroup service_api
 	 *  \brief Функция умножения массива 4-хмерных векторов 
 	 *  на массив продублированных констант
 	 *
@@ -646,6 +656,7 @@ extern "C"{
 	
 	/**
 	 *  \defgroup dotMulC_Add dotMulC_Add
+	 *  \ingroup service_api
 	 *  \brief Функция умножения постоянного 4-хмерного вектора на на массив констант с прибавлением массива других 4-хмерных векторов.
 	 *  Массив констант должен быть продублированным
 	 *  
@@ -674,6 +685,7 @@ extern "C"{
 
 	 /**
 	 *  \defgroup dotMulC_Add dotMulC_Add
+	 *  \ingroup service_api
 	 *  \brief Функция умножения постоянного 4-хмерного вектора на на массив констант с прибавлением массива других 4-хмерных векторов.
 	 *  Массив констант должен быть продублированным
 	 *
@@ -711,6 +723,7 @@ extern "C"{
 	
 	/**
 	 *  \defgroup findMinMax2 findMinMax2
+	 *  \ingroup service_api
 	 *  \brief Поэлементный поиск минимум и максимума из двух массивов
 	 *  
 	 *  \param srcVec1 [in] Description for src1
@@ -738,6 +751,7 @@ extern "C"{
 
 	/**
 	 *  \defgroup findMinMax3 findMinMax3
+	 *  \ingroup service_api
 	 *  \brief Поэлементный поиск минимум и максимума из трех массивов
 	 *  
 	 *  \param src1 [in] Первый входной массив
@@ -767,6 +781,7 @@ extern "C"{
 	
 	/**
 	 *  \defgroup loadIdentify loadIdentify
+	 *  \ingroup service_api
 	 *  \brief Функция инициализации матрицы едининчной матрицей
 	 *  
 	 *  \param matrix [out] Выходная матрица
@@ -786,6 +801,7 @@ extern "C"{
 	
 	/**
 	 *  \defgroup meanToInt3 meanToInt3
+	 *  \ingroup service_api
 	 *  \brief Функция поиска среднего значения из трех элементов и конвертирования его в целочисленный тип
 	 *  
 	 *  \param src1 [in] Входной массив первых значений
@@ -813,6 +829,7 @@ extern "C"{
 	 
 	 /**
 	 *  \defgroup meanToIn23 meanToInt2
+	 *  \ingroup service_api
 	 *  \brief Функция поиска среднего значения из двух элементов и конвертирования его в целочисленный тип
 	 *  
 	 *  \param src1 [in] Входной массив первых значений
@@ -839,6 +856,7 @@ extern "C"{
 		
 	/**
 	 *  \defgroup mulC_f mulC_f
+	 *  \ingroup service_api
 	 *  \brief Функция умножение массива на постоянное значение
 	 *  
 	 *  \param pSrcV [in] Входной массив
@@ -864,6 +882,7 @@ extern "C"{
 	
 	/**
 	 *  \defgroup mul_mat4nm32f_v4nm32f mul_mat4nm32f_v4nm32f
+	 *  \ingroup service_api
 	 *  \brief Функция умножение матрицы 4х4 на массив 4хмерных векторов. Матрица задается по столбцам
 	 *  
 	 *  \param srcMat4x4 [in] Входная матрица 4х4 (column-major order)
@@ -889,6 +908,7 @@ extern "C"{
 
 	 /**
 	 *  \defgroup mul_v4nm32f_mat4nm32f mul_v4nm32f_mat4nm32f
+	 *  \ingroup service_api
 	 *  \brief Функция массива 4хмерных векторов на матрицу 4х4. Матрица задается по строкам
 	 *
 	 *  \param srcMat4x4 [in] Входная матрица 4х4 (row-major order)
@@ -920,6 +940,7 @@ extern "C"{
 
 	/**
 	 *  \defgroup replaceEq0_f replaceEq0
+	 *  \ingroup service_api
 	 *  \brief Функция замены нуля другим значением
 	 *  
 	 *  \param srcVec [in] Входной массив
@@ -947,6 +968,7 @@ extern "C"{
 
 	/**
 	 *  \defgroup set_v4nm32f set_v4nm32f
+	 *  \ingroup service_api
 	 *  \brief Функция инициализации элементов массива постоянным значением.
 	 *  
 	 *  \param dstVec [out] Инициализируемый массив
@@ -972,6 +994,7 @@ extern "C"{
 
 	/**
 	 *  \defgroup sortByYinTriangle sortByYinTriangle
+	 *  \ingroup service_api
 	 *  \brief Функция поэлементной сортировки двухмерных элементов по возрастанию 2-й компоненты
 	 *  
 	 *  \param srcAxy [in, out] Первый входной массив двухмерных векторов
@@ -999,6 +1022,7 @@ extern "C"{
 
 	/**
 	 *  \defgroup split_v4nm32f split_v4nm32f
+	 *  \ingroup service_api
 	 *  \brief Функция разбивки 4х(-)мерного вектора на 4 отдельных значения(вектор на значения не бьется)
 	 *  
 	 *  \param srcVec [in] Входной массив векторов (массив векторов?)
@@ -1030,6 +1054,7 @@ extern "C"{
 	 
 	/**
 	 *  \defgroup split_v2nm32f split_v2nm32f
+	 *  \ingroup service_api
 	 *  \brief Функция разбиения 2хмерного вектора на 2 отдельных значения
 	 *  
 	 *  \param srcVec [in] Входной массив векторов
@@ -1056,6 +1081,7 @@ extern "C"{
 	//! \}
 	/**
 	 *  \defgroup subCRev subCRev
+	 *  \ingroup service_api
 	 *  \brief Функция вычитания вектора из постоянного значения
 	 *  
 	 *  \param pSrcV [in] Входной массив
@@ -1147,6 +1173,7 @@ void updatePolygonsP(DataForNmpu1* data, Points* triangles, int count, int segX,
 
 /**
  *  \defgroup color Light
+ *  \ingroup service_api
  *  \brief Функция расчета освещения
  *  
  *  \param vertex [in] Входной массив вершин

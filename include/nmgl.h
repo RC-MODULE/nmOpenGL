@@ -1,15 +1,87 @@
 #ifndef __NMGL_H__
 #define __NMGL_H__
 
+
+/*! 
+	\page intro Введение
+
+Библиотека предназначена для построения графических OpenGL приложений на процессорном ядре NMC4, на плате МС121.01 . 
+В состав библиотеки входят интерфейсные функции, начинающиеся с префикса nmgl и определяемые спецификацией OpenGL SC 1.0.1. 
+
+
+*/
+
+
 #include "nmgltype.h"
 
 #include "nmgldef.h"
 
+/**
+ * \defgroup  main Интерфейсные функции nmOpenGL
+ */
+
+
+/**
+ * \defgroup  opengl_api Интерфейсные функции nmOpenGL
+ */
+
+///@{ 
+
 
 void nmglActiveTexture (NMGLenum texture);
+
 void nmglAlphaFunc (NMGLenum func, NMGLclampf ref);
-void nmglBegin(NMGLenum mode);
+
+/**
+ *  \brief Задаёт ограничения для вершин примитива или группы одинаковых примитивов
+ *  
+ *  \param mode Определяет примитив(ы), которые будут созданы из вершин между glBegin и последующим [nmglEnd](https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/glEnd.xml). Приняты десять символьных констант: GL_POINTS, GL_LINES, GL_LINE_STRIP, GL_LINE_LOOP, GL_TRIANGLES, GL_TRIANGLE_STRIP, GL_TRIANGLE_FAN.
+ *  \return void
+ *  
+ *  \details nmglBegin и  <a href="https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/glEnd.xml"> nmglEnd </a>  задают ограничения для вершин, которые определяют примитив, или группу одинаковых примитивов. Для nmglBegin допустим только один аргумент, который определяет, каким из десяти способов вершины будут считаны. Пусть n -- целое число, не менее 1, а N -- общее количество выбранных вершин. Интерпретации будут выглядеть следующим образом:
+
+GL_POINTS
+> Обрабатывает каждую вершину как отдельную точку Вершина n определяет точку n. Изображено N точек.
+
+GL_LINES
+> Обрабатывает каждую пару вершин как независимый сегмент линии. Вершины 2*n - 1 и 2*n определяют линию n. Будет отображено N/ 2 линий.
+
+GL_LINE_STRIP
+
+> Рисует связанную группу сегментов линии от первой вершины к последней. Вершины n и n + 1 определяют линию n. Будет отображено N - 1 линий.
+
+GL_LINE_LOOP
+
+> Рисует связанную группу сегментов линии от первой вершины к последней, а потом обратно. Вершины n и n + 1 определяют линию n. Эта линия, однако, будет определена вершинами N и 1. Будет нарисовано N линий.
+
+GL_TRIANGLES
+
+> Интерпретирует каждые три вершины как самостоятельный треугольник. Вершины 3*n - 2 , 3*n - 1 , и 3*n определяют треугольник n. Будет отображено N/ 3 треугольников.
+
+GL_TRIANGLE_STRIP
+
+> Рисует связанную группу треугольников. Один треугольник определяется для каждой вершины, представленной после двух предыдущих. Если n является нечётным числом, вершины n, n + 1 и n + 2 определяют треугольник n. Если n является чётным числом, вершины n+1, n и n + 2 определяют треугольник n. Будет отображено N - 2 треугольников.
+
+GL_TRIANGLE_FAN
+
+> Рисует связанную группу треугольников. Один треугольник определяется для каждой вершины, представленной после двух предыдущих. Вершины 1 , n + 1 , и n + 2 определяют треугольник n. Будет нарисовано N - 2 треугольников.
+
+Только набор команд GL может быть применён между nmglBegin и [nmglEnd](https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/glEnd.xml). Он включает команды [nmglVertex](https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/glVertex.xml), [nmglColor](https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/glColor.xml), [nmglSecondaryColor](https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/glSecondaryColor.xml), [nmglNormal](https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/glNormal.xml), [nmglTexCoord](https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/glTexCoord.xml), [nmglMultiTexCoord](https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/glMultiTexCoord.xml), [nmglArrayElement](https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/glArrayElement.xml) и [nmglMaterial](https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/glMaterial.xml). Кроме того, можно использовать [nmglCallLists](https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/glCallLists.xml) для формирования дисплейных списков, включающих только предыдущие команды. Если какая-либо команда GL выполняется между nmglBegin и [nmglEnd](https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/glEnd.xml), появляется сообщение об ошибке и команда игнорируется.
+
+Независимо от значения, выбранного для *mode*, отсутствуют ограничения для количества вершин, которые могут быть определены между nmglBegin и [nmglEnd](https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/glEnd.xml). Неполностью определённые линии, треугольники, четырёхугольники, и многоугольники не будут отображены. Объект считается неполностью определённым, если либо установлено слишком мало вершин даже для одного примитива, либо некорректно указано количество вершин. Неполные примитивы игнорируются, остальные будут отображены.
+
+Предусмотрены минимальные количества вершин для каждого примитива: 1 для точки, 2 для линии, 3 для треугольника, 4 для четырёхугольника и 3 для многоугольника. Точного количества вершин требуют следующие режимы. GL_LINES (2), GL_TRIANGLES (3), GL_QUADS (4), и GL_QUAD_STRIP (2).
+
+
+
+ */
+ void nmglBegin(NMGLenum mode);
+
+
+
 void nmglBindTexture (NMGLenum target, NMGLuint texture);
+
+
 void nmglBitmap (NMGLsizei width, NMGLsizei height, NMGLfloat xorig, NMGLfloat yorig, NMGLfloat xmove, NMGLfloat ymove, const NMGLubyte *bitmap);
 void nmglBlendFunc (NMGLenum sfactor, NMGLenum dfactor);
 void nmglCallLists (NMGLsizei n, NMGLenum type, const NMGLvoid *lists);
@@ -118,5 +190,13 @@ void nmglColorSubTableEXT (NMGLenum target, NMGLsizei start, NMGLsizei count, NM
 void nmglColorTableEXT (NMGLenum target, NMGLenum internalformat, NMGLsizei width, NMGLenum format, NMGLenum type, const void *data);
 void nmglGetColorTableEXT (NMGLenum target, NMGLenum format, NMGLenum type,void *data);
 void nmglGetColorTableParameterivEXT (NMGLenum target, NMGLenum pname, NMGLint *params);
+
+
+///@}
+
+/**
+ * \defgroup  service_api Сервисные функции
+ */
+
 
 #endif

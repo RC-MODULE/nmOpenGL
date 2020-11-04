@@ -3,8 +3,8 @@
 
 /*class HostTargetCommunication {
 private:
-	HostTargetCommunication(){}		//конструктор недоступен
-	~HostTargetCommunication() {}	//и дестркутор
+	HostTargetCommunication(){}		//РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ РЅРµРґРѕСЃС‚СѓРїРµРЅ
+	~HostTargetCommunication() {}	//Рё РґРµСЃС‚СЂРєСѓС‚РѕСЂ
 public:
 	static HostTargetCommunication &get() {
 		static HostTargetCommunication htc;

@@ -17,8 +17,8 @@ typedef int DepthImage32[WIDTH_IMAGE * HEIGHT_IMAGE];
 typedef int ImageRGB565[WIDTH_IMAGE * HEIGHT_IMAGE / 2];
 typedef int DepthImage16[WIDTH_IMAGE * HEIGHT_IMAGE / 2];
 
-//при изменении типа отрисовываемого изображения, следует так же поменять
-//код в функции readMask
+//РїСЂРё РёР·РјРµРЅРµРЅРёРё С‚РёРїР° РѕС‚СЂРёСЃРѕРІС‹РІР°РµРјРѕРіРѕ РёР·РѕР±СЂР°Р¶РµРЅРёСЏ, СЃР»РµРґСѓРµС‚ С‚Р°Рє Р¶Рµ РїРѕРјРµРЅСЏС‚СЊ
+//РєРѕРґ РІ С„СѓРЅРєС†РёРё readMask
 #define OUTPUT_IMAGE_RGB8888
 
 #ifdef OUTPUT_IMAGE_RGB8888
