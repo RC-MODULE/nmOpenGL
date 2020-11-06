@@ -10,7 +10,7 @@
 SECTION(".text_shared0") int main()
 {
 	halSleep(3000);
-	nmprofiler_init();
+	//nmprofiler_init();
 	//nmprofiler_disable();
 
 #if defined(__GNUC__) && defined(PROFILER0)
