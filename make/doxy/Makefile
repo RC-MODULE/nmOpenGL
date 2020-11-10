@@ -4,6 +4,13 @@ SHELL := cmd
 
 all: pdf
 
+doxy:
+	taskkill /FI "windowtitle eq nmopengl"
+	doxygen
+	start ""  %CD%\html\nmopengl.chm 
+
+
+
 chm:
 	doxygen
 	utf2win.bat
