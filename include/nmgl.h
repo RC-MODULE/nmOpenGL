@@ -1338,7 +1338,22 @@ void nmglRotatef (NMGLfloat angle, NMGLfloat x, NMGLfloat y, NMGLfloat z);
 
 Текущая матрица (см. [nmglMatrixMode](https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/glMatrixMode.xml)) умножается на эту матрицу масштабирования, и продукт операции заменяет текущую матрицу, как если бы была применена команда [nmglMultMatrix](https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/glMultMatrix.xml)с аргументом в виде следующей матрицы:
 
-1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1
+|   |   |   |   |
+|--:|--:|--:|--:|
+| 1 | 0 | 0 | 0 |
+| 0 | 1 | 0 | 0 |
+| 0 | 0 | 1 | 0 |
+| 0 | 0 | 0 | 1 |
+
+\f[
+A = 
+\begin{pmatrix}
+1 & 2 & 3 \\
+4 & 5 & 6 \\
+7 & 8 & 9
+\end{pmatrix}
+\f]
+
 
 Если выбран режим работы с матрицами GL_MODELVIEW или GL_PROJECTION, все объекты, изображённые после применения команды nmglScale будут подвергнуты масштабированию.
 
