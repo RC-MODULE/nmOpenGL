@@ -31,7 +31,7 @@
 /*!
  \brief Функция выбирает текстурный модуль для последующей модификации функциями текстурирования.
  \param texture идентификатор текстурного модуля, устанавливаемого в качестве активного. 
- \return void
+
 
  \details Значение аргумента texture представляет собой символическую константу вида NMGL_TEXTUREi. Значение константы NMGL_TEXTUREi определяется по формуле NMGL_TEXTUREi = NMGL_TEXTURE0 + i. i лежит в диапазоне 0..(k-1), где k-поддерживаемое число модулей текстур, зависящее от реализации. Значение k определяется значением параметра NMGL_MAX_TEXTURE_UNITS. По умолчанию активным модулем текстуры является модуль с идентификатором NMGL_TEXTURE0. Минимальное количество поддерживаемых модулей текстур равно 1. Если в функцию передано неподдерживаемое значение texture, должна быть сформирована ошибка NMGL_INVALID_ENUM.
  
@@ -44,7 +44,7 @@ void nmglAlphaFunc (NMGLenum func, NMGLclampf ref);
  \brief Задаёт ограничения для вершин примитива или группы одинаковых примитивов
  
    \param mode Определяет примитив(ы), которые будут созданы из вершин между glBegin и последующим [nmglEnd](https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/glEnd.xml). Приняты десять символьных констант: GL_POINTS, GL_LINES, GL_LINE_STRIP, GL_LINE_LOOP, GL_TRIANGLES, GL_TRIANGLE_STRIP, GL_TRIANGLE_FAN.
- \return void
+
 
  
  \details nmglBegin и  <a href="https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/glEnd.xml"> nmglEnd </a>  задают ограничения для вершин, которые определяют примитив, или группу одинаковых примитивов. Для nmglBegin допустим только один аргумент, который определяет, каким из десяти способов вершины будут считаны. Пусть n -- целое число, не менее 1, а N -- общее количество выбранных вершин. Интерпретации будут выглядеть следующим образом:
@@ -99,7 +99,7 @@ void nmglCallLists (NMGLsizei n, NMGLenum type, const NMGLvoid *lists);
  \brief Очищает буферы до предустановленных значений
  
  \param mask [in] Побитовый оператор OR для масок, который показывает, что буферам требуется очистка. Предусмотрено четыре буфера: GL_COLOR_BUFFER_BIT, GL_DEPTH_BUFFER_BIT, и GL_STENCIL_BUFFER_BIT
- \return void
+
 
  \details nmglClear устанавливает для области с битовым слоем в окне значения, ранее выбранные с помощью команд nmglClearColor, nmglClearDepth и nmglClearStencil.
 
@@ -130,7 +130,7 @@ void nmglClear (NMGLbitfield mask);
  \brief Определяет значения для очистки для буферов цвета.
  
  \param red,green,blue,alpha [in] Определяет значения уровней красного, зелёного, синего, альфа-канала, которые применяются при очистке буфера. Изначальные значения -- 0.
- \return void
+
 
  \details nmglClearColor определяет значения уровней красного, зелёного, синего, альфа-канала, применяемые командой [nmglClear](https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/glClear.xml) при очистке буфера цвета. Значения, определённые командой nmglClearColor фиксируются в диапазоне 0 -- 1.
  
@@ -141,7 +141,7 @@ void nmglClearColor (NMGLclampf red, NMGLclampf green, NMGLclampf blue, NMGLclam
  \brief Определяет значения для очистки для буфера глубины
  
  \param depth [in] Определяет значение глубины, применяемое при очистке буфера глубины. Изначальное значение -- 1.
- \return void
+
 
  \details nmglClearDepth определяет уровень глубины, применяемый командой [nmglClear](https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/glClear.xml) для очистки буфера глубины. Значения, определённые командой nmglClearDepth, фиксируются в диапазоне 0 -- 1.
  
@@ -154,7 +154,7 @@ void nmglClientActiveTexture (NMGLenum texture);
  \defgroup nmglColor4 nmglColor4(f,ub)
  \brief устанавливает текущий цвет
  \param red, green, blue, alpha [in] Определяет новые уровни красного, зелёного, синего, альфа-канала для текущего цвета
- \return void
+
 
  \details nmglColor устанавливает новый цвет RGBA с четырьмя значениями.
 
@@ -181,7 +181,6 @@ void nmglColorPointer (NMGLint size, NMGLenum type, NMGLsizei stride, const NMGL
  \param format определяет количество компонент в одном текселе. Единственное поддерживаемое значение: NMGL_RGBA.
  \param type определяет формат представления компонент текселя. Единственное поддерживаемое значение - NMGL_UNSIGNED_BYTE.
  \param data  указатель на массив данных текселей загружаемой палитры.
- \return void
 
 
  \details Функция работает в соответствии со следующим алгоритмом:
@@ -209,7 +208,7 @@ void nmglCopyPixels (NMGLint x, NMGLint y, NMGLsizei width, NMGLsizei height, NM
  \brief Определяет, где будет производиться отбраковка фрагментов: на лицевой или на задней стороне.
  
  \param mode [in] Определяет, где будет производиться отбор фрагментов-кандидатов на отбраковку: на лицевой или на задней стороне. Применяются следующие символьные константы GL_FRONT, GL_BACK, и GL_FRONT_AND_BACK . Начальное значение -- GL_BACK.
- \return void
+
 
  \details nmglCullFace определяет, где будет производиться отбраковка фрагментов: на лицевой или на задней стороне (как определяется в соответствии с оператором *mode*) когда отбраковка фрагментов активирована. Изначально отбраковка фрагментов деактивирована. Чтобы активировать и деактивировать отбраковку фрагментов, следует применить команды [nmglEnable](https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/glEnable.xml) и [nmglDisable](https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/glDisable.xml) с аргументом GL_CULL_FACE. Подлежащие отбраковке фрагменты включают треугольники, многоугольники, прямоугольники, другие четырёхугольники.
 
@@ -222,7 +221,6 @@ void nmglCullFace (NMGLenum mode);
  \brief Определяет значение, с которым будет сравниваться глубина буфера
  
  \param func [in] Определяет, функцию сравнения глубины. Применяются следующие символьные константы GL_LESS, GL_LEQUAL и GL_ALWAYS. Начальное значение -- GL_LESS.
- \return void
 
  \details nmglDepthFunc определяет функцию, применяемую для сравнения значения глубины каждого входящего пикселя со значением глубины, представленным в буфере глубины. Сравнение происходит только, если активировано тестирование глубины. (См. [nmglEnable](https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/glEnable.xml) и [nmglDisable](https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/glDisable.xml) для GL_DEPTH_TEST.)
 
@@ -254,7 +252,6 @@ void nmglDisableClientState (NMGLenum array);
  \param mode [in] Определяет, какие примитивы будут визуализированы. Применяются следующие символьные константы GL_POINTS, GL_LINE_STRIP, GL_LINE_LOOP, GL_LINES, GL_TRIANGLE_STRIP, илиGL_TRIANGLE_FAN.
  \param first [in] Определяет начальный показатель в активированных массивах.
  \param count [in] Определяет, какие показатели будут визуализированы
- \return void
 
  \details nmglDrawArrays определяет набор геометрических примитив с малым количеством обращений к подпрограмме. Вместо вызова процедуры GL для прохождения каждой конкретной вершины, нормали, текстурной координаты, флага ребра, цвета, можно заранее указать отдельные массивы вершин, нормалей и цветов и использовать их для конструирования последовательности примитивов, благодаря единственному вызову команды nmglDrawArrays.
 
@@ -271,7 +268,7 @@ void nmglDrawPixels (NMGLsizei width, NMGLsizei height, NMGLenum format, NMGLenu
  \brief Активирует или деактивирует функции GL на стороне сервера
  
  \param cap [in] Определяет символьную константу, обозначающую функцию GL.
- \return void
+
 
  \details nmglEnable и [nmglDisable](https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/glDisable.xml) активируют и деактивируют различные функции. Следует применять [nmglIsEnabled](https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/glIsEnabled.xml) или [nmglGet](https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/glGet.xml) для определения текущих настроек любой из функций. Изначальное значение для каждой функции кроме GL_DITHER и GL_MULTISAMPLE -- GL_FALSE. Изначальное значение для GL_DITHER и GL_MULTISAMPLE -- GL_TRUE.
 
@@ -343,7 +340,7 @@ void nmglDisable (NMGLenum cap);
  \brief Brief description
  
  \param cap [in] Определяет, какие именно функции будут активированы. Применяются следующие символьные константы: GL_COLOR_ARRAY GL_NORMAL_ARRAY и GL_VERTEX_ARRAY .
- \return void
+
 
  \details Команды nmglEnableClientState и [nmglDisableClientState](https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/glDisableClientState.xml) активируют или деактивирует отдельные функции клиента. По умолчанию все функции клиента деактивированы. Команды nmglEnableClientState и [nmglDisableClientState](https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/glDisableClientState.xml) используют один аргумент, *cap*, который может принимать одно из следующих значений:
 
@@ -371,7 +368,7 @@ void nmglEndList (void);
 /*!
  \brief Блокировка, которая действует, пока все процессы GL не будут завершены
  
- \return void
+
 
  \details nmglFinish препятствует возврату из процедуры, пока действие всех ранее вызванных команд GL не завершено. Эффект таких действие включает все изменения состояния GL, все изменения состояния соединения и все изменения содержания буфера кадров.
  
@@ -381,7 +378,7 @@ void nmglFinish (void);
 /*!
  \brief Принудительно запускает команды GL в заданное время
  
- \return void
+
 
  \details В различных вариантах исполнения GL команды вводятся в буфер в нескольких местах, включая сетевые буферы и сами ускорители выполнения графических операций. КомандаglFlush опустошает все эти буферы, в результате чего все сделанные команды выполняются, как только их принимают соответствующий механизм визуализации. Хотя такое выполнение не может быть завершено в любой заданный временной промежуток, в конечный временной промежуток оно завершается в установленный промежуток времени.
 
@@ -394,7 +391,6 @@ void nmglFlush (void);
  \brief nmglFrontFace
  
  \param mode [in] Определяет ориентацию лицевых многоугольников. Допустимы значения GL_CW и GL_CCW. Начальное значение -- GL_CCW.
- \return void
 
  \details На «сцене», полностью составленной из непрозрачных закрытых поверхностей, задние многоугольники никогда не видны. Устранение этих невидимых многоугольников даёт очевидное преимущество в ускорении визуализации изображений. Чтобы активировать и деактивировать устранение задних многоугольников, следует применить [nmglEnable](https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/glEnable.xml) и [nmglDisable](https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/glDisable.xml) с аргументом GL_CULL_FACE.
 
@@ -409,19 +405,25 @@ void nmglFrontFace (NMGLenum mode);
  \param left,right [in] Определяет координаты для левой и правой вертикальных плоскостей отсечения.
  \param bottom, top [in] Определяет координаты для верхней и нижней горизонтальных плоскостей отсечения.
  \param zNear, zFar [in] Определяет расстояния для расположения плоскостей отсечения малой и большой глубины. Значения обоих расстояний должны быть положительными.
- \return void
 
  \details nmglFrustum описывает матрицу перспективы, которая создаёт перспективную проекцию. Текущая матрица (см. [nmglMatrixMode](https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/glMatrixMode.xml)) умножается на эту матрицу, и результат заменяет текущую матрицу, как если бы была применена команда [nmglMultMatrix](https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/glMultMatrix.xml) с аргументом в виде следующей матрицы:
 
-2*nearVal right - left 0 A 0 0 2*nearVal top - bottom B 0 0 0 C D 0 0 -1 0
+\f[
+\begin{pmatrix}
+\frac{2zNear}{right - left}  & 0 & A & 0 \\
+0 & \frac{2zNear}{top - bottom} & B & 0 \\
+0 & 0 & C & D \\
+0 & 0 & -1 & 1 \\
+\end{pmatrix}
+\f]
 
-A = right + left right - left
+\f[A = \frac{right + left}{right - left}\f]
 
-B = top + bottom top - bottom
+\f[B = \frac{top + bottom}{top - bottom}\f]
 
-C = - farVal + nearVal farVal - nearVal
+\f[C = -\frac{zFar + zNear}{zFar - zNear}\f]
 
-D = - 2*farVal*nearVal farVal - nearVal
+\f[D = -\frac{2zFarzNear}{zFar - zNear}\f]
 
 Как правило, применяется режим работы с матрицами GL_PROJECTION, и операторы left bottom - nearVal and right top - nearVal определяют точки на ближней плоскости кадрирования, которые наносятся в нижний левый и верхний правый углы окна, если человеческий глаз находится на уровне (0, 0, 0). Оператор farVal определяет расположение дальней плоскости кадрирования. Значения *nearVal* и *farVal* должны быть положительными.
 
@@ -436,7 +438,7 @@ void nmglGenTextures (NMGLsizei n, NMGLuint *textures);
  \brief Возвращает значение/значения выбранного параметра
  \param pname [in] Определяет значение параметра, которое должно быть возвращено. Допустимы символьные константы, представленные в списке ниже.
  \param params Возвращает значение/значения определённого параметра
- \return void
+
 
  \details Эти четыре команды возвращают значения переменных простого состояния в GL. *pname* это символьная константа, обозначающая параметры состояния, которые должны быть восстановлены, и *params* это указатель на массив заданного типа, в котором требуется разместить восстановленные данные.
 
@@ -887,7 +889,7 @@ void nmglGetFloatv (NMGLenum pname, NMGLfloat *params);
  \param format определяет количество компонент в одном текселе. Единственное поддерживаемое значение: NMGL_RGBA.
  \param type определяет формат представления компонент текселя. Единственное поддерживаемое значение - NMGL_UNSIGNED_BYTE.
  \param data  указатель на массив данных текселей палитры.
- \return void
+
 
  \details 
  */
@@ -898,7 +900,7 @@ void nmglGetColorTableEXT (NMGLenum target, NMGLenum format, NMGLenum type, NMGL
  \param target определяет тип текстуры, для которой задаётся палитра. Единственное поддерживаемое значение: NMGL_TEXTURE_2D.
  \param pname код интересующей характеристики
  \param params  указатель на массив переменных для хранения считанных значений характеристик.
- \return void
+
 
  \details 
  
@@ -914,7 +916,7 @@ void nmglGetPolygonStipple (NMGLubyte *mask);
  \param env данный аргумент должен принимать значение NMGL_TEXTURE_ENV.
  \param pname символическая константа, определяющая наименование параметра, значение которого требуется получить. Данный аргумент может принимать единственное значение NMGL_TEXTURE_ENV_COLOR.
  \param params указатель на область памяти, в которую необходимо поместить значение считываемого параметра.
- \return void
+
 
  \details 
  
@@ -925,7 +927,7 @@ void nmglGetTexEnvfv (NMGLenum target, NMGLenum pname, NMGLfloat *params);
  \param env данный аргумент должен принимать значение NMGL_TEXTURE_ENV.
  \param pname символическая константа, определяющая наименование параметра, значение которого требуется получить. Данный аргумент может принимать единственное значение NMGL_TEXTURE_ENV_MODE.
  \param params указатель на область памяти, в которую необходимо поместить значение считываемого параметра.
- \return void
+
 
  \details 
  
@@ -937,7 +939,7 @@ void nmglGetTexEnviv (NMGLenum target, NMGLenum pname, NMGLint *params);
  \param target данный аргумент определяет тип текущего привязанного текстурного объекта и должен принимать значение NMGL_TEXTURE_2D.
  \param pname символическая константа, определяющая наименование параметра, значение которого требуется получить. Возможные значения:NMGL_TEXTURE_MIN_FILTER, NMGL_TEXTURE_MAG_FILTER, NMGL_TEXTURE_WRAP_S, NMGL_TEXTURE_WRAP_T.
  \param params указатель на область памяти, в которую необходимо поместить значение считываемого параметра текстурирования.
- \return void
+
 
  \details 
  
@@ -953,7 +955,7 @@ NMGLboolean nmglIsEnabled (NMGLenum cap);
  \param light [in] Определяет свет. Количество источников света зависит от варианта исполнения GL, но поддерживается не менее 8 источников. Они определяются символьными именами по форме GL_LIGHT i, где i варьируется от 0 до значения GL_MAX_LIGHTS - 1.
  \param pname [in] Определяет единственное значение параметра источника света для *light*. Допустимы: GL_SPOT_EXPONENT, GL_SPOT_CUTOFF, GL_CONSTANT_ATTENUATION, GL_LINEAR_ATTENUATION, и GL_QUADRATIC_ATTENUATION.
  \param params [in] Определяет значение параметра *pname*, которое будет установлено для источника света *light*.
- \return void
+
 
  \details nmglLight устанавливает значения параметров отдельного источника света. *light* даёт наименование свету и представляет собой имя в символьной форме GL_LIGHT i, где i варьируется от 0 до значения GL_MAX_LIGHTS - 1. *Pname* определяет один из десяти параметров источника света, снова по символьному имени. *params* это либо единое значение, либо указатель на массив, содержащий новые значения.
 
@@ -989,7 +991,7 @@ void nmglLightf (NMGLenum light, NMGLenum pname, const NMGLfloat params);
  \param light [in] Определяет свет. Количество источников света зависит от варианта исполнения GL, но поддерживается не менее 8 источников. Они определяются символьными именами по форме GL_LIGHT i, где i варьируется от 0 до значения GL_MAX_LIGHTS - 1.
  \param pname [in] Определяет значение параметра источника света для *light*. Допустимы GL_AMBIENT, GL_DIFFUSE, GL_SPECULAR, GL_POSITION, GL_SPOT_CUTOFF, GL_SPOT_DIRECTION, GL_SPOT_EXPONENT, GL_CONSTANT_ATTENUATION, GL_LINEAR_ATTENUATION, и GL_QUADRATIC_ATTENUATION.
  \param params [in] Определяет указатель значения или совокупности значений параметра *pname*, которое будет установлено для источника света *light*.
- \return void
+
 
  \details nmglLight устанавливает значения параметров отдельного источника света. *light* даёт наименование свету и представляет собой имя в символьной форме GL_LIGHT i, где i варьируется от 0 до значения GL_MAX_LIGHTS - 1. *Pname* определяет один из десяти параметров источника света, снова по символьному имени. *params* это либо единое значение, либо указатель на массив, содержащий новые значения.
 
@@ -1025,11 +1027,18 @@ void nmglListBase (NMGLuint base);
 /*!
  \brief Заменяет текущую матрицу матрицей тождественности
  
- \return void
+
 
  \details nmglLoadIdentity Заменяет текущую матрицу матрицей тождественности. Это семантически эквивалентно вызову команды [nmglLoadMatrix](https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/glLoadMatrix.xml) с матрицей тождественности
 
-1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1
+\f[
+\begin{pmatrix}
+1 & 0 & 0 & x \\
+0 & 1 & 0 & y \\
+0 & 0 & 1 & z \\
+0 & 0 & 0 & 1 \\
+\end{pmatrix}
+\f]
 
 Но в некоторых случаях это более эффективно.
  
@@ -1040,13 +1049,26 @@ void nmglLoadIdentity (void);
  \brief Заменяет текущую матрицу выбранной
  
  \param m [in] станавливает указатель для 16 следующих друг за другом значений, которые используются как элементы основной матрицы, имеющей 4x4 столбцов.
- \return void
+
 
  \details nmglLoadMatrix заменяет текущую матрицу другой, элементы которой устанавливаются параметром m. Текущая матрица -- это матрица проецирования, матрица моделирования или текстурная матрица, в зависимости от активного режима работы с матрицами (см. [nmglMatrixMode](https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/glMatrixMode.xml)).
 
-Текущая матрица, М, определяет трансформацию координат. Рассмотрим принцип действия М-матрицы моделирования. Если \f$ v = |v0,v1,v2,v3| \f$  это набор координат вершин, и m указывает на массив 16-символьных значений с плавающей запятой, одинарной или двойной точности: m = m0 m1 ... m15 , тогда преобразование иллюстрации модели M x v будет следующим:
+Текущая матрица, М, определяет трансформацию координат. Рассмотрим принцип действия М-матрицы моделирования. Если \f$ v = (v[0],v[1],v[2],v[3]) \f$  это набор координат вершин, и m указывает на массив 16-символьных значений с плавающей запятой, одинарной или двойной точности: \f$ m = {m[0], m[1] ... m[15]} \f$  , тогда преобразование иллюстрации модели \f$M(v)\f$ будет следующим:
 
-M x v = m0 m4 m8 m12 m1 m5 m9 m13 m2 m6 m10 m14 m3 m7 m11 m15 x v0 v1 v2 v3
+\f[M v =
+\begin{pmatrix}
+m[0] & m[4] & m[8]  & m[12] \\
+m[1] & m[5] & m[9]  & m[13] \\
+m[2] & m[6] & m[10] & m[14] \\
+m[3] & m[7] & m[11] & m[15] \\
+\end{pmatrix} 
+\begin{pmatrix}
+v[0] \\
+v[1] \\
+v[2] \\
+v[3] \\
+\end{pmatrix}
+\f]
 Проекционные и текстурные трансформации определяются аналогично.
  
  */
@@ -1058,7 +1080,7 @@ void nmglLoadMatrixf (const NMGLfloat *m);
  \param face [in] Определяет, какая поверхность будет обновлена: лицевая или задняя. Следует выбрать один из двух вариантов:GL_FRONT (передняя), GL_BACK (задняя), и GL_FRONT_AND_BACK (передняя и задняя).
  \param pname [in] Определяет единственное значение, устанавливающее материал для лицевой или задней поверхности, которая будет обновлена. Должно быть GL_SHININESS.
  \param param [in] Определяет значение параметра GL_SHININESS.
- \return void
+
 
  \details nmglMaterial задаёт значения параметрам материала. Предусмотрено два подобранных комплекта параметров материала. Первый набор, *front-facing*, применяется для окраски точек, линий, точечных изображений и многоугольников (когда двустороннее освещение деактивировано), или для правильных лицевых многоугольников (когда двустороннее освещение активировано). Второй набор, *back-facing*, используется для окраски многоугольников задней поверхности, только когда применено двустороннее освещение. См. справочную страницу [nmglLightModel](https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/glLightModel.xml) для получения расширенной информации о расчёте одностороннего и двустороннего освещения.
 
@@ -1103,7 +1125,7 @@ void nmglMaterialf (NMGLenum face, NMGLenum pname, NMGLfloat param);
  \param face [in] Определяет, какая поверхность будет обновлена: лицевая или задняя. Следует выбрать один из двух вариантов:GL_FRONT (передняя), GL_BACK (задняя), и GL_FRONT_AND_BACK (передняя и задняя).
  \param pname [in] Определяет параметр материала обновляемой поверхности/поверхностей. Должен иметь одно из следующих значений: GL_AMBIENT, GL_DIFFUSE, GL_SPECULAR, GL_EMISSION, GL_SHININESS, GL_AMBIENT_AND_DIFFUSE, GL_COLOR_INDEXES.
  \param param [in] Определяет указатель значения или совокупности значений параметра *pname*.
- \return void
+
 
  \details nmglMaterial задаёт значения параметрам материала. Предусмотрено два подобранных комплекта параметров материала. Первый набор, *front-facing*, применяется для окраски точек, линий, точечных изображений и многоугольников (когда двустороннее освещение деактивировано), или для правильных лицевых многоугольников (когда двустороннее освещение активировано). Второй набор, *back-facing*, используется для окраски многоугольников задней поверхности, только когда применено двустороннее освещение. См. справочную страницу [nmglLightModel](https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/glLightModel.xml) для получения расширенной информации о расчёте одностороннего и двустороннего освещения.
 
@@ -1146,7 +1168,7 @@ void nmglMaterialfv (NMGLenum face, NMGLenum pname, const NMGLfloat *params);
  \brief Определяет, какая матрица является текущей
  
  \param mode [in] Определяет, какой стек матриц является объектом последующих матричных операций. Допустимы два значения: GL_MODELVIEW и GL_PROJECTION. Начальное значение -- GL_MODELVIEW.
- \return void
+
 
  \details nmglMatrixMode устанавливает текущий режим работы с матрицами. mode может принимать одно из четырёх значений:
 
@@ -1167,9 +1189,24 @@ void nmglMatrixMode (NMGLenum mode);
  \brief Умножает текущую матрицу на выбранную
  
  \param m [in] Указывает на 16 следующих друг за другом значений, которые используются как элементы основной матрицы, имеющей 4x4 столбцов.
- \return void
+
 
  \details nmglMultMatrix умножает текущую матрицу на другую, определённую с помощью параметра m, и заменяет текущую матрицу результатом операции.
+ 
+ \f[C' = CM =
+\begin{pmatrix}
+c[0] & c[4] & c[8]  & c[12] \\
+c[1] & c[5] & c[9]  & c[13] \\
+c[2] & c[6] & c[10] & c[14] \\
+c[3] & c[7] & c[11] & c[15] \\
+\end{pmatrix} 
+\begin{pmatrix}
+m[0] & m[4] & m[8]  & m[12] \\
+m[1] & m[5] & m[9]  & m[13] \\
+m[2] & m[6] & m[10] & m[14] \\
+m[3] & m[7] & m[11] & m[15] \\
+\end{pmatrix}
+\f]
 
 Текущая матрица определяется активным режимом работы с матрицами (см. [nmglMatrixMode](https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/glMatrixMode.xml)). Это матрица проецирования, матрица моделирования или текстурная матрица.
  
@@ -1181,7 +1218,7 @@ void nmglMultMatrixf (const NMGLfloat *m);
  \param texture- символическая константа вида NMGL_TEXTUREi, где i определяет номер изменяемого набора текстурных координат. Значение константы NMGL_TEXTUREi определяется по формуле NMGL_TEXTUREi = NMGL_TEXTURE0 + i (i лежит в диапазоне от 0 до k минус 1, где k поддерживаемое число модулей текстур, зависящее от реализации. Значение k определяется значением параметра NMGL_MAX_TEXTURE_UNITS. Минимальное количество поддерживаемых модулей текстур равно 1. Если в аргументе texture передано некорректное значение, поведение функции не определено.
  \param s значение текстурной координаты s.
  \param t значение текстурной координаты t.
- \return void
+
 
  \details 
  
@@ -1192,7 +1229,7 @@ void nmglMultiTexCoord2f (NMGLenum target, NMGLfloat s, NMGLfloat t);
  \brief Функция nmglMultiTexCoord2fv предназначена для установки текстурных координат при использовании мультитекстурирования. Функция устанавливает текущее значение однородных текстурных координат s и t для заданного модуля текстур.
  \param texture- символическая константа вида NMGL_TEXTUREi, где i определяет номер изменяемого набора текстурных координат. Значение константы NMGL_TEXTUREi определяется по формуле NMGL_TEXTUREi = NMGL_TEXTURE0 + i (i лежит в диапазоне от 0 до k минус 1, где k  поддерживаемое число модулей текстур, зависящее от реализации. Значение k определяется значением параметра NMGL_MAX_TEXTURE_UNITS. Минимальное количество поддерживаемых модулей текстур равно 1. Если в аргументе texture передано некорректное значение, поведение функции не определено.
  \param v указатель на массив из двух элементов, определяющих значения текстурных координат s и t.
- \return void
+
 
  \details 
  
@@ -1205,7 +1242,7 @@ void nmglNewList (NMGLuint list, NMGLenum mode);
  
  \param nx,ny,nz [in] Определяет координаты текущей нормали по осям x, y и z . Изначальное значение текущей нормали представлено в единичном векторе (0, 0, 1).
  
- \return void
+
 
  \details DТекущая нормаль устанавливается в соответствии с заданными координатами всегда, когда применяется nmglNormal. Аргумент в байтах, аргумент в виде целого числа, аргумент в виде короткого целого числа конвертируются в формат с плавающей запятой с линейным преобразованием, которое представляет самое большое отображаемое положительное целое число как 1,0 а самое большое отображаемое отрицательное целое число как -1,0.
 
@@ -1222,7 +1259,7 @@ void nmglNormal3fv (const NMGLfloat *v);
  \param type [in] Определяет тип данных для каждой координаты в массиве. Принята символьная константа GL_FLOAT. Начальное значение -- GL_FLOAT.
  \param stride [in] Определяет байтовое смещение между следующими друг за другом нормалями. Должно быть 0 Изначальное значение -- 0.
  \param pointer [in] Устанавливает указатель для первой координаты для первой нормали массива. Изначальное значение -- 0.
- \return void
+
 
  \details nmglNormalPointer определяет расположение и формат данных массива нормалей для использования при визуализации. *type* определяет тип данных для каждой координаты нормали *stride* определяет байтовый шаг от одной нормали до следующей, что позволяет вершины и атрибуты объединять в одном массиве или разделять между несколькими.
 
@@ -1237,7 +1274,7 @@ void nmglNormalPointer (NMGLenum type, NMGLsizei stride, const NMGLvoid *pointer
  \param type [in] Определяет тип данных для каждой координаты в массиве. Принята символьная константа GL_FLOAT. Начальное значение -- GL_FLOAT.
  \param stride [in] Определяет байтовое смещение между следующими друг за другом нормалями. Должно быть 0 Изначальное значение -- 0.
  \param pointer [in] Устанавливает указатель для первой координаты для первой нормали массива. Изначальное значение -- 0.
- \return void
+
 
  \details nmglNormalPointer определяет расположение и формат данных любого массива нормалей, используемого при визуализации. Размер нормали должен быть 4 (последний элемент -- 0). type определяет тип данных для каждой координаты нормали stride определяет байтовый шаг от одной нормали до следующей, что позволяет вершины и атрибуты объединять в одном массиве или разделять между несколькими.
 
@@ -1252,19 +1289,18 @@ void nmglNormalPointerNM (NMGLenum type, NMGLsizei stride, const NMGLvoid *point
  \param left,right [in] Определяет координаты для левой и правой вертикальных плоскостей отсечения.
  \param bottom, top [in] Определяет координаты для верхней и нижней горизонтальных плоскостей отсечения.
  \param zNear,zFar [in] Определяет расстояния расположения для плоскостей отсечения меньшей и большей глубины. Их значения будут негативными, если плоскость должна быть позади смотрящего
- \return void
+
 
  \details nmglOrtho описывает трансформацию, которая создаёт параллельную проекцию. Текущая матрица (см. [nmglMatrixMode](https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/glMatrixMode.xml)) умножается на эту матрицу, и результат заменяет текущую матрицу, как если бы была применена команда [nmglMultMatrix](https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/glMultMatrix.xml) с аргументом в виде следующей матрицы:
 
-2 right - left 0 0 t x 0 2 top - bottom 0 t y 0 0 -2 farVal - nearVal t z 0 0 0 1
-
-where
-
-t x = - right + left right - left
-
-t y = - top + bottom top - bottom
-
-t z = - farVal + nearVal farVal - nearVal
+\f[
+\begin{pmatrix}
+\frac{2}{right - left}  & 0 & 0 & -\frac{right + left}{right - left} \\
+0 & \frac{2}{top - bottom} & 0 & -\frac{top + bottom}{top - bottom} \\
+0 & 0 & -\frac{2}{zFar - zNear} & -\frac{zFar + bottom}{zFar - zNear} \\
+0 & 0 & 0 & 1 \\
+\end{pmatrix}
+\f]
 
 Как правило, применяется режим работы с матрицами GL_PROJECTION, и операторы left bottom - nearVal and right top - nearVal определяют точки на ближней плоскости кадрирования, которые наносятся в нижний левый и верхний правый углы окна соответственно, если человеческий глаз находится на уровне (0, 0, 0). Оператор farVal определяет расположение дальней плоскости кадрирования. Значения *nearVal* и *farVal* могут быть как положительными, так и отрицательными.
 
@@ -1284,7 +1320,6 @@ void nmglPolygonStipple (const NMGLubyte *mask);
 /*!
  \brief Помещает текущую матрицу в стек и извлекает её оттуда
  
- \return Return description
  \details Предусмотрены стеки матриц для каждого режима работы с матрицами. В режиме GL_MODELVIEW глубина стека составляет не менее 32. В других режимах GL_MODELVIEW глубина стека составляет не менее 2. Текущей матрицей в любом режиме считается матрица «на верхушке» стека, предусмотренного для данного режима.
 
 nmglPushMatrix опускает текущую матрицу в стеке на один уровень вниз, дублируя её. То есть после вызова команды nmglPushMatrix матрица на вершине стека будет идентична матрице, находящейся ниже неё.
@@ -1315,13 +1350,20 @@ void nmglReadPixels (NMGLint x, NMGLint y, NMGLsizei width, NMGLsizei height, NM
  
  \param angle [in] Определяет угол поворота в градусах.
  \param x,y,z [in] Определяет, соответственно, координаты вектора по осям x, y и z.
- \return void
+
 
  \details nmglRotate обеспечивает поворот элемента *angle* в градусах относительно заданного вектора по осям x y z. Текущая матрица (см. [nmglMatrixMode](https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/glMatrixMode.xml)) умножается на матрицу вращения, и продукт этой замены текущей матрицы будет таким, как если бы была применена команда [nmglMultMatrix](https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/glMultMatrix.xml)] с аргументом в виде следующей матрицы:
 
-x 2  1 - c + c x*y   1 - c - z*s x*z   1 - c + y*s 0 y*x   1 - c + z*s y 2   1 - c + c y*z   1 - c - x*s 0 x*z   1 - c - y*s y*z   1 - c + x*s z 2   1 - c + c 0 0 0 0 1
+\f[
+\begin{pmatrix}
+x^2(1-c)+c & xy(1-c)-zs & xz(1-c)+ys & 0 \\
+xy(1-c)+zs & y^2(1-c)+c & yz(1-c)-xs & 0 \\
+xz(1-c)-ys & yz(1-c)+xs & z^2(1-c)+c & 0 \\
+0 & 0 & 0 & 1 \\
+\end{pmatrix}
+\f]
 
-При этом c = косинус угла, s = синус угла , и x y z = 1 (если не так, GL нормализует данный вектор).
+При этом *c* = косинус угла, *s* = синус угла , и || x y z ||= 1 (если не так, GL нормализует данный вектор).
 
 Если выбран режим работы с матрицами GL_MODELVIEW или GL_PROJECTION, все объекты, изображённые после применения команды nmglRotate будут повёрнуты. Следует применить [nmglPushMatrix](https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/glPushMatrix.xml) и [nmglPopMatrix](https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/glPopMatrix.xml) для сохранения и восстановления неповёрнутой системы координат
  
@@ -1331,18 +1373,18 @@ void nmglRotatef (NMGLfloat angle, NMGLfloat x, NMGLfloat y, NMGLfloat z);
 /*!
  \brief Умножает текущую матрицу на общую масштабирующую матрицу
  
- \param x,y,z [in] Определяет величины коэффициентов масштабирования по осям x, y, и z соответственно.
- \return void
+ \param x,y,z [in] Определяет величины коэффициентов масштабирования по осям *x*, *y*, и *z* соответственно.
 
- \details nmglScale проводит неравномерное масштабирование по осям x, y, и z. Три параметра определяют необходимый коэффициент масштабирования по каждой из трёх осей.
+
+ \details nmglScale проводит неравномерное масштабирование по осям *x*, *y*, и *z*. Три параметра определяют необходимый коэффициент масштабирования по каждой из трёх осей.
 
 Текущая матрица (см. [nmglMatrixMode](https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/glMatrixMode.xml )умножается на эту матрицу масштабирования, и продукт операции заменяет текущую матрицу, как если бы была применена команда [nmglMultMatrix](https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/glMultMatrix.xml)с аргументом в виде следующей матрицы:
 
 \f[
 \begin{pmatrix}
-1 & 0 & 0 & 0 \\
-0 & 1 & 0 & 0 \\
-0 & 0 & 1 & 0 \\
+x & 0 & 0 & 0 \\
+0 & y & 0 & 0 \\
+0 & 0 & z & 0 \\
 0 & 0 & 0 & 1 \\
 \end{pmatrix}
 \f]
@@ -1367,7 +1409,7 @@ void nmglStencilOp (NMGLenum fail, NMGLenum zfail, NMGLenum zpass);
  \param type тип данных для каждой координаты текстуры, должен иметь значение NMGL_FLOAT.
  \param stride смещение в байтах между последовательными наборами координат текстуры. Если шаг равен 0, то элементы массива считаются плотно упакованными. Единственное доступное значение - 0.
  \param pointer указатель на первую координату первого набора текстурных координат в массиве. Начальное значение равно 0.
- \return void
+
 
  \details При указании массива координат текстуры размер, тип, шаг и указатель сохраняются как состояние на стороне клиента в дополнение к текущей привязке буферного объекта массива вершин.
 
@@ -1380,7 +1422,7 @@ void nmglTexCoordPointer (NMGLint size, NMGLenum type, NMGLsizei stride, const N
  \param target данный аргумент должен принимать значение NMGL_TEXTURE_ENV.
  \param pname символическая константа, определяющая наименование устанавливаемого параметра. Данный аргумент может принимать единственное значение NMGL_TEXTURE_ENV_COLOR.
  \param params указатель на массив значений параметра. Значение текущего цвета текстурного окружения задается массивом из четырех чисел, каждое из которых устанавливает одну из компонент (RGBA). Значения должны лежать в диапазоне \[0, 1\]. Значения, выходящие за диапазон, приводятся к ближайшему граничному значению диапазона (0 или 1).
- \return void
+
 
  \details 
  
@@ -1392,7 +1434,7 @@ void nmglTexEnvfv (NMGLenum target, NMGLenum pname, const NMGLfloat *params);
  \param target данный аргумент должен принимать значение NMGL_TEXTURE_ENV.
  \param pname символическая константа, определяющая наименование устанавливаемого параметра. Данный аргумент может принимать единственное значение NMGL_TEXTURE_ENV_MODE.
  \param param новое значение параметра. Возможные значения: NMGL_MODULATE, NMGL_REPLACE, NMGL_DECAL, NMGL_BLEND, NMGL_ADD.
- \return void
+
 
  \details 
  
@@ -1404,7 +1446,7 @@ void nmglTexImage2D (NMGLenum target, NMGLint level, NMGLint internalformat, NMG
  \param target тип текстуры. Данный аргумент должен принимать значение NMGL_TEXTURE_2D.
  \param pname символическая константа, определяющая наименование устанавливаемого параметра. Возможные значения: NMGL_TEXTURE_WRAP_S, NMGL_TEXTURE_WRAP_T, NMGL_TEXTURE_MIN_FILTER, NMGL_TEXTURE_MAG_FILTER.
  \param param новое значение параметра. Параметры обработки границ NMGL_TEXTURE_WRAP_S и NMGL_TEXTURE_WRAP_T могут принимать только значения NMGL_REPEAT и NMGL_CLAMP_TO_EDGE. Поддерживаются все режимы фильтрации. Возможные значения параметра NMGL_TEXTURE_MIN_FILTER: NMGL_NEAREST, NMGL_LINEAR, NMGL_NEAREST_MIPMAP_NEAREST, NMGL_NEAREST_MIPMAP_LINEAR, NMGL_LINEAR_MIPMAP_NEAREST, NMGL_LINEAR_MIPMAP_LINEAR. Возможные значения параметра NMGL_TEXTURE_MAG_FILTER: NMGL_NEAREST, NMGL_LINEAR. Если значение передаваемого аргумента отличается от допустимого, генерируется ошибка NMGL_INVALID_VALUE.
- \return void
+
 
  \details
  
@@ -1415,12 +1457,19 @@ void nmglTexSubImage2D (NMGLenum target, NMGLint level, NMGLint xoffset, NMGLint
 /*!
  \brief Умножает текущую матрицу на матрицу трансляции
  
- \param x,y,z [in] Определяет, соответственно, координаты вектора по осям x, y и z.
- \return void
+ \param x,y,z [in] Определяет, соответственно, координаты вектора по осям *x*, *y* и *z*.
 
- \details nmglTranslate производит трансляцию по осям x y z. Текущая матрица (см. [nmglMatrixMode](https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/glMatrixMode.xml)) умножается на матрицу трансляции, и продукт этой операции заменяет текущую матрицу, как если бы была применена команда [nmglMultMatrix](https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/glMultMatrix.xml)с аргументом в виде следующей матрицы:
 
-1 0 0 x 0 1 0 y 0 0 1 z 0 0 0 1
+ \details nmglTranslate производит трансляцию по осям *x* *y* *z*. Текущая матрица (см. [nmglMatrixMode](https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/glMatrixMode.xml)) умножается на матрицу трансляции, и продукт этой операции заменяет текущую матрицу, как если бы была применена команда [nmglMultMatrix](https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/glMultMatrix.xml)с аргументом в виде следующей матрицы:
+
+\f[
+\begin{pmatrix}
+1 & 0 & 0 & x \\
+0 & 1 & 0 & y \\
+0 & 0 & 1 & z \\
+0 & 0 & 0 & 1 \\
+\end{pmatrix}
+\f]
 
 Если выбран режим работы с матрицами GL_MODELVIEW или GL_PROJECTION, все объекты, изображённые после применения команды nmglTranslate будут транслированы.
 
@@ -1433,13 +1482,12 @@ void nmglTranslatef (NMGLfloat x, NMGLfloat y, NMGLfloat z);
  \defgroup Vertexf Vertexf
  \brief Определяет вершину
  
- \param x,y,z,w  [in] Определяет координаты x, y, z, и w для вершины. Не все параметры присутствуют во всех формах данной команды.
- return void
+ \param x,y,z,w  [in] Определяет координаты *x*, *y*, *z*, и *w* для вершины. Не все параметры присутствуют во всех формах данной команды.
 
  
  \details Команды nmglVertex используются в рамках пар [nmglBegin](https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/glBegin.xml)/[nmglEnd](https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/glEnd.xml) для определения вершин точки, линии, многоугольника. Текущие цвет, координаты нормали, текстурные координаты, облачные координаты связаны с вершиной, когда вызвана команда nmglVertex.
 
-Когда установлены координаты только по осям x и y , по оси z по умолчанию устанавливается значение 0, а по оси w по умолчанию устанавливается значение 1. Когда установлены координаты по осям x, y и z, по оси w по умолчанию устанавливается значение 1.
+Когда установлены координаты только по осям *x* и *y* , по оси *z* по умолчанию устанавливается значение 0, а по оси *w* по умолчанию устанавливается значение 1. Когда установлены координаты по осям *x*, *y* и *z*, по оси *w* по умолчанию устанавливается значение 1.
  
  */
  //! \{
@@ -1451,9 +1499,9 @@ void nmglVertex3f (NMGLfloat x, NMGLfloat y, NMGLfloat z);
  \defgroup Vertexfv Vertexfv
  \brief Определяет вершину
  
- \param v Определяет указатель для массива из двух, трёх или четырёх элементов. Элементы массива из двух элементов: x и y; массива из трёх элементов: x, y, и z; массива из четырёх элементов: x, y, z и w.
+ \param v Определяет указатель для массива из двух, трёх или четырёх элементов. Элементы массива из двух элементов: *x* и *y*; массива из трёх элементов: *x*, *y*, и *z*; массива из четырёх элементов: *x*, *y*, *z* и *w*.
  
- \return void
+
 
  
  \details Команды nmglVertex используются в рамках пар [nmglBegin](https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/glBegin.xml)/[nmglEnd](https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/glEnd.xml) для определения вершин точки, линии, многоугольника. Текущие цвет, координаты нормали, текстурные координаты, облачные координаты связаны с вершиной, когда вызвана команда nmglVertex.
@@ -1473,7 +1521,7 @@ void nmglVertex3fv (const NMGLfloat *v);
  \param type [in] Определяет тип данных для каждой координаты в массиве. Принята символьная константа GL_FLOAT. Начальное значение -- GL_FLOAT.
  \param stride [in] Определяет байтовое смещение между следующими друг за другом байтовыми вершинами. Должно быть 0. Изначальное значение -- 0.
  \param pointer [in] Устанавливает указатель для первой координаты для первой вершины массива. Изначальное значение -- 0.
- \return void
+
 
  \details nmglVertexPointer определяет расположение и формат данных массива координат вершины для использования при визуализации. *size* определяет количество координат для вершины и должен иметь значение 2, 3, или 4. *type* определяет тип данных для каждой координаты *stride* определяет байтовый шаг от одной вершины до следующей, что позволяет вершины и атрибуты объединять в одном массиве или разделять между несколькими.
 
@@ -1487,13 +1535,13 @@ void nmglVertexPointer (NMGLint size, NMGLenum type, NMGLsizei stride, const NMG
  
  \param x,y [in] Определяет в пикселях нижний левый угол прямоугольника поля видимости. Изначальное значение -- (0,0).
  \param width, height [in] Определяет ширину и высоту поля видимости. Когда контекст GL впервые прикрепляется к окну, значения параметров, *width* и *height* устанавливаются в соответствии с размерами этого окна.
- \return void
 
- \details Команда nmglViewport определяет аффинное преобразование координат x и y от нормализованных координат устройства в координаты окна. Пусть x~н~ и y~н~ -- это нормализуемые координаты устройства. Тогда координаты окна x~о~ y~о~ будут вычислены следующим образом:
 
-x~о~ = (x~н~ + 1)*(ширина /2 + x)
+ \details Команда nmglViewport определяет аффинное преобразование координат x и y от нормализованных координат устройства в координаты окна. Пусть \f$ x_n \f$  и \f$ y_n \f$ -- это нормализуемые координаты устройства. Тогда координаты окна \f$ x_w \f$ \f$ y_w \f$ будут вычислены следующим образом:
 
-y~о~ = (y~н~ + 1)*(высота /2 + y)
+\f$ x_w = (x_n*width/2) + (x+width/2)) \f$ 
+
+\f$ y_w = (y_n*height/2) + (y+height/2)) \f$ 
 
 Ширина и высота поля видимости молча закрепляются за уровнем, зависящим от варианта исполнения GL. Чтобы запросить такой уровень, следует вызвать команду [nmglGet](https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/glGet.xml) с аргументом GL_MAX_VIEWPORT_DIMS.
  
@@ -1511,7 +1559,7 @@ void nmglViewport (NMGLint x, NMGLint y, NMGLsizei width, NMGLsizei height);
  \param format определяет формат данных текселя. Если значение аргумента **internalformat** равно NMGL_COLOR_INDEX8_EXT, то значение аргумента **format** должно быть равно NMGL_COLOR_INDEX. В противном случае значение аргумента **format** должно совпадать со значением аргумента **internalformat.**
  \param type определяет тип данных текселя. Должен иметь значение NMGL_UNSIGNED_BYTE.
  \param pixels указатель на текстурное изображение, хранящееся в памяти.
- \return void
+
 
  \details 
  
@@ -1529,7 +1577,7 @@ void nmglTexImage2D(NMGLenum target, NMGLint level, NMGLint internalformat, NMGL
  \param format определяет формат данных текселя. Возможные значения: NMGL_RGBA, NMGL_RGB, NMGL_ALPHA, NMGL_LUMINANCE и NMGL_LUMINANCE_ALPHA.
  \param type определяет тип данных текселя. Должен иметь значение NMGL_UNSIGNED_BYTE.
  \param pixels указатель на фрагмент текстурного изображения в памяти.
- \return void
+
 
  \details 
  
@@ -1549,7 +1597,7 @@ void nmglColorSubTableEXT (NMGLenum target, NMGLsizei start, NMGLsizei count, NM
  \param format определяет количество компонент в одном текселе. Единственное поддерживаемое значение: NMGL_RGBA.
  \param type определяет формат представления компонент текселя. Единственное поддерживаемое значение  NMGL_UNSIGNED_BYTE.
  \param data указатель на массив данных текселей загружаемой палитры.
- \return void
+
 
  \details Если длина палитры больше, чем диапазон цветов индексов цвета в текстурной памяти, то некоторые элементы палитры не будут использоваться.
 
