@@ -53,7 +53,7 @@ solution "demo3d-mc12101"
 	  configuration "Release"
 		   defines { "NDEBUG"}
 		   buildcommands {"make -f Makefile0"}
-		   rebuildcommands {"make -B -f Makefile"}
+		   rebuildcommands {"make -B -f Makefile0"}
 		   cleancommands {"make clean"}		   
 		   
 	project "mc12101-nmc4-1"

@@ -120,7 +120,7 @@ SECTION(".text_shared0") int main()
 		nmglVertexPointer(4, NMGL_FLOAT, 0, vertices_DDR);
 		nmglNormalPointer(NMGL_FLOAT, 0, normal_DDR);
 		nmglLoadIdentity();
-		//nmglScalef(0.9f, 0.9f, 0.9f);
+		nmglScalef(0.95f, 0.95f, 0.95f);
 		nmglRotatef(angle, 0.707f, 0.707f, 0);
 		materialDiffuse[0] = 1;
 		materialDiffuse[2] = 0;
@@ -135,7 +135,7 @@ SECTION(".text_shared0") int main()
 		nmglVertexPointer(4, NMGL_FLOAT, 0, vertices_DDR2);
 		nmglNormalPointer(NMGL_FLOAT, 0, normal_DDR2);
 		nmglLoadIdentity();
-		//nmglScalef(0.9f, 0.9f, 0.9f);
+		nmglScalef(0.95f, 0.95f, 0.95f);
 		materialDiffuse[0] = 0.4;
 		materialDiffuse[1] = 1;
 		materialDiffuse[2] = 1;

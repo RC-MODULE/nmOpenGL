@@ -48,8 +48,8 @@ void fillPtrnsInit(unsigned char* dst, int* table_dydx, unsigned char color) {
 	}
 	for (float angle = AMOUNT_ANGLES / 4; angle < AMOUNT_ANGLES / 2; angle++) {
 		for (int off = 0; off < OFFSETS; off++, cntRight++, cntLeft++) {
-			fillSide(dst + cntRight * size, off, 0, off + r * cos(angle * stepA), r * sin(angle * stepA), color, 0);
-			fillSide(dst + cntLeft  * size, off, 0, off + r * cos(angle * stepA), r * sin(angle * stepA), color, 1);
+			fillSide(dst + cntRight * size, off, 0, off + r * cos(angle * stepA), r * sin(angle * stepA), color, 1);
+			fillSide(dst + cntLeft  * size, off, 0, off + r * cos(angle * stepA), r * sin(angle * stepA), color, 0);
 		}
 	}
 
@@ -64,8 +64,8 @@ void fillPtrnsInit(unsigned char* dst, int* table_dydx, unsigned char color) {
 				}
 			}
 			else {
-				fillSide(dst + cntRight * size, off, 0, off + r * cos(angle * stepA), r * sin(angle * stepA), color, 0);
-				fillSide(dst + cntLeft  * size, off, 0, off + r * cos(angle * stepA), r * sin(angle * stepA), color, 1);
+				fillSide(dst + cntRight * size, off, 0, off + r * cos(angle * stepA), r * sin(angle * stepA), color, 1);
+				fillSide(dst + cntLeft  * size, off, 0, off + r * cos(angle * stepA), r * sin(angle * stepA), color, 0);
 			}
 			
 		}
@@ -73,8 +73,8 @@ void fillPtrnsInit(unsigned char* dst, int* table_dydx, unsigned char color) {
 
 	for (float angle = 3 * AMOUNT_ANGLES / 4; angle < AMOUNT_ANGLES; angle++) {
 		for (int off = 0; off < OFFSETS; off++, cntRight++, cntLeft++) {
-			fillSide(dst + cntRight * size, off, 0, off + r * cos(angle * stepA), r * sin(angle * stepA), color, 0);
-			fillSide(dst + cntLeft  * size, off, 0, off + r * cos(angle * stepA), r * sin(angle * stepA), color, 1);
+			fillSide(dst + cntRight * size, off, 0, off + r * cos(angle * stepA), r * sin(angle * stepA), color, 1);
+			fillSide(dst + cntLeft  * size, off, 0, off + r * cos(angle * stepA), r * sin(angle * stepA), color, 0);
 		}
 	}
 	
@@ -200,7 +200,63 @@ static void drawLine(unsigned char* dst, int x1, int y1, int x2, int y2, unsigne
 }
 
 static void fillSide(unsigned char* dst, int x1, int y1, int x2, int y2, unsigned char color, int topLeftSide) {
-	float deltaY = (y2 - y1);
+	int deltaX = x2 - x1;
+	int deltaY = y2 - y1;
+	int dx = (deltaX > 0) ? 1 : -1;
+	int dy = (deltaY > 0) ? 1 : -1;
+	double k, err;
+	if (abs(deltaX) >= abs(deltaY)) {
+		k = 2 * (double)fabs(deltaY) / fabs(deltaX);
+		err = 0;
+		int y = y1;
+		for (int x = x1; x != x2; x += dx) {
+			if (err > 1) {
+				y += dy;
+				err -= 2;
+			}
+			err += k;
+			if(topLeftSide){
+				for(int i = x; i < WIDTH_PTRN; i++){
+					setPixel(dst, i, y, color);
+				}
+			} else {
+				for(int i = 0; i < x + 1; i++){
+					setPixel(dst, i, y, color);
+				}
+			}
+		}
+		if (topLeftSide == 1 && deltaX < 0 ||
+			topLeftSide == 0 && deltaX > 0) {
+			for (int y = y2; y < HEIGHT_PTRN; y++) {
+				for (int x = 0; x < WIDTH_PTRN; x++) {
+					setPixel(dst, x, y, color);
+				}
+			}
+		}
+	}
+	else {
+		k = 2 * (double)fabs(deltaX) / fabs(deltaY);
+		err = 0;
+		int x = x1;
+		for (int y = y1; y != y2; y += dy) {
+			if (err > 1) {
+				x += dx;
+				err -= 2;
+			}
+			err += k;
+			if(topLeftSide){
+				for(int i = x; i < WIDTH_PTRN; i++){
+					setPixel(dst, i, y, color);
+				}
+			} else {
+				for(int i = 0; i < x + 1; i++){
+					setPixel(dst, i, y, color);
+				}
+			}
+		}
+		
+	}
+	/*float deltaY = (y2 - y1);
 	float deltaX = (x2 - x1);
 	float k = deltaY / deltaX;
 	float b = y1 - k * x1;
@@ -229,7 +285,7 @@ static void fillSide(unsigned char* dst, int x1, int y1, int x2, int y2, unsigne
 				}
 			}
 		}
-	}
+	}*/
 }
 
 static void fillCircle(unsigned char* dst, int x0, int y0, int radius, unsigned char color) {
