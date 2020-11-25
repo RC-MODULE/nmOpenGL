@@ -23,6 +23,8 @@
 #define SECTION(sec)
 #endif // __GNUC__
 
+using namespace tex_nm0;
+
 #define TRIANGLE_AMOUNT 5 
 
 //Массив текстур в виде структур типа image_t
@@ -37,11 +39,11 @@ image_t result_images [1];
 Функция rawToImage выполняет преобразование массива цветов пикселей в структуру типа image_t.
 
 \param triangles [in] Массив цветов пикселей треугольников
-\param windows [in] Массив с данными о треугольниках в массиве triangles
+\param ptrnSizes [in] Массив с данными о ширине и высоте прямоугольных областей, в которые вписаны треугольники triangles
 \param images [in] Массив структур типа image_t для сохранения информации о треугольниках
 \param count [in] Количество треугольников 
 */
-int rawToImage (nm32s* triangles, Rectangle* windows, image_t* images, int count);
+int rawToImage (nm32s* triangles, Size* ptrnSizes, image_t* images, int count);
 
 #endif
 
@@ -151,7 +153,7 @@ int main ()
 	((nm32s*)colors)[3] = (nm32s)255;
 	
 	//Информация о размещении видимой части треугольников в сегменте
-    Rectangle windows [1];
+	Size ptrnSizes[1];
     
     int i = 0;
     int j = 0;
@@ -162,10 +164,8 @@ int main ()
 
 	printf ("Start texturing test...\n");
 
-    windows[0].x = -1;
-    windows[0].y = 0;
-    windows[0].width = 32;
-    windows[0].height = 32;
+    ptrnSizes[0].width = 32;
+    ptrnSizes[0].height = 32;
   
     float x0[TRIANGLE_AMOUNT] = {0.0f, 0.0f,  0.0f,  0.0f,  0.0f};
     float y0[TRIANGLE_AMOUNT] = {0.0f, 0.0f,  0.0f,  0.0f, 32.0f - 10.0f};
@@ -252,7 +252,7 @@ int main ()
 				// before correction test because it corrupts images
 				char filename[256];
 				snprintf(filename, 256, "%i_res.%s", refId + 1, "bmp");
-				rawToImage(pDstTriangle, windows, result_images, 1);
+				rawToImage(pDstTriangle, ptrnSizes, result_images, 1);
 				saveToBmp (32, result_images[0], filename);
 #endif //__NM__        
 				corr = compareImages(pDstTriangle, references[refId], WIDTH_PTRN, HEIGHT_PTRN);
@@ -331,7 +331,7 @@ void cropRectangle(nm32s *triangle, int count)
 }
 
 #ifndef __NM__
-int rawToImage (nm32s* triangles, Rectangle* windows, image_t* images, int count)
+int rawToImage (nm32s* triangles, Size* ptrnSizes, image_t* images, int count)
 {
     
     int i = 0;
@@ -343,8 +343,8 @@ int rawToImage (nm32s* triangles, Rectangle* windows, image_t* images, int count
     
     for (i = 0; i < count; i++)
     {
-        int width = windows[i].width;
-        int height = windows[i].height;
+        int width = ptrnSizes[i].width;
+        int height = ptrnSizes[i].height;
         nm32s pixel_pos = 0;
         nm32s pixel_value = 0;
         
@@ -371,7 +371,7 @@ int rawToImage (nm32s* triangles, Rectangle* windows, image_t* images, int count
             }
         }
         
-        triangle += windows[i].height * windows[i].width;
+        triangle += ptrnSizes[i].height * ptrnSizes[i].width;
 
         // for (dstRow = 0; dstRow < height; dstRow++)
         // {
