@@ -13,6 +13,12 @@ TARGET0   = demo3d-target0
 TARGET1   = demo3d-target1
 HOST      = demo3d-host
 
+ifeq ($(CONFIGURATION),Debug)
+	TARGET_SUFFIX = d
+else
+	TARGET_SUFFIX = 
+endif
+
 VS ?=vs2015
 ALL: $(VS)
 .PHONY = vs2005 vs2015
@@ -45,13 +51,13 @@ run:
 	$(MAKE) -j4 runhost runtarget0  runtarget1 
 
 runhost: $(HOST)
-	bin\$(PLATFORM)\$(CONFIGURATION)\$(HOST)-$(PLATFORM)
+	bin\$(PLATFORM)\$(CONFIGURATION)\$(HOST)-$(PLATFORM)$(TARGET_SUFFIX)
 	
 runtarget0: $(TARGET0) 
-	bin\$(PLATFORM)\$(CONFIGURATION)\$(TARGET0)-$(PLATFORM)
+	bin\$(PLATFORM)\$(CONFIGURATION)\$(TARGET0)-$(PLATFORM)$(TARGET_SUFFIX)
 	
 runtarget1: $(TARGET1) 
-	bin\$(PLATFORM)\$(CONFIGURATION)\$(TARGET1)-$(PLATFORM)
+	bin\$(PLATFORM)\$(CONFIGURATION)\$(TARGET1)-$(PLATFORM)$(TARGET_SUFFIX)
 	
 
 include $(ROOT)/clean.mk

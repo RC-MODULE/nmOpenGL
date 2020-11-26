@@ -6,19 +6,28 @@ include $(ROOT)/global.mk
 
 .SUFFIXES:
 
+PLATFORM  ?= x64
+CONFIGURATION  ?= Release
 
-TARGET0   = demo3d-target0-x86
-TARGET1   = demo3d-target1-x86
-HOST      = demo3d-host-x86
+TARGET0   = demo3d-target0
+TARGET1   = demo3d-target1
+HOST      = demo3d-host
+
+ifeq ($(CONFIGURATION),Debug)
+	TARGET_SUFFIX = d
+else
+	TARGET_SUFFIX = 
+endif
 
 VS ?=vs2015
 ALL: $(VS)
 .PHONY = vs2005 vs2015
 
 debug: $(HOST).vcxproj $(TARGET0).vcxproj $(TARGET1).vcxproj
-	"$(VS140COMNTOOLS)vsvars32" && msbuild $(HOST).vcxproj    /p:Configuration=Debug
-	"$(VS140COMNTOOLS)vsvars32" && msbuild $(TARGET0).vcxproj /p:Configuration=Debug
-	"$(VS140COMNTOOLS)vsvars32" && msbuild $(TARGET1).vcxproj /p:Configuration=Debug
+	"$(VS140COMNTOOLS)vsvars32" && msbuild $(HOST).vcxproj    /p:Configuration=Debug /p:Platform=$(PLATFORM)
+	"$(VS140COMNTOOLS)vsvars32" && msbuild $(TARGET0).vcxproj /p:Configuration=Debug /p:Platform=$(PLATFORM)
+	"$(VS140COMNTOOLS)vsvars32" && msbuild $(TARGET1).vcxproj /p:Configuration=Debug /p:Platform=$(PLATFORM)
+
 $(TARGET0) $(TARGET1) $(HOST): $(VS)
 	
 vs2005: $(HOST).vcproj $(TARGET0).vcproj $(TARGET1).vcproj
@@ -28,9 +37,12 @@ vs2005: $(HOST).vcproj $(TARGET0).vcproj $(TARGET1).vcproj
 	
 
 vs2015:	$(HOST).vcxproj $(TARGET0).vcxproj $(TARGET1).vcxproj
-	"$(VS140COMNTOOLS)vsvars32" && msbuild $(HOST).vcxproj    /p:Configuration=Release
-	"$(VS140COMNTOOLS)vsvars32" && msbuild $(TARGET0).vcxproj /p:Configuration=Release
-	"$(VS140COMNTOOLS)vsvars32" && msbuild $(TARGET1).vcxproj /p:Configuration=Release
+	"$(VS140COMNTOOLS)vsvars32" && msbuild $(HOST).vcxproj    /p:Configuration=$(CONFIGURATION)    /p:Platform=$(PLATFORM)
+	"$(VS140COMNTOOLS)vsvars32" && msbuild $(TARGET0).vcxproj /p:Configuration=$(CONFIGURATION)    /p:Platform=$(PLATFORM)
+	"$(VS140COMNTOOLS)vsvars32" && msbuild $(TARGET1).vcxproj /p:Configuration=$(CONFIGURATION)    /p:Platform=$(PLATFORM)
+#	"$(VS140COMNTOOLS)vsvars32" && msbuild $(HOST).vcxproj    /p:Configuration=Release    /p:Platform=$(PLATFORM)
+#	"$(VS140COMNTOOLS)vsvars32" && msbuild $(TARGET0).vcxproj /p:Configuration=Release    /p:Platform=$(PLATFORM)
+#	"$(VS140COMNTOOLS)vsvars32" && msbuild $(TARGET1).vcxproj /p:Configuration=Release    /p:Platform=$(PLATFORM)
 
 $(HOST).vcproj $(TARGET0).vcproj $(TARGET1).vcproj:
 	premake5 vs2005
@@ -39,28 +51,29 @@ $(HOST).vcxproj $(TARGET0).vcxproj $(TARGET1).vcxproj:
 	premake5 vs2015
 
 
-run: 
+run: $(HOST) $(TARGET0) $(TARGET1)
 	$(MAKE) -j4 runhost runtarget0  runtarget1 
+	
 drun: 
 	$(MAKE) -j4 runhostd runtarget0d  runtarget1d 
-
+	
 runhost: $(HOST)
-	bin\Release\$(HOST)
+	bin\$(PLATFORM)\$(CONFIGURATION)\$(HOST)-$(PLATFORM)$(TARGET_SUFFIX)
 	
 runtarget0: $(TARGET0) 
-	bin\Release\$(TARGET0)
+	bin\$(PLATFORM)\$(CONFIGURATION)\$(TARGET0)-$(PLATFORM)$(TARGET_SUFFIX)
 	
 runtarget1: $(TARGET1) 
-	bin\Release\$(TARGET1)
-
+	bin\$(PLATFORM)\$(CONFIGURATION)\$(TARGET1)-$(PLATFORM)$(TARGET_SUFFIX)
+	
 runhostd: $(HOST)
-	bin\debug\$(HOST)
+	bin\$(PLATFORM)\debug\$(HOST)-$(PLATFORM)d
 	
 runtarget0d: $(TARGET0) 
-	bin\debug\$(TARGET0)
+	bin\$(PLATFORM)\debug\$(TARGET0)-$(PLATFORM)d
 	
 runtarget1d: $(TARGET1) 
-	bin\debug\$(TARGET1)
+	bin\$(PLATFORM)\debug\$(TARGET1)-$(PLATFORM)d
 	
 libs:
 	
