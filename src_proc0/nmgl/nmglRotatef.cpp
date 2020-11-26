@@ -1,7 +1,7 @@
 #include "demo3d_nm0.h"
 #include "nmpp.h"
 #include "nmgl.h"
-#include "nmgl_data0.h"
+
 #include <math.h>
 
 #pragma code_section ".text_nmgl"
@@ -37,7 +37,11 @@ void nmglRotatef(NMGLfloat angle, NMGLfloat x, NMGLfloat y, NMGLfloat z) {
 	temp.matr[2*4+1] = ((1-cos)*y*z - x*sin);
 	temp.matr[2*4+2] = (cos + z*z*(1-cos));
 
-	mat4nm32f* current = cntxt.currentMatrixStack->top();
+	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
+	mat4nm32f* current = cntxt->currentMatrixStack->top();
 	mul_mat4nm32f_v4nm32f(current, (v4nm32f*)&temp, (v4nm32f*)current, 4);
 	
+	if (cntxt->currentMatrixStack->type == NMGL_MODELVIEW_MATRIX) {
+		reverseMatrix3x3in4x4(cntxt->modelviewMatrixStack.top(), &cntxt->normalMatrix);
+	}
 }

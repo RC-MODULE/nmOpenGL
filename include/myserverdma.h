@@ -1,5 +1,6 @@
 #ifndef __MY_SERVER_DMA_H__
 #define __MY_SERVER_DMA_H__ 
+#include "time.h"
 
 #define MSD_DMA 1
 #define MSD_DMA_2D 2
@@ -17,22 +18,18 @@ struct MyDmaTask {
 	int dstStride;
 	int type;
 	msdCallback callback;
+	clock_t t0;
 };
 
-#ifdef __NM__
+#ifdef __GNUC__
 inline void msdStartCopy(MyDmaTask* dmaCopy) {
-	switch (dmaCopy->type)
-	{
-	case MSD_DMA:
+	if (dmaCopy->type == MSD_DMA) {
 		halDmaStartA(dmaCopy->src, dmaCopy->dst, dmaCopy->size);
-		break;
-	case MSD_DMA_2D:
+	}
+	else {
 		halDma2D_StartA(dmaCopy->src, dmaCopy->dst,
 			dmaCopy->size, dmaCopy->width,
 			dmaCopy->srcStride, dmaCopy->dstStride);
-		break;
-	default:
-		break;
 	}
 }
 #else
@@ -53,39 +50,39 @@ inline void msdStartCopy(MyDmaTask* dmaCopy) {
 		break;
 	}
 }
-#endif // __NM__
+#endif // __GNUC__
 
 
 
 template <int BUFFER_SIZE, int NUM_CHANNELS> class MyDmaServer {
-	msdCallback originCallback;												// адрес преустановленного обработчика DMA   
+	msdCallback originCallback;												// Р°РґСЂРµСЃ РїСЂРµСѓСЃС‚Р°РЅРѕРІР»РµРЅРЅРѕРіРѕ РѕР±СЂР°Р±РѕС‚С‡РёРєР° DMA   
 public:
-	bool	isWorking;														// флаг сервер находится в режиме исполнения DMA задач
-	HalRingBufferConnector<MyDmaTask, BUFFER_SIZE>  channel[NUM_CHANNELS];		// DMA каналы 
-	HalRingBufferConnector<MyDmaTask, BUFFER_SIZE>* currentChannel;			// текущий ДМА канал
-	MyDmaTask* currentTask;													// Указатель на текущую задчу. По нему в callback функции можно , например, выставить статус завершенной
-																			// Иниализация кольцевых буферов DMA задач
-																			// Иниализация DMA , сохранение обработчика ПДП
+	bool	isWorking;														// С„Р»Р°Рі СЃРµСЂРІРµСЂ РЅР°С…РѕРґРёС‚СЃСЏ РІ СЂРµР¶РёРјРµ РёСЃРїРѕР»РЅРµРЅРёСЏ DMA Р·Р°РґР°С‡
+	HalRingBufferConnector<MyDmaTask, BUFFER_SIZE>  channel[NUM_CHANNELS];		// DMA РєР°РЅР°Р»С‹ 
+	HalRingBufferConnector<MyDmaTask, BUFFER_SIZE>* currentChannel;			// С‚РµРєСѓС‰РёР№ Р”РњРђ РєР°РЅР°Р»
+	MyDmaTask* currentTask;													// РЈРєР°Р·Р°С‚РµР»СЊ РЅР° С‚РµРєСѓС‰СѓСЋ Р·Р°РґС‡Сѓ. РџРѕ РЅРµРјСѓ РІ callback С„СѓРЅРєС†РёРё РјРѕР¶РЅРѕ , РЅР°РїСЂРёРјРµСЂ, РІС‹СЃС‚Р°РІРёС‚СЊ СЃС‚Р°С‚СѓСЃ Р·Р°РІРµСЂС€РµРЅРЅРѕР№
+																			// РРЅРёР°Р»РёР·Р°С†РёСЏ РєРѕР»СЊС†РµРІС‹С… Р±СѓС„РµСЂРѕРІ DMA Р·Р°РґР°С‡
+																			// РРЅРёР°Р»РёР·Р°С†РёСЏ DMA , СЃРѕС…СЂР°РЅРµРЅРёРµ РѕР±СЂР°Р±РѕС‚С‡РёРєР° РџР”Рџ
 	void init(msdCallback dmaCallback) {
 		
 		isWorking = false;
 		for (int ch = 0; ch < NUM_CHANNELS; ch++) {
-			channel[ch].create();											// выделяем кольцевой буфер задач
+			channel[ch].create();											// РІС‹РґРµР»СЏРµРј РєРѕР»СЊС†РµРІРѕР№ Р±СѓС„РµСЂ Р·Р°РґР°С‡
 		}
-		halDmaInit();														// инициализация ПДП (halDmaInit halDmaInitC halDmaInitA halDmaInitM ... )
-																			//originCallback=halDmaGetCallback();									// сохраняем текущий обработчик ПДП
-		halDmaSetCallback(dmaCallback);								// назначаем новый callback (обработчик ПДП)
+		halDmaInit();														// РёРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РџР”Рџ (halDmaInit halDmaInitC halDmaInitA halDmaInitM ... )
+																			//originCallback=halDmaGetCallback();									// СЃРѕС…СЂР°РЅСЏРµРј С‚РµРєСѓС‰РёР№ РѕР±СЂР°Р±РѕС‚С‡РёРє РџР”Рџ
+		halDmaSetCallback(dmaCallback);								// РЅР°Р·РЅР°С‡Р°РµРј РЅРѕРІС‹Р№ callback (РѕР±СЂР°Р±РѕС‚С‡РёРє РџР”Рџ)
 	}
 
 	~MyDmaServer() {
-		halDmaSetCallback(originCallback);									// Восстановлиям исходный обработчик ПДП
+		halDmaSetCallback(originCallback);									// Р’РѕСЃСЃС‚Р°РЅРѕРІР»РёСЏРј РёСЃС…РѕРґРЅС‹Р№ РѕР±СЂР°Р±РѕС‚С‡РёРє РџР”Рџ
 	}
 
-	// возвращает адрес кольцевого буфера канала для присоединения DMA клиентом 
+	// РІРѕР·РІСЂР°С‰Р°РµС‚ Р°РґСЂРµСЃ РєРѕР»СЊС†РµРІРѕРіРѕ Р±СѓС„РµСЂР° РєР°РЅР°Р»Р° РґР»СЏ РїСЂРёСЃРѕРµРґРёРЅРµРЅРёСЏ DMA РєР»РёРµРЅС‚РѕРј 
 	HalRingBufferData<MyDmaTask, BUFFER_SIZE>* getChannelBuffer(int idxChannel) {
 		return channel[idxChannel].container;
 	}
-	// возвращает статус , что все задачи во всех каналах выполнены
+	// РІРѕР·РІСЂР°С‰Р°РµС‚ СЃС‚Р°С‚СѓСЃ , С‡С‚Рѕ РІСЃРµ Р·Р°РґР°С‡Рё РІРѕ РІСЃРµС… РєР°РЅР°Р»Р°С… РІС‹РїРѕР»РЅРµРЅС‹
 	inline bool isJobCompleted() {
 		for (int i = 0; i < NUM_CHANNELS; i++) {
 			if (!isChannelCompleted(i))
@@ -94,16 +91,16 @@ public:
 		return true;
 	}
 
-	// возвращает статус , что все задачи в данном канале выполнены
+	// РІРѕР·РІСЂР°С‰Р°РµС‚ СЃС‚Р°С‚СѓСЃ , С‡С‚Рѕ РІСЃРµ Р·Р°РґР°С‡Рё РІ РґР°РЅРЅРѕРј РєР°РЅР°Р»Рµ РІС‹РїРѕР»РЅРµРЅС‹
 	inline bool isChannelCompleted(int ch) {
 		return channel[ch].isEmpty();
 	}
 
 
-	// здесь установливается порядок обхода задач, (например, стратегия где задачи выибираются по одной поочередно из каждого канала. В данном примере важно чтобы NUM_CHANNELS - степерь двойка
+	// Р·РґРµСЃСЊ СѓСЃС‚Р°РЅРѕРІР»РёРІР°РµС‚СЃСЏ РїРѕСЂСЏРґРѕРє РѕР±С…РѕРґР° Р·Р°РґР°С‡, (РЅР°РїСЂРёРјРµСЂ, СЃС‚СЂР°С‚РµРіРёСЏ РіРґРµ Р·Р°РґР°С‡Рё РІС‹РёР±РёСЂР°СЋС‚СЃСЏ РїРѕ РѕРґРЅРѕР№ РїРѕРѕС‡РµСЂРµРґРЅРѕ РёР· РєР°Р¶РґРѕРіРѕ РєР°РЅР°Р»Р°. Р’ РґР°РЅРЅРѕРј РїСЂРёРјРµСЂРµ РІР°Р¶РЅРѕ С‡С‚РѕР±С‹ NUM_CHANNELS - СЃС‚РµРїРµСЂСЊ РґРІРѕР№РєР°
 	inline void startNextTask() {
-#ifdef __NM__
-		isWorking = true;					// флаг что сервер ишачит
+#ifdef __GNUC__
+		isWorking = true;					// С„Р»Р°Рі С‡С‚Рѕ СЃРµСЂРІРµСЂ СЂР°Р±РѕС‚Р°РµС‚
 		for (int i = 0; i < NUM_CHANNELS; i++) {
 			currentChannel = &channel[i];
 			if (!currentChannel->isEmpty()) {
@@ -111,7 +108,7 @@ public:
 				return;
 			}
 		}
-		isWorking = false;				// флаг что сервер чили
+		isWorking = false;				// С„Р»Р°Рі С‡С‚Рѕ СЃРµСЂРІРµСЂ СЃС‚РѕРёС‚
 #else
 		for (int i = 0; i < NUM_CHANNELS; i++) {
 			currentChannel = &channel[i];
@@ -127,9 +124,9 @@ public:
 		}
 #endif
 	}
-	// Запустить все задачи на на исполнение 
+	// Р—Р°РїСѓСЃС‚РёС‚СЊ РІСЃРµ Р·Р°РґР°С‡Рё РЅР° РЅР° РёСЃРїРѕР»РЅРµРЅРёРµ 
 	void startJob() {
-		if (isWorking) {						// Не отвелекай ,  уже работаю 
+		if (isWorking) {						// РќРµ РѕС‚РІРµР»РµРєР°Р№ ,  СѓР¶Рµ СЂР°Р±РѕС‚Р°СЋ 
 			return;
 		}
 		startNextTask();

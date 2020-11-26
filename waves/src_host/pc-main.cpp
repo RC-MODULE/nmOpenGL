@@ -71,7 +71,9 @@ int main()
 #if defined(PROFILER0) || defined(PROFILER1)
 		if (counter > 8 && flag) {
 #ifdef PROFILER0
-			halProfilerPrint2xml(".main0.map", 0, "../perf0.xml");
+			halProfilerPrint2xml(".main0.map", 0, XML_NAME);
+			return 0;
+			
 #endif // PROFILER0
 #ifdef PROFILER1
 			halProfilerPrint2xml(".main1.map", 1, "../perf1.xml");

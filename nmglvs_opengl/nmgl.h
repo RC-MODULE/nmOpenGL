@@ -18,6 +18,7 @@
 
 #define setHeap(a)
 
+#define PROFILER_SIZE()	
 
 struct Models {
 	char* sphere = "../../models/sphere_31.stl";
@@ -37,47 +38,111 @@ extern "C" {
 		float* normalVec4,
 		float scale
 	);
-};
+	void cnvTrianglesToLines(float* srcVertices, float* dstVertices, int size);
+}; 
 
 
-#define nmglBegin				glBegin	
-#define nmglEnd					glEnd
-#define nmglVertex3fv			glVertex3fv
-#define nmglVertex3f			glVertex3f
-#define nmglNormal3fv			glNormal3fv
-#define nmglNormal3f			glNormal3f
-#define nmglRotatef				glRotatef		
-#define nmglScalef				glScalef		
-#define nmglTranslatef			glTranslatef
-#define nmglOrthof 				glOrtho	
-#define nmglFrustumf 			glFrustum
-#define nmglFinish 				glFinish 		
-#define nmglFrontFace 			glFrontFace 
-#define nmglCullFace 			glCullFace 
-#define nmglDepthFunc 			glDepthFunc 
-#define nmglDepthMask 			glDepthMask 
-#define nmglDepthRange 			glDepthRange 
-#define nmglClearColor			glClearColor
-#define nmglClearDepthf			glClearDepthf
-#define nmglGetError			glGetError
-#define nmglGetFloatv			glGetFloatv
-#define nmglEnable				glEnable				
-#define nmglDisable				glDisable				
-#define nmglMatrixMode			glMatrixMode			
-#define nmglPushMatrix			glPushMatrix			
-#define nmglPopMatrix			glPopMatrix			
-#define nmglLoadIdentity		glLoadIdentity		
-#define nmglViewport			glViewport			
-#define nmglClear				glClear				
-#define nmglLightf				glLightf				
-#define nmglLightfv				glLightfv				
-#define nmglMaterialf			glMaterialf			
-#define nmglMaterialfv			glMaterialfv			
-#define nmglEnableClientState	glEnableClientState	
-#define nmglDisableClientState	glDisableClientState	
-#define nmglVertexPointer		glVertexPointer		
-#define nmglNormalPointer		glNormalPointer		
-#define nmglColorPointer		glColorPointer		
-#define nmglDrawArrays			glDrawArrays			
+#define nmglActiveTexture                              glActiveTexture 
+#define nmglAlphaFunc                                  glAlphaFunc 
+#define nmglBegin                                      glBegin
+#define nmglBindTexture                                glBindTexture 
+#define nmglBitmap                                     glBitmap 
+#define nmglBlendFunc                                  glBlendFunc 
+#define nmglCallLists                                  glCallLists 
+#define nmglClear                                      glClear 
+#define nmglClearColor                                 glClearColor 
+#define nmglClearDepthf                                glClearDepthf 
+#define nmglClearStencil                               glClearStencil 
+#define nmglClientActiveTexture                        glClientActiveTexture 
+#define nmglColor4f                                    glColor4f 
+#define nmglColor4fv                                   glColor4fv 
+#define nmglColor4ub                                   glColor4ub 
+#define nmglColorMask                                  glColorMask 
+#define nmglColorPointer                               glColorPointer 
+#define nmglColorSubTableEXT                           glColorSubTableEXT 
+#define nmglColorTableEXT                              glColorTableEXT 
+#define nmglCopyPixels                                 glCopyPixels 
+#define nmglCullFace                                   glCullFace 
+#define nmglDepthFunc                                  glDepthFunc 
+#define nmglDepthMask                                  glDepthMask 
+#define nmglDepthRangef                                glDepthRangef 
+#define nmglDisable                                    glDisable 
+#define nmglDisableClientState                         glDisableClientState 
+#define nmglDrawArrays                                 glDrawArrays 
+#define nmglDrawElements                               glDrawElements 
+#define nmglDrawPixels                                 glDrawPixels 
+#define nmglEnable                                     glEnable 
+#define nmglEnableClientState                          glEnableClientState 
+#define nmglEnd                                        glEnd 
+#define nmglEndList                                    glEndList 
+#define nmglFinish                                     glFinish 
+#define nmglFlush                                      glFlush 
+#define nmglFrontFace                                  glFrontFace 
+#define nmglFrustumf                                   glFrustum
+#define nmglGenLists                                   glGenLists 
+#define nmglGenTextures                                glGenTextures 
+#define nmglGetError                                   glGetError 
+#define nmglGetBooleanv                                glGetBooleanv 
+#define nmglGetColorTableEXT                           glGetColorTableEXT 
+#define nmglGetColorTableParameterivEXT                glGetColorTableParameterivEXT 
+#define nmglGetFloatv                                  glGetFloatv 
+#define nmglGetIntegerv                                glGetIntegerv 
+#define nmglGetLightfv                                 glGetLightfv 
+#define nmglGetMaterialfv                              glGetMaterialfv 
+#define nmglGetPointerv                                glGetPointerv 
+#define nmglGetPolygonStipple                          glGetPolygonStipple 
+#define nmglGetTexEnvfv                                glGetTexEnvfv 
+#define nmglGetTexEnviv                                glGetTexEnviv 
+#define nmglGetTexParameteriv                          glGetTexParameteriv 
+#define nmglGetString                                  glGetString 
+#define nmglHint                                       glHint 
+#define nmglIsEnabled                                  glIsEnabled 
+#define nmglLightfv                                    glLightfv 
+#define nmglLightModelfv                               glLightModelfv 
+#define nmglLineStipple                                glLineStipple 
+#define nmglLineWidth                                  glLineWidth 
+#define nmglListBase                                   glListBase 
+#define nmglLoadIdentity                               glLoadIdentity 
+#define nmglLoadMatrixf                                glLoadMatrixf 
+#define nmglMaterialf                                  glMaterialf 
+#define nmglMaterialfv                                 glMaterialfv 
+#define nmglMatrixMode                                 glMatrixMode 
+#define nmglMultMatrixf                                glMultMatrixf 
+#define nmglMultiTexCoord2f                            glMultiTexCoord2f 
+#define nmglMultiTexCoord2fv                           glMultiTexCoord2fv 
+#define nmglNewList                                    glNewList 
+#define nmglNormal3f                                   glNormal3f 
+#define nmglNormal3fv                                  glNormal3fv 
+#define nmglNormalPointer                              glNormalPointer 
+#define nmglNormalPointerNM                            glNormalPointerNM 
+#define nmglOrthof                                     glOrtho
+#define nmglPixelStorei                                glPixelStorei 
+#define nmglPointSize                                  glPointSize 
+#define nmglPolygonOffset                              glPolygonOffset 
+#define nmglPolygonStipple                             glPolygonStipple
+#define nmglPopMatrix                                  glPopMatrix 
+#define nmglPushMatrix                                 glPushMatrix 
+#define nmglRasterPos3f                                glRasterPos3f 
+#define nmglReadPixels                                 glReadPixels 
+#define nmglRotatef                                    glRotatef 
+#define nmglScalef                                     glScalef 
+#define nmglScissor                                    glScissor 
+#define nmglShadeModel                                 glShadeModel 
+#define nmglStencilFunc                                glStencilFunc 
+#define nmglStencilMask                                glStencilMask 
+#define nmglStencilOp                                  glStencilOp 
+#define nmglTexCoordPointer                            glTexCoordPointer 
+#define nmglTexEnvfv                                   glTexEnvfv 
+#define nmglTexEnvi                                    glTexEnvi 
+#define nmglTexImage2D                                 glTexImage2D 
+#define nmglTexParameteri                              glTexParameteri 
+#define nmglTexSubImage2D                              glTexSubImage2D 
+#define nmglTranslatef                                 glTranslatef 
+#define nmglVertex2f                                   glVertex2f 
+#define nmglVertex2fv                                  glVertex2fv 
+#define nmglVertex3f                                   glVertex3f 
+#define nmglVertex3fv                                  glVertex3fv 
+#define nmglVertexPointer                              glVertexPointer 
+#define nmglViewport                                   glViewport 
 
 #endif

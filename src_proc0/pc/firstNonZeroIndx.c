@@ -17,18 +17,19 @@
 //! \endif
 //!
 //------------------------------------------------------------------------
-int firstNonZeroIndx_32s(int* pSrcVec, int nSize)
-{
-	#ifdef RPC
-	//RPC_HOST_PPI(nmppsAbs1_4s,pSrcVec,pDstVec,nSize);
-	#else
+#ifdef __NM__
+extern "C" {
+#endif
+	int firstNonZeroIndx_32s(int* pSrcVec, int nSize)
+	{
+		int i;
+		for (i = 0; i < nSize; i++) {
+			if (pSrcVec[i] != 0)
+				return i;
+		}
+		return -1;
 
-	int i;
-	for(i=0;i<nSize;i++){
-		if (pSrcVec[i]!=0)
-			return i;
 	}
-	return -1;
-
-	#endif
+#ifdef __NM__
 }
+#endif

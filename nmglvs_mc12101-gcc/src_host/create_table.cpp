@@ -12,10 +12,10 @@ void sum(nm8s* src, nm32s* temp, nm32s* accTemp, int nOffSets_X, int sizePtrn)
 };
 
 
-void create_tabl_dydx(nm8s* srcPatterns,int* dydx, int width, int height){
+void create_tabl_dydx(unsigned char* srcPatterns,int* dydx, int width, int height){
 	int sizePtrn = width*height;
 	int nPtrn = AMOUNT_ANGLES/2;
-	nmppsSet_32s(dydx, 0, 2*width*height);
+	nmppsSet_32s(dydx, 0, 2*width*height + 2 * width);
 
 //---------------dydx--------------------
 	//заполнение 0..31 строки
@@ -25,7 +25,7 @@ void create_tabl_dydx(nm8s* srcPatterns,int* dydx, int width, int height){
 //высчитывание и запись в таблицу dydx смещения относительно начала паттернов
 //----------первая-и-вторая-четверть------------------------------------  
 	nmppsSet_32s((nm32s*)accTemp, width - 1,sizePtrn);							//сдвиг смещения паттернов до x0=0
-	for (i=1;i<nPtrn;i++){
+	for (i=2;i<nPtrn;i++){
 		nm8s* src = nmppsAddr_8s((nm8s*)srcPatterns,sizePtrn*(i*OFFSETS + width-1));
 		sum(src, temp, accTemp, OFFSETS, sizePtrn);
 	}
@@ -36,7 +36,7 @@ void create_tabl_dydx(nm8s* srcPatterns,int* dydx, int width, int height){
 	}
 
 	nmppsSet_32s((nm32s*)accTemp, nPtrn*OFFSETS, sizePtrn);							//сдвиг смещения паттернов до x0=0
-	for (i = 1; i<nPtrn; i++)
+	for (i = 2; i<nPtrn; i++)
 	{
 		nm8s* src = nmppsAddr_8s((nm8s*)srcPatterns, sizePtrn*((i+ nPtrn)*OFFSETS));
 		sum(src, temp, accTemp, OFFSETS, sizePtrn);

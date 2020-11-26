@@ -1,238 +1,265 @@
-#include "nmpp.h"
-#include <cmath>
-#include "demo3d_nm1.h"
+#include "pattern.h"
+#define _USE_MATH_DEFINES
+#include "math.h"
+#include "stdio.h"
+#include "windows.h"
+#include <iostream>
+#include <fstream>
+using namespace std;
 
-#define PI 3.14159265359
+#define abs(a) (((a) < 0) ? -(a) : (a))
 
-enum FillMode {
-	RIGHT,
-	LEFT,
-	LINE
-};
+static void setPixel(unsigned char* dst, int x, int y, unsigned char color);
+//static void fillRow(unsigned char* dst, int x1, int x2, int y, unsigned char color);
+static void drawLine(unsigned char* dst, int x1, int y1, int x2, int y2, unsigned char color);
+static void fillSide(unsigned char* dst, int x1, int y1, int x2, int y2, unsigned char color, int leftSide);
+static void fillCircle(unsigned char* dst, int x0, int y0, int radius, unsigned char color);
+static void createLineTable(int* table);
+static void createFillTable(int* table);
 
-struct Point {
-	int x;
-	int y;
-};
 
-struct Line {
-	Point p0;
-	Point p1;
-};
+void fillPtrnsInit(unsigned char* dst, int* table_dydx, unsigned char color) {
+	int cntRight = 0;
+	int cntLeft = FILL_PATTERNS_AMOUNT / 2;
+	const int size = WIDTH_PTRN * HEIGHT_PTRN;
 
-void fill(nm8s* dst, int startX, int width, int y, int fillColor, FillMode fillMode) {
-	int xst;
-	switch (fillMode)
-	{
-	case RIGHT:
-		xst = MAX(startX, 0);
-		for (int xTmp = xst; xTmp<width; xTmp++)
-			dst[y*width + xTmp] = fillColor;
-		break;
-	case LEFT:
-		xst = MIN(startX + 1, width);
-		for (int xTmp = 0; xTmp < xst; xTmp++)
-			dst[y*width + xTmp] = fillColor;
-		break;
-	case LINE:
-		xst = MAX(startX, 0);
-		xst = MIN(xst, width);
-		dst[y*width + xst] = fillColor;
-		break;
-	default:
-		break;
+
+	for (int i = 0; i < FILL_PATTERNS_AMOUNT * size; i++) {
+		dst[i] = 0;
 	}
+
+	int r = max(WIDTH_PTRN, HEIGHT_PTRN);
+	float stepA = M_PI / AMOUNT_ANGLES;
+	for (float angle = 0; angle < AMOUNT_ANGLES/4; angle++) {
+		for (int off = 0; off < OFFSETS; off++, cntRight++, cntLeft++) {
+			if (angle == 0) {
+				for (int x = off; x < WIDTH_PTRN; x++) {
+					drawLine(dst + cntRight * size, x, 0, x, HEIGHT_PTRN, color);
+				}
+				for (int x = 0; x < off; x++) {
+					drawLine(dst + cntLeft * size, x, 0, x, HEIGHT_PTRN, color);
+				}
+			}
+			else {
+				fillSide(dst + cntRight * size, off, 0, off + r * cos(angle * stepA), r * sin(angle * stepA), color, 1);
+				fillSide(dst + cntLeft  * size, off, 0, off + r * cos(angle * stepA), r * sin(angle * stepA), color, 0);
+			}
+		}
+	}
+	for (float angle = AMOUNT_ANGLES / 4; angle < AMOUNT_ANGLES / 2; angle++) {
+		for (int off = 0; off < OFFSETS; off++, cntRight++, cntLeft++) {
+			fillSide(dst + cntRight * size, off, 0, off + r * cos(angle * stepA), r * sin(angle * stepA), color, 0);
+			fillSide(dst + cntLeft  * size, off, 0, off + r * cos(angle * stepA), r * sin(angle * stepA), color, 1);
+		}
+	}
+
+	for (float angle = AMOUNT_ANGLES / 2; angle < 3 * AMOUNT_ANGLES / 4; angle++) {
+		for (int off = 0; off < OFFSETS; off++, cntRight++, cntLeft++) {
+			if (angle == AMOUNT_ANGLES/2) {
+				for (int x = off; x < WIDTH_PTRN; x++) {
+					drawLine(dst + cntRight * size, x, 0, x, HEIGHT_PTRN, color);
+				}
+				for (int x = 0; x < off; x++) {
+					drawLine(dst + cntLeft * size, x, 0, x, HEIGHT_PTRN, color);
+				}
+			}
+			else {
+				fillSide(dst + cntRight * size, off, 0, off + r * cos(angle * stepA), r * sin(angle * stepA), color, 0);
+				fillSide(dst + cntLeft  * size, off, 0, off + r * cos(angle * stepA), r * sin(angle * stepA), color, 1);
+			}
+			
+		}
+	}
+
+	for (float angle = 3 * AMOUNT_ANGLES / 4; angle < AMOUNT_ANGLES; angle++) {
+		for (int off = 0; off < OFFSETS; off++, cntRight++, cntLeft++) {
+			fillSide(dst + cntRight * size, off, 0, off + r * cos(angle * stepA), r * sin(angle * stepA), color, 0);
+			fillSide(dst + cntLeft  * size, off, 0, off + r * cos(angle * stepA), r * sin(angle * stepA), color, 1);
+		}
+	}
+	
+	//create_tabl_dydx(dst, table_dydx, WIDTH_PTRN, HEIGHT_PTRN);
+	createFillTable(table_dydx);
 }
 
-//Bresenham's line algorithm
-void drawPattern(Line* line,
-	nm8s* dst,
-	int width,
-	int height,	
-	int fillColor,
-	FillMode fillMode) 
-{
-	int deltaX = line->p1.x - line->p0.x;
-	int deltaY = line->p1.y - line->p0.y;
-	int dx = (deltaX > 0) ? 1 : -1;
-	int dy = (deltaY > 0) ? 1 : -1;
-	double k, err;
-	if (abs(deltaX) >= abs(deltaY)) {
-		k = 2 * (double)ABS(deltaY) / ABS(deltaX);
-		err = 0;
-		int y = line->p0.y;
-		for (int x = line->p0.x; x != line->p1.x; x += dx) {
-			if (err > 1) {
-				y += dy;
-				err -= 2;
-			}
-			err += k;
-			fill(dst, x, width, y, fillColor, fillMode);
+static void createFillTable(int* table) {
+	for (int y = 0; y < HEIGHT_TABLE; y++) {
+		for (int x = -WIDTH_TABLE / 2; x < 0; x++) {
+			float number = floor(atan2(y, x) * AMOUNT_ANGLES / M_PI);
+			table[y * WIDTH_TABLE + x + WIDTH_TABLE / 2] = number * OFFSETS;
+		}
+		for (int x = 0; x < WIDTH_TABLE / 2; x++) {
+			float number = ceil(atan2(y, x) * AMOUNT_ANGLES / M_PI);
+			table[y * WIDTH_TABLE + x + WIDTH_TABLE / 2] = number * OFFSETS;
 		}
 	}
-	else {
-		k = 2 * (double)ABS(deltaX) / ABS(deltaY);
-		err = 0;
-		int x = line->p0.x;
-		for (int y = line->p0.y; y != line->p1.y; y += dy) {
-			if (err > 1) {
-				x += dx;
-				err -= 2;
-			}
-			err += k;
-			fill(dst, x, width, y, fillColor, fillMode);
-		}
-	}
+	
 }
 
-/*void drawPattern(Point* point,
-	int angle,
-	nm8s* dst,
-	int width,
-	int height,
-	int fillColor,
-	FillMode fillMode)
-{
-	Line line;
-	double length = sqrt(width * width + height * height);
-	double a = angle * PI / 180;
-	line.p0.x = point->x;
-	line.p0.y = point->y;
-	line.p1.x = round(length * cos(a) + point->x);
-	line.p1.y = round(length * sin(a) + point->y);
-	int deltaX = line.p1.x - line.p0.x;
-	int deltaY = line.p1.y - line.p0.y;
-	int dx = (deltaX > 0) ? 1 : -1;
-	int dy = (deltaY > 0) ? 1 : -1;
-	double k, err;
-	if (abs(deltaX) >= abs(deltaY)) {
-		line.p1.x = MAX(0, line.p1.x);
-		line.p1.x = MIN(line.p1.x, width);
-		k = 2 * (double)ABS(deltaY) / ABS(deltaX);
-		err = 0;
-		int y = line.p0.y;
-		int xst;
-		for (int x = line.p0.x; x != line.p1.x; x += dx) {
-			if (err > 1) {
-				y += dy;
-				err -= 2;
-			}
-			err += k;
-			fill(dst, x, width, y, fillColor, fillMode);
-		}
-		if (angle >= 135 && fillMode == RIGHT || 
-			angle <= 45  && fillMode == LEFT) {
-			for (int i = y * width; i < width * height; i++) {
-				dst[i] = fillColor;
-			}
-		}
-	}
-	else {
-		line.p1.y = MAX(0, line.p1.y);
-		line.p1.y = MIN(line.p1.y, width);
-		k = 2 * (double)ABS(deltaX) / ABS(deltaY);
-		err = 0;
-		int x = line.p0.x;
-		int xst;
-		for (int y = line.p0.y; y != line.p1.y; y += dy) {
-			if (err > 1) {
-				x += dx;
-				err -= 2;
-			}
-			err += k;
-			fill(dst, x, width, y, fillColor, fillMode);
-		}
-	}
-}*/
-
-void fillPattern(nm8s* pDstSource,int width, int height)
-{
-	int x=0;
-	int y=0;
-	int size = width*height;		//size of one pattern
-	int nOffSets_X = OFFSETS;
-	int color = 1;
+void linePtrnsInit(unsigned char* dst, int* table, unsigned char color) {
 	int cnt = 0;
-	Line line;
-	//Point point;
-	FillMode mode[2] = { RIGHT, LEFT };
+	const int size = WIDTH_PTRN * HEIGHT_PTRN;
+	for (int i = 0; i < LINE_PATTERNS_AMOUNT * size; i++) {
+		dst[i] = 0;
+	}
+	float stepA = M_PI / AMOUNT_ANGLES;
+	int r = 2 * max(WIDTH_PTRN, HEIGHT_PTRN);
+	for (float angle = 0; angle < AMOUNT_ANGLES / 2; angle++, cnt++) {
+		drawLine(dst + cnt * size, 0, 0, r * cos(angle * stepA), r * sin(angle * stepA), color);
+	}
 
-	/*for (int angle = 180; angle > 0; angle--) {
-		for (int i = 0; i < OFFSETS; i++) {
-			nm8s* dsti = nmppsAddr_8s(pDstSource, cnt++ * size);
-			point.x = i;
-			point.y = 0;
-			drawPattern(&point, angle, (nm8s*)dsti, width, height, color, RIGHT);
+	for (float angle = AMOUNT_ANGLES / 2; angle < AMOUNT_ANGLES; angle++, cnt++) {
+		drawLine(dst + cnt * size, WIDTH_PTRN, 0, WIDTH_PTRN - 1 + r * cos(angle * stepA), r * sin(angle * stepA), color);
+	}
+
+	createLineTable(table);
+	
+}
+
+
+static void createLineTable(int* table) {
+	for (int i = 0; i < SIZE_TABLE; i++) {
+		table[i] = 0;
+	}
+	for (int y = 0; y < HEIGHT_TABLE; y++) {
+		for (int x = -WIDTH_TABLE / 2; x < WIDTH_TABLE / 2; x++) {
+			float angle = round(atan2(y, x) * AMOUNT_ANGLES / M_PI);
+			table[y * WIDTH_TABLE + x + WIDTH_TABLE / 2] = angle;
 		}
 	}
-	for (int angle = 180; angle > 0; angle--) {
-		for (int i = 0; i < OFFSETS; i++) {
-			nm8s* dsti = nmppsAddr_8s(pDstSource, cnt++ * size);
-			point.x = i;
-			point.y = 0;
-			drawPattern(&point, angle, (nm8s*)dsti, width, height, color, LEFT);
+}
+
+void pointPtrnsInit(unsigned char* dst, unsigned char color) {
+	int cnt = 0;
+	const int size = WIDTH_PTRN * HEIGHT_PTRN;
+	for (int i = 0; i < POINT_PATTERNS_AMOUNT * size; i++) {
+		dst[i] = 0;
+	}
+	for (int d = 1; d < POINT_PATTERNS_AMOUNT; d++, cnt++) {
+		unsigned char* tmpDst = dst + cnt * size;
+		for (int y = 0; y < d; y++) {
+			for (int x = 0; x < d; x++) {
+				tmpDst[y * WIDTH_PTRN + x] = color;
+			}
 		}
 	}
-	return;*/
-		 
-	for (int m = 0; m < 2; m++) {
-		cnt = m * NPATTERNS / 2;
-		//step on the left side (180..135 degrees)
-		for (y = 0; y < height; y++)
-		{
-			for (int i = 0; i < OFFSETS; i++, cnt++)
-			{
-				nm8s* dsti = nmppsAddr_8s(pDstSource, cnt * size);
-				line.p0.x = i;
-				line.p0.y = 0;
-				line.p1.x = i - width;
-				line.p1.y = y;
-				drawPattern(&line, (nm8s*)dsti, width, height, color, mode[m]);
-				for (int i = y * width; i < size; i++) {
-					dsti[i] = color;
+}
+
+
+static void setPixel(unsigned char* dst, int x, int y, unsigned char color) {
+	if(x < 0 || x >= WIDTH_PTRN ||
+		y < 0 || y >= HEIGHT_PTRN){
+		return;
+	}
+	dst[y * WIDTH_PTRN + x] = color;
+}
+
+static void fillRow(unsigned char* dst, int x1, int x2, int y, unsigned char color) {
+	if (y >= 0 && y < HEIGHT_PTRN) {
+		for (int x = x1; x < x2; x++) {
+			if (x >= 0 && x < WIDTH_PTRN) {
+				dst[y * WIDTH_PTRN + x] = color;
+			}
+		}
+	}
+}
+
+
+static void drawLine(unsigned char* dst, int x1, int y1, int x2, int y2, unsigned char color) {
+	int deltaX = abs(x2 - x1);
+	int deltaY = abs(y2 - y1);
+	int signX = x1 < x2 ? 1 : -1;
+	int signY = y1 < y2 ? 1 : -1;
+
+	if (abs(deltaX) > abs(deltaY)) {
+		int deltaError = deltaY;
+		int error = 0;
+		while (x1 != x2) {
+			setPixel(dst, x1, y1, color);
+			error += deltaError;
+			if (error >= deltaX) {
+				y1 += signY;
+				error -= deltaX;
+			}
+			x1 += signX;
+		}
+	}
+	else {
+		int deltaError = deltaX;
+		int error = 0;
+		while (y1 != y2) {
+			setPixel(dst, x1, y1, color);
+			error += deltaError;
+			if (error >= deltaY) {
+				x1 += signX;
+				error -= deltaY;
+			}
+			y1 += signY;
+		}
+	}
+}
+
+static void fillSide(unsigned char* dst, int x1, int y1, int x2, int y2, unsigned char color, int topLeftSide) {
+	float deltaY = (y2 - y1);
+	float deltaX = (x2 - x1);
+	float k = deltaY / deltaX;
+	float b = y1 - k * x1;
+	for (int y = 0; y < HEIGHT_PTRN; y++) {
+		for (int x = 0; x < WIDTH_PTRN; x++) {
+			if (fabs(deltaX) > fabs(deltaY)) {
+				float yRefp = k * ((float)x) + b;
+				float yRefs = k * ((float)x) + b;
+				if (topLeftSide == 0 && (yRefp <= y + 0.5) ||
+					topLeftSide == 1 && (yRefs >= y - 0.5)) {
+					setPixel(dst, x, y, color);
+				}
+				else {
+					setPixel(dst, x, y, 0);
+				}
+			}
+			else {
+				float xRefp = ((float)(y - b)) / k;
+				float xRefs = ((float)(y - b)) / k;
+				if (topLeftSide == 0 && (xRefp <= x + 0.5) ||
+					topLeftSide == 1 && (xRefp >= x - 0.5)) {
+					setPixel(dst, x, y, color);
+				}
+				else {
+					setPixel(dst, x, y, 0);
 				}
 			}
 		}
-		//step on the up side (135..90 degrees)
-		for (x = width - 1; x >= 0; x--)
-		{
-			for (int i = 0; i < OFFSETS; i++, cnt++)
-			{
-				nm8s* dsti = nmppsAddr_8s(pDstSource, cnt * size);
-				line.p0.x = i;
-				line.p0.y = 0;
-				line.p1.x = i - x;
-				line.p1.y = height;
-				drawPattern(&line, (nm8s*)dsti, width, height, color, mode[m]);
-			}
-		}
-		//(90..45 degrees)
-		for (x = 0; x < width; x++)
-		{
-			for (int i = 0; i < OFFSETS; i++, cnt++)
-			{
-				nm8s* dsti = nmppsAddr_8s(pDstSource, cnt * size);
-				line.p0.x = i;
-				line.p0.y = 0;
-				line.p1.x = x + i;
-				line.p1.y = height;
-				drawPattern(&line, (nm8s*)dsti, width, height, color, mode[m]);
-			}
-		}
-		//step on the right side (45..0 degrees)
-		for (y = height - 1; y >=0 ; y--)
-		{
-			for (int i = 0; i < OFFSETS; i++, cnt++)
-			{
-				nm8s* dsti = nmppsAddr_8s(pDstSource, cnt * size);
-				line.p0.x = i;
-				line.p0.y = 0;
-				line.p1.x = x + i;
-				line.p1.y = y;
-				drawPattern(&line, (nm8s*)dsti, width, height, color, mode[m]);
-			}
-		}
-		//------------------------------------
 	}
-
 }
+
+static void fillCircle(unsigned char* dst, int x0, int y0, int radius, unsigned char color) {
+	int x = 0;
+	int y = radius;
+	int delta = 1 - 2 * radius;
+	int error = 0;
+	while (y >= 0) {
+		//setPixel(dst, x0 + x, y0 + y, color);
+		//setPixel(dst, x0 + x, y0 - y, color);
+		//setPixel(dst, x0 - x, y0 + y, color);
+		//setPixel(dst, x0 - x, y0 - y, color);
+		fillRow(dst, x0 - x, x0 + x, y0 - y, color);
+		fillRow(dst, x0 - x, x0 + x, y0 + y, color);
+		error = 2 * (delta + y) - 1;
+		if (delta < 0 && error <= 0) {
+			++x;
+			delta += 2 * x + 1;
+			continue;
+		}
+		error = 2 * (delta - x) - 1;
+		if (delta > 0 && error > 0) {
+			--y;
+			delta += 1 - 2 * y;
+			continue;
+		}
+		++x;
+		delta += 2 * (x - y);
+		--y;
+	}
+}
+
+

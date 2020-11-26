@@ -6,14 +6,12 @@ begin ".text_demo3d"
 <_dotMulV_v4nm32f>
 	ar5 = ar7-2	;
 	push ar0,gr0;
-	push ar1,gr1;
-	push ar2,gr2	with gr1 = false;
-	push ar3,gr3	with gr1++;
-	push ar4,gr4	with gr1 <<= 2;
-	push ar5,gr5	with gr2 = gr1;
-	push ar6,gr6	with gr5 = gr1;
-	ar0 = [--ar5]	with gr6 = gr1;
-	ar1 = [--ar5];
+	push ar1,gr1	with gr1 = false;
+	push ar2,gr2	with gr1++;
+	push ar5,gr5	with gr1 <<= 2;
+	push ar6,gr6	with gr2 = gr1;
+	ar0 = [--ar5]	with gr5 = gr1;
+	ar1 = [--ar5]	with gr6 = gr1;
 	ar6 = [--ar5];
 	gr0 = [--ar5];
 
@@ -51,8 +49,6 @@ begin ".text_demo3d"
 <EndProgram>	
 	pop ar6,gr6;
 	pop ar5,gr5;
-	pop ar4,gr4;
-	pop ar3,gr3;
 	pop ar2,gr2;
 	pop ar1,gr1;
 	pop ar0,gr0;

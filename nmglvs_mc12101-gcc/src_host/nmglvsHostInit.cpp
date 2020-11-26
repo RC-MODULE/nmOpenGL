@@ -14,6 +14,7 @@
 #include "demo3d_host.h"
 #include "demo3d_nm1.h"
 #include "ringbuffert.h"
+#include "imagebuffer.h"
 
 
 
@@ -52,18 +53,24 @@ int nmglvsHostInit()
 			return -2;
 		}
 	}
+	for (int i = 0; i < NUM_NM_CORES; i++) {
+		int ok = halSync(0, i);
+		if (ok != 0x600DB00F) {
+			printf("Interprocessor allocation error!\n", i);
+			return -3;
+		}
+	}
 //----------------init-nmc1------------------------------
 	//nmc1, sync0
-	int patternsNM = halSync(1,1);
+	int patternsNM = halSyncAddr(0, 1);
 	//PatternsArray* patterns = (PatternsArray*)halMalloc32(sizeof32(PatternsArray));
 	PatternsArray* patterns = (PatternsArray*)nmppsMalloc_32s(sizeof32(PatternsArray));
 	hostCreatePatterns(patterns);
 	halWriteMemBlock(patterns, patternsNM, sizeof32(PatternsArray), 1);
+	nmppsFree(patterns);
 //----------------init-ringbuffer-------------
 	//nmc1, sync3
-	ImageData* nmImageRB = (ImageData*)halSync(4, 1);
-	//halFree(patterns);
-	nmppsFree(patterns);
+	ImageData* nmImageRB = (ImageData*)halSyncAddr(0, 1);
 
 	hostImageRB.init(nmImageRB, writeMem, readMem);
 	

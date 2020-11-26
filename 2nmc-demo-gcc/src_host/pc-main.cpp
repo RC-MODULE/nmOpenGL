@@ -27,8 +27,6 @@ int main()
 
 	float* vertices = new float[4000 * 12];
 	float* normal = new float[4000 * 9];
-	//float* vertices = (float*)halMalloc32(4000 * 12);
-	//float* normal = (float*)halMalloc32(4000 * 9);
 	int ok;
 
 	int sizePolygons = sizeof32(Polygons);
@@ -38,23 +36,27 @@ int main()
 	
 	FILE* fmodel = fopen(filePath, "r");
 	int amount = get_amm_poligone(fmodel);
+	fclose(fmodel);
 	fmodel = fopen(filePath, "r");
 	createArrayVec4(fmodel, vertices, normal, 1);
+	fclose(fmodel);
 	ok = halSync(amount, 0);
-	int verticesNM = halSync(1, 0);
+	int verticesNM = halSyncAddr(0, 0);
 	ok = halWriteMemBlock(vertices, verticesNM, amount * 12, 0);
-	int normalNM = halSync(3, 0);
+	int normalNM = halSyncAddr(0, 0);
 	ok = halWriteMemBlock(normal, normalNM, amount * 9, 0);
 
 	filePath = models.two_sphere;
 	fmodel = fopen(filePath, "r");
 	amount = get_amm_poligone(fmodel);
+	fclose(fmodel);
 	fmodel = fopen(filePath, "r");
 	createArrayVec4(fmodel, vertices, normal, 0.5);
+	fclose(fmodel);
 	halSync(amount, 0);
-	verticesNM = halSync(1, 0);
+	verticesNM = halSyncAddr(0, 0);
 	ok = halWriteMemBlock(vertices, verticesNM, amount * 12, 0);
-	normalNM = halSync(3, 0);
+	normalNM = halSyncAddr(0, 0);
 	ok = halWriteMemBlock(normal, normalNM, amount * 9, 0);
 	ok = halSync(4, 0);
 
@@ -72,17 +74,19 @@ int main()
 		nmglvsHostReadImage(currentImage);
 		VS_SetData(1, currentImage);
 		counter++;
-#if defined(PROFILER0) || defined(PROFILER1)
+//#if defined(PROFILER0) || defined(PROFILER1)
 		if (counter>=256 && flag) {
-#ifdef PROFILER0
-			halProfilerPrint2xml(".main0.map", 0, "../perf0.xml");
-#endif // PROFILER0
-#ifdef PROFILER1
-			halProfilerPrint2xml(".main1.map", 1, "../perf1.xml");
-#endif // PROFILER1
+//#ifdef PROFILER0
+			//halProfilerPrint2xml("main0.map", 0, "../perf0_2.xml");
+			//return 0;
+//#endif // PROFILER0
+//#ifdef PROFILER1
+			//halProfilerPrint2xml("main1.map", 1, "../perf1.xml");
+			//return 0;
+//#endif // PROFILER1
 			flag = 0;
 		}
-#endif
+//#endif
 		/*VS_Line(1, 0, 128, 768, 128, 0xFF);
 		VS_Line(1, 0, 256, 768, 256, 0xFF);
 		VS_Line(1, 0, 384, 768, 384, 0xFF);

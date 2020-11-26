@@ -3,11 +3,11 @@
 #include "demo3d_nm1.h"
 #include "nmgldef.h"
 #include "stdio.h"
+#include "service.h"
+#include "imagebuffer.h"
 
 
-#define CHECK_STATUS(a) while (dataCopy.statusData[a] == 0)
-
-SECTION(".text_demo3d") int getAddrPtrnsL(NMGL_Context_NM1* context, Polygons* poly){
-	
+SECTION(".text_demo3d") int getAddrPtrnsL(PolygonsOld* poly) {
+	poly->count = 0;
 	return 0;
 }

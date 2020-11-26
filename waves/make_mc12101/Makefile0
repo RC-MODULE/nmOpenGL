@@ -54,14 +54,18 @@ PROJECT          = main0
 OUT_DIR          = .
 TARGET           = $(OUT_DIR)/$(PROJECT).abs
 INC_DIRS         = -I"$(NMPP)/include" -I$(HAL)/include -I$(ROOT)/include -I"../include"
-SRC_DIRS         = $(ROOT)/nmglvs_mc12101-gcc/src_nmc0 $(ROOT)/src_proc0/common $(ROOT)/src_proc0/nm $(ROOT)/src_proc0/nmgl ../src_target0 ./ ../src_nm
-LIB_DIRS         = -L"$(NMC_GCC_TOOLPATH)/nmc4-ide/lib" -L"$(NMPP)/lib" -L"$(HAL)/lib"
+SRC_DIRS         = $(ROOT)/nmglvs_mc12101-gcc/src_nmc0 ../src_target0 ./ ../src_nm
+LIB_DIRS         = -L"$(NMC_GCC_TOOLPATH)/nmc4-ide/lib" -L"$(NMPP)/lib" -L"$(HAL)/lib" -L"$(ROOT)/lib"
 TMP_DIR          = Release
 #-------------- RELEASE/ALL config -------------------
 CC 				 = nmc-g++
 AS               = nmc-gcc 				 
 AS_FLAGS    	 = -c -mmas -x assembler -mnmc4-float
-LIBS             = -lnmpp-nmc4f -lhal-mc12101
+ifeq ($(DEBUG),y)
+LIBS             = -lnmopengl-nmc4fd -lnmpp-nmc4f -lhal-mc12101
+else
+LIBS             = -lnmopengl-nmc4f -lnmpp-nmc4f -lhal-mc12101
+endif
 LINKER_FLAGS     =   -Xlinker -Map=.main0.map $(LIB_DIRS) -save-temps "-Wl,-Tldscript-nmc0.ld" -Wl,--whole-archive -lmc12101 -Wl,--no-whole-archive -o$(TARGET) 
 #LINKER_FLAGS    += -Wl,--section-start,.heap2=0x14000,--defsym,__HEAP_2_END=0x60000
 #LINKER_FLAGS    += -Wl,--section-start,.heap3=0x1C000,--defsym,__HEAP_3_END=0x80000 
@@ -110,14 +114,14 @@ nmc4vars_win.mk:
 $(OUT_DIR): 
 	-mkdir "$(@)"
 	
-$(TMP_DIR)/%.o: %.asm 
+$(TMP_DIR)/%.o: %.asm $(ALL_H)
 	$(AS) $(AS_FLAGS) $(<) -o$(@)  $(INC_DIRS)
 	
-$(TMP_DIR)/%.o: %.cpp 
-	$(CC) $(CC_FLAGS) -c $(<) -o$(@) $(INC_DIRS) -O2 -fno-builtin-printf
+$(TMP_DIR)/%.o: %.cpp $(ALL_H)
+	$(CC) $(CC_FLAGS) -c $(<) -o$(@) $(INC_DIRS) -O2 -fno-builtin-printf -mnmc4-float
 
-$(TMP_DIR)/%.o: %.c
-	$(CC) $(CC_FLAGS) -c $(<) -o$(@) $(INC_DIRS) -O2 -fno-builtin-printf
+$(TMP_DIR)/%.o: %.c $(ALL_H)
+	$(CC) $(CC_FLAGS) -c $(<) -o$(@) $(INC_DIRS) -O2 -fno-builtin-printf -mnmc4-float
 	
 proflist:
 	lua53 $(HAL)/script/profiler-gcc.lua .main0.map > proflist_generated0.asm 

@@ -39,8 +39,10 @@ end macroDepthTest;
 //[in] gr7 - width in 64-word
 
 begin ".text_demo3dExt"
-global _depthTestCore_A_r: label;
-<_depthTestCore_A_r>
+global _depthTestCore32_A_r: label;
+global _depthTestCore16_A_r: label;
+<_depthTestCore32_A_r>
+<_depthTestCore16_A_r>
 	DepthTestMacros_start:label;
 	push ar2, gr2;
 	push ar4, gr4;

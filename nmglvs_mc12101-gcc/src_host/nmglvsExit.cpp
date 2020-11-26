@@ -13,7 +13,7 @@
 
 int nmglvsExit(unsigned* result)
 {
-	/*halGetResult(result, 0);
-	halGetResult(result + 1, 1);*/
+	halGetResult(result, 0);
+	halGetResult(result + 1, 1);
 	return 0;
 };
