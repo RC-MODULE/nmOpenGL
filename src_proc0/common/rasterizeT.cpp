@@ -17,36 +17,10 @@ SECTION(".text_demo3d") void triangleOffset(Triangles &src, Triangles &dst, int 
 	dst.colors = src.colors + offset;
 }
 
-/*SECTION(".text_demo3d") void pushPoly(Polygons &innerPoly, PolygonsConnector &connector) {
-	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
-
-	while (connector.isFull());
-	nmblas_scopy(sizeof32(Polygons), (float*)&innerPoly, 1, (float*)connector.ptrHead(), 1);
-	innerPoly.count = 0;
-	connector.incHead();
-	cntxt->synchro.writeInstr(1, NMC1_DRAW_TRIANGLES);
-}
-
-SECTION(".text_demo3d") void recursiveUpdate(Triangles& triangles, Polygons &polygons, PolygonsConnector &connector, int segX, int segY) {
-	if (triangles.size + polygons.count < POLYGONS_SIZE) {
-		updatePolygonsT(&polygons, &triangles, triangles.size, segX, segY);
-	}
-	else {
-		Triangles tmpTrian;
-		int count = POLYGONS_SIZE - polygons.count;
-		updatePolygonsT(&polygons, &triangles, count, segX, segY);
-		pushPoly(polygons, connector);
-		triangleOffset(triangles, tmpTrian, count);
-		tmpTrian.size = triangles.size - count;
-		recursiveUpdate(tmpTrian, polygons, connector, segX, segY);
-	}
-}*/
-
 SECTION(".text_demo3d")
 void rasterizeT(const Triangles* triangles, const BitMask* masks){
 
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
-	PolygonsConnector *connector = cntxt->polygonsConnectors;
 
 	int count = triangles->size;
 
@@ -87,18 +61,18 @@ void rasterizeT(const Triangles* triangles, const BitMask* masks){
 
 					int offset = 0;
 					Triangles localTrian2;
+					PolygonsConnector *connector = cntxt->polygonsConnectors;
 					while (offset < resultSize) {
-						int localSize = MIN(resultSize - offset, POLYGONS_SIZE);
-						triangleOffset(localTrian, localTrian2, offset);
-						offset += POLYGONS_SIZE;
-						while (connector[0].isFull()) {
+						while (connector->isFull()) {
 							halSleep(2);
 						}
-						Polygons* poly = connector[0].ptrHead();
-						poly->count = 0;
+						Polygons* poly = connector->ptrHead();
+						int localSize = MIN(resultSize - offset, POLYGONS_SIZE - poly->count);
+						triangleOffset(localTrian, localTrian2, offset);
+						offset += localSize;
 						updatePolygonsT(poly, &localTrian2, localSize, segX, segY);
-						connector[0].incHead();
-						cntxt->synchro.writeInstr(1, NMC1_DRAW_TRIANGLES);
+						connector->incHead();
+						cntxt->synchro.writeInstr(1, NMC1_DRAW_TRIANGLES, iSeg);
 					}
 
 					cntxt->synchro.writeInstr(1,

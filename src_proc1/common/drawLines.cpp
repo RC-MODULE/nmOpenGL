@@ -7,8 +7,10 @@
 
 SECTION(".text_demo3d") void drawLines() {
 	NMGL_Context_NM1 *context = NMGL_Context_NM1::getContext();
+	PolygonsConnector *connector = context->polygonsConnectors;
 
-	Polygons* poly = context->polygonsConnectors[0].ptrTail();
+	Polygons* poly = connector->ptrTail();
+
 	getAddrPtrnsL(poly);
 	COMMON_DRAW_TYPE* mulZ = (COMMON_DRAW_TYPE*)context->buffer0;
 	COMMON_DRAW_TYPE* mulC = (COMMON_DRAW_TYPE*)context->buffer0;
@@ -21,7 +23,8 @@ SECTION(".text_demo3d") void drawLines() {
 
 	msdWaitDma(1);
 
-	context->polygonsConnectors[0].incTail();
+	poly->count = 0;
+	connector->incTail();
 	for(int point = 0; countTrangles > 0; countTrangles -= SMALL_SIZE,	point += SMALL_SIZE){
 		int localSize = MIN(countTrangles, SMALL_SIZE);
 

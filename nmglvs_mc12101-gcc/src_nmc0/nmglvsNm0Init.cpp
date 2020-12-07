@@ -81,6 +81,9 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 		setHeap(10);
 		polygonsData = myMallocT<PolygonsArray>();
 		polygonsData->init();
+		for(int i = 0; i< COUNT_POLYGONS_BUFFER; i++){
+			polygonsData->ptr(i)->count = 0;
+		}
 		cntxt->polygonsConnectors[0].init(polygonsData);
 
 		cntxt->beginEndInfo.vertex = myMallocT<v4nm32f>(BIG_NMGL_SIZE);

@@ -10,7 +10,9 @@ int totalSum(nm32s* pVec, int size);
 
 SECTION(".text_demo3d") void drawTriangles() {
 	NMGL_Context_NM1 *context = NMGL_Context_NM1::getContext();
-	Polygons* poly = context->polygonsConnectors[0].ptrTail();
+	PolygonsConnector *connector = context->polygonsConnectors;
+
+	Polygons* poly = connector->ptrTail();
 
 	PROFILER_SIZE(poly->count);
 	getAddrPtrnsT(context->polygonsConnectors->ptrTail());
@@ -24,9 +26,10 @@ SECTION(".text_demo3d") void drawTriangles() {
 	int point = 0;
 
 	msdWaitDma(1);
-	//return;
-	
-	context->polygonsConnectors[0].incTail();
+
+	poly->count = 0;
+	connector->incTail();
+
 	while (countTrangles > 0) {
 		int localSize = MIN(countTrangles, SMALL_SIZE);
 		int point_x3 = point * 3;

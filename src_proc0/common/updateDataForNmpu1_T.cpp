@@ -34,23 +34,23 @@ void updatePolygonsT(DataForNmpu1* data, Triangles* triangles, int count, int se
 	nmppsSub_32f(triangles->x2, triangles->x0, temp1, count);
 	nmppsSub_32f(triangles->y1, triangles->y0, temp2, count);
 	nmppsSub_32f(triangles->y2, triangles->y0, temp3, count);
-	nmppsMul_Mul_Sub_32f(temp1, temp2, temp3, temp0, (float*)data->crossProducts, count);
+	nmppsMul_Mul_Sub_32f(temp1, temp2, temp3, temp0, (float*)data->crossProducts + data->count, count);
 
 	nmppsSubC_32f(triangles->x0, temp0, cntxt->windowInfo.x0_f[segX], count);
 	nmppsSubC_32f(triangles->y0, temp1, cntxt->windowInfo.y0_f[segY], count);
-	nmppsConvert_32f32s_rounding(temp0, data->x0, 0, count);
-	nmppsConvert_32f32s_rounding(temp1, data->y0, 0, count);
+	nmppsConvert_32f32s_rounding(temp0, data->x0 + data->count, 0, count);
+	nmppsConvert_32f32s_rounding(temp1, data->y0 + data->count, 0, count);
 	nmppsSubC_32f(triangles->x1, temp0, cntxt->windowInfo.x0_f[segX], count);
 	nmppsSubC_32f(triangles->y1, temp1, cntxt->windowInfo.y0_f[segY], count);
-	nmppsConvert_32f32s_rounding(temp0, data->x1, 0, count);
-	nmppsConvert_32f32s_rounding(temp1, data->y1, 0, count);
+	nmppsConvert_32f32s_rounding(temp0, data->x1 + data->count, 0, count);
+	nmppsConvert_32f32s_rounding(temp1, data->y1 + data->count, 0, count);
 	nmppsSubC_32f(triangles->x2, temp0, cntxt->windowInfo.x0_f[segX], count);
 	nmppsSubC_32f(triangles->y2, temp1, cntxt->windowInfo.y0_f[segY], count);
-	nmppsConvert_32f32s_rounding(temp0, data->x2, 0, count);
-	nmppsConvert_32f32s_rounding(temp1, data->y2, 0, count);
+	nmppsConvert_32f32s_rounding(temp0, data->x2 + data->count, 0, count);
+	nmppsConvert_32f32s_rounding(temp1, data->y2 + data->count, 0, count);
 	
-	nmblas_scopy (count, (float*)triangles->z, 1, (float*)data->z, 1);
-	nmblas_scopy(4 * count, (float*)triangles->colors, 1, (float*)data->color, 1);
+	nmblas_scopy (count, (float*)triangles->z, 1, (float*)data->z + data->count, 1);
+	nmblas_scopy(4 * count, (float*)triangles->colors, 1, (float*)data->color + 4 * data->count, 1);
 
 #ifdef DEBUG
 	static unsigned int counter = 0;

@@ -25,33 +25,18 @@ void updatePolygonsL(DataForNmpu1* data, Lines* lines, int count, int segX, int 
 	float* temp3 = cntxt->buffer3 + 6 * NMGL_SIZE;
 
 	sort();
-	for (int i = 0; i < count; i++) {
-		float errorX = 0;
-		float errorY = 0;
-		int x0 = (int)floor(lines->x0[i] - cntxt->windowInfo.x0_f[segX]);
-		int y0 = (int)floor(lines->y0[i] - cntxt->windowInfo.y0_f[segY]);
-		errorX = lines->x0[i] - floor(lines->x0[i]);
-		errorY = lines->y0[i] - floor(lines->y0[i]);
-		data->x0[i] = x0;
-		data->y0[i] = y0;
-		int dx01 = (int)floor(lines->x1[i] - lines->x0[i] + errorX);
-		int dy01 = (int)floor(lines->y1[i] - lines->y0[i] + errorY);
-		errorX = lines->x1[i] - floor(lines->x1[i]);
-		errorY = lines->y1[i] - floor(lines->y1[i]);
-		data->x1[i] = x0 + dx01;
-		data->y1[i] = y0 + dy01;
-	}
-	/*nmppsSubC_32f(lines->x0, temp0, cntxt->windowInfo.x0_f[segX], count);
+
+	nmppsSubC_32f(lines->x0, temp0, cntxt->windowInfo.x0_f[segX], count);
 	nmppsSubC_32f(lines->y0, temp1, cntxt->windowInfo.y0_f[segY], count);
-	nmppsConvert_32f32s_rounding(temp0, data->x0, 0, count);
-	nmppsConvert_32f32s_rounding(temp1, data->y0, 0, count);
+	nmppsConvert_32f32s_rounding(temp0, data->x0 + data->count, 0, count);
+	nmppsConvert_32f32s_rounding(temp1, data->y0 + data->count, 0, count);
 	nmppsSubC_32f(lines->x1, temp0, cntxt->windowInfo.x0_f[segX], count);
 	nmppsSubC_32f(lines->y1, temp1, cntxt->windowInfo.y0_f[segY], count);
-	nmppsConvert_32f32s_rounding(temp0, data->x1, 0, count);
-	nmppsConvert_32f32s_rounding(temp1, data->y1, 0, count);*/
+	nmppsConvert_32f32s_rounding(temp0, data->x1 + data->count, 0, count);
+	nmppsConvert_32f32s_rounding(temp1, data->y1 + data->count, 0, count);
 
-	nmblas_scopy (count, (float*)lines->z, 1, (float*)data->z, 1);
-	nmblas_scopy(4 * count, (float*)lines->colors, 1, (float*)data->color, 1);
+	nmblas_scopy (count, (float*)lines->z, 1, (float*)data->z + data->count, 1);
+	nmblas_scopy(4 * count, (float*)lines->colors, 1, (float*)data->color + 4 * data->count, 1);
 //#ifdef DEBUG
 	static unsigned int counter = 0;
 	for (int i = 0; i < count; i++) {
