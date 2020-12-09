@@ -13,7 +13,7 @@ extern void* cntxtAddr_nm1;
 #endif
 extern NMGL_Context_NM1 *cntxt_nm1;
 extern unsigned int nmpu1IsAccessible;
-extern NMGLubyte mipmap[MIPMAP_MEM_SIZE];
+extern NMGLubyte* mipmap;
 extern int getTexelSizeUbytes(NMGLint format);
 int isPowerOf2(NMGLint x);
 

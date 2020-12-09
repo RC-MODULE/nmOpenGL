@@ -33,6 +33,9 @@ SECTION(".data_imu6") int dividedMasksMemory[4][3 * NMGL_SIZE / 32];
 
 SECTION(".data_imu6") int masksBits[36][3 * NMGL_SIZE / 32];
 
+
+extern  NMGLubyte* mipmap; //texture memory
+
 int counter = 0;
 
 template<class T> inline T* myMallocT() {
@@ -91,6 +94,12 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 		cntxt->beginEndInfo.color = myMallocT<v4nm32f>(BIG_NMGL_SIZE);
 		cntxt->beginEndInfo.inBeginEnd = false;
 		cntxt->beginEndInfo.maxSize = BIG_NMGL_SIZE;
+		
+		//Allocate memory for textures.
+		//Must be in EMI. 
+		//EMI has enough space and does not require address mapping at mc12101
+		setHeap(12);
+		mipmap = myMallocT<NMGLubyte>(MIPMAP_MEM_SIZE); 
 	}
 	catch (int& e) {
 		halHostSync(0xDEADB00F);

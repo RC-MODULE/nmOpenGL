@@ -56,8 +56,7 @@ const void *pixels);
 int nmglTexSubImage2D_TexSubImage_contextStateCorrect();
 int nmglTexSubImage2D_wrongArgs_isError();
 ////////////EXTERN/////////////////////////////////////////////////////////////////////////////////////
-extern NMGLubyte mipmap[MIPMAP_MEM_SIZE];
-extern NMGLubyte mipmap[MIPMAP_MEM_SIZE];
+extern NMGLubyte* mipmap;
 extern NMGL_Context_NM0 *cntxt;
 extern void* cntxtAddr_nm1;
 //========================================================================================
