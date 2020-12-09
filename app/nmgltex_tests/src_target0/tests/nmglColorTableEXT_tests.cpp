@@ -103,23 +103,26 @@ int nmglColorTableEXT_setColorTable_contextCorrect()
 	}
 	nmglColorTableEXT (NMGL_TEXTURE_2D, NMGL_RGBA, cwidth, NMGL_RGBA, NMGL_UNSIGNED_BYTE, data);
 	wait_for_nm1_if_available;
-DEBUG_PRINT(("cwidth=%d\n0width=%d\n1width=%d\n",cwidth,cntxt->texState.texObjects[0].palette.width,cntxt_nm1->texState.texObjects[0].palette.width));
+	DEBUG_PRINT(("cwidth=%d\n0width=%d\n", cwidth, cntxt->texState.texObjects[0].palette.width));
 	TEST_ASSERT(cntxt->texState.texObjects[0].palette.width == cwidth);
-	if(nmpu1IsAccessible == 1) {TEST_ASSERT(cntxt_nm1->texState.texObjects[0].palette.width == cwidth);}
+	if(nmpu1IsAccessible == 1) {
+		DEBUG_PRINT(("cwidth=%d\n1width=%d\n", cwidth, cntxt_nm1->texState.texObjects[0].palette.width));
+		TEST_ASSERT(cntxt_nm1->texState.texObjects[0].palette.width == cwidth);
+	}
 	
 	for (i=0;i<cwidth*RGBA_TEXEL_SIZE_UBYTE;i++)
 	{
 		if(*((NMGLubyte*)data+i) != *((NMGLubyte*)(cntxt->texState.texObjects[0].palette.colors+i)))
 		{
 			
-			printf("i=%d\ndata[%d]=%x pale[%d]=%d data_nm1[%d]\n",i,i,*((NMGLubyte*)data+i),i,*((NMGLubyte*)(cntxt->texState.texObjects[0].palette.colors+i)),i,*((NMGLubyte*)(cntxt_nm1->texState.texObjects[0].palette.colors+i)));
+			printf("i=%d\ndata[%d]=%x pale[%d]=%d data_nm0[%d]\n",i,i,*((NMGLubyte*)data+i),i,*((NMGLubyte*)(cntxt->texState.texObjects[0].palette.colors+i)),i);
 			TEST_ASSERT(0);
 		}
 		if(nmpu1IsAccessible == 1)
 		{
 			if(*((NMGLubyte*)data+i) != *((NMGLubyte*)(cntxt_nm1->texState.texObjects[0].palette.colors+i)))
 			{
-					printf("i=%d\n pale[%d]=%d data_nm1[%d]\n",i,i,*((NMGLubyte*)(cntxt->texState.texObjects[0].palette.colors+i)),i,*((NMGLubyte*)(cntxt_nm1->texState.texObjects[0].palette.colors+i)));
+				printf("i=%d\ndata[%d]=%x pale[%d]=%d data_nm1[%d]\n",i,i, *((NMGLubyte*)data + i), i, *((NMGLubyte*)(cntxt_nm1->texState.texObjects[0].palette.colors + i)), i);
 				TEST_ASSERT(0);
 			}
 		}

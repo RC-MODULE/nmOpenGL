@@ -101,7 +101,11 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 	cntxt->patterns = (PatternsArray*)halSyncAddr(synchroData, 1);
 	halSyncAddr(polygonsData, 1);
 #ifdef TEST_NMGL_TEX_FUNC
-       cntxtAddr_nm1 = (void*)halSyncAddr(0, 1);	   
+	cntxtAddr_nm1 = (void*)halSyncAddr(0, 1);
+#ifndef __NM__
+	cntxtAddr_nm1 = 0; //static shared memory is not supported in x86 model
+#endif //__NM__
+       	   
 #endif //TEST_NMGL_TEX_FUNC
 	halHostSync(0x600DB00F);	// send ok to host
 
