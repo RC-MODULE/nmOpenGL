@@ -72,7 +72,7 @@ pname:TEXTURE_WRAP_S,TEXTURE_WRAP_T
 #pragma code_section ".text_tex_tests"
 #pragma data_section ".data_tex_tests"
 #endif
-extern NMGLubyte mipmap[MIPMAP_MEM_SIZE];
+extern NMGLubyte* mipmap;
 NMGL_Context_NM0 *cntxt;
 //extern void* cntxtAddr_nm1;
 extern unsigned int nmpu1IsAccessible;
