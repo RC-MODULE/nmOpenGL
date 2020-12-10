@@ -17,7 +17,7 @@ extern "C"
 //alignment = 4
 
 SECTION(TEXTURE_SECTION)
-unsigned char pixels_2_2[16] = {  
+NMGLubyte pixels_2_2[16] = {  
 0xff, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 
 0x00, 0x00, 0x00, 0xff, 0xff, 0xff, 0x00, 0x00, 
 };  
@@ -27,9 +27,6 @@ TexImage2D teximage_2_2 = {
     //internal format
     NMGL_RGB,
 
-    ////level
-    //0,
-
     //pixels
     pixels_2_2,
 
@@ -37,10 +34,7 @@ TexImage2D teximage_2_2 = {
     2,
 
     //height
-    2,
-
-    ////border
-    //0
+    2
 };  
 
 
