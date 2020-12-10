@@ -298,6 +298,17 @@ SECTION(".text_nmglvs") int nmglvsNm1Step()
 		}
 		break;
 	}
+    
+	case NMC1_TEXTURE2D: {
+		cntxt->texState.texUnits[cntxt->texState.activeTexUnitIndex].enabled = (NMGLboolean)currentCommand.params[0];
+		if ((NMGLboolean)currentCommand.params[0] == NMGL_TRUE) {
+			cntxt->texState.textureEnabled = cntxt->texState.textureEnabled | ((unsigned int)1 << cntxt->texState.activeTexUnitIndex);
+		} 
+		else {
+			cntxt->texState.textureEnabled = cntxt->texState.textureEnabled & (~((unsigned int)1 << cntxt->texState.activeTexUnitIndex));
+		}
+		break;
+	}
 
 	default:
 		break;

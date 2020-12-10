@@ -63,6 +63,12 @@ struct NMGL_Context_NM0_Texture {
 	*  По спецификации требуется.
 	*/
 	unsigned int unpackAlignment;
+    
+	/**
+	* Признак активации текстурирования (битовая маска). Значение > 0 означает, что
+	* текстурирование активировано.
+	*/
+	unsigned int textureEnabled;
 	
 	void init(){
 	
@@ -85,6 +91,7 @@ struct NMGL_Context_NM0_Texture {
 //==========TEX_OBJ_INIT====================================
 		INIT_TEX_OBJECTS();
 		unpackAlignment=4;
+		textureEnabled = 0;
 	}
 	
 };

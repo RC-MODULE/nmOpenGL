@@ -61,6 +61,12 @@ struct NMGL_Context_NM1_Texture {
 	*  По спецификации требуется.
 	*/
 	unsigned int unpackAlignment;
+    
+	/**
+	* Признак активации текстурирования (битовая маска). Значение > 0 означает, что 
+	* текстурирование активировано.
+	*/
+	unsigned int textureEnabled;
 
 	
 #ifdef TEST_NMGL_TEX_FUNC
@@ -76,6 +82,7 @@ struct NMGL_Context_NM1_Texture {
 		//texcoordArray
 		//curTexCoords
 		//unpackAlignment
+		textureEnabled = 0;
 		INIT_TEX_UNITS();
 		INIT_TEX_OBJECTS();
 	}
