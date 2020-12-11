@@ -127,6 +127,21 @@ extern "C" int vertexPrimitiveRepack(const v4nm32f *srcVertex, const v4nm32f *sr
 //! \}
 
 /**
+\defgroup texCoordsRepack_f texCoordsRepack
+\ingroup service_api
+\brief Переупаковка текстурных координат аналогично переупаковке вершин vertexPrimitiveRepack
+\param srcTexCoords[in] Входной массив текстурных координат 
+\param dstTexCoords[out] Выходной массив текстурных координат 
+\param mode [in] Входной формат треугольных примитивов
+\param vertCount [in] Количество вершин во входном массиве для обработки 
+\return Возвращает количество треугольников, cooтветствующее количеству текстурных координат в выходном массиве
+\par
+*/
+//! \{
+extern "C" int texCoordsRepack(const v2nm32f *srcTexCoords,  nm32f *dstTexCoords, int mode, int vertCount);
+//! \}
+
+/**
 \defgroup nmppsCmpGteLteMirrorV_32f_f nmppsCmpGteLteMirrorV_32f
 \ingroup service_api
 \brief Проверка принадлежности элементов одного массива соответствующим  

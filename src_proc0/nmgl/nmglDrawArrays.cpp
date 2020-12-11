@@ -19,6 +19,9 @@ SECTION(".data_imu6")	v2nm32f texResult[3 * NMGL_SIZE];
 SECTION(".data_imu6")	ArrayManager<float> vertexAM;
 SECTION(".data_imu6")	ArrayManager<float> normalAM;
 SECTION(".data_imu6")	ArrayManager<v4nm32f> colorAM;
+#ifdef TEXTURE_ENABLED
+SECTION(".data_imu6")	ArrayManager<float> texcoordAM;
+#endif //TEXTURE_ENABLED
 
 SECTION(".data_imu6")	BitDividedMask clipMask[10];
 
@@ -142,10 +145,19 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 	float* srcDDR_vertex = (float*)cntxt->vertexArray.pointer + cntxt->vertexArray.size * first;
 	float* srcDDR_normal = (float*)cntxt->normalArray.pointer + cntxt->normalArray.size * first;
 	v4nm32f* srcDDR_color = (v4nm32f*)cntxt->colorArray.pointer + first;
-
 	cntxt->vertexArray.offset = first;
 	cntxt->normalArray.offset = first;
 	cntxt->colorArray.offset = first;
+
+#ifdef TEXTURE_ENABLED
+	unsigned int clientActiveTexUnitIndex;
+	float* srcDDR_texcoords;
+	if (cntxt->texState.textureEnabled) {
+		clientActiveTexUnitIndex = cntxt->texState.clientActiveTexUnitIndex;
+		srcDDR_texcoords = (float*)cntxt->texState.texcoordArray[clientActiveTexUnitIndex].pointer + cntxt->texState.texcoordArray[clientActiveTexUnitIndex].size * first;
+		cntxt->texState.texcoordArray[clientActiveTexUnitIndex].offset = first;
+	}
+#endif //TEXTURE_ENABLED
 
 	int maxInnerCount;
 	switch (mode) {
@@ -178,10 +190,22 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 		vertexAM.set(srcDDR_vertex, cntxt->vertexArray.size * count, cntxt->vertexArray.size * maxInnerCount, copyVec<float>);
 		normalAM.set(srcDDR_normal, cntxt->normalArray.size * count, cntxt->normalArray.size * maxInnerCount, copyVec<float>);
 		colorAM.set(srcDDR_color, count, maxInnerCount, copyVec<v4nm32f>);
+#ifdef TEXTURE_ENABLED
+		if (cntxt->texState.textureEnabled) {
+			texcoordAM.set(srcDDR_texcoords, cntxt->texState.texcoordArray[clientActiveTexUnitIndex].size * count, 
+				           cntxt->texState.texcoordArray[clientActiveTexUnitIndex].size * maxInnerCount, copyVec<float>);
+		}
+#endif //TEXTURE_ENABLED
 	}else{
 		vertexAM.set(srcDDR_vertex, cntxt->vertexArray.size * count, cntxt->vertexArray.size * maxInnerCount, copyRisc<float>);
 		normalAM.set(srcDDR_normal, cntxt->normalArray.size * count, cntxt->normalArray.size * maxInnerCount, copyRisc<float>);
 		colorAM.set(srcDDR_color, count, maxInnerCount, copyRisc<v4nm32f>);
+#ifdef TEXTURE_ENABLED
+		if (cntxt->texState.textureEnabled) {
+			texcoordAM.set(srcDDR_texcoords, cntxt->texState.texcoordArray[clientActiveTexUnitIndex].size * count, 
+				           cntxt->texState.texcoordArray[clientActiveTexUnitIndex].size * maxInnerCount, copyRisc<float>);
+		}
+#endif //TEXTURE_ENABLED
 	}
 
 	if (cntxt->isLighting) {
@@ -212,6 +236,26 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 		}
 		//умножение на dидовую матрицу (Modelview matrix)
 		mul_mat4nm32f_v4nm32f(cntxt->modelviewMatrixStack.top(), (v4nm32f*)cntxt->buffer1, vertexResult, localSize);
+
+		//texcoords
+#ifdef TEXTURE_ENABLED
+		if (cntxt->texState.textureEnabled) {
+			//texture coordinates
+			if (cntxt->texState.texcoordArray[clientActiveTexUnitIndex].enabled) {
+				texcoordAM.pop(cntxt->buffer0);
+				switch (cntxt->texState.texcoordArray[clientActiveTexUnitIndex].size) //Must be equal to 2
+				{
+				case 2:
+					nmblas_dcopy(localSize, (double*)cntxt->buffer0, 1, (double*)cntxt->buffer1, 1);
+					break;
+				default:
+					break;
+				}
+				nmblas_scopy(2 * localSize, cntxt->buffer1, 1, (float*)texResult, 1);
+			}
+		}
+#endif //TEXTURE_ENABLED
+
 		//normal
 		if (cntxt->normalArray.enabled) {
 			if (cntxt->normalArray.size == 3) {
@@ -229,6 +273,7 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 				dotMulV_v4nm32f((v2nm32f*)cntxt->buffer1, (v4nm32f*)cntxt->buffer2, colorOrNormal, localSize);
 			}
 		}
+
 		//vertex in vertexResult
 		//normal in colorOrNormal
 		//Освещение или наложение цветов
@@ -263,7 +308,6 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 
 		//умножение на матрицу проекции (Projection matrix)
 		mul_mat4nm32f_v4nm32f(cntxt->projectionMatrixStack.top(), vertexResult, (v4nm32f*)vertexResult, localSize);
-
 #ifndef TRIANGULATION_ENABLED
 		//----------------------------------
 		//vertex in vertexResult
@@ -348,6 +392,12 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			TrianglePointers tmp1;
 			TrianglePointers tmp2;
 			PROFILER_SIZE(localSize);
+
+#ifdef TEXTURE_ENABLED
+			//FIX: Somehow localSize is changed after vertexPrimitiveRepack on mc12101
+			//volatile prevent localSizeBackup to be optimized as localSize
+			volatile int localSizeBackup = localSize;
+#endif //TEXTURE_ENABLED
 			int primCount = vertexPrimitiveRepack(vertexResult, colorOrNormal, cntxt->buffer0, (v4nm32f*)cntxt->buffer1, mode, localSize);
 
 			//в tmp0 хранятся данные в порядке x0,y0,z0,w0,x1,y1,z1,w1,x2,y2,z2,w2 (остальные массивы неопределены)
@@ -365,6 +415,21 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			tmp0.v2.z = cntxt->buffer0 + 10 * primCount;
 			tmp0.v2.w = cntxt->buffer0 + 11 * primCount;
 
+#ifdef TEXTURE_ENABLED
+			
+			if (cntxt->texState.textureEnabled) {
+				//save texture coordinates to buffer1 after color
+				//(offset in buffer1 = (sizeof(v4nm32f) = 4) * primCount)
+				texCoordsRepack(texResult, ((nm32f*)cntxt->buffer1) + primCount * 4, mode, localSizeBackup);
+				tmp1.v0.s = cntxt->buffer1 + 4 * primCount;
+				tmp1.v0.t = cntxt->buffer1 + 5 * primCount;
+				tmp1.v1.s = cntxt->buffer1 + 6 * primCount;
+				tmp1.v1.t = cntxt->buffer1 + 7 * primCount;
+				tmp1.v2.s = cntxt->buffer1 + 8 * primCount;
+				tmp1.v2.t = cntxt->buffer1 + 9 * primCount;
+			}
+#endif //TEXTURE_ENABLED
+
 			tmp1.v0.x = cntxt->buffer2 + 0 * primCount;
 			tmp1.v0.y = cntxt->buffer2 + 1 * primCount;
 			tmp1.v0.z = cntxt->buffer2 + 2 * primCount;
@@ -374,6 +439,22 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			tmp1.v2.x = cntxt->buffer2 + 6 * primCount;
 			tmp1.v2.y = cntxt->buffer2 + 7 * primCount;
 			tmp1.v2.z = cntxt->buffer2 + 8 * primCount;
+#ifdef TEXTURE_ENABLED
+			if (cntxt->texState.textureEnabled) {
+				tmp1.v0.w = cntxt->buffer2 + 9 * primCount;
+				tmp1.v1.w = cntxt->buffer2 + 10 * primCount;
+				tmp1.v2.w = cntxt->buffer2 + 11 * primCount;
+			}
+#endif //TEXTURE_ENABLED
+
+#ifdef TEXTURE_ENABLED
+			if (cntxt->texState.textureEnabled) {
+				//copy w to buffer2 (tmp1)
+				nmblas_scopy(primCount, tmp0.v0.w, 1, tmp1.v0.w, 1);
+				nmblas_scopy(primCount, tmp0.v1.w, 1, tmp1.v1.w, 1);
+				nmblas_scopy(primCount, tmp0.v2.w, 1, tmp1.v2.w, 1);
+			}
+#endif //TEXTURE_ENABLED
 
 			//------------clipping-------------------
 
@@ -403,10 +484,15 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			nmppsMulC_AddC_32f(tmp1.v2.y, cntxt->windowInfo.viewportMulY, cntxt->windowInfo.viewportAddY, tmp1.v2.y, primCount);		//Y
 			nmppsMulC_AddC_32f(tmp1.v2.z, cntxt->windowInfo.viewportMulZ, cntxt->windowInfo.viewportAddZ, tmp1.v2.z, primCount);		//Z			
 
+#ifndef TEXTURE_ENABLED
 			//в tmp0 теперь хранятся x,y в оконных координатах, z в диапазона 0..Z_BUFF_MAX, 
 			//координаты w а так же текстурные координаты s,t, оставшиеся без изменений
 
 			//данные хранятся в tmp1 (в buffer2), цвет в buffer1
+#else //TEXTURE_ENABLED
+			//в tmp0 теперь хранятся x,y в оконных координатах, z в диапазона 0..Z_BUFF_MAX, координаты w.
+			//Данные (x,y,z,w) хранятся в tmp1 (в buffer2), цвет в buffer1, текстурные координаты s,t - в buffer1.
+#endif //TEXTURE_ENABLED
 			v2nm32f *minXY = (v2nm32f*)cntxt->buffer4;
 			v2nm32f *maxXY = (v2nm32f*)cntxt->buffer4 + 3 * NMGL_SIZE;
 			int srcThreated = 0;
@@ -421,6 +507,23 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			tmp0.v2.x = cntxt->buffer0 + 6 * NMGL_SIZE;
 			tmp0.v2.y = cntxt->buffer0 + 7 * NMGL_SIZE;
 			tmp0.v2.z = cntxt->buffer0 + 8 * NMGL_SIZE;
+#ifdef TEXTURE_ENABLED
+			if (cntxt->texState.textureEnabled) {
+				//w should be also in buffer0 after triangulation
+				tmp0.v0.w = cntxt->buffer0 + 9 * NMGL_SIZE;
+				tmp0.v1.w = cntxt->buffer0 + 10 * NMGL_SIZE;
+				tmp0.v2.w = cntxt->buffer0 + 11 * NMGL_SIZE;
+
+				//texcoord to buffer3 right after color during triangulation
+				//Check: max color space in buffer3 will be NMGL_SIZE*4 ?
+				tmp0.v0.s = cntxt->buffer3 + 4 * NMGL_SIZE;
+				tmp0.v0.t = cntxt->buffer3 + 5 * NMGL_SIZE;
+				tmp0.v1.s = cntxt->buffer3 + 6 * NMGL_SIZE;
+				tmp0.v1.t = cntxt->buffer3 + 7 * NMGL_SIZE;
+				tmp0.v2.s = cntxt->buffer3 + 8 * NMGL_SIZE;
+				tmp0.v2.t = cntxt->buffer3 + 9 * NMGL_SIZE;
+			}
+#endif //TEXTURE_ENABLED
 			
 			while (srcThreated < primCount) {
 				//PROFILER_SIZE(primCount);
@@ -428,6 +531,33 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 				int currentCount = triangulate(cntxt->buffer2, (v4nm32f*)cntxt->buffer1, primCount,
 					WIDTH_PTRN, HEIGHT_PTRN,
 					NMGL_SIZE, cntxt->buffer0, (v4nm32f*)cntxt->buffer3, &srcThreated);	
+
+#ifdef TEXTURE_ENABLED
+				if (cntxt->texState.textureEnabled) {
+					//triangulate w. 
+					//At now simply copy w to tmp0 (buffer0) from tmp1 (buffer2) but 
+					//must be implemented in triangulate(). 
+					//So this code works only for 32*32 triangles and 
+					//currentCount must be equal to primCount. 
+					//TODO: must be implemented in triangulate
+					nmblas_scopy(currentCount, tmp1.v0.w, 1, tmp0.v0.w, 1);
+					nmblas_scopy(currentCount, tmp1.v1.w, 1, tmp0.v1.w, 1);
+					nmblas_scopy(currentCount, tmp1.v2.w, 1, tmp0.v2.w, 1);
+
+					//triangulate s,t. 
+					//At now simply copy s,t to tmp0 (buffer0) from tmp1 (buffer2) 
+					//but must be implemented in triangulate(). 
+					//So this code works only for 32*32 triangles 
+					//and currentCount must be equal to primCount. 
+					//TODO: must be implemented in triangulate
+					nmblas_scopy(currentCount, tmp1.v0.s, 1, tmp0.v0.s, 1);
+					nmblas_scopy(currentCount, tmp1.v0.t, 1, tmp0.v0.t, 1);
+					nmblas_scopy(currentCount, tmp1.v1.s, 1, tmp0.v1.s, 1);
+					nmblas_scopy(currentCount, tmp1.v1.t, 1, tmp0.v1.t, 1);
+					nmblas_scopy(currentCount, tmp1.v2.s, 1, tmp0.v2.s, 1);
+					nmblas_scopy(currentCount, tmp1.v2.t, 1, tmp0.v2.t, 1);
+				}
+#endif //TEXTURE_ENABLED
 
 				if (currentCount % 2) {					
 					tmp0.v0.x[currentCount] = tmp0.v0.x[currentCount - 1];
@@ -439,12 +569,30 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 					tmp0.v2.x[currentCount] = tmp0.v2.x[currentCount - 1];
 					tmp0.v2.y[currentCount] = tmp0.v2.y[currentCount - 1];
 					tmp0.v2.z[currentCount] = tmp0.v2.z[currentCount - 1];
+#ifdef TEXTURE_ENABLED
+					if (cntxt->texState.textureEnabled) {
+						tmp0.v0.w[currentCount] = tmp0.v0.w[currentCount - 1];
+						tmp0.v1.w[currentCount] = tmp0.v1.w[currentCount - 1];
+						tmp0.v2.w[currentCount] = tmp0.v2.w[currentCount - 1];
+						tmp0.v0.s[currentCount] = tmp0.v0.s[currentCount - 1];
+						tmp0.v0.t[currentCount] = tmp0.v0.t[currentCount - 1];
+						tmp0.v1.s[currentCount] = tmp0.v1.s[currentCount - 1];
+						tmp0.v1.t[currentCount] = tmp0.v1.t[currentCount - 1];
+						tmp0.v2.s[currentCount] = tmp0.v2.s[currentCount - 1];
+						tmp0.v2.t[currentCount] = tmp0.v2.t[currentCount - 1];
+					}
+#endif //TEXTURE_ENABLED
 					for (int i = 0; i < 12; i++) {
 						cntxt->buffer3[12 * (currentCount)+i] = cntxt->buffer3[12 * (currentCount - 1) + i];
 					}
+
 					currentCount++;
 				}
 
+#ifdef TEXTURE_ENABLED
+				//Data (x,y,z) now in buffer0, color in buffer3, texCoords in buffer3.
+				//Data (x,y,z,w,s,t) are referenced via tmp0.
+#endif //TEXTURE_ENABLED
 				//копирование каждого третьего цвета
 				nmblas_dcopy(2 * currentCount, (double*)cntxt->buffer3, 6, (double*)colorOrNormal, 2);
 				nmblas_dcopy(2 * currentCount, (double*)cntxt->buffer3 + 1, 6, (double*)colorOrNormal + 1, 2);				
@@ -457,6 +605,35 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 				nmblas_scopy(currentCount, tmp0.v2.y, 1, cntxt->trianInner.y2, 1);
 				meanToInt3(tmp0.v0.z, tmp0.v1.z, tmp0.v2.z, cntxt->trianInner.z, currentCount);
 				nmppsConvert_32f32s_rounding((float*)colorOrNormal, (int*)cntxt->trianInner.colors, 0, 4 * currentCount);
+#ifdef TEXTURE_ENABLED
+				if (cntxt->texState.textureEnabled) {
+					nmblas_scopy(currentCount, tmp0.v0.w, 1, cntxt->trianInner.w0, 1);
+					nmblas_scopy(currentCount, tmp0.v1.w, 1, cntxt->trianInner.w1, 1);
+					nmblas_scopy(currentCount, tmp0.v2.w, 1, cntxt->trianInner.w2, 1);
+
+					nmblas_scopy(currentCount, tmp0.v0.s, 1, cntxt->trianInner.s0, 1);
+					nmblas_scopy(currentCount, tmp0.v0.t, 1, cntxt->trianInner.t0, 1);
+					nmblas_scopy(currentCount, tmp0.v1.s, 1, cntxt->trianInner.s1, 1);
+					nmblas_scopy(currentCount, tmp0.v1.t, 1, cntxt->trianInner.t1, 1);
+					nmblas_scopy(currentCount, tmp0.v2.s, 1, cntxt->trianInner.s2, 1);
+					nmblas_scopy(currentCount, tmp0.v2.t, 1, cntxt->trianInner.t2, 1);
+#if 0					
+					for (int i = 0; i < currentCount; i++) {
+						printf("w0 %f ", cntxt->trianInner.w0[i]);
+						printf("w1 %f ", cntxt->trianInner.w1[i]);
+						printf("w2 %f ", cntxt->trianInner.w2[i]);
+						printf("s0 %f ", cntxt->trianInner.s0[i]);
+						printf("t0 %f ", cntxt->trianInner.t0[i]);
+						printf("s1 %f ", cntxt->trianInner.s1[i]);
+						printf("t1 %f ", cntxt->trianInner.t1[i]);
+						printf("s2 %f ", cntxt->trianInner.s2[i]);
+						printf("t2 %f ", cntxt->trianInner.t2[i]);
+						printf("\n");
+					}
+#endif //0
+				}
+#endif //TEXTURE_ENABLED
+
 				cntxt->trianInner.size = currentCount;
 				if (cntxt->isCullFace) {
 					PROFILER_SIZE(cntxt->trianInner.size);

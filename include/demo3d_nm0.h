@@ -115,6 +115,19 @@ struct Triangles{
 	float* x2;
 	float* y2;
 	int* z;
+#ifdef TEXTURE_ENABLED 
+	//order is important
+	float* s0;
+	float* t0;
+	float* s1;
+	float* t1;
+	float* s2;
+	float* t2;
+	float* w0;
+	float* w1;
+	float* w2;
+	int dummy;
+#endif //TEXTURE_ENABLED 
 	v4nm32s* colors;
 	int size;
 	int maxSize;
