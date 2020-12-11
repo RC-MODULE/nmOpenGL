@@ -35,9 +35,9 @@ SECTION(".text_demo3d") int swapImage() {
 	cntxt->t1 = clock();
 	//cntxt->synchro.counter++;
 	//cntxt->synchro.time = cntxt->t1 - cntxt->t0;
-	cntxt->imagesData->head++;
-	cntxt->colorBuffer.mData = cntxt->imagesData->ptrHead();
-	while (cntxt->imagesData->isFull());
+	cntxt->imageConnector->incHead();
+	cntxt->colorBuffer.mData = cntxt->imageConnector->ptrHead();
+	while (cntxt->imageConnector->isFull());
 	cntxt->t0 = clock();
 	return 0;
 }

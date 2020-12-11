@@ -9,6 +9,14 @@
 
 #define BIG_NMGL_SIZE (128 * NMGL_SIZE)
 
+/*!
+ *  \brief Класс, хранящий побитовую маску.
+ *  
+ *  Побитовая маска используется для выставления и определения принадлежности примитива одному из сегментов изображения.
+ *  
+ *  Если в соответствующем бите стоит 1 - значит примитив принадлежит сегменту, иначе не принадлежит. Так же структура хранит в себе переменную, характеризующую
+    наличие ненулевых битов в маске
+ */
 class BitMask {
 public:
 	int* bits;
@@ -34,7 +42,10 @@ public:
 	}
 };
 
-
+/*!
+ *  \brief Класс, хранящий побитовую маску в раздельных массивах.
+ *  Принцип схож с принципом структуры BitMask, однако в данной структуре маска разделена на четные и нечетные элементы
+ */
 class BitDividedMask{
 public:
 	BitMask even;
@@ -64,6 +75,9 @@ public:
 	}
 };
 
+/*!
+ *  \brief Структура, хранящая указатели на геометрические координаты, текстурные координаты и цвет вершины
+ */
 struct CombinePointers {
 	float *x;
 	float *y;
@@ -75,12 +89,19 @@ struct CombinePointers {
 	int dummy;
 };
 
+
+/*!
+ *  \brief Структура, хранящая три вершины треугольника. Каждая вершина описывается структурой CombinePointers
+ */
 struct TrianglePointers {
 	CombinePointers v0;
 	CombinePointers v1;
 	CombinePointers v2;
 };
 
+/*!
+ *  \brief Структура, хранящая две вершины линии. Каждая вершина описывается структурой CombinePointers
+ */
 struct LinePointers {
 	CombinePointers v0;
 	CombinePointers v1;
@@ -121,6 +142,9 @@ struct Triangles{
 };
 void copyTriangles(const Triangles &src, int offsetSrc, Triangles &dst, int offsetDst, int size);
 
+/*!
+ *  \brief Структура для описывания блока glBegin/glEnd
+ */
 class NmglBeginEndInfo{
 public:
 	v4nm32f* vertex;
@@ -145,18 +169,27 @@ public:
 
 };
 
+/*!
+ *  \brief Структура, хранящая информацию о стеке матриц
+ */
 struct MatrixStack {
-	mat4nm32f* base;
-	int current;
-	int size;
-	int type;
+	mat4nm32f* base;	///< указатель на массив матриц
+	int current;		///< Индекс текущей матрицы
+	int size;			///< Размер массива
+	int type;			///< Тип матриц
 
 	mat4nm32f* top() {
 		return &base[current];
 	}
 };
 
-
+/*!
+ *  \brief Контекст nmOpengl на ядре NMPU0
+ *  
+ *  \details Контекст сделан в виде статического класса и должен существовать только в единственном экземпляре.
+ *  От значений различных параметров зависит работа функций Opengl
+ *  
+ */
 class NMGL_Context_NM0 {
 private:
 	static NMGL_Context_NM0 *context;
@@ -175,70 +208,70 @@ public:
 	}
 
 
-	NMGLSynchro synchro;
-	PolygonsConnector* polygonsConnectors;
-	NMGLenum error;
-	PatternsArray* patterns;
-	float* buffer0;
-	float* buffer1;
-	float* buffer2;
-	float* buffer3;
-	float* buffer4;
+	NMGLSynchro synchro;  ///< Класс, осуществляющий синхронизацию между процессорами
+	PolygonsConnector* polygonsConnectors;  ///< Указатель на коннекторы структуры Polygons, необходимой для передачи данных с ядра на ядро
+	NMGLenum error;			///< Переменная, хранящая код ошибки. 0, если ошибок нет
+	PatternsArray* patterns;	///< Указатель на массив двухразрядных паттернов
+	float* buffer0;				///< Указатель буфер 0, используемый как временный буфер в нескольких функциях. Размер буфера должен быть (12 * NMGL_SIZE)
+	float* buffer1;				///< Указатель буфер 1, используемый как временный буфер в нескольких функциях. Размер буфера должен быть (12 * NMGL_SIZE)
+	float* buffer2;				///< Указатель буфер 2, используемый как временный буфер в нескольких функциях. Размер буфера должен быть (12 * NMGL_SIZE)
+	float* buffer3;				///< Указатель буфер 3, используемый как временный буфер в нескольких функциях. Размер буфера должен быть (12 * NMGL_SIZE)
+	float* buffer4;				///< Указатель буфер 4, используемый как временный буфер в нескольких функциях. Размер буфера должен быть (12 * NMGL_SIZE)
 
-	BitMask segmentMasks[36];
-	BitDividedMask dividedMasks[2];	
+	BitMask segmentMasks[36];	///< Массив структур однобитных масок. Каждая структура описывает один из сегментов изображения
+	BitDividedMask dividedMasks[2];	 ///< Массив структур разделенных однобитных масок. 
 
-	Triangles trianInner;
-	Lines lineInner;
-	Points pointInner;
-	NmglBeginEndInfo beginEndInfo;
+	Triangles trianInner;		///< Структура Triangles, массивы которой должны лежать во внутренней памяти. Каждый массив должен быть размера NMGL_SIZE
+	Lines lineInner;			///< Структура Lines, массивы которой должны лежать во внутренней памяти. Каждый массив должен быть размера NMGL_SIZE
+	Points pointInner;			///< Структура Points, массивы которой должны лежать во внутренней памяти. Каждый массив должен быть размера NMGL_SIZE
+	NmglBeginEndInfo beginEndInfo;	///< Структура для работы с блоком glBegin/glEnd
 
-	mat4nm32f modelviewMatrix[16];
-	mat4nm32f projectionMatrix[2];
-	mat4nm32f normalMatrix;
-	MatrixStack modelviewMatrixStack;
-	MatrixStack projectionMatrixStack;
-	MatrixStack* currentMatrixStack;
-	int isUseTwoSidedMode;
+	mat4nm32f modelviewMatrix[16];		///< Стек видовых матриц(16 матриц)
+	mat4nm32f projectionMatrix[2];		///< Стек проекционных матриц(2 матрицы)
+	mat4nm32f normalMatrix;				///< Матрица для нормалей
+	MatrixStack modelviewMatrixStack;	///< Структура для работы со стеком видовых матриц
+	MatrixStack projectionMatrixStack;	///< Структура для работы со стеком проекционных матриц
+	MatrixStack* currentMatrixStack;	///< Указатель на текущий стек матриц
+	int isUseTwoSidedMode;				///< 
 
-	int isCullFace;
+	int isCullFace;						///< Состояние режима отбрасывания треугольников с другим порядком обхода вершин. NMGL_TRUE, если включен, иначе NMGL_FALSE
 	int cullFaceType;
 	int frontFaceOrientation;
-	int normalizeEnabled;
-	float pointRadius;
+	int normalizeEnabled;				///< Состояние режима нормализации. NMGL_TRUE, если включен, иначе NMGL_FALSE
+	float pointRadius;					///< Радиус точек при рисование примитивов типа NMGL_POINTS
 	int dummy;
 
-	Array vertexArray;
-	Array normalArray;
-	Array colorArray;
+	Array vertexArray;					///< Класс для работы со значением координат вершинам в nmglDrawArrays
+	Array normalArray;					///< Класс для работы с нормалями в nmglDrawArrays
+	Array colorArray;					///< Класс для работы с цветом в nmglDrawArrays
 
-	v4nm32f ambientMul[MAX_LIGHTS + 1];
-	v4nm32f diffuseMul[MAX_LIGHTS];
-	v4nm32f specularMul[MAX_LIGHTS];
-	WindowInfo windowInfo;
+	v4nm32f ambientMul[MAX_LIGHTS + 1];    ///< Общие значения окружающей интенсивности материала и источников освещения (элемент MAX_LIGHTS говорит об общей интенсивности материала и сцены)
+	v4nm32f diffuseMul[MAX_LIGHTS];		   ///< Общие значения рассеяной интенсивности материала и источников освещения
+	v4nm32f specularMul[MAX_LIGHTS];	   ///< Общие значения зеркальной интенсивности материала и источников освещения
+	WindowInfo windowInfo;				///< Информация о расположении и размерах сегментов в изображении. Модифицируется функцией nmglViewport
 
-	v4nm32f tmp;
+	v4nm32f tmp;						
 
-	v4nm32f materialAmbient;
-	v4nm32f materialDiffuse;
-	v4nm32f materialSpecular;
-	v4nm32f materialEmissive;
+	v4nm32f materialAmbient;			///< Окружающий цвет материала
+	v4nm32f materialDiffuse;			///< Рассеяный цвет материала
+	v4nm32f materialSpecular;			///< Зеркальный цвет материала
+	v4nm32f materialEmissive;			///< Эмиссионный цвет материала
 
-	v4nm32f lightAmbient[MAX_LIGHTS + 1];
-	v4nm32f lightDiffuse[MAX_LIGHTS];
-	v4nm32f lightSpecular[MAX_LIGHTS];
-	v4nm32f lightPosition[MAX_LIGHTS];
-	v4nm32f lightSpotDirection[MAX_LIGHTS];
-	float lightSpotExp[MAX_LIGHTS];
-	float lightSpotCutoff[MAX_LIGHTS];
-	float lightConstAtt[MAX_LIGHTS];
-	float lightLinAtt[MAX_LIGHTS];
-	float lightQuadAtt[MAX_LIGHTS];
-	bool isEnabledLight[MAX_LIGHTS];
-	int isLighting;
-	float specularExp;
+	v4nm32f lightAmbient[MAX_LIGHTS + 1];   ///< Значения окружающей интенсивности источников света (элемент MAX_LIGHTS говорит об интенсивности сцены)
+	v4nm32f lightDiffuse[MAX_LIGHTS];       ///< Значения рассеяной интенсивности источников света
+	v4nm32f lightSpecular[MAX_LIGHTS];      ///< Значения зеркальной интенсивности источников света
+	v4nm32f lightPosition[MAX_LIGHTS];		///< Значения положения источников освещения
+	v4nm32f lightSpotDirection[MAX_LIGHTS];		///< Направление прожектора для источников света
+	float lightSpotExp[MAX_LIGHTS];			///< Показатель степени прожектора для источников света
+	float lightSpotCutoff[MAX_LIGHTS];		///< Угол отсечки прожектора для источников света
+	float lightConstAtt[MAX_LIGHTS];		///< Постоянный коэффициент затухания для источника света (не используется)
+	float lightLinAtt[MAX_LIGHTS];			///< Коэффициент линейного затухания  для источника света (не используется)
+	float lightQuadAtt[MAX_LIGHTS];			///< Квадратичный коэффициент затухания для источника света (не используется)
+	int isEnabledLight[MAX_LIGHTS];		///< Флаги активности источников света
+	int isLighting;						///< Флаг активности расчета освещения
+	float specularExp;					///< Показатель зеркальности
 
-	NMGL_Context_NM0_Texture texState; //textures data
+	NMGL_Context_NM0_Texture texState; 	///< textures data
 	
 	void init(NMGLSynchroData* syncroData){
 		synchro.init(syncroData);
@@ -365,13 +398,12 @@ public:
 
 extern "C"{
 	
-	/**
-	 *  \defgroup addC_v4nm32f addC_v4nm32f
+	/*!
 	 *  \ingroup service_api
-	 *  \brief Функция сложения массива 4-мерных векторов с 4-мерным вектором
+	 *  \brief Функция сложения массива 4-мерных векторов с одиночным 4-мерным вектором
 	 *  
 	 *  \param pSrcV [in] Входной массив 4-хмерных векторов
-	 *  \param pSrcC [in] Указатель на 4-мерный вектор
+	 *  \param pSrcC [in] Указатель на одиночный 4-мерный вектор
 	 *  \param pDst [out] Выходной массив
 	 *  \param size [in] Число векторов
 	 *  
@@ -391,27 +423,22 @@ extern "C"{
 	 //! \}
 	
 
-	/**
-	 *  \defgroup baseLighti baseLighti
+	/*!
 	 *  \ingroup service_api
 	 *  \brief Функция вычисления основной части освещения
 	 *  
 	 *  \param ambient [in] Указатель на амбиентную составляющую источника освещения
 	 *  \param n_dot_vp [in] Указатель на продублированный массив скалярного произведения нормали и дистанцией между источником и точкой
 	 *  \param diffuse [in] Указатель на амбиентную составляющую источника освещения
-	 *  \param n_dot_h_in_srm [in] Что-то пока что не очень ясное
-	 *  \param specular [in]  Тоже неясно
+	 *  \param n_dot_h_in_srm [in] Указатель на возведенный в степень srm продублированный массив скалярного произведения нормали и вектора h
+	 *  \param specular [in]  Указатель на массив specular
 	 *  \param dst [out] Выходной массив
 	 *  \param count [in] Число векторов
 	 *  
 	 *  \details Функция вычисляет основную часть освещения по формуле 
-	 *  res = a + nvp * d + f(nvp) * nh * s, где
-	 *  a - ambient
-	 *  nvp - n_dot_vp
-	 *  d - diffuse
-	 *  nh - n_dot_h_in_srm
-	 *  s - specular
-	 *  f(x) = 1, if (x!=0), else 0	
+	 *  \f[res = a + nvp * d + f(nvp) * nh * s\f], где
+	 *  *a* - *ambient*, *nvp* - *n_dot_vp*,  *d* - *diffuse*, *nh* - *n_dot_h_in_srm*, *s* - *specular*
+	 *  \f[f(x) = 1, if (x!=0), else 0	\f]
 	 *  
 	 *  \par
 	 *  \xmlonly
@@ -431,8 +458,7 @@ extern "C"{
 	void baseLighti(v4nm32f* ambient, v2nm32f* n_dot_vp, v4nm32f* diffuse, v2nm32f* n_dot_h_in_srm, v4nm32f* specular, v4nm32f* dst, int count);
 	 //! \}
 	
-	/**
-	 *  \defgroup clamp clamp
+	/*!
 	 *  \ingroup service_api
 	 *  \brief Функция приведения чисел к фиксированному диапазону
 	 *  
@@ -441,7 +467,12 @@ extern "C"{
 	 *  \param max [in] Максимальный порог диапазона
 	 *  \param pDstVec [out] Выходной массив
 	 *  \param size [in] Число элементов массива
-	 *  \retval Return description
+	 *  
+	 *  \details Функция вычисляет следующее выражение
+	 *  \f[f(x)= \begin{Bmatrix}
+	 *  \(min, & if x < min\) \\
+	 *  \(x, & if min<x<max\) \\
+	 *  \(max, & if x>max\) \f]
 	 *  
 	 *  \par
 	 *  \xmlonly
@@ -459,19 +490,17 @@ extern "C"{
 	void clamp_32f(nm32f* pSrcVec, float min, float max, nm32f* pDstVec, int size);
 	 //! \}
 		
-	/**
-	 *  \defgroup cnv32f_v2v4 cnv32f_v2v4
+	/*!
 	 *  \ingroup service_api
 	 *  \brief Функция конвертации двухмерного вектора в четырехмерный 
 	 *  с заданными значениями третьей и четвертой компоненты
 	 *  
 	 *  \param srcVec [in] Входный массив
-	 *  \param stride [in] Шаг чтения
+	 *  \param dstVec [out] Выходной массив
 	 *  \param value3 [in] Значение третьей компоненты элемента выходного массива
 	 *  \param value4 [in] Значение четвертой компоненты элемента выходного массива
-	 *  \param dstVec [out] Выходной массив
 	 *  \param size [in] Размер массива в элементах
-	 *  \retval Return description
+	 *  
 	 *  
 	 *  \par
 	 *  \xmlonly
@@ -490,13 +519,12 @@ extern "C"{
 	void cnv32f_v2v4(const v2nm32f* srcVec, v4nm32f* dstVec, float value3, float value4, int size);
 	 //! \}
 	 
-	 /**
-	 *  \defgroup cnv32f_v3v4 cnv32f_v3v4
+	 /*!
 	 *  \ingroup service_api
 	 *  \brief Функция конвертации трехмерного вектора в четырехмерный 
 	 *  
-	 *  \param src [in] Входный массив
-	 *  \param dst [out] Выходный массив
+	 *  \param srcVec [in] Входный массив
+	 *  \param dstVec [out] Выходный массив
 	 *  \param value4 [in] Значение четвертой компоненты элемента выходного массива
 	 *  \param size [in] Размер массива в элементах
 	 *  \retval Return description
@@ -513,19 +541,20 @@ extern "C"{
 	 *  \endxmlonly
 	 */
 	 //! \{
-	void cnv32f_v3v4(const nm32f* src, nm32f* dst, float value4, int size);
+	void cnv32f_v3v4(const nm32f* srcVec, nm32f* dstVec, float value4, int size);
 	 //! \}
 	
-	/**
-	 *  \defgroup Group Group name
+	/*!
 	 *  \ingroup service_api
-	 *  \brief Brief description
+	 *  \brief Функции выборки элементов из массивов
 	 *  
-	 *  \param srcPointers [in] Description for srcPointers
-	 *  \param indices [in] Description for indices
-	 *  \param dstPointers [in] Description for dstPointers
-	 *  \param nArrays [in] Description for nArrays
-	 *  \param size [in] Description for size
+	 *  \param srcPointers [in] Указатели входных массивов
+	 *  \param indices [in] Массив индексов
+	 *  \param dstPointers [in] Указатели выходных массивов
+	 *  \param nArrays [in] Число массивов
+	 *  \param size [in] Число копируемых элементов
+	 *  
+	 *  \details Функция производит выборку нужных элементов из входных массивов и кладет их подряд в выходных массивых. Индексы нужных элементов хранятся в массиве indices
 	 *  
 	 *  \par
 	 *  \xmlonly
@@ -540,11 +569,22 @@ extern "C"{
 	 *  \endxmlonly
 	 */
 	void copyArraysByIndices(void** srcPointers, int* indices, void** dstPointers, int nArrays, int size);
+	
+	/*!
+	 *  \brief Функция выборки цветов
+	 *  
+	 *  \param srcColor [in] Входной массив цветных векторов
+	 *  \param indices [in] Массив индексов
+	 *  \param dstColor [in] Выходной массив цветных векторов
+	 *  \param size [in] Число цветных векторов
+	 *  
+	 *  \details Функция берет элементы цветных векторов с индексами, получаемыми из *indices* и кладет их последовательно в выходной массив
+	 *  
+	 */
 	void copyColorByIndices(v4nm32s* srcColor, int* indices, v4nm32s* dstColor, int size);
 	
 
-	/**
-	 *  \defgroup dotC_gt0 dotC_gt0
+	/*!
 	 *  \ingroup service_api
 	 *  \brief Функция скалярного произведения массивa векторов и постоянного вектора с последующимся занулением отрицательных значений
 	 *  
@@ -552,7 +592,10 @@ extern "C"{
 	 *  \param srcC [in] Указатель на постоянный вектор
 	 *  \param dstValues [out] Выходной массив полученных значений (продублированный)
 	 *  \param size [in] Число векторов в массиве
-	 *  \retval Return description
+	 *  
+	 *  \details Функция считает скалярное произведение двух векторов и проверяет знак. Если результат больше нуля, то пишется результат, если меньше
+	 *  нуля, то пишется ноль. В выходном массиве результат пишется как два одинаковых числа, идующих подряд. Это сделано для удобства последующей работы
+	 *  с векторным сопроцессором
 	 *  
 	 *  \par
 	 *  \xmlonly
@@ -570,8 +613,7 @@ extern "C"{
 	 //! \}
 	
 	
-	/**
-	 *  \defgroup dotV_gt0 dotV_gt0
+	/*!
 	 *  \ingroup service_api
 	 *  \brief Функция скалярного произведения массивов векторов с последующимся занулением отрицательных значений
 	 *  
@@ -579,7 +621,10 @@ extern "C"{
 	 *  \param srcVec2 [in] Второй входной массив
 	 *  \param dstValues [out] Выходной массив полученных значений (продублированный)
 	 *  \param size [in] Число элементов
-	 *  \retval Return description
+	 *  
+	 *  \details Функция считает скалярное произведение двух векторов и проверяет знак. Если результат больше нуля, то пишется результат, если меньше
+	 *  нуля, то пишется ноль. В выходном массиве результат пишется в таком виде \f$ (r_0,r_0), (r_1,r_1)... (r_n,r_n) \f$. Это сделано для удобства последующей работы
+	 *  с векторным сопроцессором
 	 *  
 	 *  \par
 	 *  \xmlonly
@@ -592,16 +637,38 @@ extern "C"{
 	 *      </testperf>
 	 *  \endxmlonly
 	 */
-	 //! \{
 	void dotV_gt0_v4nm32f(v4nm32f* srcVec1, v4nm32f* srcVec2, v2nm32f* dstValues, int size);
-	void dotV_v4nm32f(v4nm32f* srcVec1, v4nm32f* srcVec2, v2nm32f* dstValues, int size);
-	 //! \}
-	
-	
-	/**
-	 *  \defgroup dotMulC_AddC dotMulC_AddC
+	 
+	 /*!
 	 *  \ingroup service_api
-	 *  \brief Функция умножения постоянного 4-хмерного вектора на массив продублированных констант с прибавлением другого постоянного вектора.
+	 *  \brief Функция скалярного произведения массивов векторов
+	 *  
+	 *  \param srcVec1 [in] Первый входной массив
+	 *  \param srcVec2 [in] Второй входной массив
+	 *  \param dstValues [out] Выходной массив полученных значений (продублированный)
+	 *  \param size [in] Число элементов
+	 *  
+	 *  \details Функция считает скалярное произведение двух векторов в выходной массив получившийся результат. В выходном массиве результат 
+	 *  пишется в таком виде \f$ (r_0,r_0), (r_1,r_1)... (r_n,r_n) \f$. Это сделано для удобства последующей работы
+	 *  с векторным сопроцессором
+	 *  
+	 *  \par
+	 *  \xmlonly
+	 *      <testperf>
+	 *          <param name="srcVec1"> im0 </param>
+	 *          <param name="srcVec2"> im0 im1 </param>
+	 *          <param name="dstValues"> im0 im1 im2 </param>
+	 *          <param name="size"> 128 512 1024 </param>
+	 *    		<size> size </size>
+	 *      </testperf>
+	 *  \endxmlonly
+	 */
+	void dotV_v4nm32f(v4nm32f* srcVec1, v4nm32f* srcVec2, v2nm32f* dstValues, int size);
+	
+	
+	/*!
+	 *  \ingroup service_api
+	 *  \brief Функция умножения постоянного 4-хмерного вектора на массив констант с прибавлением другого постоянного вектора.
 	 *  Массив констант должен быть продублированным
 	 *  
 	 *  \param srcVec [in] Входной массив констант
@@ -609,7 +676,8 @@ extern "C"{
 	 *  \param addC [in] Указатель на постоянный вектор-слагаемое
 	 *  \param dst [out] Выходной массив векторов
 	 *  \param size [in] Число векторов
-	 *  \retval Return description
+	 *  
+	 *  \details Массив констант должен быть  продублированным, то есть вида \f$ (c_0,c_0), (c_1,c_1)... (c_n,c_n) \f$
 	 *  
 	 *  \par
 	 *  \xmlonly
@@ -627,17 +695,17 @@ extern "C"{
 	void dotMulC_AddC_v4nm32f(v2nm32f* srcVec, v4nm32f* mulC, v4nm32f* addC, v4nm32f* dst, int size);
 	 //! \}
 
-	 /**
-	 *  \defgroup dotMulC_AddC dotMulC_AddC
+	 /*!
 	 *  \ingroup service_api
 	 *  \brief Функция умножения массива 4-хмерных векторов 
-	 *  на массив продублированных констант
+	 *  на массив констант
 	 *
 	 *  \param srcVec [in] Входной массив констант
 	 *  \param mulVec [in] Указатель на массив векторов
 	 *  \param dst [out] Выходной массив векторов
 	 *  \param size [in] Число векторов
-	 *  \retval Return description
+	 *  
+	 *  \details Массив констант должен быть  продублированным, то есть вида \f$ (c_0,c_0), (c_1,c_1)... (c_n,c_n) \f$
 	 *
 	 *  \par
 	 *  \xmlonly
@@ -654,10 +722,9 @@ extern "C"{
 	void dotMulV_v4nm32f(v2nm32f* srcVec, v4nm32f* mulVec, v4nm32f* dst, int size);
 	 //! \}
 	
-	/**
-	 *  \defgroup dotMulC_Add dotMulC_Add
+	/*!
 	 *  \ingroup service_api
-	 *  \brief Функция умножения постоянного 4-хмерного вектора на на массив констант с прибавлением массива других 4-хмерных векторов.
+	 *  \brief Функция умножения постоянного 4-хмерного вектора на массив констант с прибавлением массива других 4-хмерных векторов.
 	 *  Массив констант должен быть продублированным
 	 *  
 	 *  \param srcVec [in] Массив констант
@@ -665,7 +732,9 @@ extern "C"{
 	 *  \param addVec [in] Массив прибавляющихся векторов
 	 *  \param dst [out] Выходной массив
 	 *  \param size [in] Число элементов
-	 *  \retval Return description
+	 *  
+	 *  \details Функция делает следующую операцию \f$ f(x,y) = C * (x_0, x_1, x_2, x_3) +  (y_0, y_1, y_2, y_3)\f$. Константы C должен быть продублированным, то есть массив
+	 *  констант должен быть вида \f$ (c_0,c_0), (c_1,c_1)... (c_n,c_n) \f$
 	 *  
 	 *  \par
 	 *  \xmlonly
@@ -683,55 +752,158 @@ extern "C"{
 	void dotMulC_Add_v4nm32f(v2nm32f* srcVec, v4nm32f* mulC, v4nm32f* addVec, v4nm32f* dst, int size);
 	 //! \}
 
-	 /**
-	 *  \defgroup dotMulC_Add dotMulC_Add
+	/*!
 	 *  \ingroup service_api
-	 *  \brief Функция умножения постоянного 4-хмерного вектора на на массив констант с прибавлением массива других 4-хмерных векторов.
-	 *  Массив констант должен быть продублированным
-	 *
-	 *  \param srcVec [in] Массив констант
-	 *  \param mulC [in] Указатель на умножающийся постоянный вектор
-	 *  \param addVec [in] Массив прибавляющихся векторов
-	 *  \param dst [out] Выходной массив
-	 *  \param size [in] Число элементов
-	 *  \retval Return description
-	 *
+	 *  \brief Функция нахождение отрицательных смещений (с двумя параллельными обработками)
+	 *  
+	 *  \param src1 [in] Входной массив 1
+	 *  \param src2 [in] Входной массив 2
+	 *  \param dst1 [in] Выходный массив 1
+	 *  \param dst2 [in] Выходный массив 2
+	 *  \param size [in] Число обрабатываемых элементов (для обоих массивов одинаковое)
+	 *  
+	 *  \details Функция вычисляет следующее выражение
+	 *  \f[f(x)= \begin{Bmatrix}
+	 *  -x, & if x < 0 \\
+	 *  0, & if x >= 0 \f]
+	 *  
+	 *  Функция берет данные от двух источников и если все массивы распределены по разным банкам памяти, то обрабатывает их параллельно
+	 *  
+	 */
+	void doubleAbsIfNegElse0_32f(float* src1, float* src2, float* dst1, float* dst2, int size);
+	
+	/*!
+	 *  \ingroup service_api
+	 *  \brief Функция производит два параллельных сложения
+	 *  
+	 *  \param src1 [in] Первый входной массив 1
+	 *  \param src2 [in] Первый входной массив 2
+	 *  \param srcAdd1 [in] Второй входной массив 1
+	 *  \param srcAdd2 [in] Второй входной массив 2
+	 *  \param dst1 [in] Выходной массив 1
+	 *  \param dst2 [in] Выходной массив 2
+	 *  \param size [in] Число обрабатываемых элементов (для обоих массивов одинаковое)
+	 *  
+	 *  \details Функция паралелльно вычисляет два сложения. *dst1 = src1 + srcAdd1, dst2 = src2 + srcAdd2*
+	 *  
+	 */
+	void doubleAdd_32f(float* src1, float* src2, float* srcAdd1, float* srcAdd2, float* dst1, float* dst2, int size);
+	
+	/*!
+	 *  \ingroup service_api
+	 *  \brief Функция приведения чисел к фиксированному диапазону
+	 *  
+	 *  \param src1 [in] Входной массив 1
+	 *  \param src2 [in] Входной массив 2
+	 *  \param min [in] Минимальный порог диапазона
+	 *  \param max [in] Максимальный порог диапазона
+	 *  \param dst1 [out] Выходной массив 1
+	 *  \param dst2 [out] Выходной массив 2
+	 *  \param size [in] Число элементов массива
+	 *  
+	 *  \details Функция осуществляет те же действия что и функия clamp_32f, но параллельно для двух массивов
+	 *  
 	 *  \par
 	 *  \xmlonly
 	 *      <testperf>
-	 *          <param name="srcVec"> im0 </param>
-	 *          <param name="mulC"> im0 </param>
-	 *          <param name="addVec"> im0 im1 </param>
-	 *          <param name="dst"> im0 im1 im2 </param>
+	 *          <param name="pSrcVec"> im0 </param>
+	 *          <param name="min"> 0 </param>
+	 *          <param name="max"> 1 </param>
+	 *          <param name="pDstVec"> im0 im1 </param>
 	 *          <param name="size"> 128 512 1024 </param>
-	 *    		<size> size </size>
+	 *  		<size> size </size>
 	 *      </testperf>
 	 *  \endxmlonly
 	 */
-	 //! \{
-	void dotMulC_Add_v4nm32f(v2nm32f* srcVec, v4nm32f* mulC, v4nm32f* addVec, v4nm32f* dst, int size);
-	 //! \}
-	
-	void doubleAbsIfNegElse0_32f(float* src1, float* src2, float* dst1, float* dst2, int size);
-	void doubleAdd_32f(float* src1, float* src2, float* srcAdd1, float* srcAdd2, float* dst1, float* dst2, int size);
 	void doubleClamp_32f(float* src1, float* src2, float min, float max, float* dst1, float* dst2, int size);
+	
+	/*!
+	 *  \ingroup service_api
+	 *  \brief Brief description
+	 *  
+	 *  \param src1 [in] Description for src1
+	 *  \param src2 [in] Description for src2
+	 *  \param C1 [in] Description for C1
+	 *  \param C2 [in] Description for C2
+	 *  \param dst1 [in] Description for dst1
+	 *  \param dst2 [in] Description for dst2
+	 *  \param size [in] Description for size
+	 *  
+	 *  \details Details
+	 *  
+	 */
 	void doubleMulC_32f(float* src1, float* src2, float C1, float C2, float* dst1, float* dst2, int size);
+	
+	/*!
+	 *  \ingroup service_api
+	 *  \brief Функция производит два параллельных вычитания
+	 *  
+	 *  \param src1 [in] Первый входной массив 1
+	 *  \param src2 [in] Первый входной массив 2
+	 *  \param srcSub1 [in] Второй входной массив 1
+	 *  \param srcSub2 [in] Второй входной массив 2
+	 *  \param dst1 [in] Выходной массив 1
+	 *  \param dst2 [in] Выходной массив 2
+	 *  \param size [in] Число обрабатываемых элементов (для обоих массивов одинаковое)
+	 *  
+	 *  \details Функция паралелльно осуществляет два вычитания. *dst1 = src1 - srcSub1, dst2 = src2 - srcSub2*
+	 *  
+	 */
 	void doubleSub_32f(float* src1, float* src2, float* srcSub1, float* srcSub2, float* dst1, float* dst2, int size);
+	
+	/*!
+	 *  \ingroup service_api
+	 *  \brief Функция производит два параллельных вычитания
+	 *  
+	 *  \param src1 [in] Первый входной массив 1
+	 *  \param src2 [in] Первый входной массив 2
+	 *  \param С1 [in] Константа 1
+	 *  \param С2 [in] Константа 2
+	 *  \param dst1 [in] Выходной массив 1
+	 *  \param dst2 [in] Выходной массив 2
+	 *  \param size [in] Число обрабатываемых элементов (для обоих массивов одинаковое)
+	 *  
+	 *  \details Функция паралелльно вычитает два вычитания константы из массива. *dst1 = src1 - С1, dst2 = src2 - С2*
+	 *  
+	 */
 	void doubleSubC_32f(float* src1, float* src2, float C1, float C2, float* dst1, float* dst2, int size);
+	
+	/*!
+	 *  \ingroup service_api
+	 *  \brief Функция быстрого обратного корня
+	 *  
+	 *  \param srcVec [in] Входной массив
+	 *  \param dstVec [in] Выходной массив
+	 *  \param size [in] Число элементов
+	 *  
+	 *  \details Функция вычисляет выражение \f[ \frac{1}{\sqrt{x}} \f]. 
+	 *  Aлгоритм принимает 32-битное число с плавающей запятой (одинарной точности в формате IEEE 754) в качестве исходных данных и производит над ним следующие операции: 
+	 *  1. Трактуя 32-битное дробное число как целое, проводит операцию \f$y_0 = 5F3759DF_16 − (x >> 1)\f$, где >> — битовый сдвиг вправо. Результат снова трактуется как 32-битное дробное число. 
+	 *  2. Для уточнения проводит одну итерацию метода Ньютона: \f$y1 = y0(1,5 − 0,5xy0^2)\f$.
+	 *  
+	 */
 	void fastInvSqrt(float* srcVec, float* dstVec, int size);
+	
+	/*!
+	 *  \brief Находит индекс первого ненулевого элемента
+	 *  
+	 *  \param pSrcVec [in] Входной массив элемент
+	 *  \param size [in] Число элементов
+	 *  \return Индекс первого ненулевого элемента. Если не находит, то будет равно -1
+	 *  
+	 */
 	int firstNonZeroIndx_32s(int* pSrcVec, int size);
 	
-	/**
-	 *  \defgroup findMinMax2 findMinMax2
+	/*!
 	 *  \ingroup service_api
 	 *  \brief Поэлементный поиск минимум и максимума из двух массивов
 	 *  
-	 *  \param srcVec1 [in] Description for src1
-	 *  \param srcVec2 [in] Description for src2
-	 *  \param dstMin [out] Description for dstMin
-	 *  \param dstMax [in] Description for dstMax
-	 *  \param size [in] Description for size
-	 *  \retval Return description
+	 *  \param srcVec1 [in] Первый входной массив
+	 *  \param srcVec2 [in] Второй входной массив
+	 *  \param dstMin [out] Выходной массив минимумов
+	 *  \param dstMax [out] Выходной массив максимумов
+	 *  \param size [in] Число элементов
+	 *  
 	 *  
 	 *  \par
 	 *  \xmlonly
@@ -749,8 +921,7 @@ extern "C"{
 	void findMinMax2(float* srcVec1, float* srcVec2, float* dstMin, float* dstMax, int size);	
 	 //! \}
 
-	/**
-	 *  \defgroup findMinMax3 findMinMax3
+	/*!
 	 *  \ingroup service_api
 	 *  \brief Поэлементный поиск минимум и максимума из трех массивов
 	 *  
@@ -759,8 +930,7 @@ extern "C"{
 	 *  \param src3 [in] Третий входной массив
 	 *  \param dstMin [out] Выходной массив с минимумом
 	 *  \param dstMax [out] Выходной массив с максимумом
-	 *  \param size [in] Description for size
-	 *  \retval Return description
+	 *  \param size [in] Число элементов
 	 *  
 	 *  \par
 	 *  \xmlonly
@@ -779,13 +949,11 @@ extern "C"{
 	void findMinMax3(float* src1, float* src2, float* src3, float* dstMin, float* dstMax, int size);
 	 //! \}
 	
-	/**
-	 *  \defgroup loadIdentify loadIdentify
+	/*!
 	 *  \ingroup service_api
 	 *  \brief Функция инициализации матрицы едининчной матрицей
 	 *  
 	 *  \param matrix [out] Выходная матрица
-	 *  \retval Return description
 	 *  
 	 *  \par
 	 *  \xmlonly
@@ -799,8 +967,7 @@ extern "C"{
 	void loadIdentify(mat4nm32f* matrix);
 	 //! \}
 	
-	/**
-	 *  \defgroup meanToInt3 meanToInt3
+	/*!
 	 *  \ingroup service_api
 	 *  \brief Функция поиска среднего значения из трех элементов и конвертирования его в целочисленный тип
 	 *  
@@ -809,7 +976,6 @@ extern "C"{
 	 *  \param src3 [in] Входной массив третьих значений
 	 *  \param result [out] Выходной массив в целочисленном формате
 	 *  \param size [in] Число элементов массива
-	 *  \retval Return description
 	 *  
 	 *  \par
 	 *  \xmlonly
@@ -827,8 +993,7 @@ extern "C"{
 	void meanToInt3(float* src1, float* src2, float* src3, int* result, int size);
 	 //! \}
 	 
-	 /**
-	 *  \defgroup meanToIn23 meanToInt2
+	 /*!
 	 *  \ingroup service_api
 	 *  \brief Функция поиска среднего значения из двух элементов и конвертирования его в целочисленный тип
 	 *  
@@ -836,7 +1001,6 @@ extern "C"{
 	 *  \param src2 [in] Входной массив вторых значений
 	 *  \param result [out] Выходной массив
 	 *  \param size [in] Число элементов массива
-	 *  \retval Return description
 	 *  
 	 *  \par
 	 *  \xmlonly
@@ -854,8 +1018,7 @@ extern "C"{
 	 //! \}
 	
 		
-	/**
-	 *  \defgroup mulC_f mulC_f
+	/*!
 	 *  \ingroup service_api
 	 *  \brief Функция умножение массива на постоянное значение
 	 *  
@@ -863,7 +1026,6 @@ extern "C"{
 	 *  \param pSrcC [in] Указатель на постоянное значение
 	 *  \param pDst [out] Выходной массив
 	 *  \param size [in] Число элементов
-	 *  \retval Return description
 	 *  
 	 *  \par
 	 *  \xmlonly
@@ -880,8 +1042,7 @@ extern "C"{
 	void mulC_v4nm32f(v4nm32f* pSrcV, v4nm32f* pSrcC, v4nm32f* pDst, int size);
 	 //! \}
 	
-	/**
-	 *  \defgroup mul_mat4nm32f_v4nm32f mul_mat4nm32f_v4nm32f
+	/*!
 	 *  \ingroup service_api
 	 *  \brief Функция умножение матрицы 4х4 на массив 4хмерных векторов. Матрица задается по столбцам
 	 *  
@@ -889,7 +1050,6 @@ extern "C"{
 	 *  \param srcVec4xN [in] Входной массив векторов
 	 *  \param dstVec4xN [in] Выходной массив
 	 *  \param count [in] Число векторов
-	 *  \retval Return description
 	 *  
 	 *  \par
 	 *  \xmlonly
@@ -906,8 +1066,7 @@ extern "C"{
 	void mul_mat4nm32f_v4nm32f(mat4nm32f* srcMat4x4,	v4nm32f* srcVec4xN, v4nm32f* dstVec4xN, int count);
 	 //! \}
 
-	 /**
-	 *  \defgroup mul_v4nm32f_mat4nm32f mul_v4nm32f_mat4nm32f
+	 /*!
 	 *  \ingroup service_api
 	 *  \brief Функция массива 4хмерных векторов на матрицу 4х4. Матрица задается по строкам
 	 *
@@ -915,7 +1074,6 @@ extern "C"{
 	 *  \param srcVec4xN [in] Входной массив векторов
 	 *  \param dstVec4xN [in] Выходной массив
 	 *  \param count [in] Число векторов
-	 *  \retval Return description
 	 *
 	 *  \par
 	 *  \xmlonly
@@ -932,14 +1090,39 @@ extern "C"{
 	void mul_v4nm32f_mat4nm32f(v4nm32f* srcVec4xN, mat4nm32f* srcMat4x4, v4nm32f* dstVec4xN, int count);
 	 //! \}
 	
-	
+	/*!
+	 *  \ingroup service_api
+	 *  \brief Функция чтение однобитного массива масок
+	 *  
+	 *  \param mask [in] Входной массив масок
+	 *  \param dstIndices [in] Выходной массив индексов
+	 *  \param size [in] Число элементов
+	 *  
+	 *  \details Функция читает входные данные как однобитный массив проверяя значение каждого бита. Если бит маски равен 1, то его порядковый номер 
+	 *  записывается в *dstIndices*, иначе он пропускается
+	 *  
+	 */
 	int readMask(nm1* mask, int* dstIndices, int size);
+	
+	/*!
+	 *  \ingroup service_api
+	 *  \brief Функция чтение однобитного массива масок, разделенного на четные и нечетные маски
+	 *  
+	 *  \param maskEven [in] Входной массив масок четных элементов
+	 *  \param maskOdd [in] Входной массив масок нечетных элементов
+	 *  \param dstIndices [in] Выходной массив индексов
+	 *  \param size [in] Число элементов
+	 *  
+	 *  \details Функция читает входные данные как однобитный массив проверяя значение каждого бита. Если бит маски равен 1, то его порядковый номер вычисляется для массива четных масок 
+	 *  как 2i, для нечетных масок как 2i+1, где i - порядковый номер бита в массиве. Затем этот индекс записывается в *dstIndices*
+	 *  
+	 */
 	int readDividedMask(nm1* maskEven, nm1* maskOdd, int* dstIndices, int size);
-	int readMaskToLimitDst(nm1* mask, int* dstIndices, int* treated, int size, int maxSize);
+	
+	//int readMaskToLimitDst(nm1* mask, int* dstIndices, int* treated, int size, int maxSize);
 	void remap_32u(nm32u* pSrcVec, nm32u* pDstVec, nm32s* pRemapTable, int size);
 
-	/**
-	 *  \defgroup replaceEq0_f replaceEq0
+	/*!
 	 *  \ingroup service_api
 	 *  \brief Функция замены нуля другим значением
 	 *  
@@ -966,8 +1149,7 @@ extern "C"{
 	
 	
 
-	/**
-	 *  \defgroup set_v4nm32f set_v4nm32f
+	/*!
 	 *  \ingroup service_api
 	 *  \brief Функция инициализации элементов массива постоянным значением.
 	 *  
@@ -992,8 +1174,7 @@ extern "C"{
 	
 	
 
-	/**
-	 *  \defgroup sortByYinTriangle sortByYinTriangle
+	/*!
 	 *  \ingroup service_api
 	 *  \brief Функция поэлементной сортировки двухмерных элементов по возрастанию 2-й компоненты
 	 *  
@@ -1018,10 +1199,28 @@ extern "C"{
 	void sortByY3(float* srcAxy, float* srcBxy, float* srcCxy, int size);
 	 //! \}
 	 
+	 /*!
+	 *  \ingroup service_api
+	 *  \brief Функция поэлементной сортировки двухмерных элементов по возрастанию 2-й компоненты
+	 *  
+	 *  \param srcXY0 [in, out] Первый входной массив двухмерных векторов
+	 *  \param srcXY1 [in, out] Второй входной массив двухмерных векторов
+	 *  \param size [in] Число элементов
+	 *  \retval Return description
+	 *  
+	 *  \par
+	 *  \xmlonly
+	 *      <testperf>
+	 *          <param name="srcXY0"> im0 </param>
+	 *          <param name="srcXY1"> im0 im1 </param>
+	 *          <param name="size"> 128 512 1024 </param>
+	 *      	<size> size </size>
+	 *      </testperf>
+	 *  \endxmlonly
+	 */
 	void sortByY2(float* srcXY0, float* srcXY1, int size);
 
-	/**
-	 *  \defgroup split_v4nm32f split_v4nm32f
+	/*!
 	 *  \ingroup service_api
 	 *  \brief Функция разбивки 4х(-)мерного вектора на 4 отдельных значения(вектор на значения не бьется)
 	 *  
@@ -1052,8 +1251,7 @@ extern "C"{
 	void split_v4nm32f(v4nm32f* srcVec, int step, float* dstX, float* dstY, float* dstZ, float* dstW, int countVec);
 	 //! \}
 	 
-	/**
-	 *  \defgroup split_v2nm32f split_v2nm32f
+	/*!
 	 *  \ingroup service_api
 	 *  \brief Функция разбиения 2хмерного вектора на 2 отдельных значения
 	 *  
@@ -1079,8 +1277,8 @@ extern "C"{
 	 //! \{
 	void split_v2nm32f(v2nm32f* srcVec, int step, float* dstX, float* dstY, int countVec);
 	//! \}
-	/**
-	 *  \defgroup subCRev subCRev
+	
+	/*!
 	 *  \ingroup service_api
 	 *  \brief Функция вычитания вектора из постоянного значения
 	 *  
@@ -1105,9 +1303,56 @@ extern "C"{
 	void subCRev_v4nm32f(v4nm32f* pSrcV, v4nm32f* pSrcC, v4nm32f* pDst, int size);
 	 //! \}
 	
+	/*!
+	 *  \ingroup service_api
+	 *  \brief Brief description
+	 *  
+	 *  \param srcFlags [in] Description for srcFlags
+	 *  \param srcVec [in] Description for srcVec
+	 *  \param valueLeft [in] Description for valueLeft
+	 *  \param valueRight [in] Description for valueRight
+	 *  \param dstVec [in] Description for dstVec
+	 *  \param size [in] Description for size
+	 *  \return Return description
+	 *  \details Details
+	 *  
+	 */
 	void ternaryLt0_AddC_AddC_32f(nm32f* srcFlags, nm32f* srcVec, float valueLeft, float valueRight, float* dstVec, int size);
+	
+	/*!
+	 *  \ingroup service_api
+	 *  \brief Функция умножения трех массивов на константу
+	 *  
+	 *  \param src1 [in] Входной массив 1
+	 *  \param src2 [in] Входной массив 2
+	 *  \param src3 [in] Входной массив 2
+	 *  \param C [in] Умножаемая константа
+	 *  \param dst1 [in] Выходной массив 1
+	 *  \param dst2 [in] Выходной массив 2
+	 *  \param dst3 [in] Выходной массив 3
+	 *  \param size [in] Число элементов
+	 *  
+	 *  \details Функция умножает три входных массива на одну константу и выгружает результат в три разных массива. Если все массивы лежат в разных банках памяти,
+	 *  то умножение каждого массива происходит параллельно друг другу
+	 *  
+	 */
 	void tripleMulC_32f(float* src1, float* src2, float* src3, float C, float* dst1, float* dst2, float* dst3, int size);
 
+	/*!
+	 *  \ingroup service_api
+	 *  \defgroup repackToPrimitives repackToPrimitives
+	 *  \brief Функции переупаковки вершин
+	 *  
+	 *  \param srcVertex [in] Description for srcVertex
+	 *  \param srcColor [in] Description for srcColor
+	 *  \param srcTex [in] Description for srcTex
+	 *  \param dstVertex [in] Description for dstVertex
+	 *  \param vertexAmount [in] Description for vertexAmount
+	 *  \return Return description
+	 *  \details Details
+	 *  
+	 */
+	 //! \{
 	int repackToPrimitives_t(const v4nm32f *srcVertex,
 		const v4nm32f *srcColor,
 		const v2nm32f *srcTex,
@@ -1138,6 +1383,7 @@ extern "C"{
 		const v2nm32f *srcTex,
 		LinePointers *dstVertex,
 		int vertexAmount);
+	 //! \}
 
 }
 
@@ -1159,28 +1405,86 @@ void copyColorByIndices_BGRA_RGBA(v4nm32s* srcColor, int* indices, v4nm32s* dstC
 
 
 //functions that use NMGLSynchroL_ContextNM0
+
+/*!
+ *  \ingroup service_api
+ *  \brief Brief description
+ *  
+ *  \param triangles [in] Description for triangles
+ *  
+ *  \details Функция реализует выборку треагольников в зависимости от порядка обхода точек в треугольниках. Функция использует контекст NMGL_Context_NM0.
+ *  Режимы выборки определяются переменными frontFaceOrientation и cullFaceType в структуре NMGL_Context_NM0.
+ *  
+ */
 void cullFaceSortTriangles(Triangles &triangles);
+
+/*!
+ *  \ingroup service_api
+ *  \brief Функция проверки примитивов на принадлежность сегментам изображения
+ *  
+ *  \param minXY [in] Массив векторов минимумов координат *x* и *y*
+ *  \param maxXY [in] Массив векторов максимумов координат *x* и *y*
+ *  \param masks [out] Массив масок принадлежности.
+ *  \param size [in] Число примитивов
+ *  
+ *  \details Функция используется контекст NMGL_Context_NM0
+ *  
+ */
 void setSegmentMask(v2nm32f* minXY, v2nm32f* maxXY, BitMask* masks, int size);
+
+/*!
+ *  \ingroup service_api
+ *  \defgroup rasterize rasterize
+ *  \brief Функция растеризации примитивов
+ *  
+ *  \param triangles,lines,points [in] Значения вершин примитивов, их цвета и текстурных координат
+ *  \param masks [in] Массив масок принадлежности примитивов сегментам
+ *  
+ *  \details Изображение делится на сегменты размером 128х128 пикселей, потому что такие сегменты помещаются во внутреннюю память. Принадлежность примитива какому-либо сегменту определяется посредство проверки маски данного сегмента. Если треугольник лежит на границе двух сегментов, то считается, что он принадлежит каждому из них. После выделения примитивов, принадлежащих сегментов происходит обработка вершин и запись полученных данных в структуру *DataForNmpu1*. При необходимости, посылается команда NMPU1 для отрисовки этой структуры.
+ *  
+ *  Функция использует контекст NMGL_Context_NM0. 
+ *  
+ */
+  //! \{
 void rasterizeT(const Triangles* triangles, const BitMask* masks);
 void rasterizeL(const Lines* lines, const BitMask* masks);
 void rasterizeP(const Points* points, const BitMask* masks);
+  //! \}
+
+/*!
+ *  \ingroup service_api
+ *  \defgroup updatePolygons updatePolygons
+ *  \brief Функция дополнения структур для передачи данных от NMPU0 к NMPU1
+ *  
+ *  \param poly,data [in] Указатель на дополняемую структуру.
+ *  \param triangles,lines,points [in] Указатель на входную структуру данных
+ *  \param count [in] Число примитивов
+ *  \param segX [in] Номер колонки сегмента изображения
+ *  \param segY [in] Номер ряда сегмента изображения
+ 
+ *  \details Функция берет массивы из структур *triangles*,*lines* или *points*, обрабатывает их в зависимости от положения сегмента где они находятс и кладет нужные данный в конец массивов в структуре *PolygonsOld* или *DataForNmpu1*, которые при необходимости передаются затем на NMPU1. 
+ *  PolygonsOld устаревшая версия структуры и не рекомендуется к использованию. Переход между типами структур происходит посредством #define USED_OLD_POLYGONS.
+ *  Функция использует контекст NMGL_Context_NM0.
+ *  
+ */
+ //! \{
 void updatePolygonsT(PolygonsOld* poly, Triangles* triangles, int count, int segX, int segY);
 void updatePolygonsL(PolygonsOld* poly, Lines* lines, int count, int segX, int segY);
-void updatePolygonsP(PolygonsOld* poly, Points* lines, int count, int segX, int segY);
+void updatePolygonsP(PolygonsOld* poly, Points* points, int count, int segX, int segY);
 void updatePolygonsT(DataForNmpu1* data, Triangles* triangles, int count, int segX, int segY);
-void updatePolygonsL(DataForNmpu1* data, Lines* triangles, int count, int segX, int segY);
-void updatePolygonsP(DataForNmpu1* data, Points* triangles, int count, int segX, int segY);
+void updatePolygonsL(DataForNmpu1* data, Lines* lines, int count, int segX, int segY);
+void updatePolygonsP(DataForNmpu1* data, Points* points, int count, int segX, int segY);
+//! \}
 
-/**
- *  \defgroup color Light
+/*!
  *  \ingroup service_api
  *  \brief Функция расчета освещения
  *  
  *  \param vertex [in] Входной массив вершин
  *  \param srcNormal_dstColor [in, out] Входной массив нормалей, выходной массив цветов
  *  \param size [in] Число вершин
- *  \retval Return description
- *  \details Функция использует массивы nmglBuffer0, nmglBuffer1, nmglBuffer2, nmglBuffer3
+ *  
+ *  \details Функция использует контекст NMGL_Context_NM0 и находящиеся в нем массивы buffer0, buffer1, buffer2, buffer3
  */
 //! \{
 void light(v4nm32f* vertex, v4nm32f* srcNormal_dstColor, int size);
