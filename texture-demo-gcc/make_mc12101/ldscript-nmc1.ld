@@ -64,11 +64,7 @@ SECTIONS
   {
     *(.bss);
   } > C1_IMU0
-  .stack : ALIGN(0x8)
-  {
-    *(.stack);
-  } > C1_IMU0
-  .text_nmplv : ALIGN(0x8)
+ .text_nmplv : ALIGN(0x8)
   {
     *(.text_nmplv);
   } > C1_IMU0
@@ -99,6 +95,10 @@ SECTIONS
   .data_imu0A : ALIGN(0x64)
   {
     *(.data_imu0A);
+  } > C1_IMU0
+  .stack : ALIGN(0x8)
+  {
+    *(.stack);
   } > C1_IMU0
   .data_imu1 : ALIGN(0x8)
   {

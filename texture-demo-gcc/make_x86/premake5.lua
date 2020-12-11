@@ -81,6 +81,7 @@ solution "demo3d-target0"
 solution "demo3d-target1"
    configurations { "Debug", "Release" }
    platforms{"x64","x86"}
+   defines {"TEXTURE_ENABLED"}
 
    -- A project defines one build target
    project "demo3d-target1"

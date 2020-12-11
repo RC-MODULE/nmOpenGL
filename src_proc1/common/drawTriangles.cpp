@@ -8,6 +8,11 @@
 
 int totalSum(nm32s* pVec, int size);
 
+#ifdef TEXTURE_ENABLED
+using namespace tex_nm1; 
+SECTION(".data_imu0") TrianglesInfo triangles;
+#endif //TEXTURE_ENABLED
+
 SECTION(".text_demo3d") void drawTriangles() {
 	NMGL_Context_NM1 *context = NMGL_Context_NM1::getContext();
 	PolygonsConnector *connector = context->polygonsConnectors;
@@ -95,6 +100,56 @@ SECTION(".text_demo3d") void drawTriangles() {
 			localSize);
 
 		//mulBuffer теперь хранит цвет
+
+#ifdef TEXTURE_ENABLED
+#define TRIANGLE_AMOUNT 2
+        if (context->texState.textureEnabled) {
+            //TODO: Check: DataForNmpu1 contains window coordinates or segment coordinates?
+            float x0[TRIANGLE_AMOUNT] = {415.0f,414.0f };
+            float y0[TRIANGLE_AMOUNT] = {353.0f,354.0f };
+            float x1[TRIANGLE_AMOUNT] = {384.0f,414.0f };
+            float y1[TRIANGLE_AMOUNT] = {353.0f,384.0f };
+            float x2[TRIANGLE_AMOUNT] = {384.0f,384.0f };
+            float y2[TRIANGLE_AMOUNT] = {384.0f,384.0f };
+
+            float s0[TRIANGLE_AMOUNT] = {1.0f,1.0f };
+            float t0[TRIANGLE_AMOUNT] = {1.0f,1.0f };
+            float s1[TRIANGLE_AMOUNT] = {0.0f,1.0f };
+            float t1[TRIANGLE_AMOUNT] = {1.0f,0.0f };
+            float s2[TRIANGLE_AMOUNT] = {0.0f,0.0f };
+            float t2[TRIANGLE_AMOUNT] = {0.0f,0.0f };
+
+            float z[TRIANGLE_AMOUNT] = {1.0f, 1.0f}; //w after matrix projection
+
+            triangles.x0 = &x0[0];
+            triangles.y0 = &y0[0];
+            triangles.x1 = &x1[0];
+            triangles.y1 = &y1[0];
+            triangles.x2 = &x2[0];
+            triangles.y2 = &y2[0];
+
+            triangles.s0 = &s0[0];
+            triangles.t0 = &t0[0];
+            triangles.s1 = &s1[0];
+            triangles.t1 = &t1[0];
+            triangles.s2 = &s2[0];
+            triangles.t2 = &t2[0];
+
+            triangles.z0 = &z[0];
+            triangles.z1 = &z[0];
+            triangles.z2 = &z[0];
+
+            textureTriangle(
+                    context->polyImgTmp,
+                    &triangles,
+                    (COMMON_DRAW_TYPE**)(context->imagePoints + point),
+                    context->ptrnInnPoints + point,
+                    context->ptrnSizes + point,
+                    mulC,
+                    mulC,
+                    localSize);
+        }
+#endif //TEXTURE_ENABLED
 
 		//функция накладывает маску на буфер с цветами 
 		//и копирует треугольник в изображение

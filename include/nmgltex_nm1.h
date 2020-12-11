@@ -5,15 +5,15 @@
 
 struct NMGL_Context_NM1_Texture {
 	
-  /**
-  * Координата x левого нижнего угла обрабатываемого сегмента кадрового буфера
-  */
-  int segX0;
+	/**
+	* Координата x левого нижнего угла обрабатываемого сегмента кадрового буфера
+	*/
+	int segX0;
 	
 	/**
-  * Координата y левого нижнего угла обрабатываемого сегмента кадрового буфера
+	* Координата y левого нижнего угла обрабатываемого сегмента кадрового буфера
 	*/
-  int segY0;
+	int segY0;
 
 	/**
 	* Ширина обрабатываемого сегмента кадрового буфера
@@ -79,6 +79,9 @@ struct NMGL_Context_NM1_Texture {
 		activeTexUnitIndex = 0;
 		clientActiveTexUnit = NMGL_TEXTURE0;
 		clientActiveTexUnitIndex = 0;
+		segX0 = 0;
+		segY0 = 0;
+		segWidth = WIDTH_SEG;
 		//texcoordArray
 		//curTexCoords
 		//unpackAlignment

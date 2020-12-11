@@ -127,6 +127,8 @@ SECTION(".text_nmglvs") int nmglvsNm1Step()
 		while (copyImageCounterColor <= numOfSeg);
 		PROFILER_SIZE(width * height);
 		cntxt->colorBuffer.pushWindow(cntxt->smallColorBuff, width, height);
+		cntxt->texState.segX0 = x0;
+		cntxt->texState.segY0 = y0;
 		break;
 	}
 
@@ -214,7 +216,7 @@ SECTION(".text_nmglvs") int nmglvsNm1Step()
 	
 	case NMC1_SET_MIPMAP_LVL_POINTER: {
 		//use DDR only as addresses are sent directly
-		cntxt->texState.texObjects[currentCommand.params[0]].texImages2D[currentCommand.params[1]].pixels=(void*)currentCommand.params[2];
+		cntxt->texState.texObjects[currentCommand.params[0]].texImages2D[currentCommand.params[1]].pixels=halMapAddrFrom((void*)currentCommand.params[2],0);
 		DEBUG_PRINT2(("Step:for texture %d level %d got pointer %x\n",currentCommand.params[0],currentCommand.params[1],currentCommand.params[2]));
 		break;
 	}	
