@@ -217,12 +217,12 @@ SECTION(".text_demo3d") int getAddrPtrnsT(DataForNmpu1* data) {
 #ifdef TEXTURE_ENABLED
 	if (cntxt->texState.textureEnabled) {
 		for (int i = 0; i < size; i++) {
-			cntxt->x0[i] = (float)dataTmp->x0[i];
-			cntxt->y0[i] = (float)dataTmp->y0[i];
-			cntxt->x1[i] = (float)dataTmp->x1[i];
-			cntxt->y1[i] = (float)dataTmp->y1[i];
-			cntxt->x2[i] = (float)dataTmp->x2[i];
-			cntxt->y2[i] = (float)dataTmp->y2[i];
+			cntxt->x0[i] = (float)dataTmp->x0[i] + cntxt->texState.segX0;
+			cntxt->y0[i] = (float)dataTmp->y0[i] + cntxt->texState.segY0;
+			cntxt->x1[i] = (float)dataTmp->x1[i] + cntxt->texState.segX0;
+			cntxt->y1[i] = (float)dataTmp->y1[i] + cntxt->texState.segY0;
+			cntxt->x2[i] = (float)dataTmp->x2[i] + cntxt->texState.segX0;
+			cntxt->y2[i] = (float)dataTmp->y2[i] + cntxt->texState.segY0;
 
 			cntxt->texS0[i] = dataTmp->s0[i];
 			cntxt->texT0[i] = dataTmp->t0[i];

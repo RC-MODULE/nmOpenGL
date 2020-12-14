@@ -102,68 +102,24 @@ SECTION(".text_demo3d") void drawTriangles() {
 		//mulBuffer теперь хранит цвет
 
 #ifdef TEXTURE_ENABLED
-//		if (context->texState.textureEnabled) {
-//			for (int i = 0; i < localSize; i++) {
-//				printf("after getAddrPtrnsT ");
-//				printf("x0 %f ", context->x0[i]);
-//				printf("y0 %f ", context->y0[i]);
-//				printf("x1 %f ", context->x1[i]);
-//				printf("y1 %f ", context->y1[i]);
-//				printf("x2 %f ", context->x2[i]);
-//				printf("y2 %f ", context->y2[i]);
-//
-//				printf("w0 %f ", context->w0[i]);
-//				printf("w1 %f ", context->w1[i]);
-//				printf("w2 %f ", context->w2[i]);
-//
-//				printf("s0 %f ", context->texS0[i]);
-//				printf("t0 %f ", context->texT0[i]);
-//				printf("s1 %f ", context->texS1[i]);
-//				printf("t1 %f ", context->texT1[i]);
-//				printf("s2 %f ", context->texS2[i]);
-//				printf("t2 %f ", context->texT2[i]);
-//				printf("\n");
-//			}
-//		}
-#endif //TEXTURE_ENABLED
-
-#ifdef TEXTURE_ENABLED
-#define TRIANGLE_AMOUNT 2
         if (context->texState.textureEnabled) {
-            //TODO: Check: DataForNmpu1 contains window coordinates or segment coordinates?
-            float x0[TRIANGLE_AMOUNT] = {415.0f,414.0f };
-            float y0[TRIANGLE_AMOUNT] = {353.0f,354.0f };
-            float x1[TRIANGLE_AMOUNT] = {384.0f,414.0f };
-            float y1[TRIANGLE_AMOUNT] = {353.0f,384.0f };
-            float x2[TRIANGLE_AMOUNT] = {384.0f,384.0f };
-            float y2[TRIANGLE_AMOUNT] = {384.0f,384.0f };
+			triangles.x0 = &context->x0[0];
+			triangles.y0 = &context->y0[0];
+			triangles.x1 = &context->x1[0];
+			triangles.y1 = &context->y1[0];
+			triangles.x2 = &context->x2[0];
+			triangles.y2 = &context->y2[0];
 
-            float s0[TRIANGLE_AMOUNT] = {1.0f,1.0f };
-            float t0[TRIANGLE_AMOUNT] = {1.0f,1.0f };
-            float s1[TRIANGLE_AMOUNT] = {0.0f,1.0f };
-            float t1[TRIANGLE_AMOUNT] = {1.0f,0.0f };
-            float s2[TRIANGLE_AMOUNT] = {0.0f,0.0f };
-            float t2[TRIANGLE_AMOUNT] = {0.0f,0.0f };
+			triangles.s0 = &context->texS0[0];
+			triangles.t0 = &context->texT0[0];
+			triangles.s1 = &context->texS1[0];
+			triangles.t1 = &context->texT1[0];
+			triangles.s2 = &context->texS2[0];
+			triangles.t2 = &context->texT2[0];
 
-            float z[TRIANGLE_AMOUNT] = {1.0f, 1.0f}; //w after matrix projection
-
-            triangles.x0 = &x0[0];
-            triangles.y0 = &y0[0];
-            triangles.x1 = &x1[0];
-            triangles.y1 = &y1[0];
-            triangles.x2 = &x2[0];
-            triangles.y2 = &y2[0];
-
-            triangles.s0 = &s0[0];
-            triangles.t0 = &t0[0];
-            triangles.s1 = &s1[0];
-            triangles.t1 = &t1[0];
-            triangles.s2 = &s2[0];
-            triangles.t2 = &t2[0];
-
-            triangles.z0 = &z[0];
-            triangles.z1 = &z[0];
-            triangles.z2 = &z[0];
+			triangles.z0 = &context->w0[0];
+			triangles.z1 = &context->w1[0];
+			triangles.z2 = &context->w2[0];
 
             textureTriangle(
                     context->polyImgTmp,
