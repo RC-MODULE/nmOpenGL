@@ -111,22 +111,23 @@ void rasterizeT(const Triangles* triangles, const BitMask* masks){
 						offset += localSize;
 						updatePolygonsT(poly, &localTrian2, localSize, segX, segY);
 #ifdef TEXTURE_ENABLED
-//						if (cntxt->texState.textureEnabled) {
-//							for (int i = 0; i < resultSize; i++) {
-//								printf("w0 %f ", localTrian2.w0[i]);
-//								printf("w1 %f ", localTrian2.w1[i]);
-//								printf("w2 %f ", localTrian2.w2[i]);
-//								printf("s0 %f ", localTrian2.s0[i]);
-//								printf("t0 %f ", localTrian2.t0[i]);
-//								printf("s1 %f ", localTrian2.s1[i]);
-//								printf("t1 %f ", localTrian2.t1[i]);
-//								printf("s2 %f ", localTrian2.s2[i]);
-//								printf("t2 %f ", localTrian2.t2[i]);
+//						if(cntxt->texState.textureEnabled) {
+//							for (int i = 0; i < localSize; i++) {
+//								printf("after updatePolygonsT ");
+//								printf("w0 %f ", poly->w0[i]);
+//								printf("w1 %f ", poly->w1[i]);
+//								printf("w2 %f ", poly->w2[i]);
+//								printf("s0 %f ", poly->s0[i]);
+//								printf("t0 %f ", poly->t0[i]);
+//								printf("s1 %f ", poly->s1[i]);
+//								printf("t1 %f ", poly->t1[i]);
+//								printf("s2 %f ", poly->s2[i]);
+//								printf("t2 %f ", poly->t2[i]);
 //								printf("\n");
 //							}
 //						}
 #endif //TEXTURE_ENABLED
-					connector->incHead();
+						connector->incHead();
 						cntxt->synchro.writeInstr(1, NMC1_DRAW_TRIANGLES, iSeg);
 					}
 

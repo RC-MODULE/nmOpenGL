@@ -39,7 +39,6 @@
 #endif //TEXTURE_ENABLED
 
 
-
 SECTION(".text_demo3d")
 //void updateDataForNmpu1_T(DataForNmpu1* data, Triangles* triangles, int count, int segX, int segY){
 void updatePolygonsT(DataForNmpu1* data, Triangles* triangles, int count, int segX, int segY){
@@ -50,44 +49,7 @@ void updatePolygonsT(DataForNmpu1* data, Triangles* triangles, int count, int se
 	float* temp2 = cntxt->buffer2 + 2 * NMGL_SIZE;
 	float* temp3 = cntxt->buffer3 + 6 * NMGL_SIZE;
 
-#ifdef TEXTURE_ENABLED
-//	if (cntxt->texState.textureEnabled) {
-//		for (int i = 0; i < count; i++) {
-//			printf("before sort ");
-//			printf("w0 %f ", triangles->w0[i]);
-//			printf("w1 %f ", triangles->w1[i]);
-//			printf("w2 %f ", triangles->w2[i]);
-//			printf("s0 %f ", triangles->s0[i]);
-//			printf("t0 %f ", triangles->t0[i]);
-//			printf("s1 %f ", triangles->s1[i]);
-//			printf("t1 %f ", triangles->t1[i]);
-//			printf("s2 %f ", triangles->s2[i]);
-//			printf("t2 %f ", triangles->t2[i]);
-//			printf("\n");
-//		}
-//	}
-#endif //TEXTURE_ENABLED
-
 	sort();
-
-
-#ifdef TEXTURE_ENABLED
-//	if (cntxt->texState.textureEnabled) {
-//		for (int i = 0; i < count; i++) {
-//			printf("after sort ");
-//			printf("w0 %f ", triangles->w0[i]);
-//			printf("w1 %f ", triangles->w1[i]);
-//			printf("w2 %f ", triangles->w2[i]);
-//			printf("s0 %f ", triangles->s0[i]);
-//			printf("t0 %f ", triangles->t0[i]);
-//			printf("s1 %f ", triangles->s1[i]);
-//			printf("t1 %f ", triangles->t1[i]);
-//			printf("s2 %f ", triangles->s2[i]);
-//			printf("t2 %f ", triangles->t2[i]);
-//			printf("\n");
-//		}
-//	}
-#endif //TEXTURE_ENABLED
 
 	nmppsSub_32f(triangles->x1, triangles->x0, temp0, count);
 	nmppsSub_32f(triangles->x2, triangles->x0, temp1, count);
@@ -110,6 +72,20 @@ void updatePolygonsT(DataForNmpu1* data, Triangles* triangles, int count, int se
 	
 	nmblas_scopy (count, (float*)triangles->z, 1, (float*)data->z + data->count, 1);
 	nmblas_scopy(4 * count, (float*)triangles->colors, 1, (float*)data->color + 4 * data->count, 1);
+
+#ifdef TEXTURE_ENABLED
+	if (cntxt->texState.textureEnabled) {
+		nmblas_scopy(count, (float*)triangles->s0, 1, (float*)data->s0, 1);
+		nmblas_scopy(count, (float*)triangles->t0, 1, (float*)data->t0, 1);
+		nmblas_scopy(count, (float*)triangles->s1, 1, (float*)data->s1, 1);
+		nmblas_scopy(count, (float*)triangles->t1, 1, (float*)data->t1, 1);
+		nmblas_scopy(count, (float*)triangles->s2, 1, (float*)data->s2, 1);
+		nmblas_scopy(count, (float*)triangles->t2, 1, (float*)data->t2, 1);
+		nmblas_scopy(count, (float*)triangles->w0, 1, (float*)data->w0, 1);
+		nmblas_scopy(count, (float*)triangles->w1, 1, (float*)data->w1, 1);
+		nmblas_scopy(count, (float*)triangles->w2, 1, (float*)data->w2, 1);
+	}
+#endif TEXTURE_ENABLED
 
 #ifdef DEBUG
 	static unsigned int counter = 0;
