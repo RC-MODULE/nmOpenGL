@@ -102,6 +102,32 @@ SECTION(".text_demo3d") void drawTriangles() {
 		//mulBuffer теперь хранит цвет
 
 #ifdef TEXTURE_ENABLED
+//		if (context->texState.textureEnabled) {
+//			for (int i = 0; i < localSize; i++) {
+//				printf("after getAddrPtrnsT ");
+//				printf("x0 %f ", context->x0[i]);
+//				printf("y0 %f ", context->y0[i]);
+//				printf("x1 %f ", context->x1[i]);
+//				printf("y1 %f ", context->y1[i]);
+//				printf("x2 %f ", context->x2[i]);
+//				printf("y2 %f ", context->y2[i]);
+//
+//				printf("w0 %f ", context->w0[i]);
+//				printf("w1 %f ", context->w1[i]);
+//				printf("w2 %f ", context->w2[i]);
+//
+//				printf("s0 %f ", context->texS0[i]);
+//				printf("t0 %f ", context->texT0[i]);
+//				printf("s1 %f ", context->texS1[i]);
+//				printf("t1 %f ", context->texT1[i]);
+//				printf("s2 %f ", context->texS2[i]);
+//				printf("t2 %f ", context->texT2[i]);
+//				printf("\n");
+//			}
+//		}
+#endif //TEXTURE_ENABLED
+
+#ifdef TEXTURE_ENABLED
 #define TRIANGLE_AMOUNT 2
         if (context->texState.textureEnabled) {
             //TODO: Check: DataForNmpu1 contains window coordinates or segment coordinates?

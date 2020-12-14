@@ -214,6 +214,30 @@ SECTION(".text_demo3d") int getAddrPtrnsT(DataForNmpu1* data) {
 #endif
 	mergePtrnsAddr3(dstPackTmp02, dstPackTmp01, dstPackTmp12, SMALL_SIZE, cntxt->ppDstPackPtrns, size);
 
+#ifdef TEXTURE_ENABLED
+	if (cntxt->texState.textureEnabled) {
+		for (int i = 0; i < size; i++) {
+			cntxt->x0[i] = (float)dataTmp->x0[i];
+			cntxt->y0[i] = (float)dataTmp->y0[i];
+			cntxt->x1[i] = (float)dataTmp->x1[i];
+			cntxt->y1[i] = (float)dataTmp->y1[i];
+			cntxt->x2[i] = (float)dataTmp->x2[i];
+			cntxt->y2[i] = (float)dataTmp->y2[i];
+
+			cntxt->texS0[i] = dataTmp->s0[i];
+			cntxt->texT0[i] = dataTmp->t0[i];
+			cntxt->texS1[i] = dataTmp->s1[i];
+			cntxt->texT1[i] = dataTmp->t1[i];
+			cntxt->texS2[i] = dataTmp->s2[i];
+			cntxt->texT2[i] = dataTmp->t2[i];
+
+			cntxt->w0[i] = dataTmp->w0[i];
+			cntxt->w1[i] = dataTmp->w1[i];
+			cntxt->w2[i] = dataTmp->w2[i];
+		}
+	}
+#endif //TEXTURE_ENABLED
+
 	//этот кусок кода является си-реализацией этой функции и является более наглядным	
 	/*for (int i = 0; i < size; i++) {
 
