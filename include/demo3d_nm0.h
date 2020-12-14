@@ -1033,6 +1033,34 @@ extern "C"{
 	 
 	void sortByY2(float* srcXY0, float* srcXY1, int size);
 
+#ifdef TEXTURE_ENABLED
+	/**
+	 *  \brief Функция поэлементной сортировки данных X,Y,S,T,W вершин 0,1,2
+	 *  по возрастанию Y. Для i-го входного набора вершин 0,1,2 упорядочивает 
+	 *  вершины (данные вершин) в порядке возрастания координаты Y.
+	 *  
+	 *  \param srcXY0 [in, out] Входной массив двухмерных векторов XY0
+	 *  \param srcXY1 [in, out] Входной массив двухмерных векторов XY1
+	 *  \param srcXY2 [in, out] Входной массив двухмерных векторов XY2
+	 *  \param srcS0  [in, out] Входной массив одномерных векторов S0
+	 *  \param srcT0  [in, out] Входной массив одномерных векторов T0
+	 *  \param srcS1  [in, out] Входной массив одномерных векторов S1 
+	 *  \param srcT1  [in, out] Входной массив одномерных векторов T1 
+	 *  \param srcS2  [in, out] Входной массив одномерных векторов S2 
+	 *  \param srcT2  [in, out] Входной массив одномерных векторов T2 
+	 *  \param srcW0  [in, out] Входной массив одномерных векторов W0 
+	 *  \param srcW1  [in, out] Входной массив одномерных векторов W1 
+	 *  \param srcW2  [in, out] Входной массив одномерных векторов W2 
+	 *  \param size [in] Число элементов в массивах
+	 *  \retval Return description
+	 */
+	void sortByY5(float* srcXY0, float* srcXY1, float* srcXY2,
+		float* srcS0, float* srcT0,
+		float* srcS1, float* srcT1,
+		float* srcS2, float* srcT2,
+		float* srcW0, float* srcW1, float* srcW2,
+		int size);
+#endif //TEXTURE_ENABLED
 	/**
 	 *  \defgroup split_v4nm32f split_v4nm32f
 	 *  \ingroup service_api

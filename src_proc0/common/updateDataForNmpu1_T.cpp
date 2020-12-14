@@ -9,7 +9,7 @@
 #include "math.h"
 
 
-
+#ifndef TEXTURE_ENABLED
 #define sort() 	nmppsMerge_32f(triangles->x0, triangles->y0, temp0, count);	 \
 	nmppsMerge_32f(triangles->x1, triangles->y1, temp1, count);				 \
 	nmppsMerge_32f(triangles->x2, triangles->y2, temp2, count);				 \
@@ -17,6 +17,28 @@
 	split_v2nm32f((v2nm32f*)temp0, 1, triangles->x0, triangles->y0, count);	 \
 	split_v2nm32f((v2nm32f*)temp1, 1, triangles->x1, triangles->y1, count);	 \
 	split_v2nm32f((v2nm32f*)temp2, 1, triangles->x2, triangles->y2, count)
+
+#else //TEXTURE_ENABLED
+
+#define sort() 	nmppsMerge_32f(triangles->x0, triangles->y0, temp0, count);	 \
+	nmppsMerge_32f(triangles->x1, triangles->y1, temp1, count);				 \
+	nmppsMerge_32f(triangles->x2, triangles->y2, temp2, count);				 \
+	if (cntxt->texState.textureEnabled == 0) {                                \
+		sortByY3(temp0, temp1, temp2, count);									 \
+	}																		 \
+	else {																	 \
+		sortByY5(temp0, temp1, temp2, \
+				 triangles->s0, triangles->t0, \
+				 triangles->s1, triangles->t1, \
+				 triangles->s2, triangles->t2, \
+				 triangles->w0, triangles->w1, triangles->w2, count);						\
+	}																		 \
+	split_v2nm32f((v2nm32f*)temp0, 1, triangles->x0, triangles->y0, count);	 \
+	split_v2nm32f((v2nm32f*)temp1, 1, triangles->x1, triangles->y1, count);	 \
+	split_v2nm32f((v2nm32f*)temp2, 1, triangles->x2, triangles->y2, count)
+#endif //TEXTURE_ENABLED
+
+
 
 SECTION(".text_demo3d")
 //void updateDataForNmpu1_T(DataForNmpu1* data, Triangles* triangles, int count, int segX, int segY){
@@ -28,7 +50,44 @@ void updatePolygonsT(DataForNmpu1* data, Triangles* triangles, int count, int se
 	float* temp2 = cntxt->buffer2 + 2 * NMGL_SIZE;
 	float* temp3 = cntxt->buffer3 + 6 * NMGL_SIZE;
 
+#ifdef TEXTURE_ENABLED
+//	if (cntxt->texState.textureEnabled) {
+//		for (int i = 0; i < count; i++) {
+//			printf("before sort ");
+//			printf("w0 %f ", triangles->w0[i]);
+//			printf("w1 %f ", triangles->w1[i]);
+//			printf("w2 %f ", triangles->w2[i]);
+//			printf("s0 %f ", triangles->s0[i]);
+//			printf("t0 %f ", triangles->t0[i]);
+//			printf("s1 %f ", triangles->s1[i]);
+//			printf("t1 %f ", triangles->t1[i]);
+//			printf("s2 %f ", triangles->s2[i]);
+//			printf("t2 %f ", triangles->t2[i]);
+//			printf("\n");
+//		}
+//	}
+#endif //TEXTURE_ENABLED
+
 	sort();
+
+
+#ifdef TEXTURE_ENABLED
+//	if (cntxt->texState.textureEnabled) {
+//		for (int i = 0; i < count; i++) {
+//			printf("after sort ");
+//			printf("w0 %f ", triangles->w0[i]);
+//			printf("w1 %f ", triangles->w1[i]);
+//			printf("w2 %f ", triangles->w2[i]);
+//			printf("s0 %f ", triangles->s0[i]);
+//			printf("t0 %f ", triangles->t0[i]);
+//			printf("s1 %f ", triangles->s1[i]);
+//			printf("t1 %f ", triangles->t1[i]);
+//			printf("s2 %f ", triangles->s2[i]);
+//			printf("t2 %f ", triangles->t2[i]);
+//			printf("\n");
+//		}
+//	}
+#endif //TEXTURE_ENABLED
 
 	nmppsSub_32f(triangles->x1, triangles->x0, temp0, count);
 	nmppsSub_32f(triangles->x2, triangles->x0, temp1, count);

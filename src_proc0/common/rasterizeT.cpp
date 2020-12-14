@@ -108,6 +108,8 @@ void rasterizeT(const Triangles* triangles, const BitMask* masks){
 						Polygons* poly = connector->ptrHead();
 						int localSize = MIN(resultSize - offset, POLYGONS_SIZE - poly->count);
 						triangleOffset(localTrian, localTrian2, offset);
+						offset += localSize;
+						updatePolygonsT(poly, &localTrian2, localSize, segX, segY);
 #ifdef TEXTURE_ENABLED
 //						if (cntxt->texState.textureEnabled) {
 //							for (int i = 0; i < resultSize; i++) {
@@ -124,9 +126,7 @@ void rasterizeT(const Triangles* triangles, const BitMask* masks){
 //							}
 //						}
 #endif //TEXTURE_ENABLED
-						offset += localSize;
-						updatePolygonsT(poly, &localTrian2, localSize, segX, segY);
-						connector->incHead();
+					connector->incHead();
 						cntxt->synchro.writeInstr(1, NMC1_DRAW_TRIANGLES, iSeg);
 					}
 
