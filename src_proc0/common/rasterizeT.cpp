@@ -15,6 +15,22 @@ SECTION(".text_demo3d") void triangleOffset(Triangles &src, Triangles &dst, int 
 	dst.y2 = src.y2 + offset;
 	dst.z = src.z + offset;
 	dst.colors = src.colors + offset;
+#ifdef TEXTURE_ENABLED
+	//TODO: May be remove check cntxt->texState.textureEnabled value
+	//if it is slowing down pipeline more than extra sum.
+	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
+	if (cntxt->texState.textureEnabled) {
+		dst.s0 = src.s0 + offset;
+		dst.t0 = src.t0 + offset;
+		dst.s1 = src.s1 + offset;
+		dst.t1 = src.t1 + offset;
+		dst.s2 = src.s2 + offset;
+		dst.t2 = src.t2 + offset;
+		dst.w0 = src.w0 + offset;
+		dst.w1 = src.w1 + offset;
+		dst.w2 = src.w2 + offset;
+	}
+#endif //TEXTURE_ENABLED
 }
 
 SECTION(".text_demo3d")
@@ -74,23 +90,6 @@ void rasterizeT(const Triangles* triangles, const BitMask* masks){
 					copyArraysByIndices((void**)triangles, indices, (void**)&localTrian, 7, resultSize);
 #endif //TEXTURE_ENABLED
 
-#ifdef TEXTURE_ENABLED
-//					if (cntxt->texState.textureEnabled) {
-//						for (int i = 0; i < resultSize; i++) {
-//							printf("w0 %f ",localTrian.w0[i]);
-//							printf("w1 %f ",localTrian.w1[i]);
-//							printf("w2 %f ",localTrian.w2[i]);
-//							printf("s0 %f ",localTrian.s0[i]);
-//							printf("t0 %f ",localTrian.t0[i]);
-//							printf("s1 %f ",localTrian.s1[i]);
-//							printf("t1 %f ",localTrian.t1[i]);
-//							printf("s2 %f ",localTrian.s2[i]);
-//							printf("t2 %f ",localTrian.t2[i]);
-//							printf("\n");
-//						}
-//					}
-#endif //TEXTURE_ENABLED
-
 #ifdef OUTPUT_IMAGE_RGB8888
 					copyColorByIndices_BGRA_RGBA(triangles->colors, indices, (v4nm32s*)localTrian.colors, resultSize);
 #endif // OUTPUT_IMAGE_RGB8888
@@ -109,6 +108,22 @@ void rasterizeT(const Triangles* triangles, const BitMask* masks){
 						Polygons* poly = connector->ptrHead();
 						int localSize = MIN(resultSize - offset, POLYGONS_SIZE - poly->count);
 						triangleOffset(localTrian, localTrian2, offset);
+#ifdef TEXTURE_ENABLED
+//						if (cntxt->texState.textureEnabled) {
+//							for (int i = 0; i < resultSize; i++) {
+//								printf("w0 %f ", localTrian2.w0[i]);
+//								printf("w1 %f ", localTrian2.w1[i]);
+//								printf("w2 %f ", localTrian2.w2[i]);
+//								printf("s0 %f ", localTrian2.s0[i]);
+//								printf("t0 %f ", localTrian2.t0[i]);
+//								printf("s1 %f ", localTrian2.s1[i]);
+//								printf("t1 %f ", localTrian2.t1[i]);
+//								printf("s2 %f ", localTrian2.s2[i]);
+//								printf("t2 %f ", localTrian2.t2[i]);
+//								printf("\n");
+//							}
+//						}
+#endif //TEXTURE_ENABLED
 						offset += localSize;
 						updatePolygonsT(poly, &localTrian2, localSize, segX, segY);
 						connector->incHead();
