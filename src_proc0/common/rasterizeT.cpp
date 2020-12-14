@@ -35,6 +35,21 @@ void rasterizeT(const Triangles* triangles, const BitMask* masks){
 	localTrian.z = (int*)cntxt->buffer3 + 4 * NMGL_SIZE;
 	int* indices = (int*)cntxt->buffer4;
 
+#ifdef TEXTURE_ENABLED
+	if (cntxt->texState.textureEnabled) {
+		localTrian.s0 = cntxt->buffer0 + 10 * NMGL_SIZE;
+		localTrian.t0 = cntxt->buffer0 + 11 * NMGL_SIZE;
+		localTrian.s1 = cntxt->buffer1 + 10 * NMGL_SIZE;
+		localTrian.t1 = cntxt->buffer1 + 11 * NMGL_SIZE;
+		localTrian.s2 = cntxt->buffer2 + 10 * NMGL_SIZE;
+		localTrian.t2 = cntxt->buffer2 + 11 * NMGL_SIZE;
+		localTrian.w0 = cntxt->buffer3 +  9 * NMGL_SIZE;
+		localTrian.w1 = cntxt->buffer3 + 10 * NMGL_SIZE;
+		localTrian.w2 = cntxt->buffer3 + 11 * NMGL_SIZE;
+	}
+#endif //TEXTURE_ENABLED
+
+
 	for (int segY = 0, iSeg = 0; segY < cntxt->windowInfo.nRows; segY++) {
 		for (int segX = 0; segX < cntxt->windowInfo.nColumns; segX++, iSeg++) {
 			if (masks[iSeg].hasNotZeroBits != 0) {
@@ -48,8 +63,33 @@ void rasterizeT(const Triangles* triangles, const BitMask* masks){
 						cntxt->windowInfo.x1[segX] - cntxt->windowInfo.x0[segX],
 						cntxt->windowInfo.y1[segY] - cntxt->windowInfo.y0[segY],
 						iSeg);
-
+#ifdef TEXTURE_ENABLED
+					if (cntxt->texState.textureEnabled) {
+						copyArraysByIndices((void**)triangles, indices, (void**)&localTrian, 16, resultSize);
+					}
+					else {
+						copyArraysByIndices((void**)triangles, indices, (void**)&localTrian, 7, resultSize);
+					}
+#else //TEXTURE_ENABLED
 					copyArraysByIndices((void**)triangles, indices, (void**)&localTrian, 7, resultSize);
+#endif //TEXTURE_ENABLED
+
+#ifdef TEXTURE_ENABLED
+//					if (cntxt->texState.textureEnabled) {
+//						for (int i = 0; i < resultSize; i++) {
+//							printf("w0 %f ",localTrian.w0[i]);
+//							printf("w1 %f ",localTrian.w1[i]);
+//							printf("w2 %f ",localTrian.w2[i]);
+//							printf("s0 %f ",localTrian.s0[i]);
+//							printf("t0 %f ",localTrian.t0[i]);
+//							printf("s1 %f ",localTrian.s1[i]);
+//							printf("t1 %f ",localTrian.t1[i]);
+//							printf("s2 %f ",localTrian.s2[i]);
+//							printf("t2 %f ",localTrian.t2[i]);
+//							printf("\n");
+//						}
+//					}
+#endif //TEXTURE_ENABLED
 
 #ifdef OUTPUT_IMAGE_RGB8888
 					copyColorByIndices_BGRA_RGBA(triangles->colors, indices, (v4nm32s*)localTrian.colors, resultSize);

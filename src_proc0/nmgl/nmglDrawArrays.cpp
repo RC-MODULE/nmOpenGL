@@ -629,23 +629,6 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 					}
 				}
 
-#ifdef TEXTURE_ENABLED
-//				if (cntxt->texState.textureEnabled) {
-//					for (int i = 0; i < cntxt->trianInner.size; i++) {
-//						printf("w0 %f ", cntxt->trianInner.w0[i]);
-//						printf("w1 %f ", cntxt->trianInner.w1[i]);
-//						printf("w2 %f ", cntxt->trianInner.w2[i]);
-//						printf("s0 %f ", cntxt->trianInner.s0[i]);
-//						printf("t0 %f ", cntxt->trianInner.t0[i]);
-//						printf("s1 %f ", cntxt->trianInner.s1[i]);
-//						printf("t1 %f ", cntxt->trianInner.t1[i]);
-//						printf("s2 %f ", cntxt->trianInner.s2[i]);
-//						printf("t2 %f ", cntxt->trianInner.t2[i]);
-//						printf("\n");
-//					}
-//				}
-#endif //TEXTURE_ENABLED
-
 				findMinMax3(cntxt->trianInner.x0, cntxt->trianInner.x1, cntxt->trianInner.x2,
 					cntxt->buffer0, cntxt->buffer1,
 					cntxt->trianInner.size);
