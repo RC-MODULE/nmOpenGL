@@ -150,6 +150,9 @@ typedef struct s_v3nm32f {
 	float v2;
 } v3nm32f;
 
+/*!
+ *  Класс с информации о массиве используемом в функции nmglDrawArrays
+ */
 struct Array {
 	const void* pointer;
 	NMGLint size;
@@ -159,6 +162,9 @@ struct Array {
 	int offset;
 };
 
+/*!
+ *  \brief Класс с информацией о делении изображения на сегменты
+ */
 struct WindowInfo {
 	int x0[20];
 	int y0[20];

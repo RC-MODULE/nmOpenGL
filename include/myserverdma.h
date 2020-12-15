@@ -9,6 +9,10 @@
 
 typedef int(*msdCallback)();
 
+/*!
+ *  \brief Структура для работы с DMA
+ *  
+ */
 struct MyDmaTask {
 	const void* src;
 	void* dst;
@@ -18,7 +22,6 @@ struct MyDmaTask {
 	int dstStride;
 	int type;
 	msdCallback callback;
-	clock_t t0;
 };
 
 #ifdef __GNUC__
@@ -53,7 +56,9 @@ inline void msdStartCopy(MyDmaTask* dmaCopy) {
 #endif // __GNUC__
 
 
-
+/*!
+ *  \brief Сервер работы с DMA
+ */
 template <int BUFFER_SIZE, int NUM_CHANNELS> class MyDmaServer {
 	msdCallback originCallback;												// адрес преустановленного обработчика DMA   
 public:
@@ -134,7 +139,9 @@ public:
 
 };
 
-
+/*!
+ *  \brief Клиент сервера DMA
+ */
 template <int BUFFER_SIZE>	class MyDmaClient : public HalRingBufferConnector<MyDmaTask, BUFFER_SIZE> {
 public:
 
@@ -148,6 +155,7 @@ public:
 
 	}
 };
+
 
 void msdInit();
 unsigned int msdAdd(const void* src, void* dst, int size, int priority = MSD_NUM_CHANNELS - 1);
