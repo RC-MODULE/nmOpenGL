@@ -1,3 +1,5 @@
+#define _CRT_SECURE_NO_WARNINGS
+
 #include <stdio.h> 
 #include <stdlib.h>
 #define PASS_outer_loop_vertex_words 	fscanf(fmodel,"%s",str);fscanf(fmodel,"%s",str);fscanf(fmodel,"%s",str);
@@ -20,17 +22,17 @@ void createArrayVec4(
 			fscanf(fmodel,"%s",str);//pass normal word 
 			////////////////////////////////////////////////wrt norm to diff arrays 
 			fscanf(fmodel,"%s",str);
-			temp = atof(str);//Nx
+			temp = (float)atof(str);//Nx
 			normalVec4[9 * pol_num + 0] = temp;
 			normalVec4[9 * pol_num + 3] = temp;
 			normalVec4[9 * pol_num + 6] = temp;
 			fscanf(fmodel,"%s",str);
-			temp = atof(str);//Ny
+			temp = (float)atof(str);//Ny
 			normalVec4[9 * pol_num + 1] = temp;
 			normalVec4[9 * pol_num + 4] = temp;
 			normalVec4[9 * pol_num + 7] = temp;
 			fscanf(fmodel,"%s",str);
-			temp = atof(str);//Nz
+			temp = (float)atof(str);//Nz
 			normalVec4[9 * pol_num + 2] = temp;
 			normalVec4[9 * pol_num + 5] = temp;
 			normalVec4[9 * pol_num + 8] = temp;
@@ -38,37 +40,37 @@ void createArrayVec4(
 			////////////////////////////////////////////////wrt A point
 			PASS_outer_loop_vertex_words
 			fscanf(fmodel,"%s",str);
-			temp = scale*atof(str);//Nx
+			temp = scale*(float)atof(str);//Nx
 			verticesVec4[12*pol_num+0] = temp;
 			fscanf(fmodel,"%s",str);
-			temp = scale*atof(str);//Ny
+			temp = scale*(float)atof(str);//Ny
 			verticesVec4[12*pol_num+1] = temp;
 			fscanf(fmodel,"%s",str);
-			temp = scale*atof(str);//Nz
+			temp = scale*(float)atof(str);//Nz
 			verticesVec4[12*pol_num+2] = temp;
 			verticesVec4[12 * pol_num + 3] = 1;
 			////////////////////////////////////////////////wrt B point
 			PASS_vertex_word
 			fscanf(fmodel,"%s",str);
-			temp = scale*atof(str);//Nx
+			temp = scale*(float)atof(str);//Nx
 			verticesVec4[12*pol_num+4] = temp;
 			fscanf(fmodel,"%s",str);
-			temp = scale*atof(str);//Ny
+			temp = scale*(float)atof(str);//Ny
 			verticesVec4[12*pol_num+5] = temp;
 			fscanf(fmodel,"%s",str);
-			temp = scale*atof(str);//Nz
+			temp = scale*(float)atof(str);//Nz
 			verticesVec4[12*pol_num+6] = temp;
 			verticesVec4[12 * pol_num + 7] = 1;
 			////////////////////////////////////////////////wrt C point
 			PASS_vertex_word
 			fscanf(fmodel,"%s",str);
-			temp = scale*atof(str);//Nx
+			temp = scale*(float)atof(str);//Nx
 			verticesVec4[12*pol_num+8] = temp;
 			fscanf(fmodel,"%s",str);
-			temp = scale*atof(str);//Ny
+			temp = scale*(float)atof(str);//Ny
 			verticesVec4[12*pol_num+9] = temp;
 			fscanf(fmodel,"%s",str);
-			temp = scale*atof(str);//Nz
+			temp = scale*(float)atof(str);//Nz
 			verticesVec4[12*pol_num+10] = temp;
 			verticesVec4[12 * pol_num + 11] = 1;
 			pol_num++;
