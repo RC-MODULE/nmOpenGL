@@ -13,7 +13,9 @@ typedef v4nm32u abgr32;
 \param srcArray [in] Входной массив элементов в формате ABGR32
 \param dstArray [in] Выходной массив элементов в формате RGB565
 \param count [in] Количество элементов во входном массиве для обработки 
+
 \return Через параметр возвращает преобразованные элементы в формате RGB565
+
 \par
 \xmlonly
 	<testperf>
@@ -38,7 +40,9 @@ extern "C" void convertABGR32_RGB565(const abgr32  *srcArray, rgb565 *dstArray, 
 \param srcArray [in] Входной массив элементов в формате RGB565
 \param dstArray [in] Выходной массив элементов в формате RGB8888
 \param count [in] Количество элементов во входном массиве для обработки 
+
 \return Через параметр возвращает преобразованные элементы в формате RGB8888
+
 \par
 \xmlonly
 	<testperf>
