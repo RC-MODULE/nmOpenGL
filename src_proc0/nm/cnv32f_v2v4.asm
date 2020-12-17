@@ -1,4 +1,7 @@
-
+/*!
+ *  \file cnv32f_v2v4.asm
+ *  \author Zhilenkov Ivan
+ */
 //void cnv32f_v2v4(v2nm32f* srcVec, float value3, float value4, v4nm32f* dstVec, int countVec);
 global _cnv32f_v2v4: label;
 

@@ -1,3 +1,7 @@
+/*!
+ *  \file pushToLines_l.cpp
+ *  \author Zhilenkov Ivan
+ */
 #include "nmpp.h"
 #include "nmblas.h"
 #include "demo3d_nm0.h"

@@ -1,4 +1,7 @@
-
+/*!
+ *  \file doubleAdd_32f.asm
+ *  \author Zhilenkov Ivan
+ */
 //Вычитает из вектора константуж
 global _doubleAdd_32f:label;
 //void doubleAdd_32f(float* src1, float* src2, float* srcAdd1, float* srcAdd2, float* dst1, float* dst2, int size);

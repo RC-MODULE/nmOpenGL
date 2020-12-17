@@ -1,4 +1,7 @@
-
+/*!
+ *  \file maskEq0_32f.asm
+ *  \author Zhilenkov Ivan
+ */
 //void maskEq0(v4nm32f* srcVec, v2nm32f* srcMask, v4nm32f* dstVec, int size);
 global _maskEq0: label;
 

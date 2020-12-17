@@ -1,4 +1,8 @@
-//void cnv32f_v3v4(nm32f* src_v3nm32f, float value4, nm32f* dst_v4nm32f, int size) 
+/*!
+ *  \file cnv32f_v3v4.asm
+ *  \author Zhilenkov Ivan
+ */
+ //void cnv32f_v3v4(nm32f* src_v3nm32f, float value4, nm32f* dst_v4nm32f, int size) 
 
 global _cnv32f_v3v4: label;
 

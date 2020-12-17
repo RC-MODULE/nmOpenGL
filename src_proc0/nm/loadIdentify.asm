@@ -1,4 +1,7 @@
-
+/*!
+ *  \file loadIdentify.asm
+ *  \author Zhilenkov Ivan
+ */
 //void loadIdentity(float* matrix)
 data ".data_demo3d"
 	global _identify: word[16] = (float(1),0,0,0,

@@ -1,4 +1,7 @@
-	
+/*!
+ *  \file readDividedMask.asm
+ *  \author Zhilenkov Ivan
+ */	
 //void readDividedMask(nm1* maskEven, nm1* maskOdd, int* dstIndices, int size){
 
 begin ".text_demo3d"

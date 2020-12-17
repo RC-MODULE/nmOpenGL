@@ -1,4 +1,7 @@
-
+/*!
+ *  \file findMinMax3.asm
+ *  \author Zhilenkov Ivan
+ */
 //void findMinMax3(float* src1, float* src2, float* src3, float* dstMin, float* dstMax, int countVec);
 global _findMinMax3: label;
 

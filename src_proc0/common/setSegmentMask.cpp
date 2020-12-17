@@ -1,3 +1,7 @@
+/*!
+ *  \file setSegmentMask.cpp
+ *  \author Zhilenkov Ivan
+ */
 #include "nmpp.h"
 #include "demo3d_nm0.h"
 

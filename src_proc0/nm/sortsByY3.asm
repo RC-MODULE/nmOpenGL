@@ -1,3 +1,7 @@
+/*!
+ *  \file sortsByY3.asm
+ *  \author Zhilenkov Ivan
+ */
 //void sortByYinTriangle(v2nm32f* srcAxy,
 //						 v2nm32f* srcBxy,
 //						 v2nm32f* srcCxy,

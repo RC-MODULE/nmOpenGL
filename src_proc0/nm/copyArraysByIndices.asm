@@ -1,3 +1,7 @@
+/*!
+ *  \file copyArraysByIndices.asm
+ *  \author Zhilenkov Ivan
+ */
 //void copyArraysByIndices(void** srcPointers, int* indices, void** dstPointers, int nArrays, int size){
 
 global _copyArraysByIndices: label;

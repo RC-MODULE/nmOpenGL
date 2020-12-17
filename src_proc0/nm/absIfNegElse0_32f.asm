@@ -1,4 +1,7 @@
-
+/*!
+ *  \file absIfNegElse0_32f.asm
+ *  \author Zhilenkov Ivan
+ */
 //вычисляет модуль если число отрицательное, иначе записывает ноль
 global _absIfNegElse0_32f:label;
 //void _absIfNegElse0_32f(float* src, float* dst, int size);

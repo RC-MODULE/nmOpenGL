@@ -1,4 +1,7 @@
-
+/*!
+ *  \file doubleSub_32f.asm
+ *  \author Zhilenkov Ivan
+ */
 //Вычитает из вектора константуж
 global _doubleSub_32f:label;
 //void doubleSub_32f(float* src1, float* src2, float* srcSub1, float* srcSub2, float* dst1, float* dst2, int size);

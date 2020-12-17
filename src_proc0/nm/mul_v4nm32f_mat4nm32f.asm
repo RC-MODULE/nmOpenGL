@@ -1,4 +1,7 @@
-
+/*!
+ *  \file mul_v4nm32f_mat4nm32f.asm
+ *  \author Zhilenkov Ivan
+ */
 //void mul_v4nm32f_mat4nm32f( float* srcVector4xN, float* srcMatrix4x4, float* dstVector4xN, int count){
 
 global _mul_v4nm32f_mat4nm32f: label;

@@ -1,4 +1,7 @@
-
+/*!
+ *  \file ternaryLt0_AddC_AddC_32f.asm
+ *  \author Zhilenkov Ivan
+ */
 //void ternaryLt0_AddC_AddC_32f(nm32f* srcFlags, nm32f* srcVec, float valueLeft, float valueRight, float* dstVec, int size);
 global _ternaryLt0_AddC_AddC_32f: label;
 

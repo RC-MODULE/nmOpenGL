@@ -1,3 +1,7 @@
+/*!
+ *  \file abs_32f.asm
+ *  \author Zhilenkov Ivan
+ */
 global _abs_32f:label;
 //void abs_32f(float* src, float* dst, int size);
 

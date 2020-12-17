@@ -1,4 +1,8 @@
-//int maskSelectionLight_RGBA_BGRA(v4nm32s* srcLight, nm1* mask, v4nm32s* dstLight, int size){
+/*!
+ *  \file maskSelectionLight_RGBA_BGRA.asm
+ *  \author Zhilenkov Ivan
+ */
+ //int maskSelectionLight_RGBA_BGRA(v4nm32s* srcLight, nm1* mask, v4nm32s* dstLight, int size){
 
 global _maskSelectionLight_RGBA_BGRA: label;
 begin ".text_demo3d"

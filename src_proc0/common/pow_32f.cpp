@@ -1,3 +1,7 @@
+/*!
+ *  \file pow_32f.cpp
+ *  \author Zhilenkov Ivan
+ */
 #include "nmpp.h"
 #include "demo3d_common.h"
 
