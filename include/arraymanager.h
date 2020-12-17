@@ -1,3 +1,9 @@
+/*!
+ *  \file arraymanager.h
+ *  \author Zhilenkov Ivan
+ */
+
+
 #ifndef __ADDR_MANAGER_H__
 #define __ADDR_MANAGER_H__
 
@@ -11,6 +17,10 @@ void addrManagerDefaultCopy(const void* src, void* dst, size_t size) {
 	nmblas_scopy(sizeof32(size), (float*)src, 1, (float*)dst, 1);
 }
 
+/*!
+ *  \brief Класс последовательной выгрузки данных из большого массива в более маленький и ограниченный массив
+ *  \author Жиленков Иван
+ */
 template <typename T>
 class ArrayManager{
 private:

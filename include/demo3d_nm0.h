@@ -16,6 +16,8 @@
  *  
  *  Если в соответствующем бите стоит 1 - значит примитив принадлежит сегменту, иначе не принадлежит. Так же структура хранит в себе переменную, характеризующую
     наличие ненулевых битов в маске
+	
+ *  \author Жиленков Иван
  */
 class BitMask {
 public:
@@ -45,6 +47,7 @@ public:
 /*!
  *  \brief Класс, хранящий побитовую маску в раздельных массивах.
  *  Принцип схож с принципом структуры BitMask, однако в данной структуре маска разделена на четные и нечетные элементы
+ *  \author Жиленков Иван
  */
 class BitDividedMask{
 public:
@@ -77,6 +80,7 @@ public:
 
 /*!
  *  \brief Структура, хранящая указатели на геометрические координаты, текстурные координаты и цвет вершины
+ *  \author Жиленков Иван
  */
 struct CombinePointers {
 	float *x;
@@ -92,6 +96,7 @@ struct CombinePointers {
 
 /*!
  *  \brief Структура, хранящая три вершины треугольника. Каждая вершина описывается структурой CombinePointers
+ *  \author Жиленков Иван
  */
 struct TrianglePointers {
 	CombinePointers v0;
@@ -101,6 +106,7 @@ struct TrianglePointers {
 
 /*!
  *  \brief Структура, хранящая две вершины линии. Каждая вершина описывается структурой CombinePointers
+ *  \author Жиленков Иван
  */
 struct LinePointers {
 	CombinePointers v0;
@@ -144,6 +150,7 @@ void copyTriangles(const Triangles &src, int offsetSrc, Triangles &dst, int offs
 
 /*!
  *  \brief Структура для описывания блока glBegin/glEnd
+ *  \author Жиленков Иван
  */
 class NmglBeginEndInfo{
 public:
@@ -171,6 +178,7 @@ public:
 
 /*!
  *  \brief Структура, хранящая информацию о стеке матриц
+ *  \author Жиленков Иван
  */
 struct MatrixStack {
 	mat4nm32f* base;	///< указатель на массив матриц
@@ -185,6 +193,7 @@ struct MatrixStack {
 
 /*!
  *  \brief Контекст nmOpengl на ядре NMPU0
+ *  \author Жиленков Иван
  *  
  *  \details Контекст сделан в виде статического класса и должен существовать только в единственном экземпляре.
  *  От значений различных параметров зависит работа функций Opengl
@@ -401,6 +410,7 @@ extern "C"{
 	/*!
 	 *  \ingroup service_api
 	 *  \brief Функция сложения массива 4-мерных векторов с одиночным 4-мерным вектором
+	 *  \author Жиленков Иван
 	 *  
 	 *  \param pSrcV [in] Входной массив 4-хмерных векторов
 	 *  \param pSrcC [in] Указатель на одиночный 4-мерный вектор
@@ -426,6 +436,7 @@ extern "C"{
 	/*!
 	 *  \ingroup service_api
 	 *  \brief Функция вычисления основной части освещения
+	 *  \author Жиленков Иван
 	 *  
 	 *  \param ambient [in] Указатель на амбиентную составляющую источника освещения
 	 *  \param n_dot_vp [in] Указатель на продублированный массив скалярного произведения нормали и дистанцией между источником и точкой
@@ -461,6 +472,7 @@ extern "C"{
 	/*!
 	 *  \ingroup service_api
 	 *  \brief Функция приведения чисел к фиксированному диапазону
+	 *  \author Жиленков Иван
 	 *  
 	 *  \param pSrcVec [in] Входной массив
 	 *  \param min [in] Минимальный порог диапазона
@@ -497,6 +509,7 @@ extern "C"{
 	 *  \ingroup service_api
 	 *  \brief Функция конвертации двухмерного вектора в четырехмерный 
 	 *  с заданными значениями третьей и четвертой компоненты
+	 *  \author Жиленков Иван
 	 *  
 	 *  \param srcVec [in] Входный массив
 	 *  \param dstVec [out] Выходной массив
@@ -525,6 +538,7 @@ extern "C"{
 	 /*!
 	 *  \ingroup service_api
 	 *  \brief Функция конвертации трехмерного вектора в четырехмерный 
+	 *  \author Жиленков Иван
 	 *  
 	 *  \param srcVec [in] Входный массив
 	 *  \param dstVec [out] Выходный массив
@@ -550,6 +564,7 @@ extern "C"{
 	/*!
 	 *  \ingroup service_api
 	 *  \brief Функции выборки элементов из массивов
+	 *  \author Жиленков Иван
 	 *  
 	 *  \param srcPointers [in] Указатели входных массивов
 	 *  \param indices [in] Массив индексов
@@ -575,6 +590,7 @@ extern "C"{
 	
 	/*!
 	 *  \brief Функция выборки цветов
+	 *  \author Жиленков Иван
 	 *  
 	 *  \param srcColor [in] Входной массив цветных векторов
 	 *  \param indices [in] Массив индексов
@@ -590,6 +606,7 @@ extern "C"{
 	/*!
 	 *  \ingroup service_api
 	 *  \brief Функция скалярного произведения массивa векторов и постоянного вектора с последующимся занулением отрицательных значений
+	 *  \author Жиленков Иван
 	 *  
 	 *  \param srcVec [in] Входной массив векторов
 	 *  \param srcC [in] Указатель на постоянный вектор
@@ -619,6 +636,7 @@ extern "C"{
 	/*!
 	 *  \ingroup service_api
 	 *  \brief Функция скалярного произведения массивов векторов с последующимся занулением отрицательных значений
+	 *  \author Жиленков Иван
 	 *  
 	 *  \param srcVec1 [in] Первый входной массив
 	 *  \param srcVec2 [in] Второй входной массив
@@ -645,6 +663,7 @@ extern "C"{
 	 /*!
 	 *  \ingroup service_api
 	 *  \brief Функция скалярного произведения массивов векторов
+	 *  \author Жиленков Иван
 	 *  
 	 *  \param srcVec1 [in] Первый входной массив
 	 *  \param srcVec2 [in] Второй входной массив
@@ -673,6 +692,7 @@ extern "C"{
 	 *  \ingroup service_api
 	 *  \brief Функция умножения постоянного 4-хмерного вектора на массив констант с прибавлением другого постоянного вектора.
 	 *  Массив констант должен быть продублированным
+	 *  \author Жиленков Иван
 	 *  
 	 *  \param srcVec [in] Входной массив констант
 	 *  \param mulC [in] Указатель на постоянный вектор-множитель
@@ -702,6 +722,7 @@ extern "C"{
 	 *  \ingroup service_api
 	 *  \brief Функция умножения массива 4-хмерных векторов 
 	 *  на массив констант
+	 *  \author Жиленков Иван
 	 *
 	 *  \param srcVec [in] Входной массив констант
 	 *  \param mulVec [in] Указатель на массив векторов
@@ -729,6 +750,7 @@ extern "C"{
 	 *  \ingroup service_api
 	 *  \brief Функция умножения постоянного 4-хмерного вектора на массив констант с прибавлением массива других 4-хмерных векторов.
 	 *  Массив констант должен быть продублированным
+	 *  \author Жиленков Иван
 	 *  
 	 *  \param srcVec [in] Массив констант
 	 *  \param mulC [in] Указатель на умножающийся постоянный вектор
@@ -758,6 +780,7 @@ extern "C"{
 	/*!
 	 *  \ingroup service_api
 	 *  \brief Функция нахождения отрицательных смещений (с двумя параллельными обработками)
+	 *  \author Жиленков Иван
 	 *  
 	 *  \param src1 [in] Входной массив 1
 	 *  \param src2 [in] Входной массив 2
@@ -782,6 +805,7 @@ extern "C"{
 	/*!
 	 *  \ingroup service_api
 	 *  \brief Функция производит два параллельных сложения
+	 *  \author Жиленков Иван
 	 *  
 	 *  \param src1 [in] Первый входной массив 1
 	 *  \param src2 [in] Первый входной массив 2
@@ -799,6 +823,7 @@ extern "C"{
 	/*!
 	 *  \ingroup service_api
 	 *  \brief Функция приведения чисел к фиксированному диапазону
+	 *  \author Жиленков Иван
 	 *  
 	 *  \param src1 [in] Входной массив 1
 	 *  \param src2 [in] Входной массив 2
@@ -827,6 +852,7 @@ extern "C"{
 	/*!
 	 *  \ingroup service_api
 	 *  \brief Brief description
+	 *  \author Жиленков Иван
 	 *  
 	 *  \param src1 [in] Description for src1
 	 *  \param src2 [in] Description for src2
@@ -844,6 +870,7 @@ extern "C"{
 	/*!
 	 *  \ingroup service_api
 	 *  \brief Функция производит два параллельных вычитания
+	 *  \author Жиленков Иван
 	 *  
 	 *  \param src1 [in] Первый входной массив 1
 	 *  \param src2 [in] Первый входной массив 2
@@ -861,6 +888,7 @@ extern "C"{
 	/*!
 	 *  \ingroup service_api
 	 *  \brief Функция производит два параллельных вычитания
+	 *  \author Жиленков Иван
 	 *  
 	 *  \param src1 [in] Первый входной массив 1
 	 *  \param src2 [in] Первый входной массив 2
@@ -878,6 +906,7 @@ extern "C"{
 	/*!
 	 *  \ingroup service_api
 	 *  \brief Функция быстрого обратного корня
+	 *  \author Жиленков Иван
 	 *  
 	 *  \param srcVec [in] Входной массив
 	 *  \param dstVec [in] Выходной массив
@@ -894,6 +923,7 @@ extern "C"{
 	
 	/*!
 	 *  \brief Находит индекс первого ненулевого элемента
+	 *  \author Жиленков Иван
 	 *  
 	 *  \param pSrcVec [in] Входной массив элемент
 	 *  \param size [in] Число элементов
@@ -905,6 +935,7 @@ extern "C"{
 	/*!
 	 *  \ingroup service_api
 	 *  \brief Поэлементный поиск минимум и максимума из двух массивов
+	 *  \author Жиленков Иван
 	 *  
 	 *  \param srcVec1 [in] Первый входной массив
 	 *  \param srcVec2 [in] Второй входной массив
@@ -931,7 +962,8 @@ extern "C"{
 
 	/*!
 	 *  \ingroup service_api
-	 *  \brief Поэлементный поиск минимум и максимума из трех массивов
+	 *  \brief Поэлементный поиск минимума и максимума из трех массивов
+	 *  \author Жиленков Иван
 	 *  
 	 *  \param src1 [in] Первый входной массив
 	 *  \param src2 [in] Второй входной массив
@@ -959,7 +991,8 @@ extern "C"{
 	
 	/*!
 	 *  \ingroup service_api
-	 *  \brief Функция инициализации матрицы едининчной матрицей
+	 *  \brief Функция инициализации матрицы единичной матрицей
+	 *  \author Жиленков Иван
 	 *  
 	 *  \param matrix [out] Выходная матрица
 	 *  
@@ -978,6 +1011,7 @@ extern "C"{
 	/*!
 	 *  \ingroup service_api
 	 *  \brief Функция поиска среднего значения из трех элементов и конвертирования его в целочисленный тип
+	 *  \author Жиленков Иван
 	 *  
 	 *  \param src1 [in] Входной массив первых значений
 	 *  \param src2 [in] Входной массив вторых значений
@@ -1004,6 +1038,7 @@ extern "C"{
 	 /*!
 	 *  \ingroup service_api
 	 *  \brief Функция поиска среднего значения из двух элементов и конвертирования его в целочисленный тип
+	 *  \author Жиленков Иван
 	 *  
 	 *  \param src1 [in] Входной массив первых значений
 	 *  \param src2 [in] Входной массив вторых значений
@@ -1029,6 +1064,7 @@ extern "C"{
 	/*!
 	 *  \ingroup service_api
 	 *  \brief Функция умножение массива на постоянное значение
+	 *  \author Жиленков Иван
 	 *  
 	 *  \param pSrcV [in] Входной массив
 	 *  \param pSrcC [in] Указатель на постоянное значение
@@ -1053,6 +1089,7 @@ extern "C"{
 	/*!
 	 *  \ingroup service_api
 	 *  \brief Функция умножение матрицы 4х4 на массив 4хмерных векторов. Матрица задается по столбцам
+	 *  \author Жиленков Иван
 	 *  
 	 *  \param srcMat4x4 [in] Входная матрица 4х4 (column-major order)
 	 *  \param srcVec4xN [in] Входной массив векторов
@@ -1077,6 +1114,7 @@ extern "C"{
 	 /*!
 	 *  \ingroup service_api
 	 *  \brief Функция массива 4хмерных векторов на матрицу 4х4. Матрица задается по строкам
+	 *  \author Жиленков Иван
 	 *
 	 *  \param srcMat4x4 [in] Входная матрица 4х4 (row-major order)
 	 *  \param srcVec4xN [in] Входной массив векторов
@@ -1101,6 +1139,7 @@ extern "C"{
 	/*!
 	 *  \ingroup service_api
 	 *  \brief Функция чтение однобитного массива масок
+	 *  \author Жиленков Иван
 	 *  
 	 *  \param mask [in] Входной массив масок
 	 *  \param dstIndices [in] Выходной массив индексов
@@ -1115,6 +1154,7 @@ extern "C"{
 	/*!
 	 *  \ingroup service_api
 	 *  \brief Функция чтение однобитного массива масок, разделенного на четные и нечетные маски
+	 *  \author Жиленков Иван
 	 *  
 	 *  \param maskEven [in] Входной массив масок четных элементов
 	 *  \param maskOdd [in] Входной массив масок нечетных элементов
@@ -1133,6 +1173,7 @@ extern "C"{
 	/*!
 	 *  \ingroup service_api
 	 *  \brief Функция замены нуля другим значением
+	 *  \author Жиленков Иван
 	 *  
 	 *  \param srcVec [in] Входной массив
 	 *  \param dstVec [out] Выходной массив
@@ -1160,6 +1201,7 @@ extern "C"{
 	/*!
 	 *  \ingroup service_api
 	 *  \brief Функция инициализации элементов массива постоянным значением.
+	 *  \author Жиленков Иван
 	 *  
 	 *  \param dstVec [out] Инициализируемый массив
 	 *  \param valueC [in] Значение константы
@@ -1185,6 +1227,7 @@ extern "C"{
 	/*!
 	 *  \ingroup service_api
 	 *  \brief Функция поэлементной сортировки двухмерных элементов по возрастанию 2-й компоненты
+	 *  \author Жиленков Иван
 	 *  
 	 *  \param srcAxy [in, out] Первый входной массив двухмерных векторов
 	 *  \param srcBxy [in, out] Второй входной массив двухмерных векторов
@@ -1210,6 +1253,7 @@ extern "C"{
 	 /*!
 	 *  \ingroup service_api
 	 *  \brief Функция поэлементной сортировки двухмерных элементов по возрастанию 2-й компоненты
+	 *  \author Жиленков Иван
 	 *  
 	 *  \param srcXY0 [in, out] Первый входной массив двухмерных векторов
 	 *  \param srcXY1 [in, out] Второй входной массив двухмерных векторов
@@ -1230,7 +1274,8 @@ extern "C"{
 
 	/*!
 	 *  \ingroup service_api
-	 *  \brief Функция разбивки 4х(-)мерного вектора на 4 отдельных значения(вектор на значения не бьется)
+	 *  \brief Функция разбивки 4х-мерного вектора на 4 отдельных значения(вектор на значения не бьется)
+	 *  \author Жиленков Иван
 	 *  
 	 *  \param srcVec [in] Входной массив векторов (массив векторов?)
 	 *  \param step [in] Шаг чтения входного массива (шаг в чем , в элементах v4nm32f?)
@@ -1262,6 +1307,7 @@ extern "C"{
 	/*!
 	 *  \ingroup service_api
 	 *  \brief Функция разбиения 2хмерного вектора на 2 отдельных значения
+	 *  *  \author Жиленков Иван
 	 *  
 	 *  \param srcVec [in] Входной массив векторов
 	 *  \param step [in] Шаг чтения входного массива
@@ -1289,6 +1335,7 @@ extern "C"{
 	/*!
 	 *  \ingroup service_api
 	 *  \brief Функция вычитания вектора из постоянного значения
+	 *  \author Жиленков Иван
 	 *  
 	 *  \param pSrcV [in] Входной массив
 	 *  \param pSrcC [in] Указатель на константу
@@ -1314,6 +1361,7 @@ extern "C"{
 	/*!
 	 *  \ingroup service_api
 	 *  \brief Brief description
+	 *  \author Жиленков Иван
 	 *  
 	 *  \param srcFlags [in] Description for srcFlags
 	 *  \param srcVec [in] Description for srcVec
@@ -1330,6 +1378,7 @@ extern "C"{
 	/*!
 	 *  \ingroup service_api
 	 *  \brief Функция умножения трех массивов на константу
+	 *  \author Жиленков Иван
 	 *  
 	 *  \param src1 [in] Входной массив 1
 	 *  \param src2 [in] Входной массив 2
@@ -1350,6 +1399,7 @@ extern "C"{
 	 *  \ingroup service_api
 	 *  \defgroup repackToPrimitives repackToPrimitives
 	 *  \brief Функции переупаковки вершин
+	 *  \author Жиленков Иван
 	 *  
 	 *  \param srcVertex [in] Description for srcVertex
 	 *  \param srcColor [in] Description for srcColor
@@ -1395,6 +1445,7 @@ extern "C"{
 
 }
 
+
 int splitTriangles(TrianglePointers *srcVertex, int srcCount, int maxWidth, int maxHeight, int maxDstSize, TrianglePointers *dstVertex, int *srcTreatedCount);
 
 
@@ -1417,10 +1468,12 @@ void copyColorByIndices_BGRA_RGBA(v4nm32s* srcColor, int* indices, v4nm32s* dstC
 /*!
  *  \ingroup service_api
  *  \brief Brief description
+ *  \author Жиленков Иван
+ *  \warning Внутри функции используется контекст NMGL_Context_NM0.
  *  
  *  \param triangles [in] Description for triangles
  *  
- *  \details Функция реализует выборку треагольников в зависимости от порядка обхода точек в треугольниках. Функция использует контекст NMGL_Context_NM0.
+ *  \details Функция реализует выборку треагольников в зависимости от порядка обхода точек в треугольниках.
  *  Режимы выборки определяются переменными frontFaceOrientation и cullFaceType в структуре NMGL_Context_NM0.
  *  
  */
@@ -1429,6 +1482,8 @@ void cullFaceSortTriangles(Triangles &triangles);
 /*!
  *  \ingroup service_api
  *  \brief Функция проверки примитивов на принадлежность сегментам изображения
+ *  \author Жиленков Иван
+ *  \warning Внутри функции используется контекст NMGL_Context_NM0.
  *  
  *  \param minXY [in] Массив векторов минимумов координат *x* и *y*
  *  \param maxXY [in] Массив векторов максимумов координат *x* и *y*
@@ -1444,6 +1499,8 @@ void setSegmentMask(v2nm32f* minXY, v2nm32f* maxXY, BitMask* masks, int size);
  *  \ingroup service_api
  *  \defgroup rasterize rasterize
  *  \brief Функция растеризации примитивов
+ *  \author Жиленков Иван
+ *  \warning Внутри функции используется контекст NMGL_Context_NM0.
  *  
  *  \param triangles,lines,points [in] Значения вершин примитивов, их цвета и текстурных координат
  *  \param masks [in] Массив масок принадлежности примитивов сегментам
@@ -1463,6 +1520,8 @@ void rasterizeP(const Points* points, const BitMask* masks);
  *  \ingroup service_api
  *  \defgroup updatePolygons updatePolygons
  *  \brief Функция дополнения структур для передачи данных от NMPU0 к NMPU1
+ *  \author Жиленков Иван
+ *  \warning Внутри функции используется контекст NMGL_Context_NM0.
  *  
  *  \param poly,data [in] Указатель на дополняемую структуру.
  *  \param triangles,lines,points [in] Указатель на входную структуру данных
@@ -1487,6 +1546,8 @@ void updatePolygonsP(DataForNmpu1* data, Points* points, int count, int segX, in
 /*!
  *  \ingroup service_api
  *  \brief Функция расчета освещения
+ *  \author Жиленков Иван
+ *  \warning Внутри функции используется контекст NMGL_Context_NM0.
  *  
  *  \param vertex [in] Входной массив вершин
  *  \param srcNormal_dstColor [in, out] Входной массив нормалей, выходной массив цветов

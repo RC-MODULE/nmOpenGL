@@ -1,3 +1,0 @@
-#define NMGL_SIZE 512
-#define POLYGONS_SIZE 512
-#define XML_NAME "../perf0_N512_P512.xml"

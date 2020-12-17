@@ -85,6 +85,7 @@ extern "C" {
 	 *  \ingroup service_api
 	 *  \defgroup mMaskVxN mMaskVxN
 	 *  \brief Функция маскирования пакетов треагольников
+	 *  \author Жиленков Иван
 	 *  
 	 *  \param pTriangles [in] Массив изображений треугольников, расположенных друг за другом
 	 *  \param pMask [in] Массив масок треугольников, аналогичные изображения
@@ -116,6 +117,8 @@ extern "C" {
 	/*!
 	 *  \ingroup service_api
 	 *  \brief Функция осуществления теста глубины
+	 *  \author Жиленков Иван
+	 *  \warning Функция имеет внутренние параметры, которые определяют по какому правилу происходит тест
 	 *  
 	 *  \param pROI [in] Массив указателей на точки изображения соответствующие левому верхнему углу изображения треугольника
 	 *  \param imageStride [in] Ширина изображения
@@ -124,7 +127,7 @@ extern "C" {
 	 *  \param pTriangSizes [in] Массив размеров треугольников
 	 *  \param count [in] Число треугольников
 	 *  
-	 *  \details У функции есть внутренние параметры, которые определяют по какому правилу происходит тест. Изображения идут сплошным массивом. Для разграничения их друг от друга используется *ptrnSizes*
+	 *  \details Изображения идут сплошным массивом. Для разграничения их друг от друга используется *ptrnSizes*
 	 *  
 	 */
 	 //! \{
@@ -135,6 +138,7 @@ extern "C" {
 	 /*!
 	 *  \ingroup service_api
 	 *  \brief Функция выборки из двух констант по знаку входного элемента
+	 *  \author Жиленков Иван
 	 *  
 	 *  \param pSrc [in] Входной массив
 	 *  \param X [in] Выходное значение при входном элементе меньше нуля
@@ -148,6 +152,7 @@ extern "C" {
 	/*!
 	 *  \ingroup service_api
 	 *  \brief Функция умножения кусков двухбитного паттерна на константу
+	 *  \author Жиленков Иван
 	 *  
 	 *  \param patterns [in] Массив двухразрядных паттернов
 	 *  \param innerPoint [in] Координаты левого нижнего угла умножаемого куска паттерна
@@ -173,6 +178,7 @@ extern "C" {
 	/*!
 	 *  \ingroup service_api
 	 *  \brief Функции массового смещения адресов на одно и то же смещения
+	 *  \author Жиленков Иван
 	 *  
 	 *  \param baseAddr [in] Входной массив адресов
 	 *  \param offsets [in] Смещения
@@ -191,6 +197,7 @@ extern "C" {
 	/*!
 	 *  \ingroup service_api
 	 *  \brief Brief description
+	 *  \author Жиленков Иван
 	 *  
 	 *  \param pSrc1 [in] Description for pSrc1
 	 *  \param pSrc2 [in] Description for pSrc2
@@ -206,13 +213,14 @@ extern "C" {
 	/*!
 	 *  \ingroup service_api
 	 *  \brief Функция копирования нескольких кусков.
+	 *  \author Жиленков Иван
+	 *  \warning Максимальный размер каждого куска не должен превышать 64 32-разрядных слов
 	 *  
 	 *  \param ppSrc [in] Массив указателей входных данных
 	 *  \param ppDst [in] Массив указателей выходных данных
 	 *  \param size [in] Массив размеров данных (в 32-разрядных словах)
 	 *  \param count [in] Число копирований
 	 *  
-	 *  \details Функция предназначена для копирования необходимых паттернов во внутреннюю память, поэтому максимальный размер каждого копируемого элемента не может превышать размера паттерна (при размере паттерна 32х32 максимальный размер равен 64 32-разрядным элементам)
 	 *  
 	 */
 	void copyPacket_32s(nm32s** ppSrc, nm32s** ppDst, int* size, int count);
@@ -220,6 +228,7 @@ extern "C" {
 	/*!
 	 *  \ingroup service_api
 	 *  \brief Brief description
+	 *  \author Жиленков Иван
 	 *  
 	 *  \param ppSrcCA [in] Description for ppSrcCA
 	 *  \param ppSrcCB [in] Description for ppSrcCB
@@ -238,6 +247,7 @@ extern "C" {
 	 *  \ingroup service_api
 	 *  \defgroup selectColorChannel selectColorChannel
 	 *  \brief Функция выборки канала из BGR_32(8-8-8-8) изображения
+	 *  \author Жиленков Иван
 	 *  
 	 *  \param srcImage [in] Входное изображение
 	 *  \param channel [in] Канал ( 0 - blue, 1 - green, 2 -red)
@@ -259,6 +269,7 @@ extern "C" {
 	/*!
 	 *  \ingroup service_api
 	 *  \brief Функция нахождения отрицательных смещений
+	 *  \author Жиленков Иван
 	 *  
 	 *  \param src [in] Входной массив
 	 *  \param dst [out] Выходной массив
@@ -278,6 +289,7 @@ extern "C" {
 	/*!
 	 *  \ingroup service_api
 	 *  \brief Суммирования всех элементов
+	 *  \author Жиленков Иван
 	 *  
 	 *  \param pVec [in] Массив значений
 	 *  \param size [in] Число элементов
@@ -291,6 +303,7 @@ extern "C" {
 	/*!
 	 *  \ingroup service_api
 	 *  \brief Brief description
+	 *  \author Жиленков Иван
 	 *  
 	 *  \param src1 [in] Description for src1
 	 *  \param src2 [in] Description for src2
@@ -307,6 +320,7 @@ extern "C" {
 	/*!
 	 *  \ingroup service_api
 	 *  \brief Brief description
+	 *  \author Жиленков Иван
 	 *  
 	 *  \param srcArray [in] Description for srcArray
 	 *  \param dstArray [in] Description for dstArray
@@ -335,6 +349,8 @@ extern "C" {
 /*!
  *  \ingroup service_api
  *  \brief Brief description
+ *  \author Жиленков Иван
+ *  \warning Функции используют контекст NMGL_Context_NM1
  *  
  *  \return Return description
  *  \details Details
@@ -349,6 +365,7 @@ void drawPoints();
 /*!
  *  \ingroup service_api
  *  \brief Brief description
+ *  \author Жиленков Иван
  *  
  *  \param poly,data [in] Description for poly
  *  
