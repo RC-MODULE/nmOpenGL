@@ -65,7 +65,7 @@ SECTION(".text_demo3d") unsigned int msdAdd2D(const void* src, void* dst, unsign
 SECTION(".text_demo3d") unsigned int msdAdd(MyDmaTask &task, int priority) {
 	unsigned int id = dmaClient[priority].getHead();
 	while (dmaClient[priority].isFull());
-	task.t0 = clock();
+//	task.t0 = clock();
 	dmaClient[priority].add(task);
 	dmaServer.startJob();
 	return id;
