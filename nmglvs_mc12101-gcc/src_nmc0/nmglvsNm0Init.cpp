@@ -5,6 +5,7 @@
 #include "demo3d_nm0.h"
 #include "cache.h"
 #include "ringbuffer.h"
+#include "stacktrace.h"
 
 #include "nmgl.h"
 
@@ -32,7 +33,7 @@ SECTION(".data_imu6")	v4nm32s nmgllightsValues[NMGL_SIZE];
 SECTION(".data_imu6") int dividedMasksMemory[4][3 * NMGL_SIZE / 32];
 
 SECTION(".data_imu6") int masksBits[36][3 * NMGL_SIZE / 32];
-
+SECTION(".data_imu6") StackTraceConnector stackTraceConnector;
 
 extern  NMGLubyte* mipmap; //texture memory
 
@@ -61,6 +62,7 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 	NMGLSynchroData* synchroData;
 	NMGL_Context_NM0 *cntxt;
 	PolygonsArray* polygonsData;
+	StackTraceData* stackTraceData;
 
 	try {
 		int fromHost = halHostSync(0xC0DE0000);		// send handshake to host
@@ -95,6 +97,9 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 		cntxt->beginEndInfo.inBeginEnd = false;
 		cntxt->beginEndInfo.maxSize = BIG_NMGL_SIZE;
 		
+		stackTraceData = myMallocT<StackTraceData>();
+		stackTraceData->init();
+		stackTraceConnector.init(stackTraceData);
 		//Allocate memory for textures.
 		//Must be in EMI. 
 		//EMI has enough space and does not require address mapping at mc12101
@@ -170,6 +175,7 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 
 	//sync4
 	halHostSync((int)0x600d600d);
+	halHostSyncAddr(stackTraceData);
 	nmglClearColor(0, 0, 0, 1.0f);
 	nmglClearDepthf(1);
 
