@@ -18,7 +18,9 @@ SECTION(".data_imu2")	float nmglBuffer1[12 * NMGL_SIZE];
 SECTION(".data_imu3")	float nmglBuffer2[12 * NMGL_SIZE];
 SECTION(".data_imu4")	float nmglBuffer3[12 * NMGL_SIZE];
 SECTION(".data_imu5")	float nmglBuffer4[12 * NMGL_SIZE];
-
+#ifdef TEXTURE_ENABLED
+SECTION(".data_imu7")	float nmglBuffer5[12 * NMGL_SIZE];
+#endif //TEXTURE_ENABLED
 
 SECTION(".data_imu2")	float nmglx0[NMGL_SIZE];
 SECTION(".data_imu2")	float nmgly0[NMGL_SIZE];
@@ -176,6 +178,9 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 	cntxt->buffer2 = nmglBuffer2;
 	cntxt->buffer3 = nmglBuffer3;
 	cntxt->buffer4 = nmglBuffer4;
+#ifdef TEXTURE_ENABLED
+	cntxt->buffer5 = nmglBuffer5;
+#endif //TEXTURE_ENABLED
 
 	cntxt->dividedMasks[0].init((nm1*)dividedMasksMemory[0], (nm1*)dividedMasksMemory[1]);
 	cntxt->dividedMasks[1].init((nm1*)dividedMasksMemory[2], (nm1*)dividedMasksMemory[3]);

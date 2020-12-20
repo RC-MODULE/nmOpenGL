@@ -103,28 +103,28 @@ SECTION(".text_demo3d") void drawTriangles() {
 
 #ifdef TEXTURE_ENABLED
         if (context->texState.textureEnabled) {
-			triangles.x0 = &context->x0[0];
-			triangles.y0 = &context->y0[0];
-			triangles.x1 = &context->x1[0];
-			triangles.y1 = &context->y1[0];
-			triangles.x2 = &context->x2[0];
-			triangles.y2 = &context->y2[0];
+			triangles.x0 = context->x0 + point;
+			triangles.y0 = context->y0 + point;
+			triangles.x1 = context->x1 + point;
+			triangles.y1 = context->y1 + point;
+			triangles.x2 = context->x2 + point;
+			triangles.y2 = context->y2 + point;
 
-			triangles.s0 = &context->texS0[0];
-			triangles.t0 = &context->texT0[0];
-			triangles.s1 = &context->texS1[0];
-			triangles.t1 = &context->texT1[0];
-			triangles.s2 = &context->texS2[0];
-			triangles.t2 = &context->texT2[0];
+			triangles.s0 = context->texS0 + point;
+			triangles.t0 = context->texT0 + point;
+			triangles.s1 = context->texS1 + point;
+			triangles.t1 = context->texT1 + point;
+			triangles.s2 = context->texS2 + point;
+			triangles.t2 = context->texT2 + point;
 
-			triangles.z0 = &context->w0[0];
-			triangles.z1 = &context->w1[0];
-			triangles.z2 = &context->w2[0];
+			triangles.z0 = context->w0 + point;
+			triangles.z1 = context->w1 + point;
+			triangles.z2 = context->w2 + point; 
 
-            textureTriangle(
-                    context->polyImgTmp,
-                    &triangles,
-                    (COMMON_DRAW_TYPE**)(context->imagePoints + point),
+			textureTriangle(
+					context->polyImgTmp,
+					&triangles,
+					(COMMON_DRAW_TYPE**)(context->imagePoints + point),
                     context->ptrnInnPoints + point,
                     context->ptrnSizes + point,
                     mulC,

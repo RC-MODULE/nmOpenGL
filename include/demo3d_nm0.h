@@ -197,6 +197,10 @@ public:
 	float* buffer2;
 	float* buffer3;
 	float* buffer4;
+#ifdef TEXTURE_ENABLED
+	float* buffer5;
+	int dummy0; //additional int for alignment
+#endif //TEXTURE_ENABLED
 
 	BitMask segmentMasks[36];
 	BitDividedMask dividedMasks[2];	

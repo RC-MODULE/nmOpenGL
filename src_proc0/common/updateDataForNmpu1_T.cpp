@@ -75,15 +75,15 @@ void updatePolygonsT(DataForNmpu1* data, Triangles* triangles, int count, int se
 
 #ifdef TEXTURE_ENABLED
 	if (cntxt->texState.textureEnabled) {
-		nmblas_scopy(count, (float*)triangles->s0, 1, (float*)data->s0, 1);
-		nmblas_scopy(count, (float*)triangles->t0, 1, (float*)data->t0, 1);
-		nmblas_scopy(count, (float*)triangles->s1, 1, (float*)data->s1, 1);
-		nmblas_scopy(count, (float*)triangles->t1, 1, (float*)data->t1, 1);
-		nmblas_scopy(count, (float*)triangles->s2, 1, (float*)data->s2, 1);
-		nmblas_scopy(count, (float*)triangles->t2, 1, (float*)data->t2, 1);
-		nmblas_scopy(count, (float*)triangles->w0, 1, (float*)data->w0, 1);
-		nmblas_scopy(count, (float*)triangles->w1, 1, (float*)data->w1, 1);
-		nmblas_scopy(count, (float*)triangles->w2, 1, (float*)data->w2, 1);
+		nmblas_scopy(count, (float*)triangles->s0, 1, (float*)data->s0 + data->count, 1);
+		nmblas_scopy(count, (float*)triangles->t0, 1, (float*)data->t0 + data->count, 1);
+		nmblas_scopy(count, (float*)triangles->s1, 1, (float*)data->s1 + data->count, 1);
+		nmblas_scopy(count, (float*)triangles->t1, 1, (float*)data->t1 + data->count, 1);
+		nmblas_scopy(count, (float*)triangles->s2, 1, (float*)data->s2 + data->count, 1);
+		nmblas_scopy(count, (float*)triangles->t2, 1, (float*)data->t2 + data->count, 1);
+		nmblas_scopy(count, (float*)triangles->w0, 1, (float*)data->w0 + data->count, 1);
+		nmblas_scopy(count, (float*)triangles->w1, 1, (float*)data->w1 + data->count, 1);
+		nmblas_scopy(count, (float*)triangles->w2, 1, (float*)data->w2 + data->count, 1);
 	}
 #endif TEXTURE_ENABLED
 

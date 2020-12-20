@@ -401,7 +401,7 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			int primCount = vertexPrimitiveRepack(vertexResult, colorOrNormal, cntxt->buffer0, (v4nm32f*)cntxt->buffer1, mode, localSize);
 
 			//в tmp0 хранятся данные в порядке x0,y0,z0,w0,x1,y1,z1,w1,x2,y2,z2,w2 (остальные массивы неопределены)
-			//в tmp1 хранятся данные в порядке x0,y0,z0,x1,y1,z1,x2,y2,z2 (остальные массивы неопределены)
+			//в tmp1 хранятся данные в порядке x0,y0,z0,x1,y1,z1,x2,y2,z2,w0,w1,w2 (в buffer2), s0,t0,s1,t1,s2,t2 (в buffer5)
 			tmp0.v0.x = cntxt->buffer0 + 0 * primCount;
 			tmp0.v0.y = cntxt->buffer0 + 1 * primCount;
 			tmp0.v0.z = cntxt->buffer0 + 2 * primCount;
@@ -416,17 +416,15 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			tmp0.v2.w = cntxt->buffer0 + 11 * primCount;
 
 #ifdef TEXTURE_ENABLED
-			
 			if (cntxt->texState.textureEnabled) {
-				//save texture coordinates to buffer1 after color
-				//(offset in buffer1 = (sizeof(v4nm32f) = 4) * primCount)
-				texCoordsRepack(texResult, ((nm32f*)cntxt->buffer1) + primCount * 4, mode, localSizeBackup);
-				tmp1.v0.s = cntxt->buffer1 + 4 * primCount;
-				tmp1.v0.t = cntxt->buffer1 + 5 * primCount;
-				tmp1.v1.s = cntxt->buffer1 + 6 * primCount;
-				tmp1.v1.t = cntxt->buffer1 + 7 * primCount;
-				tmp1.v2.s = cntxt->buffer1 + 8 * primCount;
-				tmp1.v2.t = cntxt->buffer1 + 9 * primCount;
+				//save texture coordinates to buffer5 (first half)
+				texCoordsRepack(texResult, (nm32f*)cntxt->buffer5, mode, localSizeBackup);
+				tmp1.v0.s = cntxt->buffer5 + 0 * primCount;
+				tmp1.v0.t = cntxt->buffer5 + 1 * primCount;
+				tmp1.v1.s = cntxt->buffer5 + 2 * primCount;
+				tmp1.v1.t = cntxt->buffer5 + 3 * primCount;
+				tmp1.v2.s = cntxt->buffer5 + 4 * primCount;
+				tmp1.v2.t = cntxt->buffer5 + 5 * primCount;
 			}
 #endif //TEXTURE_ENABLED
 
@@ -491,7 +489,7 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			//данные хранятся в tmp1 (в buffer2), цвет в buffer1
 #else //TEXTURE_ENABLED
 			//в tmp0 теперь хранятся x,y в оконных координатах, z в диапазона 0..Z_BUFF_MAX, координаты w.
-			//Данные (x,y,z,w) хранятся в tmp1 (в buffer2), цвет в buffer1, текстурные координаты s,t - в buffer1.
+			//Данные (x,y,z,w) хранятся в tmp1 (в buffer2), цвет в buffer1, текстурные координаты s,t - в buffer5.
 #endif //TEXTURE_ENABLED
 			v2nm32f *minXY = (v2nm32f*)cntxt->buffer4;
 			v2nm32f *maxXY = (v2nm32f*)cntxt->buffer4 + 3 * NMGL_SIZE;
@@ -514,14 +512,14 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 				tmp0.v1.w = cntxt->buffer0 + 10 * NMGL_SIZE;
 				tmp0.v2.w = cntxt->buffer0 + 11 * NMGL_SIZE;
 
-				//texcoord to buffer3 right after color during triangulation
-				//Check: max color space in buffer3 will be NMGL_SIZE*4 ?
-				tmp0.v0.s = cntxt->buffer3 + 4 * NMGL_SIZE;
-				tmp0.v0.t = cntxt->buffer3 + 5 * NMGL_SIZE;
-				tmp0.v1.s = cntxt->buffer3 + 6 * NMGL_SIZE;
-				tmp0.v1.t = cntxt->buffer3 + 7 * NMGL_SIZE;
-				tmp0.v2.s = cntxt->buffer3 + 8 * NMGL_SIZE;
-				tmp0.v2.t = cntxt->buffer3 + 9 * NMGL_SIZE;
+				//use second half of buffer5 to save texture coordinates after 
+				//triangulation 
+				tmp0.v0.s = cntxt->buffer5 +  6 * NMGL_SIZE;
+				tmp0.v0.t = cntxt->buffer5 +  7 * NMGL_SIZE;
+				tmp0.v1.s = cntxt->buffer5 +  8 * NMGL_SIZE;
+				tmp0.v1.t = cntxt->buffer5 +  9 * NMGL_SIZE;
+				tmp0.v2.s = cntxt->buffer5 + 10 * NMGL_SIZE;
+				tmp0.v2.t = cntxt->buffer5 + 11 * NMGL_SIZE;
 			}
 #endif //TEXTURE_ENABLED
 			
@@ -545,7 +543,8 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 					nmblas_scopy(currentCount, tmp1.v2.w, 1, tmp0.v2.w, 1);
 
 					//triangulate s,t. 
-					//At now simply copy s,t to tmp0 (buffer0) from tmp1 (buffer2) 
+					//At now simply copy s,t to tmp0 (second half of buffer5) 
+					//from tmp1 (first half of buffer5)
 					//but must be implemented in triangulate(). 
 					//So this code works only for 32*32 triangles 
 					//and currentCount must be equal to primCount. 
@@ -590,7 +589,7 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 				}
 
 #ifdef TEXTURE_ENABLED
-				//Data (x,y,z) now in buffer0, color in buffer3, texCoords in buffer3.
+				//Data (x,y,z,w) now in buffer0, color in buffer3, texCoords in buffer5.
 				//Data (x,y,z,w,s,t) are referenced via tmp0.
 #endif //TEXTURE_ENABLED
 				//копирование каждого третьего цвета
