@@ -67,6 +67,26 @@ public:
 	Size* ptrnSizes;
 	nm32s* valuesZ;
 	nm32s* valuesC;
+
+#ifdef TEXTURE_ENABLED
+	float* x0;
+	float* y0;
+	float* x1;
+	float* y1;
+	float* x2;
+	float* y2;
+
+	float* texS0;
+	float* texT0;
+	float* texS1;
+	float* texT1;
+	float* texS2;
+	float* texT2;
+
+	float* w0;
+	float* w1;
+	float* w2;
+#endif //TEXTURE_ENABLED
 	
 	NMGL_Context_NM1_Texture texState;
 

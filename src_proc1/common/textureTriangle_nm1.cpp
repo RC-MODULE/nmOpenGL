@@ -11,8 +11,8 @@
 
 #define TEXTURE_ENABLED
 #ifdef TEXTURE_ENABLED
-#define USE_BARYCENTRIC
-// #define PERSPECTIVE_CORRECT
+//#define USE_BARYCENTRIC
+#define PERSPECTIVE_CORRECT
 
 namespace tex_nm1 {
 // typedef enum { NEAREST, LINEAR, NEAREST_MIPMAP_NEAREST, NEAREST_MIPMAP_LINEAR, LINEAR_MIPMAP_NEAREST, LINEAR_MIPMAP_LINEAR } filter_mode_t;
@@ -139,19 +139,19 @@ int getPixelValue(unsigned int x, unsigned int y, TexImage2D image, color * pixe
     {
         //Чтение производится из массива данных изображения bmp с учетом наличия в нём 
         //дополнительных байтов для выравнивания по границе 4 байтов
-        pixelValue->r = ((unsigned char*)pixels)[pixelPos];
-        pixelValue->g = ((unsigned char*)pixels)[pixelPos + 1];
-        pixelValue->b = ((unsigned char*)pixels)[pixelPos + 2];
+        pixelValue->r = ((NMGLubyte*)pixels)[pixelPos];
+        pixelValue->g = ((NMGLubyte*)pixels)[pixelPos + 1];
+        pixelValue->b = ((NMGLubyte*)pixels)[pixelPos + 2];
 		pixelValue->a = 255;
     }
     else if (((format == NMGL_RGBA) && (type == NMGL_UNSIGNED_BYTE)))
     {
         //Чтение производится из массива данных изображения bmp с учетом наличия в нём 
         //дополнительных байтов для выравнивания по границе 4 байтов
-        pixelValue->r = ((unsigned char*)pixels)[pixelPos];
-        pixelValue->g = ((unsigned char*)pixels)[pixelPos + 1];
-        pixelValue->b = ((unsigned char*)pixels)[pixelPos + 2];
-        pixelValue->a = ((unsigned char*)pixels)[pixelPos + 3];
+        pixelValue->r = ((NMGLubyte*)pixels)[pixelPos];
+        pixelValue->g = ((NMGLubyte*)pixels)[pixelPos + 1];
+        pixelValue->b = ((NMGLubyte*)pixels)[pixelPos + 2];
+        pixelValue->a = ((NMGLubyte*)pixels)[pixelPos + 3];
     }
     else if ((format == NMGL_ALPHA) && (type == NMGL_UNSIGNED_BYTE))
     {
@@ -160,25 +160,25 @@ int getPixelValue(unsigned int x, unsigned int y, TexImage2D image, color * pixe
         pixelValue->r = 0;
         pixelValue->g = 0;
         pixelValue->b = 0;
-        pixelValue->a = ((unsigned char*)pixels)[pixelPos];
+        pixelValue->a = ((NMGLubyte*)pixels)[pixelPos];
     }
     else if ((format == NMGL_LUMINANCE) && (type == NMGL_UNSIGNED_BYTE))
     {
         //Чтение производится из массива данных изображения bmp с учетом наличия в нём 
         //дополнительных байтов для выравнивания по границе 4 байтов
-        pixelValue->r = ((unsigned char*)pixels)[pixelPos];
-        pixelValue->g = ((unsigned char*)pixels)[pixelPos];
-        pixelValue->b = ((unsigned char*)pixels)[pixelPos];
+        pixelValue->r = ((NMGLubyte*)pixels)[pixelPos];
+        pixelValue->g = ((NMGLubyte*)pixels)[pixelPos];
+        pixelValue->b = ((NMGLubyte*)pixels)[pixelPos];
         pixelValue->a = 255;
     }
     else if ((format == NMGL_LUMINANCE_ALPHA) && (type == NMGL_UNSIGNED_BYTE))
     {
         //Чтение производится из массива данных изображения bmp с учетом наличия в нём 
         //дополнительных байтов для выравнивания по границе 4 байтов
-        pixelValue->r = ((unsigned char*)pixels)[pixelPos];
-        pixelValue->g = ((unsigned char*)pixels)[pixelPos];
-        pixelValue->b = ((unsigned char*)pixels)[pixelPos];
-        pixelValue->a = ((unsigned char*)pixels)[pixelPos + 1];
+        pixelValue->r = ((NMGLubyte*)pixels)[pixelPos];
+        pixelValue->g = ((NMGLubyte*)pixels)[pixelPos];
+        pixelValue->b = ((NMGLubyte*)pixels)[pixelPos];
+        pixelValue->a = ((NMGLubyte*)pixels)[pixelPos + 1];
     }
     else
     {

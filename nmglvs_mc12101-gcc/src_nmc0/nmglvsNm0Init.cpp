@@ -18,7 +18,9 @@ SECTION(".data_imu2")	float nmglBuffer1[12 * NMGL_SIZE];
 SECTION(".data_imu3")	float nmglBuffer2[12 * NMGL_SIZE];
 SECTION(".data_imu4")	float nmglBuffer3[12 * NMGL_SIZE];
 SECTION(".data_imu5")	float nmglBuffer4[12 * NMGL_SIZE];
-
+#ifdef TEXTURE_ENABLED
+SECTION(".data_imu7")	float nmglBuffer5[12 * NMGL_SIZE];
+#endif //TEXTURE_ENABLED
 
 SECTION(".data_imu2")	float nmglx0[NMGL_SIZE];
 SECTION(".data_imu2")	float nmgly0[NMGL_SIZE];
@@ -28,6 +30,17 @@ SECTION(".data_imu3")	float nmglx2[NMGL_SIZE];
 SECTION(".data_imu3")	float nmgly2[NMGL_SIZE];
 SECTION(".data_imu4")	int nmglz_int[NMGL_SIZE];
 SECTION(".data_imu6")	v4nm32s nmgllightsValues[NMGL_SIZE];
+#ifdef TEXTURE_ENABLED
+SECTION(".data_imu1")	float nmgls0[NMGL_SIZE];
+SECTION(".data_imu2")	float nmglt0[NMGL_SIZE];
+SECTION(".data_imu3")	float nmgls1[NMGL_SIZE];
+SECTION(".data_imu4")	float nmglt1[NMGL_SIZE];
+SECTION(".data_imu5")	float nmgls2[NMGL_SIZE];
+SECTION(".data_imu6")	float nmglt2[NMGL_SIZE];
+SECTION(".data_imu7")	float nmglw0[NMGL_SIZE];
+SECTION(".data_imu7")	float nmglw1[NMGL_SIZE];
+SECTION(".data_imu7")	float nmglw2[NMGL_SIZE];
+#endif //TEXTURE_ENABLED
 
 SECTION(".data_imu6") int dividedMasksMemory[4][3 * NMGL_SIZE / 32];
 
@@ -127,9 +140,21 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 	cntxt->trianInner.x2 = nmglx2;
 	cntxt->trianInner.y2 = nmgly2;
 	cntxt->trianInner.z = nmglz_int;
+#ifdef TEXTURE_ENABLED
+	cntxt->trianInner.s0 = nmgls0;
+	cntxt->trianInner.t0 = nmglt0;
+	cntxt->trianInner.s1 = nmgls1;
+	cntxt->trianInner.t1 = nmglt1;
+	cntxt->trianInner.s2 = nmgls2;
+	cntxt->trianInner.t2 = nmglt2;
+	cntxt->trianInner.w0 = nmglw0;
+	cntxt->trianInner.w1 = nmglw1;
+	cntxt->trianInner.w2 = nmglw2;
+#endif //TEXTURE_ENABLED
 	cntxt->trianInner.colors = nmgllightsValues;
 	cntxt->trianInner.maxSize = NMGL_SIZE;
 	cntxt->trianInner.size = 0;
+
 
 	cntxt->lineInner.x0 = nmglx0;
 	cntxt->lineInner.y0 = nmgly0;
@@ -153,6 +178,9 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 	cntxt->buffer2 = nmglBuffer2;
 	cntxt->buffer3 = nmglBuffer3;
 	cntxt->buffer4 = nmglBuffer4;
+#ifdef TEXTURE_ENABLED
+	cntxt->buffer5 = nmglBuffer5;
+#endif //TEXTURE_ENABLED
 
 	cntxt->dividedMasks[0].init((nm1*)dividedMasksMemory[0], (nm1*)dividedMasksMemory[1]);
 	cntxt->dividedMasks[1].init((nm1*)dividedMasksMemory[2], (nm1*)dividedMasksMemory[3]);

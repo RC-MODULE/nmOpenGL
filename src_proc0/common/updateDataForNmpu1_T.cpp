@@ -9,7 +9,7 @@
 #include "math.h"
 
 
-
+#ifndef TEXTURE_ENABLED
 #define sort() 	nmppsMerge_32f(triangles->x0, triangles->y0, temp0, count);	 \
 	nmppsMerge_32f(triangles->x1, triangles->y1, temp1, count);				 \
 	nmppsMerge_32f(triangles->x2, triangles->y2, temp2, count);				 \
@@ -17,6 +17,27 @@
 	split_v2nm32f((v2nm32f*)temp0, 1, triangles->x0, triangles->y0, count);	 \
 	split_v2nm32f((v2nm32f*)temp1, 1, triangles->x1, triangles->y1, count);	 \
 	split_v2nm32f((v2nm32f*)temp2, 1, triangles->x2, triangles->y2, count)
+
+#else //TEXTURE_ENABLED
+
+#define sort() 	nmppsMerge_32f(triangles->x0, triangles->y0, temp0, count);	 \
+	nmppsMerge_32f(triangles->x1, triangles->y1, temp1, count);				 \
+	nmppsMerge_32f(triangles->x2, triangles->y2, temp2, count);				 \
+	if (cntxt->texState.textureEnabled == 0) {                                \
+		sortByY3(temp0, temp1, temp2, count);									 \
+	}																		 \
+	else {																	 \
+		sortByY5(temp0, temp1, temp2, \
+				 triangles->s0, triangles->t0, \
+				 triangles->s1, triangles->t1, \
+				 triangles->s2, triangles->t2, \
+				 triangles->w0, triangles->w1, triangles->w2, count);						\
+	}																		 \
+	split_v2nm32f((v2nm32f*)temp0, 1, triangles->x0, triangles->y0, count);	 \
+	split_v2nm32f((v2nm32f*)temp1, 1, triangles->x1, triangles->y1, count);	 \
+	split_v2nm32f((v2nm32f*)temp2, 1, triangles->x2, triangles->y2, count)
+#endif //TEXTURE_ENABLED
+
 
 SECTION(".text_demo3d")
 //void updateDataForNmpu1_T(DataForNmpu1* data, Triangles* triangles, int count, int segX, int segY){
@@ -51,6 +72,20 @@ void updatePolygonsT(DataForNmpu1* data, Triangles* triangles, int count, int se
 	
 	nmblas_scopy (count, (float*)triangles->z, 1, (float*)data->z + data->count, 1);
 	nmblas_scopy(4 * count, (float*)triangles->colors, 1, (float*)data->color + 4 * data->count, 1);
+
+#ifdef TEXTURE_ENABLED
+	if (cntxt->texState.textureEnabled) {
+		nmblas_scopy(count, (float*)triangles->s0, 1, (float*)data->s0 + data->count, 1);
+		nmblas_scopy(count, (float*)triangles->t0, 1, (float*)data->t0 + data->count, 1);
+		nmblas_scopy(count, (float*)triangles->s1, 1, (float*)data->s1 + data->count, 1);
+		nmblas_scopy(count, (float*)triangles->t1, 1, (float*)data->t1 + data->count, 1);
+		nmblas_scopy(count, (float*)triangles->s2, 1, (float*)data->s2 + data->count, 1);
+		nmblas_scopy(count, (float*)triangles->t2, 1, (float*)data->t2 + data->count, 1);
+		nmblas_scopy(count, (float*)triangles->w0, 1, (float*)data->w0 + data->count, 1);
+		nmblas_scopy(count, (float*)triangles->w1, 1, (float*)data->w1 + data->count, 1);
+		nmblas_scopy(count, (float*)triangles->w2, 1, (float*)data->w2 + data->count, 1);
+	}
+#endif TEXTURE_ENABLED
 
 #ifdef DEBUG
 	static unsigned int counter = 0;

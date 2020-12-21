@@ -93,7 +93,9 @@ void nmglDisable(NMGLenum cap) {
 		break;
 	
 	case NMGL_TEXTURE_2D:
-		//code
+		cntxt->texState.texUnits[cntxt->texState.activeTexUnitIndex].enabled = NMGL_FALSE;
+		cntxt->texState.textureEnabled = cntxt->texState.textureEnabled & (~((unsigned int)1 << cntxt->texState.activeTexUnitIndex));
+		cntxt->synchro.writeInstr(1, NMC1_TEXTURE2D, NMGL_FALSE);
 		break;
 	
 	case NMGL_CLIP_PLANE0:

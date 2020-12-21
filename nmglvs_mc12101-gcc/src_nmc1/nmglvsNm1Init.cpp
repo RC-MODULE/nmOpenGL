@@ -23,6 +23,26 @@ SECTION(".data_imu0") Size ptrnSizes[POLYGONS_SIZE];
 SECTION(".data_shmem1") nm32s valuesZ[POLYGONS_SIZE];
 SECTION(".data_shmem1") nm32s valuesC[POLYGONS_SIZE];
 
+#ifdef TEXTURE_ENABLED
+SECTION(".data_imu0") float x0[POLYGONS_SIZE];
+SECTION(".data_imu0") float y0[POLYGONS_SIZE];
+SECTION(".data_imu0") float x1[POLYGONS_SIZE];
+SECTION(".data_imu0") float y1[POLYGONS_SIZE];
+SECTION(".data_imu0") float x2[POLYGONS_SIZE];
+SECTION(".data_imu0") float y2[POLYGONS_SIZE];
+
+SECTION(".data_imu0") float texS0[POLYGONS_SIZE];
+SECTION(".data_imu0") float texT0[POLYGONS_SIZE];
+SECTION(".data_imu0") float texS1[POLYGONS_SIZE];
+SECTION(".data_imu0") float texT1[POLYGONS_SIZE];
+SECTION(".data_imu0") float texS2[POLYGONS_SIZE];
+SECTION(".data_imu0") float texT2[POLYGONS_SIZE];
+
+SECTION(".data_imu0") float w0[POLYGONS_SIZE];
+SECTION(".data_imu0") float w1[POLYGONS_SIZE];
+SECTION(".data_imu0") float w2[POLYGONS_SIZE];
+#endif //TEXTURE_ENABLED
+
 SECTION(".data_shmem1") nm32s* ppSrcPackPtrns[3 * POLYGONS_SIZE];
 SECTION(".data_shmem1") nm32s* ppDstPackPtrns[3 * POLYGONS_SIZE];
 SECTION(".data_shmem1") nm32s nSizePtrn32[3 * POLYGONS_SIZE];
@@ -142,6 +162,27 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 
 	cntxt->t0 = clock();
 	cntxt->pointSize = 1;
+
+#ifdef TEXTURE_ENABLED
+	cntxt->x0 = x0;
+	cntxt->y0 = y0;
+	cntxt->x1 = x1;
+	cntxt->y1 = y1;
+	cntxt->x2 = x2;
+	cntxt->y2 = y2;
+
+	cntxt->texS0 = texS0;
+	cntxt->texT0 = texT0;
+	cntxt->texS1 = texS1;
+	cntxt->texT1 = texT1;
+	cntxt->texS2 = texS2;
+	cntxt->texT2 = texT2;
+
+	cntxt->w0 = w0;
+	cntxt->w1 = w1;
+	cntxt->w2 = w2;
+#endif //TEXTURE_ENABLED
+
 	return 0;
 } 
 

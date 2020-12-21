@@ -8,6 +8,11 @@
 
 int totalSum(nm32s* pVec, int size);
 
+#ifdef TEXTURE_ENABLED
+using namespace tex_nm1; 
+SECTION(".data_imu0") TrianglesInfo triangles;
+#endif //TEXTURE_ENABLED
+
 SECTION(".text_demo3d") void drawTriangles() {
 	NMGL_Context_NM1 *context = NMGL_Context_NM1::getContext();
 	PolygonsConnector *connector = context->polygonsConnectors;
@@ -95,6 +100,38 @@ SECTION(".text_demo3d") void drawTriangles() {
 			localSize);
 
 		//mulBuffer теперь хранит цвет
+
+#ifdef TEXTURE_ENABLED
+        if (context->texState.textureEnabled) {
+			triangles.x0 = context->x0 + point;
+			triangles.y0 = context->y0 + point;
+			triangles.x1 = context->x1 + point;
+			triangles.y1 = context->y1 + point;
+			triangles.x2 = context->x2 + point;
+			triangles.y2 = context->y2 + point;
+
+			triangles.s0 = context->texS0 + point;
+			triangles.t0 = context->texT0 + point;
+			triangles.s1 = context->texS1 + point;
+			triangles.t1 = context->texT1 + point;
+			triangles.s2 = context->texS2 + point;
+			triangles.t2 = context->texT2 + point;
+
+			triangles.z0 = context->w0 + point;
+			triangles.z1 = context->w1 + point;
+			triangles.z2 = context->w2 + point; 
+
+			textureTriangle(
+					context->polyImgTmp,
+					&triangles,
+					(COMMON_DRAW_TYPE**)(context->imagePoints + point),
+                    context->ptrnInnPoints + point,
+                    context->ptrnSizes + point,
+                    mulC,
+                    mulC,
+                    localSize);
+        }
+#endif //TEXTURE_ENABLED
 
 		//функция накладывает маску на буфер с цветами 
 		//и копирует треугольник в изображение
