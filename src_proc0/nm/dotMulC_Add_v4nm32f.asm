@@ -1,4 +1,7 @@
-
+/*!
+ *  \file dotMulC_Add_v4nm32f.asm
+ *  \author Zhilenkov Ivan
+ */
 //void dotMulC_Add_v4nm32f(v2nm32f* n_dot_VP, v4nm32f* srcDiffuse, v4nm32f* addVec, v4nm32f* dst, int size);
 global _dotMulC_Add_v4nm32f: label;
 

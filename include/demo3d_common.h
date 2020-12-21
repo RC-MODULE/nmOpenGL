@@ -1,3 +1,8 @@
+/*!
+ *  \file demo3d_common.h
+ *  \brief Заголовочный файл с информацией общей для nm0 и nm1
+ *  \author Жиленков Иван
+ */
 #ifndef __DEMO3D_COMMON_H_INCLUDED__
 #define __DEMO3D_COMMON_H_INCLUDED__
 #include "nmtype.h"
@@ -76,10 +81,11 @@ struct Rectangle {
 };
 
 /**
-*  Структура для передачи полигонов от nmpu0 к nmpu1.
+*  \brief Структура для передачи полигонов от nmpu0 к nmpu1.
 *  Предполагается, что точки (x0, y0), (x1, y1) и (x2, y2) расположены в порядке возрастания y,
 *  т.е. точка (x0, y0) обладает наименьшим y
-*  Полигон должен вписываться в квадрат 32*32 пикселей
+*  \warning Каждый полигон должен вписываться в квадрат 32*32 пикселей.
+*  \author Жиленков Иван
 */
 struct DataForNmpu1 {
 	int x0[POLYGONS_SIZE];
@@ -112,10 +118,12 @@ struct DataForNmpu1 {
 
 
 /**
- *  (устаревшая)Структура для передачи полигонов от nmpu0 к nmpu1.
+ *  \brief (устаревшая)Структура для передачи полигонов от nmpu0 к nmpu1.
  *  Предполагается, что точки (x0, y0), (x1, y1) и (x2, y2) расположены в порядке возрастания y, 
  *  т.е. точка (x0, y0) обладает наименьшим y
  *  Полигон должен вписываться в квадрат 32*32 пикселей
+ *  \warning Каждый полигон должен вписываться в квадрат 32*32 пикселей.
+ *  \author Жиленков Иван
  */
 struct PolygonsOld {
 	int numbersPattrns01[POLYGONS_SIZE];
@@ -162,6 +170,10 @@ typedef struct s_v3nm32f {
 	float v2;
 } v3nm32f;
 
+/*!
+ *  \brief Класс с информации о массиве используемом в функции nmglDrawArrays
+ *  \author Жиленков Иван
+ */
 struct Array {
 	const void* pointer;
 	NMGLint size;
@@ -171,6 +183,10 @@ struct Array {
 	int offset;
 };
 
+/*!
+ *  \brief Класс с информацией о делении изображения на сегменты
+ *  \author Жиленков Иван
+ */
 struct WindowInfo {
 	int x0[20];
 	int y0[20];

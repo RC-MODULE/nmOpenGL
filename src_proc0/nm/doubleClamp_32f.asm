@@ -1,4 +1,7 @@
-
+/*!
+ *  \file doubleClamp_32f.asm
+ *  \author Zhilenkov Ivan
+ */
 //void clamp_32f(nm32f* pSrcVec1, nm32f* pSrcVec2, float min, float max, nm32f* pDstVec1, nm32f* pDstVec2, int size);
 global _doubleClamp_32f: label;
 

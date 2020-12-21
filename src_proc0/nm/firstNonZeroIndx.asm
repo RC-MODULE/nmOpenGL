@@ -1,4 +1,7 @@
-
+/*!
+ *  \file firstNonZeroIndx.asm
+ *  \author Zhilenkov Ivan
+ */
 
 begin ".text_nmplv"
  

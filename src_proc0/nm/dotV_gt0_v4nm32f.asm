@@ -1,4 +1,7 @@
-
+/*!
+ *  \file dotV_gt0_v4nm32f.asm
+ *  \author Zhilenkov Ivan
+ */
 //void dotv_gt0_v4nm32f(v4nm32f* srcVec1, v4nm32f* srcVec2, nm32f* dstValues, int size);
 global _dotV_gt0_v4nm32f: label;
 

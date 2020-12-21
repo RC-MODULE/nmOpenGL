@@ -1,4 +1,7 @@
-
+/*!
+ *  \file replaceEq0.asm
+ *  \author Zhilenkov Ivan
+ */
 //void replaceEq0_32f(float* srcVec, float* dstVec, int size, float nReplaceC);
 global _replaceEq0_32f: label;
 

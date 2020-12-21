@@ -1,4 +1,7 @@
-
+/*!
+ *  \file copyOddOffset.asm
+ *  \author Zhilenkov Ivan
+ */
 //void copyOddOffset(float* src, float* dst, int first, int size);
 
 data ".data_demo3d"

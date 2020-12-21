@@ -1,4 +1,7 @@
-
+/*!
+ *  \file tripleMulC_32f.asm
+ *  \author Zhilenkov Ivan
+ */
 //умножает на константы два вектора
 global _tripleMulC_32f:label;
 //void tripleMulC_32f(float* src1, float* src2, float* src3, float C, float* dst1, float* dst2, float* dst3, int size);

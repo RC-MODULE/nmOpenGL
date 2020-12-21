@@ -77,6 +77,7 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 	halSetProcessorNo(1);
 	//---------- start nm program ------------
 	NMGL_Context_NM1 *cntxt;
+	ImageData* imagesData;
 	try {
 		int fromHost = halHostSync(0xC0DE0001);		// send handshake to host
 		if (fromHost != 0xC0DE0086) {					// get  handshake from host
@@ -91,13 +92,15 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 		cntxt->patterns = myMallocT<PatternsArray>();
 		
 		setHeap(13);
-		cntxt->imagesData = myMallocT<ImageData>();
-		cntxt->imagesData->init();
+		imagesData = myMallocT<ImageData>();
+		imagesData->init();
+		cntxt->imageConnector = myMallocT<ImageConnector>();
+		cntxt->imageConnector->init(imagesData);
 
 		setHeap(11);
 		DepthImage* depthImage = myMallocT<DepthImage>();
 
-		cntxt->colorBuffer.init(cntxt->imagesData->ptrHead(), WIDTH_IMAGE, HEIGHT_IMAGE);
+		cntxt->colorBuffer.init(cntxt->imageConnector->ptrHead(), WIDTH_IMAGE, HEIGHT_IMAGE);
 		cntxt->depthBuffer.init(depthImage, WIDTH_IMAGE, HEIGHT_IMAGE);
 		cntxt->texState.init();
 	}
@@ -146,7 +149,7 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 		cntxt->minusOne[j] = -1;
 	}
 	//sync3
-	halHostSyncAddr(cntxt->imagesData);
+	halHostSyncAddr(imagesData);
 
 	cntxt->ptrnInnPoints = ptrnInnPoints;
 	cntxt->ptrnSizes = ptrnSizes;

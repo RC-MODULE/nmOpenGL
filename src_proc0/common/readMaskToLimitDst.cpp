@@ -1,3 +1,7 @@
+/*!
+ *  \file readMaskToLimitDst.cpp
+ *  \author Zhilenkov Ivan
+ */
 #include "nmtype.h"
 #include "demo3d_common.h"
 #include "stdio.h"

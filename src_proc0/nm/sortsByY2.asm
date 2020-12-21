@@ -1,3 +1,7 @@
+/*!
+ *  \file sortsByY2.asm
+ *  \author Zhilenkov Ivan
+ */
 //void sortByY2(v2nm32f* pAxy,
 //						 v2nm32f* pBxy,
 //						 int size)

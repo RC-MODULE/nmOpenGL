@@ -1,3 +1,7 @@
+/*!
+ *  \file copyColorByIndices.asm
+ *  \author Zhilenkov Ivan
+ */
 //void copyColorByIndices(v4nm32s* srcLight, int* indices, v4nm32s* dstLight, int size){
 
 global _copyColorByIndices: label;

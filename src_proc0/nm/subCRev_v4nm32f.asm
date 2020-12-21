@@ -1,4 +1,7 @@
-
+/*!
+ *  \file subCRev_v4nm32f.asm
+ *  \author Zhilenkov Ivan
+ */
 //void subCRev_v4nm32f(v4nm32f* pSrcV, v4nm32f* pSrcC, v4nm32f* pDst, int size);
 
 begin ".text_demo3d"

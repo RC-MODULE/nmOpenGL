@@ -1,3 +1,7 @@
+/*!
+ *  \file meanToInt3.asm
+ *  \author Zhilenkov Ivan
+ */
 global _meanToInt3: label;
 //void meanToInt3(float* src1, float* src2, float* src3, int* result, int size)
 

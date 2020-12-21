@@ -1,4 +1,7 @@
-
+/*!
+ *  \file doubleMulC_32f.asm
+ *  \author Zhilenkov Ivan
+ */
 //умножает на константы два вектора
 global _doubleMulC_32f:label;
 //void doubleMulC_32f(float* src1, float* src2, float C1, float C2, float* dst1, float dst2, int size);

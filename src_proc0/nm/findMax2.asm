@@ -1,4 +1,7 @@
-
+/*!
+ *  \file findMax2.asm
+ *  \author Zhilenkov Ivan
+ */
 //void findMax2(float* src1, float* src2, float* dstMax, int size);
 global _findMax2: label;
 

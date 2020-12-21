@@ -1,3 +1,7 @@
+/*!
+ *  \file rasterizeT.cpp
+ *  \author Zhilenkov Ivan
+ */
 #include "nmpp.h"
 #include "nmblas.h"
 #include "demo3d_nm0.h"
@@ -89,13 +93,7 @@ void rasterizeT(const Triangles* triangles, const BitMask* masks){
 #else //TEXTURE_ENABLED
 					copyArraysByIndices((void**)triangles, indices, (void**)&localTrian, 7, resultSize);
 #endif //TEXTURE_ENABLED
-
-#ifdef OUTPUT_IMAGE_RGB8888
 					copyColorByIndices_BGRA_RGBA(triangles->colors, indices, (v4nm32s*)localTrian.colors, resultSize);
-#endif // OUTPUT_IMAGE_RGB8888
-#ifdef OUTPUT_IMAGE_RGB565
-					copyColorByIndices(triangles->colors, indices, (v4nm32s*)localTrian.colors, resultSize);
-#endif // OUTPUT_IMAGE_RGB565
 					localTrian.size = resultSize;
 
 					int offset = 0;

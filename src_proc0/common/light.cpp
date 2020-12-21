@@ -1,3 +1,8 @@
+/*!
+ *  \file light.cpp
+ *  \author Zhilenkov Ivan
+ */
+
 #include "nmpp.h"
 #include "nmblas.h"
 #include "demo3d_nm0.h"
@@ -6,7 +11,7 @@
 #include "stdio.h"
 #include "math.h"
 
-//‘ункци€ рассчета освещени€
+//функция рассчета освещени€
 //n - нормаль
 //V - вершины
 //^ - единичный вектор
@@ -15,7 +20,6 @@
 
 extern "C" void maskEq0(v4nm32f* srcVec, v2nm32f* srcMask, v4nm32f* dstVec, int size);
 
-void printCrc(void* src, int size32, char* s = 0);
 
 inline void normalize_v4nm32f(v4nm32f* src, v4nm32f* dst, int size, v2nm32f* tmp1, v2nm32f* tmp2) {
 	dotV_gt0_v4nm32f(src, src, tmp1, size);	

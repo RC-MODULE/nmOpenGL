@@ -1,4 +1,7 @@
-	
+/*!
+ *  \file fastInvSqrt.asm
+ *  \author Zhilenkov Ivan
+ */	
 //void invSqrt(float* srcVec, float* dstVec, int size){
 
 data ".data_demo3d"

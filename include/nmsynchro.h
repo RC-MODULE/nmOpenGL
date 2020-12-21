@@ -50,6 +50,9 @@ struct CommandNm1{
 
 typedef HalRingBufferData<CommandNm1, PRIORITY_SIZE> NMGLSynchroData;
 
+/*!
+ *  \brief Класс для межпроцессорной синхронизации
+ */
 class NMGLSynchro {
 private:
 	HalRingBufferConnector<CommandNm1, PRIORITY_SIZE> connector;

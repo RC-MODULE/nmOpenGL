@@ -1,4 +1,7 @@
-	
+/*!
+ *  \file readMask.asm
+ *  \author Zhilenkov Ivan
+ */	
 //void readMask(nm1* srcVec, int* dstIndices, int size){
 
 begin ".text_demo3d"

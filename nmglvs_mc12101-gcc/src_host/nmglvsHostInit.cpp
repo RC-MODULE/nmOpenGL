@@ -17,6 +17,10 @@
 #include "imagebuffer.h"
 
 
+#include <thread>
+#include "stacktrace.h"
+
+
 
 using namespace std;
 
@@ -30,6 +34,31 @@ void*  writeMem(const void* src, void* dst, unsigned int size32) {
 void*  readMem(const void* src, void* dst, unsigned int size32) {
 	int ok = halReadMemBlock(dst, (int)src, size32, 1);
 	return 0;
+}
+
+
+void stackTraceRead(StackTraceData* stackTraceData) {
+	StackTraceConnector stackTraceConnector(stackTraceData, writeMem, readMem);
+
+	while (true) {
+		static int tabCount = -1;
+		while (!stackTraceConnector.isEmpty()) {
+			StackPoint point;
+			stackTraceConnector.pop(&point,1);
+			if (point.direction > 0) {
+				tabCount++;
+				printf("\n");
+			}
+			for (int i = 0; i < tabCount; i++) {
+				printf(" ");
+			}
+			printf("address = 0x%8x, time=%u\n", point.address, point.time);
+			if (point.direction < 0) {
+				tabCount--;
+				printf("\n");
+			}
+		}
+	}
 }
 
 int nmglvsHostInit()
@@ -77,5 +106,9 @@ int nmglvsHostInit()
 	//nmc0, sync4
 	halSync(0, 0);
 
+	StackTraceData *stackTraceData = (StackTraceData*)halSyncAddr(0, 0);
+
+	thread thr(stackTraceRead, stackTraceData);
+	thr.detach();
 	return 0;
 };

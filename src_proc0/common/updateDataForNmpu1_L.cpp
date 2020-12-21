@@ -1,3 +1,7 @@
+/*!
+ *  \file updateDataForNmpu1_L.cpp
+ *  \author Zhilenkov Ivan
+ */
 #include "demo3d_nm0.h"
 #include "nmpp.h"
 #include "math.h"

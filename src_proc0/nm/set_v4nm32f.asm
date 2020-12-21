@@ -1,4 +1,7 @@
-
+/*!
+ *  \file set_v4nm32f.asm
+ *  \author Zhilenkov Ivan
+ */
 //void set_v4nm32f(v4nm32f* dstVec, v4nm32f* valueC, int size);
 global _set_v4nm32f: label;
 

@@ -1,3 +1,7 @@
+/*!
+ *  \file updatePolygonsT.cpp
+ *  \author Zhilenkov Ivan
+ */
 #include "demo3d_nm0.h"
 #include "nmpp.h"
 

@@ -1,3 +1,7 @@
+/*!
+ *  \file cullFaceTriangles.cpp
+ *  \author Zhilenkov Ivan
+ */
 #include "nmgl.h"
 #include "demo3d_common.h"
 #include "demo3d_nm0.h"

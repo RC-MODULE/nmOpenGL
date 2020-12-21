@@ -1,4 +1,7 @@
-
+/*!
+ *  \file split_v2nm32f.asm
+ *  \author Zhilenkov Ivan
+ */
 //void split_v2nm32f(float* srcVec4, int step, float* dstX, float* dstY, int countVec);
 global _split_v2nm32f: label;
 

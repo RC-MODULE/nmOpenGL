@@ -1,4 +1,7 @@
-
+/*!
+ *  \file baseLighti.asm
+ *  \author Zhilenkov Ivan
+ */
 //	void baseLighti(v4nm32f* ambient, v2nm32f* n_dot_vp, v4nm32f* diffuse, v2nm32f* n_dot_h_in_srm, v4nm32f* specular, v4nm32f* dst, int count){
 // ambient + n_dot_vp * diffuse + n_dot_h_in_srm * specular
 

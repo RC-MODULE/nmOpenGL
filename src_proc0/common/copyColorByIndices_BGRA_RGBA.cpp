@@ -1,3 +1,7 @@
+/*!
+ *  \file copyColorByIndices_BGRA_RGBA.cpp
+ *  \author Жиленков Иван
+ */
 #include "demo3d_common.h"
 #include "nmtype.h"
 

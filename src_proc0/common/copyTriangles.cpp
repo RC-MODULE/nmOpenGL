@@ -1,3 +1,7 @@
+/*!
+ *  \file copyTriangles.cpp
+ *  \author Zhilenkov Ivan
+ */
 #include "demo3d_nm0.h"
 #include "nmblas.h"
 

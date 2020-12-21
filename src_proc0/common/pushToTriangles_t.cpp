@@ -1,3 +1,8 @@
+/*!
+ *  \file pushToTriangles_t.cpp
+ *  \brief Файл с функцией pushToTriangles_t
+ *  \author Zhilenkov Ivan
+ */
 #include "nmpp.h"
 #include "nmblas.h"
 #include "demo3d_nm0.h"

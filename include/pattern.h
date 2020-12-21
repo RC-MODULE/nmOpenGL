@@ -16,9 +16,14 @@
 #define NPATTERNS 						FILL_PATTERNS_AMOUNT
 #define GET_TABLE_VALUE(table, x, y)	table[(y) * 2 * WIDTH_PTRN + (x) + WIDTH_PTRN]
 
-
+/*!
+ *  \brief Тип, характеризирующий один двуразрядный паттерн
+ */
 typedef int Pattern[WIDTH_PTRN * HEIGHT_PTRN / 16];
 
+/*!
+ *  \brief Массив разннобразных двуразрядных паттернов. Имеются паттерны линий, точек и закрашенных по разный стороны от линий. Так же здесь хранятся таблица обращения к линейке паттернов определенного угла
+ */
 struct PatternsArray {
 	Pattern ptrns[FILL_PATTERNS_AMOUNT];
 	Pattern linePtrns[LINE_PATTERNS_AMOUNT];
@@ -27,10 +32,41 @@ struct PatternsArray {
 	int lineTable[SIZE_TABLE];
 };
 
+/*!
+ *  \brief Функция инициализации 8-битных паттернов закрашенных с разных сторон от разнообразных линий
+ *  
+ *  \param dst [out] Выходной массив 8-битных паттернов
+ *  \param table_dydx [out] Выходная таблица паттернов
+ *  \param color [in] Цвет закрашенной стороны (незакрашенная всегда будет 0)
+ *  
+ *  \details Details
+ *  
+ */
 void fillPtrnsInit(unsigned char* dst, int* table_dydx, unsigned char color);
+
+/*!
+ *  \brief Функция инициализации 8-битных паттернов линий
+ *  
+ *  \param dst [out] Выходной массив 8-битных паттернов
+ *  \param table_dydx [out] Выходная таблица паттернов
+ *  \param color [in] Цвет линии
+ *  
+ *  \details Details
+ *  
+ */
 void linePtrnsInit(unsigned char* dst, int* table, unsigned char  color);
+
+/*!
+ *  \brief Функция инициализации 8-битных паттернов точек
+ *  
+ *  \param dst [out] Выходной массив 8-битных паттернов
+ *  \param table_dydx [out] Выходная таблица паттернов
+ *  \param color [in] Цвет точки
+ *  
+ *  \details Details
+ *  
+ */
 void pointPtrnsInit(unsigned char* dst, unsigned char color);
 
 void create_tabl_dydx(unsigned char* srcPatterns, int* dydx, int width, int height);
-
 void hostCreatePatterns(PatternsArray* patterns);
