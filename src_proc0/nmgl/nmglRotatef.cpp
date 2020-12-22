@@ -14,6 +14,10 @@ void nmglRotatef(NMGLfloat angle, NMGLfloat x, NMGLfloat y, NMGLfloat z) {
 					 0,0,0,1};
 	float cos;
 	float sin;
+	float len = sqrtf(x * x + y * y + z * z);
+	x /= len;
+	y /= len;
+	z /= len;
 
 	float rad = angle*3.1415926 / 180;
 
