@@ -5,13 +5,12 @@
 #include <stdio.h>
 #include "imagebuffer.h"
 
-SECTION(".text_demo3d") void drawPoints() {
+SECTION(".text_demo3d") void drawPoints(PolygonsConnector *connector) {
 	NMGL_Context_NM1 *context = NMGL_Context_NM1::getContext();
-	PolygonsConnector *connector = context->polygonsConnectors;
 
-	Polygons* poly = connector->ptrTail();
+	DataForNmpu1* poly = connector->ptrTail();
 
-	getAddrPtrnsP(context->polygonsConnectors->ptrTail());
+	getAddrPtrnsP(poly);
 
 	COMMON_DRAW_TYPE* mulZ = (COMMON_DRAW_TYPE*)context->buffer0;
 	COMMON_DRAW_TYPE* mulC = (COMMON_DRAW_TYPE*)context->buffer0;

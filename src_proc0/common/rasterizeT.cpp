@@ -103,11 +103,11 @@ void rasterizeT(const Triangles* triangles, const BitMask* masks){
 						while (connector->isFull()) {
 							halSleep(2);
 						}
-						Polygons* poly = connector->ptrHead();
-						int localSize = MIN(resultSize - offset, POLYGONS_SIZE - poly->count);
+						DataForNmpu1* data = connector->ptrHead();
+						int localSize = MIN(resultSize - offset, POLYGONS_SIZE - data->count);
 						triangleOffset(localTrian, localTrian2, offset);
 						offset += localSize;
-						updatePolygonsT(poly, &localTrian2, localSize, segX, segY);
+						updatePolygonsT(data, &localTrian2, localSize, segX, segY);						
 						connector->incHead();
 						cntxt->synchro.writeInstr(1, NMC1_DRAW_TRIANGLES, iSeg);
 					}

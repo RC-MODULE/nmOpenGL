@@ -151,18 +151,20 @@ SECTION(".text_nmglvs") int nmglvsNm1Step()
 	}
 
 	case NMC1_DRAW_TRIANGLES: {
-		Polygons* poly = cntxt->polygonsConnectors[0].ptrTail();
-		PROFILER_SIZE(poly->count)
-		drawTriangles();
+		PolygonsConnector * polygonsConnector = cntxt->polygonsConnectors;
+		PROFILER_SIZE(polygonsConnector->ptrTail()->count)
+		drawTriangles(polygonsConnector);
 		break;
 	}
 
 	case NMC1_DRAW_LINES: {
-		drawLines();
+		PolygonsConnector * polygonsConnector = cntxt->polygonsConnectors;
+		drawLines(polygonsConnector);
 		break;
 	}
 	case NMC1_DRAW_POINTS: {
-		drawPoints();
+		PolygonsConnector * polygonsConnector = cntxt->polygonsConnectors;
+		drawPoints(polygonsConnector);
 		break;
 	}
 	case NMC1_POINT_SIZE: {

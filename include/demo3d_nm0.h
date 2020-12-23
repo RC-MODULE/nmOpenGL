@@ -87,8 +87,10 @@ struct CombinePointers {
 	float *y;
 	float *z;
 	float *w;
+#ifdef TEXTURE_ENABLED
 	float *s;
 	float *t;
+#endif //TEXTURE_ENABLED
 	v4nm32f* color;
 	int dummy;
 };
@@ -231,21 +233,25 @@ public:
 
 
 	NMGLSynchro synchro;
+	BitMask segmentMasks[36];
+	BitDividedMask dividedMasks[2];	
 	PolygonsConnector* polygonsConnectors;
-	NMGLenum error;
 	PatternsArray* patterns;
 	float* buffer0;
 	float* buffer1;
 	float* buffer2;
 	float* buffer3;
 	float* buffer4;
-#ifdef TEXTURE_ENABLED
 	float* buffer5;
-	int dummy0; //additional int for alignment
-#endif //TEXTURE_ENABLED
-
-	BitMask segmentMasks[36];
-	BitDividedMask dividedMasks[2];	
+	
+	int isUseTwoSidedMode;
+	NMGLenum error;
+	int isCullFace;
+	int cullFaceType;
+	int frontFaceOrientation;
+	int normalizeEnabled;				///< Состояние режима нормализации. NMGL_TRUE, если включен, иначе NMGL_FALSE
+	float pointRadius;					///< Радиус точек при рисование примитивов типа NMGL_POINTS
+	MatrixStack* currentMatrixStack;
 
 	Triangles trianInner;
 	Lines lineInner;
@@ -257,15 +263,6 @@ public:
 	mat4nm32f normalMatrix;
 	MatrixStack modelviewMatrixStack;
 	MatrixStack projectionMatrixStack;
-	MatrixStack* currentMatrixStack;
-	int isUseTwoSidedMode;
-
-	int isCullFace;
-	int cullFaceType;
-	int frontFaceOrientation;
-	int normalizeEnabled;				///< Состояние режима нормализации. NMGL_TRUE, если включен, иначе NMGL_FALSE
-	float pointRadius;					///< Радиус точек при рисование примитивов типа NMGL_POINTS
-	int dummy;
 
 	Array vertexArray;					///< Класс для работы со значением координат вершинам в nmglDrawArrays
 	Array normalArray;					///< Класс для работы с нормалями в nmglDrawArrays
@@ -1492,19 +1489,10 @@ extern "C"{
 
 }
 
+void pushToTriangles(const TrianglePointers &srcTriangles, Triangles& dstTriangles, int countVertex);
+void pushToLines(const LinePointers &srcLines, Lines &dstLines, int countVertex);
 
 int splitTriangles(TrianglePointers *srcVertex, int srcCount, int maxWidth, int maxHeight, int maxDstSize, TrianglePointers *dstVertex, int *srcTreatedCount);
-
-
-
-//int getVertexPart(Array* array, v4nm32f* dst, float* tmpBuffer, int count);
-//int getNormalPart(Array* array, v4nm32f* dst, float* tmpBuffer, int count);
-//int getColorPart(Array* array, v4nm32f* dst, float* tmpBuffer, int count);
-
-void pushToLines_l(const float *vertexX, const float *vertexY, const float *vertexZ, const v4nm32f* color, Lines& lines, int countVertex);
-void pushToLines(const float *vertexX, const float *vertexY, const float *vertexZ, const v4nm32f* color, Lines& lines, int mode, int countVertex);
-
-void pushToTriangles_t(const float *vertexX, const float *vertexY, const float *vertexZ, const v4nm32f* color, Triangles& triangles, int countVertex);
 void reverseMatrix3x3in4x4(mat4nm32f* src, mat4nm32f* dst);
 void pow_32f(nm32f* srcVec, nm32f* dstVec, float powC, int size, nm32f* pTmp1);
 void copyColorByIndices_BGRA_RGBA(v4nm32s* srcColor, int* indices, v4nm32s* dstColor, int size);
@@ -1519,12 +1507,15 @@ void copyColorByIndices_BGRA_RGBA(v4nm32s* srcColor, int* indices, v4nm32s* dstC
  *  \warning Внутри функции используется контекст NMGL_Context_NM0.
  *  
  *  \param triangles [in] Description for triangles
+ *  \param count [in] Description for triangles
+ *  
+ *  \return Description
  *  
  *  \details Функция реализует выборку треагольников в зависимости от порядка обхода точек в треугольниках.
  *  Режимы выборки определяются переменными frontFaceOrientation и cullFaceType в структуре NMGL_Context_NM0.
  *  
  */
-void cullFaceSortTriangles(Triangles &triangles);
+int cullFaceSortTriangles(TrianglePointers &triangles, int count);
 
 /*!
  *  \ingroup service_api
@@ -1582,9 +1573,6 @@ void rasterizeP(const Points* points, const BitMask* masks);
  *  
  */
  //! \{
-void updatePolygonsT(PolygonsOld* poly, Triangles* triangles, int count, int segX, int segY);
-void updatePolygonsL(PolygonsOld* poly, Lines* lines, int count, int segX, int segY);
-void updatePolygonsP(PolygonsOld* poly, Points* points, int count, int segX, int segY);
 void updatePolygonsT(DataForNmpu1* data, Triangles* triangles, int count, int segX, int segY);
 void updatePolygonsL(DataForNmpu1* data, Lines* lines, int count, int segX, int segY);
 void updatePolygonsP(DataForNmpu1* data, Points* points, int count, int segX, int segY);
@@ -1607,4 +1595,10 @@ void light(v4nm32f* vertex, v4nm32f* srcNormal_dstColor, int size);
 //! \}
 
 
+
+void printWindowInfo(WindowInfo* info, int mode);
+void printDataForNmpu1(DataForNmpu1* data, int elementsAmount);
+void printTriangles(Triangles* data, int elementsAmount);
+void printBitMask(BitMask *bitmask, int nSeg, int elementAmount);
+void printTrianglePointers(TrianglePointers* data, int elementsAmount);
 #endif

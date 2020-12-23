@@ -24,7 +24,6 @@
 #endif
 
 #define TRIANGULATION_ENABLED
-//#define USED_OLD_POLYGONS
 //#define PROFILER0
 //#define PROFILER1
 
@@ -117,47 +116,8 @@ struct DataForNmpu1 {
 };
 
 
-/**
- *  \brief (устаревшая)Структура для передачи полигонов от nmpu0 к nmpu1.
- *  Предполагается, что точки (x0, y0), (x1, y1) и (x2, y2) расположены в порядке возрастания y, 
- *  т.е. точка (x0, y0) обладает наименьшим y
- *  Полигон должен вписываться в квадрат 32*32 пикселей
- *  \warning Каждый полигон должен вписываться в квадрат 32*32 пикселей.
- *  \author Жиленков Иван
- */
-struct PolygonsOld {
-	int numbersPattrns01[POLYGONS_SIZE];
-	int numbersPattrns12[POLYGONS_SIZE];
-	int numbersPattrns02[POLYGONS_SIZE];
-	int ptrnSizesOf32_01[POLYGONS_SIZE];
-	int ptrnSizesOf32_02[POLYGONS_SIZE];
-	int pointInImage[POLYGONS_SIZE];
-	int offsetsX[POLYGONS_SIZE];
-	int offsetsY[POLYGONS_SIZE];
-	int widths[POLYGONS_SIZE];
-	int heights[POLYGONS_SIZE];
-
-	int color[4 * POLYGONS_SIZE];
-
-	int z[POLYGONS_SIZE];
-
-	int count;
-	int iSeg;
-	int dummy[14];
-
-	PolygonsOld() : count(0) {
-		
-	}
-};
-
-#ifdef USED_OLD_POLYGONS
-typedef PolygonsOld Polygons;
-#else
-typedef DataForNmpu1 Polygons;
-#endif // USED_OLD_POLYGONS
-
-typedef HalRingBufferData<Polygons, COUNT_POLYGONS_BUFFER> PolygonsArray;
-typedef HalRingBufferConnector<Polygons, COUNT_POLYGONS_BUFFER> PolygonsConnector;
+typedef HalRingBufferData<DataForNmpu1, COUNT_POLYGONS_BUFFER> PolygonsArray;
+typedef HalRingBufferConnector<DataForNmpu1, COUNT_POLYGONS_BUFFER> PolygonsConnector;
 
 //typedef int matrix[16];
 typedef struct s_mat4nm32f{
@@ -192,16 +152,14 @@ struct WindowInfo {
 	int y0[20];
 	int x1[20];
 	int y1[20];
-	v2nm32f lowerLeft[40];
-	v2nm32f upperRight[40];
 	float x0_f[20];
 	float y0_f[20];
 	float x1_f[20];
 	float y1_f[20];
+	v2nm32f lowerLeft[40];
+	v2nm32f upperRight[40];
 	int segmentWidth;
 	int segmentHeight;
-	int imageWidth;
-	int imageHeight;	
 	float viewportMulX;
 	float viewportMulY;
 	float viewportMulZ;

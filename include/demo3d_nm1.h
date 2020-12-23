@@ -377,9 +377,9 @@ extern "C" {
  *  
  */
  //! \{
-void drawTriangles();
-void drawLines();
-void drawPoints();
+void drawTriangles(PolygonsConnector *connector);
+void drawLines(PolygonsConnector *connector);
+void drawPoints(PolygonsConnector *connector);
  //! \}
 
 /*!
@@ -393,9 +393,6 @@ void drawPoints();
  *  
  */
  //! \{
-int getAddrPtrnsT(PolygonsOld* poly);
-int getAddrPtrnsL(PolygonsOld* poly);
-int getAddrPtrnsP(PolygonsOld* poly);
 int getAddrPtrnsT(DataForNmpu1* data);
 int getAddrPtrnsL(DataForNmpu1* data);
 int getAddrPtrnsP(DataForNmpu1* data);

@@ -6,11 +6,6 @@
 #include "service.h"
 #include "imagebuffer.h"
 
-int getAddrPtrnsP(PolygonsOld* data) {
-	data->count = 0;
-	return 0;
-}
-
 //SECTION(".text_demo3d") void readPolygonsL(DataForNmpu1* data){
 SECTION(".text_demo3d") int getAddrPtrnsP(DataForNmpu1* data) {
 	NMGL_Context_NM1 *cntxt = NMGL_Context_NM1::getContext();

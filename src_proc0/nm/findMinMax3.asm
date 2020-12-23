@@ -34,20 +34,24 @@ begin ".text_demo3d"
 	fpu 1 rep 32 vreg1 = [ar2++];
 	fpu 0 .float vreg0 - vreg1, set mask if >;
 	fp0_lmask = fp0_lmask;
+	fp0_hmask = fp0_hmask;
 	fpu 0 .float vreg4 = mask ? vreg1;
 	fpu 1 vreg0 = fpu 0 vreg4;
 	fpu 1 .float vreg0 - vreg1, set mask if >;
 	fp1_lmask = fp1_lmask;
+	fp1_hmask = fp1_hmask;
 	fpu 1 .float vreg0 = mask ? vreg1;
 	fpu 1 rep 32 [ar6++] = vreg0;
 	
 	fpu 0 vreg4 = vreg0;
 	fpu 0 .float vreg0 - vreg1, set mask if <;
 	fp0_lmask = fp0_lmask;
+	fp0_hmask = fp0_hmask;
 	fpu 0 .float vreg4 = mask ? vreg1;
 	fpu 1 vreg0 = fpu 0 vreg4;
 	fpu 1 .float vreg0 - vreg1, set mask if <;
 	fp1_lmask = fp1_lmask;
+	fp1_hmask = fp1_hmask;
 	if > delayed goto NextRep32	with gr7--;
 		fpu 1 .float vreg0 = mask ? vreg1;
 		fpu 1 rep 32 [ar4++] = vreg0;
@@ -63,20 +67,24 @@ begin ".text_demo3d"
 	fpu 1 rep vlen vreg1 = [ar2++];
 	fpu 0 .float vreg0 - vreg1, set mask if >;
 	fp0_lmask = fp0_lmask;
+	fp0_hmask = fp0_hmask;
 	fpu 0 .float vreg4 = mask ? vreg1;
 	fpu 1 vreg0 = fpu 0 vreg4;
 	fpu 1 .float vreg0 - vreg1, set mask if >;
 	fp1_lmask = fp1_lmask;
+	fp1_hmask = fp1_hmask;
 	fpu 1 .float vreg0 = mask ? vreg1;
 	fpu 1 rep vlen [ar6++] = vreg0;
 	
 	fpu 0 vreg4 = vreg0;
 	fpu 0 .float vreg0 - vreg1, set mask if <;
 	fp0_lmask = fp0_lmask;
+	fp0_hmask = fp0_hmask;
 	fpu 0 .float vreg4 = mask ? vreg1;
 	fpu 1 vreg0 = fpu 0 vreg4;
 	fpu 1 .float vreg0 - vreg1, set mask if <;
 	fp1_lmask = fp1_lmask;
+	fp1_hmask = fp1_hmask;
 	fpu 1 .float vreg0 = mask ? vreg1;
 	fpu 1 rep vlen [ar4++] = vreg0;
 		

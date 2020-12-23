@@ -13,14 +13,15 @@ using namespace tex_nm1;
 SECTION(".data_imu0") TrianglesInfo triangles;
 #endif //TEXTURE_ENABLED
 
-SECTION(".text_demo3d") void drawTriangles() {
+void printDataForNmpu1(DataForNmpu1* data);
+SECTION(".text_demo3d") void drawTriangles(PolygonsConnector *connector) {
 	NMGL_Context_NM1 *context = NMGL_Context_NM1::getContext();
-	PolygonsConnector *connector = context->polygonsConnectors;
 
-	Polygons* poly = connector->ptrTail();
+	DataForNmpu1* poly = connector->ptrTail();
+	//printDataForNmpu1(poly);
 
 	PROFILER_SIZE(poly->count);
-	getAddrPtrnsT(context->polygonsConnectors->ptrTail());
+	getAddrPtrnsT(poly);
 
 	COMMON_DRAW_TYPE* mulZ = (COMMON_DRAW_TYPE*)context->buffer0;
 	COMMON_DRAW_TYPE* mulC = (COMMON_DRAW_TYPE*)context->buffer0;
@@ -34,12 +35,11 @@ SECTION(".text_demo3d") void drawTriangles() {
 
 	poly->count = 0;
 	connector->incTail();
-
+	
 	while (countTrangles > 0) {
 		int localSize = MIN(countTrangles, SMALL_SIZE);
 		int point_x3 = point * 3;
 		int fullSize = totalSum(context->nSizePtrn32, localSize);
-
 		//копирование паттернов во внутреннюю память. Паттерны копируются
 		//не полностью, чтобы сэкономить время на пересылку
 		copyPacket_32s(context->ppSrcPackPtrns + point_x3, 

@@ -9,10 +9,6 @@
 #include "stdio.h"
 #include "nmblas.h"
 
-void updatePolygonsP(PolygonsOld* data, Points* points, int count, int segX, int segY) {
-
-}
-
 SECTION(".text_demo3d")
 //void updateDataForNmpu1_T(DataForNmpu1* data, Triangles* triangles, int count, int segX, int segY){
 void updatePolygonsP(DataForNmpu1* data, Points* points, int count, int segX, int segY){

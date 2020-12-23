@@ -7,6 +7,7 @@
 
 #include "nmblas.h"
 
+
 SECTION(".text_demo3d")
 void and4v(int* mask1, int* mask2, int* mask3, int* mask4, int* dst, int size) {
 	volatile int a= 0;
@@ -40,7 +41,7 @@ void setSegmentMask(v2nm32f* minXY, v2nm32f* maxXY, BitMask* masks, int size){
 			masks[iSeg].bits[i] = result;
 		}
 		int size32 = (size + 31) / 32;
-		unsigned int ind = firstNonZeroIndx_32s(masks[iSeg].bits, size32);
+		int ind = firstNonZeroIndx_32s(masks[iSeg].bits, size32);
 		//если ind = -1, значит все нули и в hasNotZeroBits писать 1, иначе наоборот
 		masks[iSeg].hasNotZeroBits = ~ind >> 31;
 

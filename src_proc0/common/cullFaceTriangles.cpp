@@ -8,61 +8,41 @@
 
 #include <nmpp.h>
 
-
-#ifndef TEXTURE_ENABLED
-#define COPY_TRIANGLE_IN_PLACE(iSrc, iDst) triangles.x2[iDst] = triangles.x2[iSrc];	\
-triangles.y2[iDst] = triangles.y2[iSrc];												\
-triangles.x1[iDst] = triangles.x1[iSrc];												\
-triangles.y1[iDst] = triangles.y1[iSrc];												\
-triangles.x0[iDst] = triangles.x0[iSrc];												\
-triangles.y0[iDst] = triangles.y0[iSrc];												\
-triangles.z[iDst] = triangles.z[iSrc];												\
-colorVec[4 * (iDst) + 0] = colorVec[4 * (iSrc) + 0];						\
-colorVec[4 * (iDst) + 1] = colorVec[4 * (iSrc) + 1];						\
-colorVec[4 * (iDst) + 2] = colorVec[4 * (iSrc) + 2];						\
-colorVec[4 * (iDst) + 3] = colorVec[4 * (iSrc) + 3]; 
-
-#else //TEXTURE_ENABLED
-
-#define COPY_TRIANGLE_IN_PLACE(iSrc, iDst) triangles.x2[iDst] = triangles.x2[iSrc];	\
-triangles.y2[iDst] = triangles.y2[iSrc];												\
-triangles.x1[iDst] = triangles.x1[iSrc];												\
-triangles.y1[iDst] = triangles.y1[iSrc];												\
-triangles.x0[iDst] = triangles.x0[iSrc];												\
-triangles.y0[iDst] = triangles.y0[iSrc];												\
-triangles.z[iDst] = triangles.z[iSrc];												\
-colorVec[4 * (iDst) + 0] = colorVec[4 * (iSrc) + 0];						\
-colorVec[4 * (iDst) + 1] = colorVec[4 * (iSrc) + 1];						\
-colorVec[4 * (iDst) + 2] = colorVec[4 * (iSrc) + 2];						\
-colorVec[4 * (iDst) + 3] = colorVec[4 * (iSrc) + 3];						\
-if (cntxt->texState.textureEnabled) {                                       \
-	triangles.s0[iDst] = triangles.s0[iSrc];												\
-	triangles.t0[iDst] = triangles.t0[iSrc];												\
-	triangles.s1[iDst] = triangles.s1[iSrc];												\
-	triangles.t1[iDst] = triangles.t1[iSrc];												\
-	triangles.s2[iDst] = triangles.s2[iSrc];												\
-	triangles.t2[iDst] = triangles.t2[iSrc];												\
-	triangles.w0[iDst] = triangles.w0[iSrc];												\
-	triangles.w1[iDst] = triangles.w1[iSrc];												\
-	triangles.w2[iDst] = triangles.w2[iSrc];												\
-}
+inline void copyVertex(CombinePointers &vertex, int iSrc, int iDst) {
+	vertex.x[iDst] = vertex.x[iSrc];
+	vertex.y[iDst] = vertex.y[iSrc];
+	vertex.z[iDst] = vertex.z[iSrc];
+	vertex.w[iDst] = vertex.w[iSrc];
+	vertex.color[iDst] = vertex.color[iSrc];
+#ifdef TEXTURE_ENABLED
+	//if (cntxt->texState.textureEnabled) {
+		vertex.s[iDst] = triangles.s[iSrc];
+		vertex.t[iDst] = triangles.t[iSrc];
+	//}
 #endif //TEXTURE_ENABLED
+}
+
+inline void copyTriangleInPlace(TrianglePointers &triangles, int iSrc, int iDst) {
+	copyVertex(triangles.v0, iSrc, iDst);
+	copyVertex(triangles.v1, iSrc, iDst);
+	copyVertex(triangles.v2, iSrc, iDst);
+}
+
+
 SECTION(".text_demo3d")
-void cullFaceSortTriangles(Triangles &triangles){
+int cullFaceSortTriangles(TrianglePointers &triangles, int count){
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
 
-	int count = triangles.size;
-	int* colorVec = (int*)triangles.colors;
 	float* walkDirection = cntxt->buffer2 + 6 * NMGL_SIZE;
 	float* temp0 = cntxt->buffer0 + 6 * NMGL_SIZE;
 	float* temp1 = cntxt->buffer3;
 	int* evenMaskVec = cntxt->dividedMasks[0].even.bits;
 	int* oddMaskVec= cntxt->dividedMasks[0].odd.bits;
 
-	nmppsMul_Mul_Sub_32f(triangles.x0, triangles.y1, triangles.x1, triangles.y0, walkDirection, count);
-	nmppsMul_Mul_Sub_32f(triangles.x1, triangles.y2, triangles.x2, triangles.y1, temp1, count);
+	nmppsMul_Mul_Sub_32f(triangles.v0.x, triangles.v1.y, triangles.v1.x, triangles.v0.y, walkDirection, count);
+	nmppsMul_Mul_Sub_32f(triangles.v1.x, triangles.v2.y, triangles.v2.x, triangles.v1.y, temp1, count);
 	nmppsAdd_32f(walkDirection, temp1, temp0, count);
-	nmppsMul_Mul_Sub_32f(triangles.x2, triangles.y0, triangles.x0, triangles.y2, temp1, count);
+	nmppsMul_Mul_Sub_32f(triangles.v2.x, triangles.v0.y, triangles.v0.x, triangles.v2.y, temp1, count);
 	nmppsAdd_32f(temp0, temp1, walkDirection, count);
 
 	if (cntxt->frontFaceOrientation == NMGL_CW) {
@@ -87,11 +67,11 @@ void cullFaceSortTriangles(Triangles &triangles){
 		if (maskEven | maskOdd) {
 			for (int j = 0; j < localSize; j++) {
 				if (maskEven % 2) {
-					COPY_TRIANGLE_IN_PLACE(2 * (i * 32 + j), resultCounter);
+					copyTriangleInPlace(triangles, 2 * (i * 32 + j), resultCounter);
 					resultCounter++;
 				}
 				if (maskOdd % 2) {
-					COPY_TRIANGLE_IN_PLACE(2 * (i * 32 + j) + 1, resultCounter);
+					copyTriangleInPlace(triangles, 2 * (i * 32 + j) + 1, resultCounter);
 					resultCounter++;
 				}
 				maskEven >>= 1;
@@ -103,8 +83,8 @@ void cullFaceSortTriangles(Triangles &triangles){
 	}
 	
 	while (resultCounter % 2) {
-		COPY_TRIANGLE_IN_PLACE(resultCounter - 1, resultCounter);
+		copyTriangleInPlace(triangles, resultCounter - 1, resultCounter);
 		resultCounter++;
 	}
-	triangles.size = resultCounter;
+	return resultCounter;
 }

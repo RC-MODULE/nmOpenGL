@@ -8,6 +8,7 @@
 SECTION(".data_imu7") int viewportValues[4];
 SECTION(".data_imu7") float viewportValues_f[4];
 
+
 SECTION(".text_nmgl")
 void nmglViewport(NMGLint x, NMGLint y, NMGLsizei width, NMGLsizei height) {
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();

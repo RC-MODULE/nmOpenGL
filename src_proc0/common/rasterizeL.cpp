@@ -68,7 +68,7 @@ void rasterizeL(const Lines* lines, const BitMask* masks){
 						lineOffset(localLine, localLine2, offset);
 						offset += POLYGONS_SIZE;
 						while (connector[0].isFull());
-						Polygons* poly = connector[0].ptrHead();
+						DataForNmpu1* poly = connector[0].ptrHead();
 						poly->count = 0;
 						updatePolygonsL(poly, &localLine2, localSize, segX, segY);
 						connector[0].incHead();

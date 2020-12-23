@@ -19,9 +19,7 @@ SECTION(".data_imu2")	float nmglBuffer1[12 * NMGL_SIZE];
 SECTION(".data_imu3")	float nmglBuffer2[12 * NMGL_SIZE];
 SECTION(".data_imu4")	float nmglBuffer3[12 * NMGL_SIZE];
 SECTION(".data_imu5")	float nmglBuffer4[12 * NMGL_SIZE];
-#ifdef TEXTURE_ENABLED
 SECTION(".data_imu7")	float nmglBuffer5[12 * NMGL_SIZE];
-#endif //TEXTURE_ENABLED
 
 SECTION(".data_imu2")	float nmglx0[NMGL_SIZE];
 SECTION(".data_imu2")	float nmgly0[NMGL_SIZE];
@@ -53,6 +51,7 @@ extern  NMGLubyte* mipmap; //texture memory
 int counter = 0;
 
 template<class T> inline T* myMallocT() {
+	
 	T* result = (T*)halMalloc32(sizeof32(T));
 	if (result == 0) throw counter;
 	counter++;
@@ -77,12 +76,15 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 	PolygonsArray* polygonsData;
 	StackTraceData* stackTraceData;
 
+#ifdef TEXTURE_ENABLED
+	printf("texture enabled on nm0\n");
+#endif TEXTURE_ENABLED
+
 	try {
 		int fromHost = halHostSync(0xC0DE0000);		// send handshake to host
 		if (fromHost != 0xC0DE0086) {					// get  handshake from host
 			return 1;
 		}
-
 
 		setHeap(8);
 		synchroData = myMallocT<NMGLSynchroData>();
@@ -117,7 +119,9 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 		//Must be in EMI. 
 		//EMI has enough space and does not require address mapping at mc12101
 		setHeap(12);
+#ifdef TEXTURE_ENABLED
 		mipmap = myMallocT<NMGLubyte>(MIPMAP_MEM_SIZE); 
+#endif //TEXTURE_ENABLED
 	}
 	catch (int& e) {
 		halHostSync(0xDEADB00F);
@@ -183,9 +187,7 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 	cntxt->buffer2 = nmglBuffer2;
 	cntxt->buffer3 = nmglBuffer3;
 	cntxt->buffer4 = nmglBuffer4;
-#ifdef TEXTURE_ENABLED
 	cntxt->buffer5 = nmglBuffer5;
-#endif //TEXTURE_ENABLED
 
 	cntxt->dividedMasks[0].init((nm1*)dividedMasksMemory[0], (nm1*)dividedMasksMemory[1]);
 	cntxt->dividedMasks[1].init((nm1*)dividedMasksMemory[2], (nm1*)dividedMasksMemory[3]);

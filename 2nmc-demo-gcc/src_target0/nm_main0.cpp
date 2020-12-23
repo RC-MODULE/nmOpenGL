@@ -10,12 +10,10 @@
 SECTION(".text_shared0") int main()
 {
 	halSleep(3000);
-	//nmprofiler_init();
-	//nmprofiler_disable();
 
-#if defined(__GNUC__) && defined(PROFILER0)
-	nmprofiler_init();
-	nmprofiler_enable();
+#if defined(__GNUC__)
+	//nmprofiler_init();
+	//nmprofiler_enable();
 #endif // __GNUC__
 
 	nmglvsNm0Init();
@@ -79,7 +77,7 @@ SECTION(".text_shared0") int main()
 	nmglClearColor(0, 0, 0.4f, 0.0f);
 
 	nmglEnable(NMGL_DEPTH_TEST);
-	nmglEnable(NMGL_CULL_FACE);
+	//nmglEnable(NMGL_CULL_FACE);
 
 	nmglMatrixMode(NMGL_MODELVIEW);
 	nmglLoadIdentity();
@@ -88,8 +86,6 @@ SECTION(".text_shared0") int main()
 	//nmglOrthof(-384, 384, -384, 384, -100, 100);
 	//nmglFrustumf(-384, 384, -384, 384, 0, 100);
 	nmglMatrixMode(NMGL_MODELVIEW);
-
-	nmglViewport(0, 0, 768, 768);
 
 	nmglEnable(NMGL_LIGHTING);
 	nmglEnable(NMGL_LIGHT0);
