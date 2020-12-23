@@ -45,11 +45,19 @@ static int bufSpace(Buffer *buf)
 // |-|-|-|-|-|x|x|
 // |-|-|-|-|-|x|x|
 // |-|-|-|-|-|x|x|
+#ifndef TEXTURE_ENABLED
 static int pushBack(Buffer *buf, Vertices *vert, Colors *colors)
+#else //TEXTURE_ENABLED
+static int pushBack(Buffer *buf, Vertices *vert, Colors *colors, Texcoords *texcoords, Wclips *wclips)
+#endif //TEXTURE_ENABLED
 {
 	if (bufIsFull(buf)){
 		return -1;
 	} else {
+#ifdef TEXTURE_ENABLED
+		NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
+		int textureEnabled = cntxt->texState.textureEnabled;
+#endif //TEXTURE_ENABLED
 		TrianglePointers *trPtr = (TrianglePointers *) buf->data; 
 		buf->back -= 1;
 		//Push A vertex
@@ -67,6 +75,20 @@ static int pushBack(Buffer *buf, Vertices *vert, Colors *colors)
 		trPtr->v2.y[buf->back] = vert->v[7];
 		trPtr->v2.z[buf->back] = vert->v[8];
 		trPtr->v2.color[buf->back] = colors->c[2];
+
+#ifdef TEXTURE_ENABLED
+		trPtr->v0.w[buf->back] = wclips->w[0];
+		trPtr->v1.w[buf->back] = wclips->w[1];
+		trPtr->v2.w[buf->back] = wclips->w[2];
+		if (textureEnabled) {
+			trPtr->v0.s[buf->back] = texcoords->st[0];
+			trPtr->v0.t[buf->back] = texcoords->st[1];
+			trPtr->v1.s[buf->back] = texcoords->st[2];
+			trPtr->v1.t[buf->back] = texcoords->st[3];
+			trPtr->v2.s[buf->back] = texcoords->st[4];
+			trPtr->v2.t[buf->back] = texcoords->st[5];
+		}
+#endif //TEXTURE_ENABLED
 		return 0;
 	}
 }
@@ -77,11 +99,19 @@ static int pushBack(Buffer *buf, Vertices *vert, Colors *colors)
 // |-|-|-|-|x|x|x|
 // |-|-|-|-|x|x|x|
 // |-|-|-|-|x|x|x|
+#ifndef TEXTURE_ENABLED
 static int popBack(Buffer *buf, Vertices *vert, Colors *colors)
+#else //TEXTURE_ENABLED
+static int popBack(Buffer *buf, Vertices *vert, Colors *colors, Texcoords *texcoords, Wclips *wclips)
+#endif //TEXTURE_ENABLED
 {
 	if (bufIsEmpty(buf)){
 		return -1;
 	} else {
+#ifdef TEXTURE_ENABLED
+		NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
+		int textureEnabled = cntxt->texState.textureEnabled;
+#endif //TEXTURE_ENABLED
 		TrianglePointers *trPtr = (TrianglePointers *) buf->data; 
 		//Push A vertex
 		vert->v[0] = trPtr->v0.x[buf->back];
@@ -98,7 +128,20 @@ static int popBack(Buffer *buf, Vertices *vert, Colors *colors)
 		vert->v[7] = trPtr->v2.y[buf->back]; 
 		vert->v[8] = trPtr->v2.z[buf->back]; 
 		colors->c[2] = trPtr->v2.color[buf->back];
-
+		
+#ifdef TEXTURE_ENABLED
+		wclips->w[0] = trPtr->v0.w[buf->back];
+		wclips->w[1] = trPtr->v1.w[buf->back];
+		wclips->w[2] = trPtr->v2.w[buf->back];
+		if (textureEnabled) {
+			texcoords->st[0] = trPtr->v0.s[buf->back];
+			texcoords->st[1] = trPtr->v0.t[buf->back];
+			texcoords->st[2] = trPtr->v1.s[buf->back];
+			texcoords->st[3] = trPtr->v1.t[buf->back];
+			texcoords->st[4] = trPtr->v2.s[buf->back];
+			texcoords->st[5] = trPtr->v2.t[buf->back];
+		}
+#endif //TEXTURE_ENABLED
 		buf->back += 1;
 		return 0;
 	}
@@ -110,11 +153,19 @@ static int popBack(Buffer *buf, Vertices *vert, Colors *colors)
 // |x|x|x|x|-|-|-|
 // |x|x|x|x|-|-|-|
 // |x|x|x|x|-|-|-|
+#ifndef TEXTURE_ENABLED
 static int pushFront(Buffer *buf, Vertices *vert, Colors *colors)
+#else //TEXTURE_ENABLED
+static int pushFront(Buffer *buf, Vertices *vert, Colors *colors, Texcoords *texcoords, Wclips *wclips)
+#endif //TEXTURE_ENABLED
 {
 	if (bufIsFull(buf)){
 		return -1;
 	} else {
+#ifdef TEXTURE_ENABLED
+		NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
+		int textureEnabled = cntxt->texState.textureEnabled;
+#endif //TEXTURE_ENABLED
 		TrianglePointers *trPtr = (TrianglePointers *) buf->data; 
 		buf->front += 1;
 		//Push A vertex
@@ -132,6 +183,19 @@ static int pushFront(Buffer *buf, Vertices *vert, Colors *colors)
 		trPtr->v2.y[buf->front] = vert->v[7];
 		trPtr->v2.z[buf->front] = vert->v[8];
 		trPtr->v2.color[buf->front] = colors->c[2];
+#ifdef TEXTURE_ENABLED
+		trPtr->v0.w[buf->front] = wclips->w[0];
+		trPtr->v1.w[buf->front] = wclips->w[1];
+		trPtr->v2.w[buf->front] = wclips->w[2];
+		if (textureEnabled) {
+			trPtr->v0.s[buf->front] = texcoords->st[0];
+			trPtr->v0.t[buf->front] = texcoords->st[1];
+			trPtr->v1.s[buf->front] = texcoords->st[2];
+			trPtr->v1.t[buf->front] = texcoords->st[3];
+			trPtr->v2.s[buf->front] = texcoords->st[4];
+			trPtr->v2.t[buf->front] = texcoords->st[5];
+		}
+#endif //TEXTURE_ENABLED
 		return 0;
 	}
 }
@@ -145,6 +209,11 @@ int splitTriangles(TrianglePointers *srcVertex,
 				   TrianglePointers *dstVertex, 
 				   int *srcTreatedCount)
 {
+#ifdef TEXTURE_ENABLED
+	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
+	int textureEnabled = cntxt->texState.textureEnabled;
+#endif //TEXTURE_ENABLED
+
 	int currentDstSize = 0;
 
 	Buffer buf = initBuf((void *) dstVertex, maxDstSize);
@@ -168,6 +237,19 @@ int splitTriangles(TrianglePointers *srcVertex,
 		a.color = srcVertex->v0.color[i];
 		b.color = srcVertex->v1.color[i];
 		c.color = srcVertex->v2.color[i];
+#ifdef TEXTURE_ENABLED
+		a.w = srcVertex->v0.w[i];
+		b.w = srcVertex->v1.w[i];
+		c.w = srcVertex->v2.w[i];
+		if (textureEnabled) {
+			a.s = srcVertex->v0.s[i];
+			a.t = srcVertex->v0.t[i];
+			b.s = srcVertex->v1.s[i];
+			b.t = srcVertex->v1.t[i];
+			c.s = srcVertex->v2.s[i];
+			c.t = srcVertex->v2.t[i];
+		}
+#endif //TEXTURE_ENABLED
 		Triangle tr{a, b, c};
 
 		// Try to triangulate the triangle
@@ -199,6 +281,11 @@ int splitOneTriangle(	const Triangle& tr,
 							nm32f yMax, 
 							Buffer *buf)
 {
+#ifdef TEXTURE_ENABLED
+	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
+	int textureEnabled = cntxt->texState.textureEnabled;
+#endif //TEXTURE_ENABLED
+
 	// Check the free space in output buffer
 	// (atleast for input triangle if it is OK and don't be splitted)
 	int freeSpace = bufSpace(buf);
@@ -218,7 +305,26 @@ int splitOneTriangle(	const Triangle& tr,
 						tr.points[1].color, 
 						tr.points[2].color
 					  };	
+#ifndef TEXTURE_ENABLED
 	pushBack(buf, &trVertices, &trColors);
+#else //TEXTURE_ENABLED
+	Texcoords trTexcoords = {
+		                      tr.points[0].s,
+		                      tr.points[0].t,
+		                      tr.points[1].s,
+		                      tr.points[1].t,
+		                      tr.points[2].s,
+		                      tr.points[2].t
+	                        };
+
+	Wclips trWclips = {
+                       	tr.points[0].w,
+                    	tr.points[1].w,
+                    	tr.points[2].w
+                      };
+
+	pushBack(buf, &trVertices, &trColors, &trTexcoords, &trWclips);
+#endif //TEXTURE_ENABLED
 
 	int overflow = 0; // Indicate that there is no more space in output buffer
 
@@ -226,7 +332,13 @@ int splitOneTriangle(	const Triangle& tr,
 		// Get the triangle out of the stack
 		Vertices curTrVertices;
 		Colors curTrColors;
+#ifndef TEXTURE_ENABLED
 		popBack(buf, &curTrVertices, &curTrColors);
+#else //TEXTURE_ENABLED
+		Texcoords curTrTexcoords;
+		Wclips curTrWclips;
+		popBack(buf, &curTrVertices, &curTrColors, &curTrTexcoords, &curTrWclips);
+#endif //TEXTURE_ENABLED
 		// Create triangle from vertices and colors
 		// to pass it to the function
 		Point a;
@@ -245,6 +357,19 @@ int splitOneTriangle(	const Triangle& tr,
 		a.color = curTrColors.c[0]; 
 		b.color = curTrColors.c[1]; 
 		c.color = curTrColors.c[2]; 
+#ifdef TEXTURE_ENABLED
+		a.w = curTrWclips.w[0];
+		b.w = curTrWclips.w[1];
+		c.w = curTrWclips.w[2];
+		if (textureEnabled) {
+			a.s = curTrTexcoords.st[0];
+			a.t = curTrTexcoords.st[1];
+			b.s = curTrTexcoords.st[2];
+			b.t = curTrTexcoords.st[3];
+			c.s = curTrTexcoords.st[4];
+			c.t = curTrTexcoords.st[5];
+		}
+#endif //TEXTURE_ENABLED
 		Triangle tr{a, b, c};
 
 		// Process the triangle:
@@ -272,8 +397,26 @@ int splitOneTriangle(	const Triangle& tr,
 											trOut1.points[1].color,
 											trOut1.points[2].color
 										};
+#ifndef TEXTURE_ENABLED				
 				pushBack(buf, &trOut1Vertices, &trOut1Colors);
+#else //TEXTURE_ENABLED				
+				Texcoords trOut1Texcoords = {
+											trOut1.points[0].s,
+											trOut1.points[0].t,
+											trOut1.points[1].s,
+											trOut1.points[1].t,
+											trOut1.points[2].s,
+											trOut1.points[2].t
+										};
+                                        
+				Wclips trOut1Wclips = {
+											trOut1.points[0].w,
+											trOut1.points[1].w,
+											trOut1.points[2].w
+										};
 
+				pushBack(buf, &trOut1Vertices, &trOut1Colors, &trOut1Texcoords, &trOut1Wclips);
+#endif //TEXTURE_ENABLED				
 				Vertices trOut2Vertices = {
 											trOut2.points[0].x,
 											trOut2.points[0].y,
@@ -290,7 +433,25 @@ int splitOneTriangle(	const Triangle& tr,
 											trOut2.points[1].color,
 											trOut2.points[2].color
 										};
+#ifndef TEXTURE_ENABLED				
 				pushBack(buf, &trOut2Vertices, &trOut2Colors);
+#else //TEXTURE_ENABLED				
+				Texcoords trOut2Texcoords = {
+											trOut2.points[0].s,
+											trOut2.points[0].t,
+											trOut2.points[1].s,
+											trOut2.points[1].t,
+											trOut2.points[2].s,
+											trOut2.points[2].t
+										};
+                                        
+				Wclips trOut2Wclips = {
+											trOut2.points[0].w,
+											trOut2.points[1].w,
+											trOut2.points[2].w
+									  };
+				pushBack(buf, &trOut2Vertices, &trOut2Colors, &trOut2Texcoords, &trOut2Wclips);
+#endif //TEXTURE_ENABLED	
 			} else {
 				// This triangle splitted is too big
 				// There is no space in output buffer
@@ -317,8 +478,27 @@ int splitOneTriangle(	const Triangle& tr,
 										tr.points[1].color,
 										tr.points[2].color
 									};
-
+#ifndef TEXTURE_ENABLED
 			pushFront(buf, &trVertices, &trColors);
+#else //TEXTURE_ENABLED
+			Texcoords trTexcoords = {
+				                      tr.points[0].s,
+				                      tr.points[0].t,
+				                      tr.points[1].s,
+				                      tr.points[1].t,
+				                      tr.points[2].s,
+				                      tr.points[2].t
+			                        };
+
+			Wclips trWclips = {
+				                tr.points[0].w,
+				                tr.points[1].w,
+				                tr.points[2].w
+			                  };
+
+			pushFront(buf, &trVertices, &trColors, &trTexcoords, &trWclips);
+#endif //TEXTURE_ENABLED
+
 		}		
 	}
 
@@ -342,6 +522,10 @@ int checkAndSplitFirstLargeEdge(const Triangle& tr,
 								Triangle &trOut1, 
 								Triangle& trOut2)
 {
+#ifdef TEXTURE_ENABLED
+	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
+	int textureEnabled = cntxt->texState.textureEnabled;
+#endif //TEXTURE_ENABLED
 	Point a = tr.points[0];
 	Point b = tr.points[1];
 	Point c = tr.points[2];
@@ -359,6 +543,29 @@ int checkAndSplitFirstLargeEdge(const Triangle& tr,
 		d.color.vec[1] = (a.color.vec[1] + b.color.vec[1]) / 2;
 		d.color.vec[2] = (a.color.vec[2] + b.color.vec[2]) / 2;
 		d.color.vec[3] = (a.color.vec[3] + b.color.vec[3]) / 2;
+#ifdef TEXTURE_ENABLED
+
+#ifdef PERSPECTIVE_CORRECT_TRIANGULATION
+		float oneOverWa = 1.0 / a.w;
+		float oneOverWb = 1.0 / b.w;
+		float oneOverW = 1.0 / (oneOverWa + oneOverWb);
+		d.w = (a.w * oneOverWa + b.w * oneOverWb) * oneOverW;
+#else //PERSPECTIVE_CORRECT_TRIANGULATION
+		d.w = (a.w + b.w) * 0.5;
+#endif //PERSPECTIVE_CORRECT_TRIANGULATION
+
+		if (textureEnabled) { 
+#ifdef PERSPECTIVE_CORRECT_TRIANGULATION
+			d.s = (a.s * oneOverWa + b.s * oneOverWb) * oneOverW;
+			d.t = (a.t * oneOverWa + b.t * oneOverWb) * oneOverW;
+#else //PERSPECTIVE_CORRECT_TRIANGULATION
+			d.s = (a.s + b.s) * 0.5;
+			d.t = (a.t + b.t) * 0.5;
+#endif //PERSPECTIVE_CORRECT_TRIANGULATION
+		}
+
+#endif //TEXTURE_ENABLED
+	
 		trOut1 = Triangle{a, d, c};
 		trOut2 = Triangle{b, d, c};
 		return 1;
@@ -373,6 +580,28 @@ int checkAndSplitFirstLargeEdge(const Triangle& tr,
 		d.color.vec[1] = (b.color.vec[1] + c.color.vec[1]) / 2;
 		d.color.vec[2] = (b.color.vec[2] + c.color.vec[2]) / 2;
 		d.color.vec[3] = (b.color.vec[3] + c.color.vec[3]) / 2;
+#ifdef TEXTURE_ENABLED
+
+#ifdef PERSPECTIVE_CORRECT_TRIANGULATION
+		float oneOverWb = 1.0 / b.w;
+		float oneOverWc = 1.0 / c.w;
+		float oneOverW = 1.0 / (oneOverWb + oneOverWc);
+		d.w = (b.w * oneOverWb + c.w * oneOverWc) * oneOverW;
+#else //PERSPECTIVE_CORRECT_TRIANGULATION
+		d.w = (b.w + c.w) * 0.5;
+#endif //PERSPECTIVE_CORRECT_TRIANGULATION
+
+		if (textureEnabled) { 
+#ifdef PERSPECTIVE_CORRECT_TRIANGULATION
+			d.s = (b.s * oneOverWb + c.s * oneOverWc) * oneOverW;
+			d.t = (b.t * oneOverWb + c.t * oneOverWc) * oneOverW;
+#else //PERSPECTIVE_CORRECT_TRIANGULATION
+			d.s = (b.s + c.s) * 0.5;
+			d.t = (b.t + c.t) * 0.5;
+#endif //PERSPECTIVE_CORRECT_TRIANGULATION
+		}
+
+#endif //TEXTURE_ENABLED
 		trOut1 = Triangle{b, d, a};
 		trOut2 = Triangle{c, d, a};
 		return 1;
@@ -387,6 +616,29 @@ int checkAndSplitFirstLargeEdge(const Triangle& tr,
 		d.color.vec[1] = (a.color.vec[1] + c.color.vec[1]) / 2;
 		d.color.vec[2] = (a.color.vec[2] + c.color.vec[2]) / 2;
 		d.color.vec[3] = (a.color.vec[3] + c.color.vec[3]) / 2;
+#ifdef TEXTURE_ENABLED
+
+#ifdef PERSPECTIVE_CORRECT_TRIANGULATION
+		float oneOverWa = 1.0 / a.w;
+		float oneOverWc = 1.0 / c.w;
+		float oneOverW = 1.0 / (oneOverWa + oneOverWc);
+		d.w = (a.w * oneOverWa + c.w * oneOverWc) * oneOverW;
+#else //PERSPECTIVE_CORRECT_TRIANGULATION
+		d.w = (a.w + c.w) * 0.5;
+#endif //PERSPECTIVE_CORRECT_TRIANGULATION
+
+		if (textureEnabled) { 
+#ifdef PERSPECTIVE_CORRECT_TRIANGULATION
+			d.s = (a.s * oneOverWa + c.s * oneOverWc) * oneOverW;
+			d.t = (a.t * oneOverWa + c.t * oneOverWc) * oneOverW;
+#else //PERSPECTIVE_CORRECT_TRIANGULATION
+			d.s = (a.s + c.s) * 0.5;
+			d.t = (a.t + c.t) * 0.5;
+#endif //PERSPECTIVE_CORRECT_TRIANGULATION
+		}
+
+#endif //TEXTURE_ENABLED
+	
 		trOut1 = Triangle{a, d, b};
 		trOut2 = Triangle{c, d, b};
 		return 1;
@@ -400,6 +652,10 @@ int checkAndSplitLargestEdge(	const Triangle& tr,
 								Triangle &trOut1, 
 								Triangle& trOut2)
 {
+#ifdef TEXTURE_ENABLED
+	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
+	int textureEnabled = cntxt->texState.textureEnabled;
+#endif //TEXTURE_ENABLED
 	// If the largest edge is too large then division is necessary 
 	edgeProjection edge0Projection = tr.edgeGetProjection(0);
 	edgeProjection edge1Projection = tr.edgeGetProjection(1);
@@ -433,6 +689,29 @@ int checkAndSplitLargestEdge(	const Triangle& tr,
 		d.color.vec[1] = (a.color.vec[1] + b.color.vec[1]) / 2;
 		d.color.vec[2] = (a.color.vec[2] + b.color.vec[2]) / 2;
 		d.color.vec[3] = (a.color.vec[3] + b.color.vec[3]) / 2;
+#ifdef TEXTURE_ENABLED
+
+#ifdef PERSPECTIVE_CORRECT_TRIANGULATION
+		float oneOverWa = 1.0 / a.w;
+		float oneOverWb = 1.0 / b.w;
+		float oneOverW = 1.0 / (oneOverWa + oneOverWb);
+		d.w = (a.w * oneOverWa + b.w * oneOverWb) * oneOverW;
+#else //PERSPECTIVE_CORRECT_TRIANGULATION
+		d.w = (a.w + b.w) * 0.5;
+#endif //PERSPECTIVE_CORRECT_TRIANGULATION
+
+		if (textureEnabled) { 
+#ifdef PERSPECTIVE_CORRECT_TRIANGULATION
+			d.s = (a.s * oneOverWa + b.s * oneOverWb) * oneOverW;
+			d.t = (a.t * oneOverWa + b.t * oneOverWb) * oneOverW;
+#else //PERSPECTIVE_CORRECT_TRIANGULATION
+			d.s = (a.s + b.s) * 0.5;
+			d.t = (a.t + b.t) * 0.5;
+#endif //PERSPECTIVE_CORRECT_TRIANGULATION
+		}
+
+#endif //TEXTURE_ENABLED
+	
 		trOut1 = Triangle{ c, a, d };
 		trOut2 = Triangle{ c, d, b };
 		return 1;

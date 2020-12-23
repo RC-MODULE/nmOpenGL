@@ -181,8 +181,16 @@ struct Point {
 	nm32f y;
 	nm32f z;
 	v4nm32f color;
+#ifndef TEXTURE_ENABLED
 	Point() { x = 0; y = 0; z = 0; color = { 0, 0, 0, 0 }; }
 	Point(nm32f xx, nm32f yy, nm32f zz, v4nm32f col) : x(xx), y(yy), z(zz), color(col) {}
+#else //TEXTURE_ENABLED
+    nm32f s;
+    nm32f t;
+    nm32f w;
+	Point() { x = 0; y = 0; z = 0; color = { 0, 0, 0, 0 }; s = 0; t = 0; w = 0;}
+	Point(nm32f xx, nm32f yy, nm32f zz, v4nm32f col, nm32f ss, nm32f tt, nm32f ww) : x(xx), y(yy), z(zz), color(col), s(ss), t(tt), w(ww) {}
+#endif //TEXTURE_ENABLED
 };
 
 struct Edge {
@@ -219,6 +227,18 @@ typedef struct Colors
 	v4nm32f c[3];
 } Colors;
 
+#ifdef TEXTURE_ENABLED
+typedef struct Texcoords
+{
+	nm32f st[6];
+} Texcoords;
+
+typedef struct Wclips
+{
+	nm32f w[3];
+} Wclips;
+#endif //TEXTURE_ENABLED
+
 // Data structure to store Vertices and Colors in 
 // "data" buffer (allocated previously)
 typedef struct Buffer 
@@ -246,8 +266,20 @@ static int popBackVertices(Buffer *vbuf, Vertices *vert);
 static int pushBackColors(Buffer *cbuf, Colors *colors);
 static int pushFrontColors(Buffer *cbuf, Colors *colors);
 static int popBackColors(Buffer *cbuf, Colors *colors);
+#ifdef TEXTURE_ENABLED
+static int pushBackTexcoords(Buffer *stbuf, Texcoords *texcoords);
+static int pushFrontTexcoords(Buffer *stbuf, Texcoords *texcoords);
+static int popBackTexcoords(Buffer *stbuf, Texcoords *texcoords);
+static int pushBackWclips(Buffer *wbuf, Wclips *wclips);
+static int pushFrontWclips(Buffer *wbuf, Wclips *wclips);
+static int popBackWclips(Buffer *wbuf, Wclips *wclips);
+#endif //TEXTURE_ENABLED
 
+#ifndef TEXTURE_ENABLED
 int triangulateOneTriangle(const Triangle& tr, nm32f xMax, nm32f yMax, Buffer *verticesStack, Buffer *colorsStack);
+#else //TEXTURE_ENABLED
+int triangulateOneTriangle(const Triangle& tr, nm32f xMax, nm32f yMax, Buffer *verticesStack, Buffer *colorsStack, Buffer *texcoordsStack, Buffer *wclipsStack);
+#endif //TEXTURE_ENABLED
 int splitOneTriangle(const Triangle& tr, nm32f xMax, nm32f yMax, Buffer *buf);
 
 /*
@@ -276,6 +308,7 @@ static void srcVertexInit(nm32f *srcVertex, int srcCount)
 	}
 }
 
+#ifndef TEXTURE_ENABLED
 /**
 \ingroup service_api
 \brief Разбиение большого треугольника на маленькие (триангуляция)
@@ -341,5 +374,13 @@ static void srcVertexInit(nm32f *srcVertex, int srcCount)
 //! \{
 int triangulate(const nm32f *srcVertex, const v4nm32f *srcColor, int srcCount, int maxWidth, int maxHeight, int maxDstSize, nm32f *dstVertex, v4nm32f *dstColor, int *srcTreatedCount);
 //! \}
+#else //TEXTURE_ENABLED
+// Macro PERSPECTIVE_CORRECT_TRIANGULATION should be enabled when 
+// perspective correct interpolation of s,t,w is needed during texturing.
+// Later, code under this macro may be used in glHint(GL_PERSPECTIVE_CORRECTION_HINT) implementation.
+
+//#define PERSPECTIVE_CORRECT_TRIANGULATION //code under this macro should be used in glHint(define this macro 
+int triangulate(const nm32f *srcVertex, const v4nm32f *srcColor, const nm32f *srcTexcoords, const nm32f *srcWclip, int srcCount, int maxWidth, int maxHeight, int maxDstSize, nm32f *dstVertex, v4nm32f *dstColor, nm32f *dstTexcoords, nm32f *dstWclip, int *srcTreatedCount);
+#endif //TEXTURE_ENABLED
 
 #endif //__SERVICE_H__
