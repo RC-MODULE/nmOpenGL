@@ -19,6 +19,17 @@ void nmglVertex2f(NMGLfloat x, NMGLfloat y)
 	cntxt->beginEndInfo.vertex[i].vec[1] = y;
 	cntxt->beginEndInfo.vertex[i].vec[2] = 0;
 	cntxt->beginEndInfo.vertex[i].vec[3] = 1;
+
+	cntxt->beginEndInfo.color[i].vec[0] = cntxt->currentColor.vec[0];
+	cntxt->beginEndInfo.color[i].vec[1] = cntxt->currentColor.vec[1];
+	cntxt->beginEndInfo.color[i].vec[2] = cntxt->currentColor.vec[2];
+	cntxt->beginEndInfo.color[i].vec[3] = cntxt->currentColor.vec[3];
+
+	cntxt->beginEndInfo.normal[i].vec[0] = cntxt->currentNormal.vec[0];
+	cntxt->beginEndInfo.normal[i].vec[1] = cntxt->currentNormal.vec[1];
+	cntxt->beginEndInfo.normal[i].vec[2] = cntxt->currentNormal.vec[2];
+	cntxt->beginEndInfo.normal[i].vec[3] = cntxt->currentNormal.vec[3];
+
 	cntxt->beginEndInfo.vertexCounter++;
 }
 
@@ -32,6 +43,17 @@ void nmglVertex3f(NMGLfloat x, NMGLfloat y, NMGLfloat z)
 	cntxt->beginEndInfo.vertex[i].vec[1] = y;
 	cntxt->beginEndInfo.vertex[i].vec[2] = z;
 	cntxt->beginEndInfo.vertex[i].vec[3] = 1;
+
+	cntxt->beginEndInfo.color[i].vec[0] = cntxt->currentColor.vec[0];
+	cntxt->beginEndInfo.color[i].vec[1] = cntxt->currentColor.vec[1];
+	cntxt->beginEndInfo.color[i].vec[2] = cntxt->currentColor.vec[2];
+	cntxt->beginEndInfo.color[i].vec[3] = cntxt->currentColor.vec[3];
+
+	cntxt->beginEndInfo.normal[i].vec[0] = cntxt->currentNormal.vec[0];
+	cntxt->beginEndInfo.normal[i].vec[1] = cntxt->currentNormal.vec[1];
+	cntxt->beginEndInfo.normal[i].vec[2] = cntxt->currentNormal.vec[2];
+	cntxt->beginEndInfo.normal[i].vec[3] = cntxt->currentNormal.vec[3];
+
 	cntxt->beginEndInfo.vertexCounter++;
 }
 
@@ -45,6 +67,17 @@ void nmglVertex2fv(const NMGLfloat *v)
 	cntxt->beginEndInfo.vertex[i].vec[1] = v[1];
 	cntxt->beginEndInfo.vertex[i].vec[2] = 0;
 	cntxt->beginEndInfo.vertex[i].vec[3] = 1;
+
+	cntxt->beginEndInfo.color[i].vec[0] = cntxt->currentColor.vec[0];
+	cntxt->beginEndInfo.color[i].vec[1] = cntxt->currentColor.vec[1];
+	cntxt->beginEndInfo.color[i].vec[2] = cntxt->currentColor.vec[2];
+	cntxt->beginEndInfo.color[i].vec[3] = cntxt->currentColor.vec[3];
+
+	cntxt->beginEndInfo.normal[i].vec[0] = cntxt->currentNormal.vec[0];
+	cntxt->beginEndInfo.normal[i].vec[1] = cntxt->currentNormal.vec[1];
+	cntxt->beginEndInfo.normal[i].vec[2] = cntxt->currentNormal.vec[2];
+	cntxt->beginEndInfo.normal[i].vec[3] = cntxt->currentNormal.vec[3];
+
 	cntxt->beginEndInfo.vertexCounter++;
 }
 
@@ -58,5 +91,16 @@ void nmglVertex3fv(const NMGLfloat *v)
 	cntxt->beginEndInfo.vertex[i].vec[1] = v[1];
 	cntxt->beginEndInfo.vertex[i].vec[2] = v[2];
 	cntxt->beginEndInfo.vertex[i].vec[3] = 1;
+
+	cntxt->beginEndInfo.color[i].vec[0] = cntxt->currentColor.vec[0];
+	cntxt->beginEndInfo.color[i].vec[1] = cntxt->currentColor.vec[1];
+	cntxt->beginEndInfo.color[i].vec[2] = cntxt->currentColor.vec[2];
+	cntxt->beginEndInfo.color[i].vec[3] = cntxt->currentColor.vec[3];
+
+	cntxt->beginEndInfo.normal[i].vec[0] = cntxt->currentNormal.vec[0];
+	cntxt->beginEndInfo.normal[i].vec[1] = cntxt->currentNormal.vec[1];
+	cntxt->beginEndInfo.normal[i].vec[2] = cntxt->currentNormal.vec[2];
+	cntxt->beginEndInfo.normal[i].vec[3] = cntxt->currentNormal.vec[3];
+
 	cntxt->beginEndInfo.vertexCounter++;
 }
