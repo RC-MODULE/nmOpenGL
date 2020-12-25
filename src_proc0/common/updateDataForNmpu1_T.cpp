@@ -125,7 +125,6 @@ void updatePolygonsT(DataForNmpu1* data, Triangles* triangles, int count, int se
 	}
 	counter++;
 #endif // DEBUG
-
 	
 	data->count = count;
 }

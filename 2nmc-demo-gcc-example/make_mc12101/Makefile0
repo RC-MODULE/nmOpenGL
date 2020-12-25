@@ -136,7 +136,7 @@ $(TMP_DIR)/%.o: %.c  $(ALL_H) $(CFG)
 profile:	
 	python $(HAL)/script/profiler.py > $(PROFILE)
 	$(MAKE)
-	python $(HAL)/script/profiler-gcc.py $(MAP) > $(PROFILE)
+	python $(HAL)/script/profiler.py $(MAP) > $(PROFILE)
 	
 
 #========================== Visual Studio  ===================

@@ -16,64 +16,6 @@ SECTION(".data_imu5")	v4nm32f vertexResult[3 * NMGL_SIZE];
 SECTION(".data_imu6")	v4nm32f colorOrNormal[3 * NMGL_SIZE];
 SECTION(".data_imu6")	v2nm32f texResult[3 * NMGL_SIZE];
 
-SECTION(".data_shared0") float saveTriangles[30 * NMGL_SIZE];
-
-SECTION("text_nmgl") void pushPointers(TrianglePointers &pointers, int size) {
-	nmblas_scopy(size, pointers.v0.x, 1, saveTriangles + 0 * NMGL_SIZE, 1);
-	nmblas_scopy(size, pointers.v0.y, 1, saveTriangles + 1 * NMGL_SIZE, 1);
-	nmblas_scopy(size, pointers.v0.z, 1, saveTriangles + 2 * NMGL_SIZE, 1);
-	nmblas_scopy(size, pointers.v0.w, 1, saveTriangles + 3 * NMGL_SIZE, 1);
-	nmblas_scopy(size, pointers.v1.x, 1, saveTriangles + 4 * NMGL_SIZE, 1);
-	nmblas_scopy(size, pointers.v1.y, 1, saveTriangles + 5 * NMGL_SIZE, 1);
-	nmblas_scopy(size, pointers.v1.z, 1, saveTriangles + 6 * NMGL_SIZE, 1);
-	nmblas_scopy(size, pointers.v1.w, 1, saveTriangles + 7 * NMGL_SIZE, 1);
-	nmblas_scopy(size, pointers.v2.x, 1, saveTriangles + 8 * NMGL_SIZE, 1);
-	nmblas_scopy(size, pointers.v2.y, 1, saveTriangles + 9 * NMGL_SIZE, 1);
-	nmblas_scopy(size, pointers.v2.z, 1, saveTriangles + 10 * NMGL_SIZE, 1);
-	nmblas_scopy(size, pointers.v2.w, 1, saveTriangles + 11 * NMGL_SIZE, 1);
-
-	nmblas_scopy(4 * size, (float*)pointers.v0.color, 1, saveTriangles + 12 * NMGL_SIZE, 1);
-	nmblas_scopy(4 * size, (float*)pointers.v1.color, 1, saveTriangles + 16 * NMGL_SIZE, 1);
-	nmblas_scopy(4 * size, (float*)pointers.v2.color, 1, saveTriangles + 20 * NMGL_SIZE, 1);
-
-#ifdef TEXTURE_ENABLED
-	nmblas_scopy(size, (float*)pointers.v0.s, 1, saveTriangles + 24 * NMGL_SIZE, 1);
-	nmblas_scopy(size, (float*)pointers.v0.t, 1, saveTriangles + 25 * NMGL_SIZE, 1);
-	nmblas_scopy(size, (float*)pointers.v1.s, 1, saveTriangles + 26 * NMGL_SIZE, 1);
-	nmblas_scopy(size, (float*)pointers.v1.t, 1, saveTriangles + 27 * NMGL_SIZE, 1);
-	nmblas_scopy(size, (float*)pointers.v2.s, 1, saveTriangles + 28 * NMGL_SIZE, 1);
-	nmblas_scopy(size, (float*)pointers.v2.t, 1, saveTriangles + 29 * NMGL_SIZE, 1);
-#endif //TEXTURE_ENABLED
-}
-
-SECTION("text_nmgl") void popPointers(TrianglePointers &pointers, int size) {
-	nmblas_scopy(size, saveTriangles + 0 * NMGL_SIZE, 1 , pointers.v0.x, 1);
-	nmblas_scopy(size, saveTriangles + 1 * NMGL_SIZE, 1 , pointers.v0.y, 1);
-	nmblas_scopy(size, saveTriangles + 2 * NMGL_SIZE, 1 , pointers.v0.z, 1);
-	nmblas_scopy(size, saveTriangles + 3 * NMGL_SIZE, 1 , pointers.v0.w, 1);
-	nmblas_scopy(size, saveTriangles + 4 * NMGL_SIZE, 1 , pointers.v1.x, 1);
-	nmblas_scopy(size, saveTriangles + 5 * NMGL_SIZE, 1 , pointers.v1.y, 1);
-	nmblas_scopy(size, saveTriangles + 6 * NMGL_SIZE, 1 , pointers.v1.z, 1);
-	nmblas_scopy(size, saveTriangles + 7 * NMGL_SIZE, 1 , pointers.v1.w, 1);
-	nmblas_scopy(size, saveTriangles + 8 * NMGL_SIZE, 1 , pointers.v2.x, 1);
-	nmblas_scopy(size, saveTriangles + 9 * NMGL_SIZE, 1 , pointers.v2.y, 1);
-	nmblas_scopy(size, saveTriangles + 10 * NMGL_SIZE, 1, pointers.v2.z, 1);
-	nmblas_scopy(size, saveTriangles + 11 * NMGL_SIZE, 1, pointers.v2.w, 1);
-
-	nmblas_scopy(4 * size, saveTriangles + 12 * NMGL_SIZE, 1, (float*)pointers.v0.color, 1);
-	nmblas_scopy(4 * size, saveTriangles + 16 * NMGL_SIZE, 1, (float*)pointers.v1.color, 1);
-	nmblas_scopy(4 * size, saveTriangles + 20 * NMGL_SIZE, 1, (float*)pointers.v2.color, 1);
-
-#ifdef TEXTURE_ENABLED
-	nmblas_scopy(size, saveTriangles + 24 * NMGL_SIZE, 1, (float*)pointers.v0.s, 1);
-	nmblas_scopy(size, saveTriangles + 25 * NMGL_SIZE, 1, (float*)pointers.v0.t, 1);
-	nmblas_scopy(size, saveTriangles + 26 * NMGL_SIZE, 1, (float*)pointers.v1.s, 1);
-	nmblas_scopy(size, saveTriangles + 27 * NMGL_SIZE, 1, (float*)pointers.v1.t, 1);
-	nmblas_scopy(size, saveTriangles + 28 * NMGL_SIZE, 1, (float*)pointers.v2.s, 1);
-	nmblas_scopy(size, saveTriangles + 29 * NMGL_SIZE, 1, (float*)pointers.v2.t, 1);
-#endif //TEXTURE_ENABLED
-}
-
 SECTION(".data_imu6")	ArrayManager<float> vertexAM;
 SECTION(".data_imu6")	ArrayManager<float> normalAM;
 SECTION(".data_imu6")	ArrayManager<v4nm32f> colorAM;
@@ -133,7 +75,6 @@ SECTION("text_demo3d") void clipSelect(TrianglePointers *src, float* srcColor, i
 
 SECTION(".text_nmgl")
 void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
-
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
 	if (cntxt->vertexArray.enabled == NMGL_FALSE) {
 		return;
@@ -236,7 +177,6 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 		}
 		//умножение на dидовую матрицу (Modelview matrix)
 		mul_mat4nm32f_v4nm32f(cntxt->modelviewMatrixStack.top(), (v4nm32f*)cntxt->buffer1, vertexResult, localSize);
-
 		//texcoords
 #ifdef TEXTURE_ENABLED
 		if (cntxt->texState.textureEnabled) {
@@ -316,50 +256,48 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 		case NMGL_TRIANGLE_STRIP:
 		{
 			TrianglePointers trianPointers;
+			nmblas_scopy(4 * localSize, (float*)vertexResult, 1, cntxt->buffer0, 1);
+			nmblas_scopy(4 * localSize, (float*)colorOrNormal, 1, cntxt->buffer1, 1);
+			nmblas_scopy(2 * localSize, (float*)texResult, 1, cntxt->buffer2, 1);
 
 			//в tmp0 хранятся данные в порядке x0,y0,z0,w0,x1,y1,z1,w1,x2,y2,z2,w2 (остальные массивы неопределены)
 			//в tmp1 хранятся данные в порядке x0,y0,z0,x1,y1,z1,x2,y2,z2,w0,w1,w2 (в buffer2), s0,t0,s1,t1,s2,t2 (в buffer5)
-			trianPointers.v0.x = cntxt->buffer0 + 0 * NMGL_SIZE;
-			trianPointers.v0.y = cntxt->buffer0 + 1 * NMGL_SIZE;
-			trianPointers.v0.z = cntxt->buffer0 + 2 * NMGL_SIZE;
-			trianPointers.v1.x = cntxt->buffer0 + 3 * NMGL_SIZE;
-			trianPointers.v1.y = cntxt->buffer0 + 4 * NMGL_SIZE;
-			trianPointers.v1.z = cntxt->buffer0 + 5 * NMGL_SIZE;
-			trianPointers.v2.x = cntxt->buffer0 + 6 * NMGL_SIZE;
-			trianPointers.v2.y = cntxt->buffer0 + 7 * NMGL_SIZE;
-			trianPointers.v2.z = cntxt->buffer0 + 8 * NMGL_SIZE;
-			trianPointers.v0.w = cntxt->buffer0 + 9 * NMGL_SIZE;
-			trianPointers.v1.w = cntxt->buffer0 + 10 * NMGL_SIZE;
-			trianPointers.v2.w = cntxt->buffer0 + 11 * NMGL_SIZE;
-			trianPointers.v0.color = (v4nm32f*)(cntxt->buffer1 + 0 * NMGL_SIZE);
-			trianPointers.v1.color = (v4nm32f*)(cntxt->buffer1 + 4 * NMGL_SIZE);
-			trianPointers.v2.color = (v4nm32f*)(cntxt->buffer1 + 8 * NMGL_SIZE);
+			trianPointers.v0.x = (float*)vertexResult + 0 * NMGL_SIZE;
+			trianPointers.v0.y = (float*)vertexResult + 1 * NMGL_SIZE;
+			trianPointers.v0.z = (float*)vertexResult + 2 * NMGL_SIZE;
+			trianPointers.v1.x = (float*)vertexResult + 3 * NMGL_SIZE;
+			trianPointers.v1.y = (float*)vertexResult + 4 * NMGL_SIZE;
+			trianPointers.v1.z = (float*)vertexResult + 5 * NMGL_SIZE;
+			trianPointers.v2.x = (float*)vertexResult + 6 * NMGL_SIZE;
+			trianPointers.v2.y = (float*)vertexResult + 7 * NMGL_SIZE;
+			trianPointers.v2.z = (float*)vertexResult + 8 * NMGL_SIZE;
+			trianPointers.v0.w = (float*)vertexResult + 9 * NMGL_SIZE;
+			trianPointers.v1.w = (float*)vertexResult + 10 * NMGL_SIZE;
+			trianPointers.v2.w = (float*)vertexResult + 11 * NMGL_SIZE;
+			trianPointers.v0.color = (colorOrNormal + 0 * NMGL_SIZE);
+			trianPointers.v1.color = (colorOrNormal + 1 * NMGL_SIZE);
+			trianPointers.v2.color = (colorOrNormal + 2 * NMGL_SIZE);
 
 #ifdef TEXTURE_ENABLED
-			trianPointers.v0.s = cntxt->buffer5 + 0 * NMGL_SIZE;
-			trianPointers.v0.t = cntxt->buffer5 + 1 * NMGL_SIZE;
-			trianPointers.v1.s = cntxt->buffer5 + 2 * NMGL_SIZE;
-			trianPointers.v1.t = cntxt->buffer5 + 3 * NMGL_SIZE;
-			trianPointers.v2.s = cntxt->buffer5 + 4 * NMGL_SIZE;
-			trianPointers.v2.t = cntxt->buffer5 + 5 * NMGL_SIZE;
+			trianPointers.v0.s = (float*)texResult + 0 * NMGL_SIZE;
+			trianPointers.v0.t = (float*)texResult + 1 * NMGL_SIZE;
+			trianPointers.v1.s = (float*)texResult + 2 * NMGL_SIZE;
+			trianPointers.v1.t = (float*)texResult + 3 * NMGL_SIZE;
+			trianPointers.v2.s = (float*)texResult + 4 * NMGL_SIZE;
+			trianPointers.v2.t = (float*)texResult + 5 * NMGL_SIZE;
 #endif //TEXTURE_ENABLED
-
-#ifdef TEXTURE_ENABLED
-			//FIX: Somehow localSize is changed after vertexPrimitiveRepack on mc12101
-			//volatile prevent localSizeBackup to be optimized as localSize
-			volatile int localSizeBackup = localSize;
-#endif //TEXTURE_ENABLED
+			volatile int a = localSize;
 
 			int primCount = 0;
 			switch (mode) {
 			case NMGL_TRIANGLES:
-				primCount = repackToPrimitives_t(vertexResult, colorOrNormal, texResult, &trianPointers, localSize);
+				primCount = repackToPrimitives_t((v4nm32f*)cntxt->buffer0, (v4nm32f*)cntxt->buffer1, (v2nm32f*)cntxt->buffer2, &trianPointers, localSize);
 				break;
 			case NMGL_TRIANGLE_FAN:
-				primCount = repackToPrimitives_tf(vertexResult, colorOrNormal, texResult, &trianPointers, localSize);
+				primCount = repackToPrimitives_tf((v4nm32f*)cntxt->buffer0, (v4nm32f*)cntxt->buffer1, (v2nm32f*)cntxt->buffer2, &trianPointers, localSize);
 				break;
 			case NMGL_TRIANGLE_STRIP:
-				primCount = repackToPrimitives_ts(vertexResult, colorOrNormal, texResult, &trianPointers, localSize);
+				primCount = repackToPrimitives_ts((v4nm32f*)cntxt->buffer0, (v4nm32f*)cntxt->buffer1, (v2nm32f*)cntxt->buffer2, &trianPointers, localSize);
 				break;
 			}
 			//------------clipping-------------------
@@ -411,7 +349,6 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 				static int counter = 0;
 				PROFILER_SIZE(primCount);
 				int currentCount = splitTriangles(&trianPointers, primCount, WIDTH_PTRN, HEIGHT_PTRN, NMGL_SIZE, &tmp, &srcThreated);
-				pushPointers(trianPointers, primCount);
 				if (currentCount % 2) {
 					tmp.v0.x[currentCount] = tmp.v0.x[currentCount - 1];
 					tmp.v0.y[currentCount] = tmp.v0.y[currentCount - 1];
@@ -446,7 +383,6 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 				nmppsMerge_32f(cntxt->buffer1, cntxt->buffer3, (float*)maxXY, cntxt->trianInner.size);
 				setSegmentMask(minXY, maxXY, cntxt->segmentMasks, cntxt->trianInner.size);
 				rasterizeT(&cntxt->trianInner, cntxt->segmentMasks);
-				popPointers(trianPointers, primCount);
 			}
 #else
 			pushToTriangles(trianPointers, cntxt->trianInner, primCount);

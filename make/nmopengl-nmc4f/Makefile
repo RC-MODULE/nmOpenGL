@@ -45,7 +45,7 @@ endif
 
 -include 		 nmc4vars_win.mk
 #include          $(ROOT)/global.mk
-DEBUG ?= n
+
 
 ARCH             =nmc4
 #--------------  target & input dirs -------------------

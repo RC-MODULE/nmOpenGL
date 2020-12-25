@@ -6,19 +6,16 @@
 #include "nmgl.h"
 #include "nmglvs_nmc0.h"
 #include "nmprofiler.h"
+//#include "stacktrace.h"
+
+
 
 SECTION(".text_shared0") int main()
 {
-	halSleep(3000);
-
-#if defined(__GNUC__)
-	//nmprofiler_init();
-	//nmprofiler_enable();
-#endif // __GNUC__
+	halSleep(500);
 
 	nmglvsNm0Init();
 
-	
 #ifdef __OPEN_GL__
 
 	setHeap(10);
@@ -77,7 +74,7 @@ SECTION(".text_shared0") int main()
 	nmglClearColor(0, 0, 0.4f, 0.0f);
 
 	nmglEnable(NMGL_DEPTH_TEST);
-	//nmglEnable(NMGL_CULL_FACE);
+	nmglEnable(NMGL_CULL_FACE);
 
 	nmglMatrixMode(NMGL_MODELVIEW);
 	nmglLoadIdentity();
@@ -158,10 +155,15 @@ SECTION(".text_shared0") int main()
 		counter++;
 		if (counter == 256) {
 			//PROFILER_PRINT2TBL();
-			nmprofiler_disable();
+			//nmprofiler_disable();
 			//return 0;
 		}
 		//nmglFinish();
+		//PROFILER_PRINT2TBL();				//  std 
+		//for (; nmprofiler_trace.tail<nmprofiler_trace.head; nmprofiler_trace.tail++) {
+		//	TraceData* item = nmprofiler_trace.ptrTail();
+		//	printf("t:%x\tfunc:%x\tdir:%d\thead:%d\n", item->time, item->func, item->dir, item->counter);
+		//}
 		nmglvsSwapBuffer();
 	}
 	//halFree(vertices_DDR);
@@ -169,11 +171,10 @@ SECTION(".text_shared0") int main()
 	//halFree(normal_DDR);
 	//halFree(normal_DDR2);
 
-#if defined(__GNUC__) && defined(PROFILER0)
-	nmprofiler_disable();
+#if defined(__GNUC__)
+	//nmprofiler_disable();
 #endif // __GNUC__
 
 	nmglvsExit_mc12101();
 	return 0x600D600D;
 } 
-

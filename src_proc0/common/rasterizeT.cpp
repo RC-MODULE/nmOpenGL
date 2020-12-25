@@ -75,6 +75,7 @@ void rasterizeT(const Triangles* triangles, const BitMask* masks){
 			if (masks[iSeg].hasNotZeroBits != 0) {
 
 				int resultSize = readMask(masks[iSeg].bits, indices, count);
+				while(true);
 				if (resultSize) {
 
 					cntxt->synchro.writeInstr(1, NMC1_COPY_SEG_FROM_IMAGE,

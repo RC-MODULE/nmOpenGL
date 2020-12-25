@@ -73,7 +73,7 @@ AS_FLAGS    	 = -c -mmas -x assembler -mnmc4-float
 LIBS             = -lnmpp-nmc4f -lhal-mc12101
 MAP		         = $(PROJECT).map
 CFG				 = ldscript-nmc0.ld
-LINKER_FLAGS     = -Xlinker -Map=$(MAP) $(LIB_DIRS) "-Wl,-T$(CFG)" -Wl,--whole-archive -lmc12101 -Wl,--no-whole-archive -o$(TARGET) 
+LINKER_FLAGS     = -Xlinker -Map=$(MAP) $(LIB_DIRS) "-Wl,-T$(CFG)" -Wl,--whole-archive -lmc12101 -Wl,--no-whole-archive -o$(TARGET)
 
 ifdef DEBUG
 	CC_FLAGS	+= -DDEBUG
@@ -148,7 +148,7 @@ $(TMP_DIR)/%.o: %.c  $(ALL_H) $(CFG)
 profile:	
 	python $(HAL)/script/profiler.py > $(PROFILE)
 	$(MAKE)
-	python $(HAL)/script/profiler-gcc.py $(MAP) > $(PROFILE)
+	python $(HAL)/script/profiler.py $(MAP) > $(PROFILE)
 	
 
 #========================== Visual Studio  ===================

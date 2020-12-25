@@ -45,7 +45,7 @@
 
 #============== PROJECT & BUILD CONFIGURATION ==========
 #
-DEBUG ?= n
+
 
 ROOT             = ../..
 include $(ROOT)/global.mk
@@ -53,6 +53,9 @@ include 		 nmc4vars_win.mk
 #-------------- target & input dirs -------------------
 PROFILE			 = ../src_target1/proflist_generated1.asm
 PROJECT          = main1
+ifdef DEBUG
+PROJECT 		 = main1d
+endif
 OUT_DIR          = .
 TARGET           = $(OUT_DIR)/$(PROJECT).abs
 INC_DIRS         = -I"$(NMPP)/include" -I$(HAL)/include -I$(ROOT)/include
@@ -141,7 +144,7 @@ $(TMP_DIR)/%.o: %.c $(ALL_H)
 profile:	
 	python $(HAL)/script/profiler.py > $(PROFILE)
 	$(MAKE)
-	python $(HAL)/script/profiler-gcc.py $(MAP) > $(PROFILE)
+	python $(HAL)/script/profiler.py $(MAP) > $(PROFILE)
 	
 
 #========================== Visual Studio  ===================

@@ -6,7 +6,7 @@
 
 int main()
 { 
-	halSleep(3000);
+	halSleep(500);
 	//nmprofiler_init();
 	//nmprofiler_enable();
 #if defined(PROFILER1) && defined(__GNUC__)

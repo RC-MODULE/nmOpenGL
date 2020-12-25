@@ -24,7 +24,37 @@
 
 using namespace std;
 
-ImageConnector hostImageRB;
+ImageConnector hostImageRB; 
+StackTraceConnector stackTraceConnector;
+
+bool gccmap_address2symbol_(char* mapfile, unsigned addr, char* fullname) {
+	FILE* f;
+	char str[1024];
+	f = fopen(mapfile, "rt");
+	if (f == 0)
+		return false;
+	char addr_str[16];
+	sprintf(addr_str, "%08x", addr);
+
+	while (!feof(f)) {
+		fgets(str, 1024, f);
+		const char* where_addr = strstr(str, addr_str);
+		if (where_addr == 0)
+			continue;
+
+		if (strstr(where_addr, "0x"))
+			continue;
+		while (strstr(where_addr, " "))
+			where_addr++;
+		//if (strlen(str)>(where_addr - str + 11))
+		//	continue;
+		sscanf(where_addr, " %s ", fullname);
+		fclose(f);
+		return true;
+	}
+	fclose(f);
+	return false;
+}
 
 void*  writeMem(const void* src, void* dst, unsigned int size32) {
 	int ok = halWriteMemBlock((void*)src, (int)dst, size32, 1);
@@ -37,28 +67,13 @@ void*  readMem(const void* src, void* dst, unsigned int size32) {
 }
 
 
-void stackTraceRead(StackTraceData* stackTraceData) {
-	StackTraceConnector stackTraceConnector(stackTraceData, writeMem, readMem);
-
-	while (true) {
-		static int tabCount = -1;
-		while (!stackTraceConnector.isEmpty()) {
-			StackPoint point;
-			stackTraceConnector.pop(&point,1);
-			if (point.direction > 0) {
-				tabCount++;
-				printf("\n");
-			}
-			for (int i = 0; i < tabCount; i++) {
-				printf(" ");
-			}
-			printf("address = 0x%8x, time=%u\n", point.address, point.time);
-			if (point.direction < 0) {
-				tabCount--;
-				printf("\n");
-			}
-		}
-	}
+void*  writeMem0(const void* src, void* dst, unsigned int size32) {
+	int ok = halWriteMemBlock((void*)src, (int)dst, size32, 0);
+	return 0;
+}
+void*  readMem0(const void* src, void* dst, unsigned int size32) {
+	int ok = halReadMemBlock(dst, (int)src, size32, 0);
+	return 0;
 }
 
 int nmglvsHostInit()
@@ -95,20 +110,17 @@ int nmglvsHostInit()
 	//PatternsArray* patterns = (PatternsArray*)halMalloc32(sizeof32(PatternsArray));
 	PatternsArray* patterns = (PatternsArray*)nmppsMalloc_32s(sizeof32(PatternsArray));
 	hostCreatePatterns(patterns);
-	halWriteMemBlock(patterns, patternsNM, sizeof32(PatternsArray), 1);
+	int ok = halWriteMemBlock(patterns, patternsNM, sizeof32(PatternsArray), 1);
 	nmppsFree(patterns);
 //----------------init-ringbuffer-------------
 	//nmc1, sync3
 	ImageData* nmImageRB = (ImageData*)halSyncAddr(0, 1);
 
 	hostImageRB.init(nmImageRB, writeMem, readMem);
-	
-	//nmc0, sync4
-	halSync(0, 0);
 
 	StackTraceData *stackTraceData = (StackTraceData*)halSyncAddr(0, 0);
-
-	thread thr(stackTraceRead, stackTraceData);
-	thr.detach();
+	stackTraceConnector.init(stackTraceData, writeMem, readMem);
+	//nmc0, sync4
+	halSync(0, 0);
 	return 0;
 };

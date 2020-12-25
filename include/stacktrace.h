@@ -1,19 +1,13 @@
 #ifndef __STACK_TRACE_H__
 #define __STACK_TRACE_H__
 #include "ringbuffert.h"
+#include "nmprofiler.h"
 
-#define STACK_TRACE_POINT_COUNT 2
-
-typedef struct s_StackPoint{
-	int time;
-	int direction;
-	int address;
-	int dummy;
-} StackPoint;
+#define STACK_TRACE_POINT_COUNT 2048
 
 
-typedef HalRingBufferData<StackPoint, STACK_TRACE_POINT_COUNT> StackTraceData;
-typedef HalRingBufferConnector<StackPoint, STACK_TRACE_POINT_COUNT> StackTraceConnector;
+typedef HalRingBufferData<TraceData, STACK_TRACE_POINT_COUNT> StackTraceData;
+typedef HalRingBufferConnector<TraceData, STACK_TRACE_POINT_COUNT> StackTraceConnector;
 
 
 

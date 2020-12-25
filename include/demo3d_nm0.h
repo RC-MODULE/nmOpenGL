@@ -122,6 +122,15 @@ struct Lines{
 	float* x1;
 	float* y1;
 	int* z;
+#ifdef TEXTURE_ENABLED 
+	//order is important
+	float* s0;
+	float* t0;
+	float* s1;
+	float* t1;
+	float* w0;
+	float* w1;
+#endif //TEXTURE_ENABLED 
 	v4nm32s* colors;
 	int size;
 	int maxSize;

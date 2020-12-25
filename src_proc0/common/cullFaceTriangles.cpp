@@ -16,8 +16,8 @@ inline void copyVertex(CombinePointers &vertex, int iSrc, int iDst) {
 	vertex.color[iDst] = vertex.color[iSrc];
 #ifdef TEXTURE_ENABLED
 	//if (cntxt->texState.textureEnabled) {
-		vertex.s[iDst] = triangles.s[iSrc];
-		vertex.t[iDst] = triangles.t[iSrc];
+		vertex.s[iDst] = vertex.s[iSrc];
+		vertex.t[iDst] = vertex.t[iSrc];
 	//}
 #endif //TEXTURE_ENABLED
 }
@@ -34,7 +34,7 @@ int cullFaceSortTriangles(TrianglePointers &triangles, int count){
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
 
 	float* walkDirection = cntxt->buffer2 + 6 * NMGL_SIZE;
-	float* temp0 = cntxt->buffer0 + 6 * NMGL_SIZE;
+	float* temp0 = cntxt->buffer2;
 	float* temp1 = cntxt->buffer3;
 	int* evenMaskVec = cntxt->dividedMasks[0].even.bits;
 	int* oddMaskVec= cntxt->dividedMasks[0].odd.bits;

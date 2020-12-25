@@ -44,7 +44,12 @@ SECTION(".data_imu7")	float nmglw2[NMGL_SIZE];
 SECTION(".data_imu6") int dividedMasksMemory[4][3 * NMGL_SIZE / 32];
 
 SECTION(".data_imu6") int masksBits[36][3 * NMGL_SIZE / 32];
+
 SECTION(".data_imu6") StackTraceConnector stackTraceConnector;
+
+extern "C" {
+	StackTraceData nmprofiler_trace;
+}
 
 extern  NMGLubyte* mipmap; //texture memory
 
@@ -69,23 +74,24 @@ SECTION(".data_imu0") NMGL_Context_NM0 *NMGL_Context_NM0::context;
 
 SECTION(".text_nmglvs") int nmglvsNm0Init()
 {
+#if defined(__GNUC__) && defined(DEBUG)
+	nmprofiler_init();
+#endif // __GNUC__
+
+
 	halSetProcessorNo(0);
-	halSleep(100);
+
+
 	NMGLSynchroData* synchroData;
 	NMGL_Context_NM0 *cntxt;
 	PolygonsArray* polygonsData;
-	StackTraceData* stackTraceData;
 
-#ifdef TEXTURE_ENABLED
-	printf("texture enabled on nm0\n");
-#endif TEXTURE_ENABLED
 
 	try {
 		int fromHost = halHostSync(0xC0DE0000);		// send handshake to host
 		if (fromHost != 0xC0DE0086) {					// get  handshake from host
 			return 1;
 		}
-
 		setHeap(8);
 		synchroData = myMallocT<NMGLSynchroData>();
 		synchroData->init();
@@ -112,9 +118,7 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 		cntxt->beginEndInfo.inBeginEnd = false;
 		cntxt->beginEndInfo.maxSize = BIG_NMGL_SIZE;
 		
-		stackTraceData = myMallocT<StackTraceData>();
-		stackTraceData->init();
-		stackTraceConnector.init(stackTraceData);
+		stackTraceConnector.init(&nmprofiler_trace);
 		//Allocate memory for textures.
 		//Must be in EMI. 
 		//EMI has enough space and does not require address mapping at mc12101
@@ -203,9 +207,9 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 	halInstrCacheEnable();
 #endif // __GNUC__
 
+	halHostSyncAddr(&nmprofiler_trace);
 	//sync4
 	halHostSync((int)0x600d600d);
-	halHostSyncAddr(stackTraceData);
 	nmglClearColor(0, 0, 0, 1.0f);
 	nmglClearDepthf(1);
 

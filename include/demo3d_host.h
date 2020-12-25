@@ -4,15 +4,20 @@
 #include "demo3d_common.h"
 #include "demo3d_nm1.h"
 #include "pattern.h"
+#include "stacktrace.h"
 
 #define NUM_NM_CORES 2
 
 #ifdef DEBUG
 #define PROGRAM "main0d.abs"
 #define PROGRAM1 "main1d.abs"
+#define MAP0 "main0d.map"
+#define MAP1 "main1d.map"
 #else
 #define PROGRAM "main0.abs"
 #define PROGRAM1 "main1.abs"
+#define MAP0 "main0.map"
+#define MAP1 "main1.map"
 #endif
 
 struct Models{

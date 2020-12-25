@@ -78,9 +78,6 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 	//---------- start nm program ------------
 	NMGL_Context_NM1 *cntxt;
 	ImageData* imagesData;
-#ifdef TEXTURE_ENABLED
-	printf("texture enabled on nm1\n");
-#endif TEXTURE_ENABLED
 	try {
 		int fromHost = halHostSync(0xC0DE0001);		// send handshake to host
 		if (fromHost != 0xC0DE0086) {					// get  handshake from host
