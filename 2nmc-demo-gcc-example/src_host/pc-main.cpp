@@ -29,8 +29,6 @@ int main()
 	float* normal = new float[4000 * 9];
 	int ok;
 
-	int sizePolygons = sizeof32(Polygons);
-
 	Models models;
 	//char* filePath = models.nm;
 	char* filePath = "NM_32.stl";

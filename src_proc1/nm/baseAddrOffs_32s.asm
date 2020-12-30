@@ -9,7 +9,6 @@ global _baseAddrOffs_32s: label;
 global _baseAddrOffs_32u: label;
 <_baseAddrOffs_32s>
 <_baseAddrOffs_32u>
-.branch;
 	ar5 = ar7-2;
 	push ar0,gr0	with gr7 = gr5;
 	push ar1,gr1	with gr0 = false;
@@ -33,5 +32,4 @@ global _baseAddrOffs_32u: label;
 	pop ar1,gr1;
 	pop ar0,gr0		with gr5 = gr7;
 	return;
-.wait;
 end ".text_demo3d";

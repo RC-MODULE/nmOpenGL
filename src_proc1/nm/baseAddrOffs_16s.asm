@@ -20,7 +20,6 @@ global _baseAddrOffs_16s: label;
 global _baseAddrOffs_16u: label;
 <_baseAddrOffs_16s>
 <_baseAddrOffs_16u>
-.branch;
 	StartTail: label;
 	EndTail: label;
 	ar5 = ar7-2;
@@ -94,5 +93,4 @@ global _baseAddrOffs_16u: label;
 	pop ar1,gr1;
 	pop ar0,gr0		with gr5 = gr7;
 	return;
-.wait;
 end ".text_demo3d";

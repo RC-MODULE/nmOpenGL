@@ -1,6 +1,7 @@
 #include "VShell.h"
 #include "nmglvs_host.h"
 #include "demo3d_common.h"
+#include "hostprofiler.h"
 
 
 
@@ -22,6 +23,8 @@ int main()
 
 	while(VS_Run())	{
 		nmglvsHostReadImage(currentImage);
+		//halProfilerPrint2xml("main0d.map", 0, "../perf0.xml");
+		//return 0;
 
 		VS_SetData(1, currentImage);
 		VS_Draw(VS_DRAW_ALL);

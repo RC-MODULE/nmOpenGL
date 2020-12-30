@@ -328,95 +328,95 @@ public:
 		projectionMatrixStack.size = 2;
 		projectionMatrixStack.type = NMGL_PROJECTION_MATRIX;
 
-		materialAmbient.vec[0] = 0.2;
-		materialAmbient.vec[1] = 0.2;
-		materialAmbient.vec[2] = 0.2;
-		materialAmbient.vec[3] = 1;
-		materialDiffuse.vec[0] = 0.8;
-		materialDiffuse.vec[1] = 0.8;
-		materialDiffuse.vec[2] = 0.8;
-		materialDiffuse.vec[3] = 1;
-		materialSpecular.vec[0] = 0;
-		materialSpecular.vec[1] = 0;
-		materialSpecular.vec[2] = 0;
-		materialSpecular.vec[3] = 1;
-		materialEmissive.vec[0] = 0;
-		materialEmissive.vec[1] = 0;
-		materialEmissive.vec[2] = 0;
-		materialEmissive.vec[3] = 1;
+		materialAmbient.vec[0] = 0.2f;
+		materialAmbient.vec[1] = 0.2f;
+		materialAmbient.vec[2] = 0.2f;
+		materialAmbient.vec[3] = 1.0f;
+		materialDiffuse.vec[0] = 0.8f;
+		materialDiffuse.vec[1] = 0.8f;
+		materialDiffuse.vec[2] = 0.8f;
+		materialDiffuse.vec[3] = 1.0f;
+		materialSpecular.vec[0] = 0.0f;
+		materialSpecular.vec[1] = 0.0f;
+		materialSpecular.vec[2] = 0.0f;
+		materialSpecular.vec[3] = 1.0f;
+		materialEmissive.vec[0] = 0.0f;
+		materialEmissive.vec[1] = 0.0f;
+		materialEmissive.vec[2] = 0.0f;
+		materialEmissive.vec[3] = 1.0f;
 
 		for (int i = 0; i < MAX_LIGHTS; i++) {
 			if (i == 0) {
-				lightDiffuse[i].vec[0] = 1;
-				lightDiffuse[i].vec[1] = 1;
-				lightDiffuse[i].vec[2] = 1;
-				lightDiffuse[i].vec[3] = 1;
+				lightDiffuse[i].vec[0] = 1.0f;
+				lightDiffuse[i].vec[1] = 1.0f;
+				lightDiffuse[i].vec[2] = 1.0f;
+				lightDiffuse[i].vec[3] = 1.0f;
 
-				lightSpecular[i].vec[0] = 1;
-				lightSpecular[i].vec[1] = 1;
-				lightSpecular[i].vec[2] = 1;
-				lightSpecular[i].vec[3] = 1;
+				lightSpecular[i].vec[0] = 1.0f;
+				lightSpecular[i].vec[1] = 1.0f;
+				lightSpecular[i].vec[2] = 1.0f;
+				lightSpecular[i].vec[3] = 1.0f;
 			}
 			else {
-				lightDiffuse[i].vec[0] = 0;
-				lightDiffuse[i].vec[1] = 0;
-				lightDiffuse[i].vec[2] = 0;
-				lightDiffuse[i].vec[3] = 1;
+				lightDiffuse[i].vec[0] = 0.0f;
+				lightDiffuse[i].vec[1] = 0.0f;
+				lightDiffuse[i].vec[2] = 0.0f;
+				lightDiffuse[i].vec[3] = 1.0f;
 
-				lightSpecular[i].vec[0] = 0;
-				lightSpecular[i].vec[1] = 0;
-				lightSpecular[i].vec[2] = 0;
-				lightSpecular[i].vec[3] = 1;
+				lightSpecular[i].vec[0] = 0.0f;
+				lightSpecular[i].vec[1] = 0.0f;
+				lightSpecular[i].vec[2] = 0.0f;
+				lightSpecular[i].vec[3] = 1.0f;
 			}
 
-			lightAmbient[i].vec[0] = 0;
-			lightAmbient[i].vec[1] = 0;
-			lightAmbient[i].vec[2] = 0;
-			lightAmbient[i].vec[3] = 1;
+			lightAmbient[i].vec[0] = 0.0f;
+			lightAmbient[i].vec[1] = 0.0f;
+			lightAmbient[i].vec[2] = 0.0f;
+			lightAmbient[i].vec[3] = 1.0f;
 
-			lightPosition[i].vec[0] = 0;
-			lightPosition[i].vec[1] = 0;
-			lightPosition[i].vec[2] = 1;
-			lightPosition[i].vec[3] = 0;
+			lightPosition[i].vec[0] = 0.0f;
+			lightPosition[i].vec[1] = 0.0f;
+			lightPosition[i].vec[2] = 1.0f;
+			lightPosition[i].vec[3] = 0.0f;
 
-			lightSpotDirection[i].vec[0] = 0;
-			lightSpotDirection[i].vec[1] = 0;
-			lightSpotDirection[i].vec[2] = -1;
-			lightSpotDirection[i].vec[3] = 0;
+			lightSpotDirection[i].vec[0] = 0.0f;
+			lightSpotDirection[i].vec[1] = 0.0f;
+			lightSpotDirection[i].vec[2] = -1.0f;
+			lightSpotDirection[i].vec[3] = 0.0f;
 
-			lightSpotExp[i] = 0;
-			lightSpotCutoff[i] = 180;
-			lightConstAtt[i] = 1;
-			lightLinAtt[i] = 0;
-			lightQuadAtt[i] = 0;
+			lightSpotExp[i] = 0.0f;
+			lightSpotCutoff[i] = 180.0f;
+			lightConstAtt[i] = 1.0f;
+			lightLinAtt[i] = 0.0f;
+			lightQuadAtt[i] = 0.0f;
 			isEnabledLight[i] = false;
 		}
 
-		lightAmbient[MAX_LIGHTS].vec[0] = 0.2;
-		lightAmbient[MAX_LIGHTS].vec[1] = 0.2;
-		lightAmbient[MAX_LIGHTS].vec[2] = 0.2;
-		lightAmbient[MAX_LIGHTS].vec[3] = 1.0;
+		lightAmbient[MAX_LIGHTS].vec[0] = 0.2f;
+		lightAmbient[MAX_LIGHTS].vec[1] = 0.2f;
+		lightAmbient[MAX_LIGHTS].vec[2] = 0.2f;
+		lightAmbient[MAX_LIGHTS].vec[3] = 1.0f;
 
 		for (int i = 0; i < 4; i++) {
 			for (int j = 0; j < 4; j++) {
 				if (i == j) {
-					modelviewMatrix[0].matr[i * 4 + j] = 1;
-					projectionMatrix[0].matr[i * 4 + j] = 1;
-					normalMatrix.matr[i * 4 + j] = 1;
+					modelviewMatrix[0].matr[i * 4 + j] = 1.0f;
+					projectionMatrix[0].matr[i * 4 + j] = 1.0f;
+					normalMatrix.matr[i * 4 + j] = 1.0;
 				}
 				else {
-					modelviewMatrix[0].matr[i * 4 + j] = 0;
-					projectionMatrix[0].matr[i * 4 + j] = 0;
-					normalMatrix.matr[i * 4 + j] = 0;
+					modelviewMatrix[0].matr[i * 4 + j] = 0.0f;
+					projectionMatrix[0].matr[i * 4 + j] = 0.0f;
+					normalMatrix.matr[i * 4 + j] = 0.0f;
 				}
 			}
 		}
-		normalMatrix.matr[15] = 0;
+		normalMatrix.matr[15] = 0.0f;
 
 		windowInfo.segmentWidth = WIDTH_SEG;
 		windowInfo.segmentHeight = HEIGHT_SEG;
-		windowInfo.viewportMulZ = (1 - 0) * 0.5 * ZBUFF_MAX;
-		windowInfo.viewportAddZ = (1 + 0) * 0.5 * ZBUFF_MAX;
+		windowInfo.viewportMulZ = (1 - 0) * 0.5f * ZBUFF_MAX;
+		windowInfo.viewportAddZ = (1 + 0) * 0.5f * ZBUFF_MAX;
 
 		//массивы
 		nmglDisableClientState(NMGL_VERTEX_ARRAY);

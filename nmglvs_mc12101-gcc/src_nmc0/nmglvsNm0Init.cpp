@@ -5,7 +5,10 @@
 #include "demo3d_nm0.h"
 #include "cache.h"
 #include "ringbuffer.h"
+
+#ifdef STACK_TRACE_ENABLED
 #include "stacktrace.h"
+#endif //STACK_TRACE_ENABLED
 
 #include "nmgl.h"
 
@@ -45,11 +48,12 @@ SECTION(".data_imu6") int dividedMasksMemory[4][3 * NMGL_SIZE / 32];
 
 SECTION(".data_imu6") int masksBits[36][3 * NMGL_SIZE / 32];
 
+#ifdef STACK_TRACE_ENABLED
 SECTION(".data_imu6") StackTraceConnector stackTraceConnector;
-
 extern "C" {
 	StackTraceData nmprofiler_trace;
 }
+#endif //STACK_TRACE_ENABLED
 
 extern  NMGLubyte* mipmap; //texture memory
 
@@ -74,9 +78,12 @@ SECTION(".data_imu0") NMGL_Context_NM0 *NMGL_Context_NM0::context;
 
 SECTION(".text_nmglvs") int nmglvsNm0Init()
 {
-#if defined(__GNUC__) && defined(DEBUG)
+#if defined(__GNUC__) && defined(DEBUG) && defined(STACK_TRACE_ENABLED)
 	nmprofiler_init();
 #endif // __GNUC__
+#ifdef TEXTURE_ENABLED
+	halLedOn(0);
+#endif //TEXTURE_ENABLED
 
 
 	halSetProcessorNo(0);
@@ -117,8 +124,9 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 		cntxt->beginEndInfo.color = myMallocT<v4nm32f>(BIG_NMGL_SIZE);
 		cntxt->beginEndInfo.inBeginEnd = false;
 		cntxt->beginEndInfo.maxSize = BIG_NMGL_SIZE;
-		
+#ifdef STACK_TRACE_ENABLED		
 		stackTraceConnector.init(&nmprofiler_trace);
+#endif //STACK_TRACE_ENABLED
 		//Allocate memory for textures.
 		//Must be in EMI. 
 		//EMI has enough space and does not require address mapping at mc12101
@@ -206,8 +214,9 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 	halDmaInitC();
 	halInstrCacheEnable();
 #endif // __GNUC__
-
+#ifdef STACK_TRACE_ENABLED
 	halHostSyncAddr(&nmprofiler_trace);
+#endif //STACK_TRACE_ENABLED
 	//sync4
 	halHostSync((int)0x600d600d);
 	nmglClearColor(0, 0, 0, 1.0f);

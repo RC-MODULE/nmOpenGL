@@ -74,6 +74,9 @@ SECTION(".data_imu0") NMGL_Context_NM1 *NMGL_Context_NM1::context;
 
 SECTION(".text_nmglvs") int nmglvsNm1Init()
 {
+#ifdef TEXTURE_ENABLED
+	halLedOn(1);
+#endif //TEXTURE_ENABLED
 	halSetProcessorNo(1);
 	//---------- start nm program ------------
 	NMGL_Context_NM1 *cntxt;

@@ -286,7 +286,7 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			trianPointers.v2.s = (float*)texResult + 4 * NMGL_SIZE;
 			trianPointers.v2.t = (float*)texResult + 5 * NMGL_SIZE;
 #endif //TEXTURE_ENABLED
-			volatile int a = localSize;
+			//volatile int a = localSize;
 
 			int primCount = 0;
 			switch (mode) {

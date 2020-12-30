@@ -15,17 +15,18 @@
 #include "demo3d_nm1.h"
 #include "ringbuffert.h"
 #include "imagebuffer.h"
-
-
 #include <thread>
+
+#ifdef STACK_TRACE_ENABLED
 #include "stacktrace.h"
+StackTraceConnector stackTraceConnector;
+#endif
 
 
 
 using namespace std;
 
 ImageConnector hostImageRB; 
-StackTraceConnector stackTraceConnector;
 
 bool gccmap_address2symbol_(char* mapfile, unsigned addr, char* fullname) {
 	FILE* f;
@@ -118,8 +119,11 @@ int nmglvsHostInit()
 
 	hostImageRB.init(nmImageRB, writeMem, readMem);
 
+#ifdef STACK_TRACE_ENABLED
 	StackTraceData *stackTraceData = (StackTraceData*)halSyncAddr(0, 0);
 	stackTraceConnector.init(stackTraceData, writeMem, readMem);
+#endif
+	
 	//nmc0, sync4
 	halSync(0, 0);
 	return 0;

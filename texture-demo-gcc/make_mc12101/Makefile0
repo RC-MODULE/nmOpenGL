@@ -100,11 +100,11 @@ OBJECTS     = $(addprefix $(TMP_DIR)/, $(OBJECTS_C) $(OBJECTS_CPP)  $(OBJECTS_AS
 .PHONY:all  clean skip
 
 .DEFAULT_GOAL=default
-default: $(TARGET) 
+default: all
 
 #$(TMP_DIR) $(OUT_DIR)  $(TARGET)
 
-all:  $(TARGET)
+all:  profile
 	
 #	$(MAKE) -j4 DEBUG=y
 #	$(MAKE) -j4

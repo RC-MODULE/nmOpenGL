@@ -127,7 +127,7 @@ $(TMP_DIR)/dumps/%.dump: $(TMP_DIR)/%.o
 $(TMP_DIR):
 	-mkdir "$(@)"
 
-$(TARGET): $(TMP_DIR) $(OBJECTS) $(ALL_H) $(CFG) nmc4vars_win.mk Makefile
+$(TARGET): profile_gen $(TMP_DIR) $(OBJECTS) $(ALL_H) $(CFG) nmc4vars_win.mk Makefile profile_read
 	$(CC) $(CC_FLAGS) $(LINKER_FLAGS) $(OBJECTS) $(LIBS)
 
 nmc4vars_win.mk:
@@ -145,9 +145,15 @@ $(TMP_DIR)/%.o: %.cpp  $(ALL_H) $(CFG)
 $(TMP_DIR)/%.o: %.c  $(ALL_H) $(CFG)
 	$(CC) $(CC_FLAGS) -c $(<) -o$(@) $(INC_DIRS)
 	
+	
 profile:	
 	python $(HAL)/script/profiler.py > $(PROFILE)
 	$(MAKE)
+	python $(HAL)/script/profiler.py $(MAP) > $(PROFILE)
+	
+profile_gen:	
+	python $(HAL)/script/profiler.py > $(PROFILE)
+profile_read:	
 	python $(HAL)/script/profiler.py $(MAP) > $(PROFILE)
 	
 

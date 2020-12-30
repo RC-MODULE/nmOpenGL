@@ -73,9 +73,8 @@ void rasterizeT(const Triangles* triangles, const BitMask* masks){
 	for (int segY = 0, iSeg = 0; segY < cntxt->windowInfo.nRows; segY++) {
 		for (int segX = 0; segX < cntxt->windowInfo.nColumns; segX++, iSeg++) {
 			if (masks[iSeg].hasNotZeroBits != 0) {
-
+				//printf("addr=%p,ind=%p, count=%d\n", masks[iSeg].bits, indices, count);
 				int resultSize = readMask(masks[iSeg].bits, indices, count);
-				while(true);
 				if (resultSize) {
 
 					cntxt->synchro.writeInstr(1, NMC1_COPY_SEG_FROM_IMAGE,
