@@ -27,10 +27,8 @@ begin ".text_demo3d"      // начало секции кода.
     ar6 = [--ar5]	with gr0++;          			// Адрес выходного массива
     gr5 = [--ar5]	with gr6 = gr0;       			// Количество элементов во входном массиве
 
-	sir = 80808080h;
-	nb1 = sir;
-	sir = 2020202h;
-	sb = sir;
+	nb1 = 80808080h;
+	sb = 2020202h;
 	ar5 = Weights;
 	rep 8 wfifo = [ar5++], ftw, wtw;
 	

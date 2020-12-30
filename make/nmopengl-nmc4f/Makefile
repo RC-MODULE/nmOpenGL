@@ -66,7 +66,7 @@ AR               = nmc-ar
 AS               = asm
 CC_FLAGS 	     = -m$(ARCH) $(INC_DIRS)  -std=c++11 -c -O2 -mnmc4-float
 AR_FLAGS         = rcs $(TARGET)
-AS_FLAGS         =-$(ARCH) -nm2ms  -split_sir -W-111 -W-109 -W-110 $(INC_DIRS) 
+AS_FLAGS         =-$(ARCH) -nm2ms  -split_sir -W-111 -W-109 $(INC_DIRS) 
 
 ifeq ($(DEBUG),y)
 CC_FLAGS	+= -DDEBUG

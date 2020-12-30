@@ -21,8 +21,7 @@ global _baseAddrOffs_32u: label;
 	ar6 = [--ar5]	with gr6 = gr0;
 	gr5 = [--ar5];
 	
-	sir = 80000000hl;
-	nb1 = sir;
+	nb1 = 80000000hl;
 	
 	delayed call vec_data_add_ram;
 		gr5 >>= 1;

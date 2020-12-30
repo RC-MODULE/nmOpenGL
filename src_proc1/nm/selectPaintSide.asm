@@ -36,8 +36,7 @@ begin ".text_demo3d"
 	push ar2,gr2;
 	ar2 = ar5;
 	
-	sir = 80000000h;
-	f1cr = sir;
+	f1cr = 80000000h;
 	gr3>>=1;
 	gr5=gr3>>5;
 	BeforeTail:label;

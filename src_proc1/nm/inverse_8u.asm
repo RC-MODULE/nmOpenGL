@@ -56,10 +56,8 @@ global _inverse_8u: label;
 	ar0 = [--ar5];
 	ar6 = [--ar5];
 	gr5 = [--ar5];
-	sir = 0FFFFFFFFh;
-	nb1 = sir;
-	sir = 0AAAAAAAAh;
-	sb = sir;
+	nb1 = 0FFFFFFFFh;
+	sb = 0AAAAAAAAh;
 	
 	gr0 = gr5 << 24;	
 	ar4 = Weights	with gr5 >>= 8;
@@ -119,4 +117,4 @@ global _inverse_8u: label;
 	pop ar4, gr4;
 	pop ar0, gr0	with gr5 = gr7;
 	return;
-end ".text_demo3d";
+end ".text_dmo3d";

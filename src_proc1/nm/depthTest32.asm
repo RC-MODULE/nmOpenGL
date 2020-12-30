@@ -10,6 +10,7 @@ end ".data_demo3d";
 begin ".text_demo3d"
 global _depthTest32: label;
 <_depthTest32>
+.branch;
 	ar5 = ar7-2;
 	push ar0,gr0;
 	push ar1,gr1;
@@ -24,9 +25,9 @@ global _depthTest32: label;
 	ar6 = [--ar5]	with gr2 = false;		//nm16s* dstMask
 	ar3 = [--ar5]	with gr2++;		//Size* sizes
 	gr4 = [--ar5]	with gr2++;		//int count
-	sir = 80000000h;
-	nb1 = sir;
-	f1cr = sir;
+	gr7 = 80000000h;
+	nb1 = gr7;
+	f1cr = gr7;
 	wtw;
 <NextTreangle>		
 	startProg: label;
@@ -52,4 +53,5 @@ global _depthTest32: label;
 	pop ar1,gr1;
 	pop ar0,gr0;
 	return;
+.wait;
 end ".text_demo3d";

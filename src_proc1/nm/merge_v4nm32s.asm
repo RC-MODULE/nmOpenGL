@@ -9,21 +9,17 @@ matr1: word [12]=(0,0,
  00001h,0000h,    // 0
  0000h,0000h,   // 1
  0000h,00001h,    // 2
- 0000h,0000h,    // 3
- 0,0
+ 0000h,0000h    // 3
 );
 end ".data_demo3d";
 begin ".text_demo3d"
 extern vec_Mul2D2W2_AddVr: label;
 global _merge_v4nm32s: label;
 <_merge_v4nm32s>
-	sir=80000000h;  // 2 по 32 на выходе
-	nb1=sir;  // 2 по 32 на выходе
-	sir=2;           // 2 по 32 на входе X
-	sb=sir;           // 2 по 32 на входе X
-	sir=0;
-	vr=sir;
-	f1cr=sir;
+	nb1=80000000h;  // 2 по 32 на выходе
+	sb=2;           // 2 по 32 на входе X
+	vr=0;
+	f1cr=0;
 	ar5=ar7-2;
 	push ar6,gr6;
 	push ar0,gr0;
