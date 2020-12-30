@@ -24,8 +24,10 @@ global _duplicate_16s: label;
 	ar0 = [--ar5]	with gr0++;
 	ar6 = [--ar5]	with gr6 = gr0 << 1;
 	gr5 = [--ar5];
-	nb1 = 80008000h;
-	sb = 20002h;
+	sir = 80008000h;
+	nb1 = sir;
+	sir = 20002h;
+	sb = sir;
 	
 	ar4 = matr	with gr5 >>= 2;
 	rep 8 wfifo = [ar4++], ftw, wtw;

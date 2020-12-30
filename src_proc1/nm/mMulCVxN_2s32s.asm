@@ -95,9 +95,11 @@ begin ".text_demo3d"
 	gr1 = [--ar5];		//Point* point
 	ar1 = [--ar5];		//Size size
 	ar2 = [--ar5];		//int* valueC
-	nb1 = 80808080h;
+	sir = 80808080h;
+	nb1 = sir;
 	gr5 = false;
-	vr = gr5;
+	sir = gr5;
+	vr = sir;
 	delayed goto NextTreangle;
 		ar6 = [--ar5];		//nm32s* pDstTreangle_32s	
 		gr7 = [--ar5];		//int count
@@ -116,9 +118,10 @@ begin ".text_demo3d"
 	ar2 = [--ar5];		//int* valueC
 	ar6 = [--ar5];		//nm32s* pDstTreangle_32s	
 	gr7 = [--ar5];		//int count
-	gr5 = [_addC4DepthTest];
-	vr = gr5;
-	nb1 = 0C0000000h;
+	sir = [_addC4DepthTest];
+	vr = sir;
+	sir = 0C0000000h;
+	nb1 = sir;
 <NextTreangle>	
 	//write mulC to matrix
 	repNHeightStart: label;

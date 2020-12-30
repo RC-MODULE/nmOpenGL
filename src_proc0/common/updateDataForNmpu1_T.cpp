@@ -89,7 +89,7 @@ void updatePolygonsT(DataForNmpu1* data, Triangles* triangles, int count, int se
 		nmblas_scopy(count, (float*)triangles->w1, 1, (float*)data->w1 + data->count, 1);
 		nmblas_scopy(count, (float*)triangles->w2, 1, (float*)data->w2 + data->count, 1);
 	}
-#endif TEXTURE_ENABLED
+#endif //TEXTURE_ENABLED
 
 #ifdef DEBUG
 	static unsigned int counter = 0;

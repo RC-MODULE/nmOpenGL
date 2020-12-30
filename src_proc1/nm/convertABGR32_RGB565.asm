@@ -85,9 +85,12 @@ begin ".text_demo3d"      // начало секции кода.
 <ConvertOneValue>
 
     // Выделить компоненты 65
-    nb1l = 08410h; // разбиение матрицы весовых коэффициентов
-    nb1h = 00h;
-    sb = 082h;
+    sir = 08410h; // разбиение матрицы весовых коэффициентов
+    nb1l = sir; // разбиение матрицы весовых коэффициентов
+    sir = 00h;
+    nb1h = sir;
+    sir = 082h;
+    sb = sir;
 
     ar2 = rgMatrix;  
     rep 8 wfifo = [ar2++], ftw, wtw;
@@ -107,9 +110,12 @@ begin ".text_demo3d"      // начало секции кода.
 if > goto ConvertOneValue;  // Если ещё не обработали 4 элемента
 
     // Упаковать 4 значения RGB565 из RGB565_tmp_array в 64-битное слово RGB565x4_tmp
-    nb1 = 080008000h;
-    sbl = 020000h;
-    sbh = 00h;
+    sir = 080008000h;
+    nb1 = sir;
+    sir = 020000h;
+    sbl = sir;
+    sir = 00h;
+    sbh = sir;
 
     ar2 = rgbMatrix;
     rep 8 wfifo = [ar2++], ftw, wtw;
