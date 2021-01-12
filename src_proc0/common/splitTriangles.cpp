@@ -539,16 +539,26 @@ int checkAndSplitFirstLargeEdge(const Triangle& tr,
 		d.x = (a.x + b.x) / 2;
 		d.y = (a.y + b.y) / 2;
 		d.z = (a.z + b.z) / 2;
-		d.color.vec[0] = (a.color.vec[0] + b.color.vec[0]) / 2;
-		d.color.vec[1] = (a.color.vec[1] + b.color.vec[1]) / 2;
-		d.color.vec[2] = (a.color.vec[2] + b.color.vec[2]) / 2;
-		d.color.vec[3] = (a.color.vec[3] + b.color.vec[3]) / 2;
-#ifdef TEXTURE_ENABLED
-
-#ifdef PERSPECTIVE_CORRECT_TRIANGULATION
+		
+#if defined(TEXTURE_ENABLED) && defined (PERSPECTIVE_CORRECT_TRIANGULATION)
+		//XXX: Warning. Potential division by zero
 		float oneOverWa = 1.0 / a.w;
 		float oneOverWb = 1.0 / b.w;
 		float oneOverW = 1.0 / (oneOverWa + oneOverWb);
+
+		d.color.vec[0] = (a.color.vec[0] * oneOverWa + b.color.vec[0] * oneOverWb) * oneOverW;
+		d.color.vec[1] = (a.color.vec[1] * oneOverWa + b.color.vec[1] * oneOverWb) * oneOverW;
+		d.color.vec[2] = (a.color.vec[2] * oneOverWa + b.color.vec[2] * oneOverWb) * oneOverW;
+		d.color.vec[3] = (a.color.vec[3] * oneOverWa + b.color.vec[3] * oneOverWb) * oneOverW;
+#else //TEXTURE_ENABLED && PERSPECTIVE_CORRECT_TRIANGULATION
+		d.color.vec[0] = (a.color.vec[0] + b.color.vec[0]) * 0.5;
+		d.color.vec[1] = (a.color.vec[1] + b.color.vec[1]) * 0.5;
+		d.color.vec[2] = (a.color.vec[2] + b.color.vec[2]) * 0.5;
+		d.color.vec[3] = (a.color.vec[3] + b.color.vec[3]) * 0.5;
+#endif //TEXTURE_ENABLED && PERSPECTIVE_CORRECT_TRIANGULATION
+
+#ifdef TEXTURE_ENABLED
+#ifdef PERSPECTIVE_CORRECT_TRIANGULATION
 		d.w = (a.w * oneOverWa + b.w * oneOverWb) * oneOverW;
 #else //PERSPECTIVE_CORRECT_TRIANGULATION
 		d.w = (a.w + b.w) * 0.5;
@@ -563,9 +573,8 @@ int checkAndSplitFirstLargeEdge(const Triangle& tr,
 			d.t = (a.t + b.t) * 0.5;
 #endif //PERSPECTIVE_CORRECT_TRIANGULATION
 		}
-
 #endif //TEXTURE_ENABLED
-	
+
 		trOut1 = Triangle{a, d, c};
 		trOut2 = Triangle{b, d, c};
 		return 1;
@@ -576,16 +585,26 @@ int checkAndSplitFirstLargeEdge(const Triangle& tr,
 		d.x = (b.x + c.x) / 2;
 		d.y = (b.y + c.y) / 2;
 		d.z = (b.z + c.z) / 2;
-		d.color.vec[0] = (b.color.vec[0] + c.color.vec[0]) / 2;
-		d.color.vec[1] = (b.color.vec[1] + c.color.vec[1]) / 2;
-		d.color.vec[2] = (b.color.vec[2] + c.color.vec[2]) / 2;
-		d.color.vec[3] = (b.color.vec[3] + c.color.vec[3]) / 2;
-#ifdef TEXTURE_ENABLED
 
-#ifdef PERSPECTIVE_CORRECT_TRIANGULATION
+#if defined(TEXTURE_ENABLED) && defined (PERSPECTIVE_CORRECT_TRIANGULATION)
+		//XXX: Warning. Potential division by zero
 		float oneOverWb = 1.0 / b.w;
 		float oneOverWc = 1.0 / c.w;
 		float oneOverW = 1.0 / (oneOverWb + oneOverWc);
+
+		d.color.vec[0] = (b.color.vec[0] * oneOverWb + c.color.vec[0] * oneOverWc) * oneOverW;
+		d.color.vec[1] = (b.color.vec[1] * oneOverWb + c.color.vec[1] * oneOverWc) * oneOverW;
+		d.color.vec[2] = (b.color.vec[2] * oneOverWb + c.color.vec[2] * oneOverWc) * oneOverW;
+		d.color.vec[3] = (b.color.vec[3] * oneOverWb + c.color.vec[3] * oneOverWc) * oneOverW;
+#else //TEXTURE_ENABLED && PERSPECTIVE_CORRECT_TRIANGULATION
+		d.color.vec[0] = (b.color.vec[0] + c.color.vec[0]) * 0.5;
+		d.color.vec[1] = (b.color.vec[1] + c.color.vec[1]) * 0.5;
+		d.color.vec[2] = (b.color.vec[2] + c.color.vec[2]) * 0.5;
+		d.color.vec[3] = (b.color.vec[3] + c.color.vec[3]) * 0.5;
+#endif //TEXTURE_ENABLED && PERSPECTIVE_CORRECT_TRIANGULATION
+
+#ifdef TEXTURE_ENABLED
+#ifdef PERSPECTIVE_CORRECT_TRIANGULATION
 		d.w = (b.w * oneOverWb + c.w * oneOverWc) * oneOverW;
 #else //PERSPECTIVE_CORRECT_TRIANGULATION
 		d.w = (b.w + c.w) * 0.5;
@@ -600,8 +619,8 @@ int checkAndSplitFirstLargeEdge(const Triangle& tr,
 			d.t = (b.t + c.t) * 0.5;
 #endif //PERSPECTIVE_CORRECT_TRIANGULATION
 		}
-
 #endif //TEXTURE_ENABLED
+
 		trOut1 = Triangle{b, d, a};
 		trOut2 = Triangle{c, d, a};
 		return 1;
@@ -612,16 +631,26 @@ int checkAndSplitFirstLargeEdge(const Triangle& tr,
 		d.x = (a.x + c.x) / 2;
 		d.y = (a.y + c.y) / 2;
 		d.z = (a.z + c.z) / 2;
-		d.color.vec[0] = (a.color.vec[0] + c.color.vec[0]) / 2;
-		d.color.vec[1] = (a.color.vec[1] + c.color.vec[1]) / 2;
-		d.color.vec[2] = (a.color.vec[2] + c.color.vec[2]) / 2;
-		d.color.vec[3] = (a.color.vec[3] + c.color.vec[3]) / 2;
-#ifdef TEXTURE_ENABLED
-
-#ifdef PERSPECTIVE_CORRECT_TRIANGULATION
+		
+#if defined(TEXTURE_ENABLED) && defined (PERSPECTIVE_CORRECT_TRIANGULATION)
+		//XXX: Warning. Potential division by zero
 		float oneOverWa = 1.0 / a.w;
 		float oneOverWc = 1.0 / c.w;
 		float oneOverW = 1.0 / (oneOverWa + oneOverWc);
+		
+		d.color.vec[0] = (a.color.vec[0] * oneOverWa + c.color.vec[0] * oneOverWc) * oneOverW;
+		d.color.vec[1] = (a.color.vec[1] * oneOverWa + c.color.vec[1] * oneOverWc) * oneOverW;
+		d.color.vec[2] = (a.color.vec[2] * oneOverWa + c.color.vec[2] * oneOverWc) * oneOverW;
+		d.color.vec[3] = (a.color.vec[3] * oneOverWa + c.color.vec[3] * oneOverWc) * oneOverW;
+#else //TEXTURE_ENABLED && PERSPECTIVE_CORRECT_TRIANGULATION
+		d.color.vec[0] = (a.color.vec[0] + c.color.vec[0]) * 0.5;
+		d.color.vec[1] = (a.color.vec[1] + c.color.vec[1]) * 0.5;
+		d.color.vec[2] = (a.color.vec[2] + c.color.vec[2]) * 0.5;
+		d.color.vec[3] = (a.color.vec[3] + c.color.vec[3]) * 0.5;
+#endif //TEXTURE_ENABLED && PERSPECTIVE_CORRECT_TRIANGULATION
+		
+#ifdef TEXTURE_ENABLED
+#ifdef PERSPECTIVE_CORRECT_TRIANGULATION
 		d.w = (a.w * oneOverWa + c.w * oneOverWc) * oneOverW;
 #else //PERSPECTIVE_CORRECT_TRIANGULATION
 		d.w = (a.w + c.w) * 0.5;
@@ -636,9 +665,8 @@ int checkAndSplitFirstLargeEdge(const Triangle& tr,
 			d.t = (a.t + c.t) * 0.5;
 #endif //PERSPECTIVE_CORRECT_TRIANGULATION
 		}
-
 #endif //TEXTURE_ENABLED
-	
+
 		trOut1 = Triangle{a, d, b};
 		trOut2 = Triangle{c, d, b};
 		return 1;
@@ -685,16 +713,26 @@ int checkAndSplitLargestEdge(	const Triangle& tr,
 		d.x = (a.x + b.x) / 2;
 		d.y = (a.y + b.y) / 2;
 		d.z = (a.z + b.z) / 2;
-		d.color.vec[0] = (a.color.vec[0] + b.color.vec[0]) / 2;
-		d.color.vec[1] = (a.color.vec[1] + b.color.vec[1]) / 2;
-		d.color.vec[2] = (a.color.vec[2] + b.color.vec[2]) / 2;
-		d.color.vec[3] = (a.color.vec[3] + b.color.vec[3]) / 2;
-#ifdef TEXTURE_ENABLED
 
-#ifdef PERSPECTIVE_CORRECT_TRIANGULATION
+#if defined(TEXTURE_ENABLED) && defined (PERSPECTIVE_CORRECT_TRIANGULATION)
+		//XXX: Warning. Potential division by zero
 		float oneOverWa = 1.0 / a.w;
 		float oneOverWb = 1.0 / b.w;
 		float oneOverW = 1.0 / (oneOverWa + oneOverWb);
+
+		d.color.vec[0] = (a.color.vec[0] * oneOverWa + b.color.vec[0] * oneOverWb) * oneOverW;
+		d.color.vec[1] = (a.color.vec[1] * oneOverWa + b.color.vec[1] * oneOverWb) * oneOverW;
+		d.color.vec[2] = (a.color.vec[2] * oneOverWa + b.color.vec[2] * oneOverWb) * oneOverW;
+		d.color.vec[3] = (a.color.vec[3] * oneOverWa + b.color.vec[3] * oneOverWb) * oneOverW;
+#else //TEXTURE_ENABLED && PERSPECTIVE_CORRECT_TRIANGULATION
+		d.color.vec[0] = (a.color.vec[0] + b.color.vec[0]) * 0.5;
+		d.color.vec[1] = (a.color.vec[1] + b.color.vec[1]) * 0.5;
+		d.color.vec[2] = (a.color.vec[2] + b.color.vec[2]) * 0.5;
+		d.color.vec[3] = (a.color.vec[3] + b.color.vec[3]) * 0.5;
+#endif //TEXTURE_ENABLED && PERSPECTIVE_CORRECT_TRIANGULATION
+
+#ifdef TEXTURE_ENABLED
+#ifdef PERSPECTIVE_CORRECT_TRIANGULATION
 		d.w = (a.w * oneOverWa + b.w * oneOverWb) * oneOverW;
 #else //PERSPECTIVE_CORRECT_TRIANGULATION
 		d.w = (a.w + b.w) * 0.5;
@@ -709,9 +747,8 @@ int checkAndSplitLargestEdge(	const Triangle& tr,
 			d.t = (a.t + b.t) * 0.5;
 #endif //PERSPECTIVE_CORRECT_TRIANGULATION
 		}
-
 #endif //TEXTURE_ENABLED
-	
+			
 		trOut1 = Triangle{ c, a, d };
 		trOut2 = Triangle{ c, d, b };
 		return 1;
