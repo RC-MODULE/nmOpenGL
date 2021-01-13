@@ -51,17 +51,33 @@ int triangulate_oneTriangleThreeDivisions_returnsSix()
 							9
 						};
 	v4nm32f srcColor[3] = {0};
+#ifdef TEXTURE_ENABLED
+    nm32f srcTexcoords[3*2] = {0};
+    nm32f srcWclip[3] = {
+						 1.0,
+						 1.0,
+						 1.0,
+	                    };
+#endif //TEXTURE_ENABLED
 	int srcCount = 1;
 	int maxWidth = 1;
 	int maxHeight = 1;
 	int maxDstSize = 10;
 	nm32f *dstVertex = (nm32f *)calloc(maxDstSize * 9, sizeof(nm32f));
 	v4nm32f *dstColor = (v4nm32f *) calloc(maxDstSize * 3, sizeof(v4nm32f));
+#ifdef TEXTURE_ENABLED
+    nm32f *dstTexcoords = (nm32f *)calloc(maxDstSize * 3*2, sizeof(nm32f));
+    nm32f *dstWclip = (nm32f *)calloc(maxDstSize * 3, sizeof(nm32f));
+#endif //TEXTURE_ENABLED
 	int srcTreatedCount;
 	int res;
 
 	//Act
+#ifndef TEXTURE_ENABLED
 	res = triangulate(srcVertex, srcColor, srcCount, maxWidth, maxHeight, maxDstSize, dstVertex, dstColor, &srcTreatedCount);
+#else //TEXTURE_ENABLED
+	res = triangulate(srcVertex, srcColor, srcTexcoords, srcWclip, srcCount, maxWidth, maxHeight, maxDstSize, dstVertex, dstColor, dstTexcoords, dstWclip, &srcTreatedCount);
+#endif //TEXTURE_ENABLED
 	(void) res;
 
 	//Assert
@@ -85,17 +101,36 @@ int triangulate_TwoTrianglesLowOutputSize_treatedCountIsOne()
 							0,0 
 						};
 	v4nm32f srcColor[6] = {0};
+#ifdef TEXTURE_ENABLED
+    nm32f srcTexcoords[2*3*2] = {0};
+    nm32f srcWclip[2*3] = {
+						 1.0,
+						 1.0,
+						 1.0,
+						 1.0,
+						 1.0,
+						 1.0
+	                    };
+#endif //TEXTURE_ENABLED
 	int srcCount = 2;
 	int maxWidth = 1;
 	int maxHeight = 1;
 	int maxDstSize = 6;
 	nm32f *dstVertex = (nm32f *)calloc(maxDstSize * 9, sizeof(nm32f));
 	v4nm32f *dstColor = (v4nm32f *)calloc(maxDstSize * 3, sizeof(v4nm32f));
+#ifdef TEXTURE_ENABLED
+    nm32f *dstTexcoords = (nm32f *)calloc(maxDstSize * 2*3*2, sizeof(nm32f));
+    nm32f *dstWclip = (nm32f *)calloc(maxDstSize * 2*3, sizeof(nm32f));
+#endif //TEXTURE_ENABLED
 	int srcTreatedCount;
 	int res;
 
 	//Act
+#ifndef TEXTURE_ENABLED
 	res = triangulate(srcVertex, srcColor, srcCount, maxWidth, maxHeight, maxDstSize, dstVertex, dstColor, &srcTreatedCount);
+#else //TEXTURE_ENABLED
+	res = triangulate(srcVertex, srcColor, srcTexcoords, srcWclip, srcCount, maxWidth, maxHeight, maxDstSize, dstVertex, dstColor, dstTexcoords, dstWclip, &srcTreatedCount);
+#endif //TEXTURE_ENABLED
 	(void) res;
 
 	//Assert
@@ -118,17 +153,36 @@ int triangulate_TwoTriangles_treatedCountIsTwo()
 							0,0 
 						};
 	v4nm32f srcColor[6] = {0};
+#ifdef TEXTURE_ENABLED
+    nm32f srcTexcoords[2*3*2] = {0};
+    nm32f srcWclip[2*3] = {
+						 1.0,
+						 1.0,
+						 1.0,
+						 1.0,
+						 1.0,
+						 1.0
+	                    };
+#endif //TEXTURE_ENABLED
 	int srcCount = 2;
 	int maxWidth = 1;
 	int maxHeight = 1;
 	int maxDstSize = 30;
 	nm32f *dstVertex = (nm32f *)calloc(maxDstSize * 9, sizeof(nm32f));
 	v4nm32f *dstColor = (v4nm32f *)calloc(maxDstSize * 3, sizeof(v4nm32f));
+#ifdef TEXTURE_ENABLED
+    nm32f *dstTexcoords = (nm32f *)calloc(maxDstSize * 2*3*2, sizeof(nm32f));
+    nm32f *dstWclip = (nm32f *)calloc(maxDstSize * 2*3, sizeof(nm32f));
+#endif //TEXTURE_ENABLED
 	int srcTreatedCount;
 	int res;
 
 	//Act
+#ifndef TEXTURE_ENABLED
 	res = triangulate(srcVertex, srcColor, srcCount, maxWidth, maxHeight, maxDstSize, dstVertex, dstColor, &srcTreatedCount);
+#else //TEXTURE_ENABLED
+	res = triangulate(srcVertex, srcColor, srcTexcoords, srcWclip, srcCount, maxWidth, maxHeight, maxDstSize, dstVertex, dstColor, dstTexcoords, dstWclip, &srcTreatedCount);
+#endif //TEXTURE_ENABLED
 	(void) res;
 
 	//Assert
@@ -152,6 +206,14 @@ int triangulate_oneTriangleThreeDivisions_outputVertexesAreCorrect()
 							9
 						};
 	v4nm32f srcColor[3] = {0};
+#ifdef TEXTURE_ENABLED
+    nm32f srcTexcoords[3*2] = {0};
+    nm32f srcWclip[3] = {
+						 1.0,
+						 1.0,
+						 1.0
+	                    };
+#endif //TEXTURE_ENABLED
 	int srcCount = 1;
 	int maxWidth = 1;
 	int maxHeight = 1;
@@ -169,11 +231,19 @@ int triangulate_oneTriangleThreeDivisions_outputVertexesAreCorrect()
 									5.50, 7.25, 8.00, 4.00, 9.00, 7.25
 								};
 	v4nm32f *dstColor = (v4nm32f *) calloc(maxDstSize * 3, sizeof(v4nm32f));
+#ifdef TEXTURE_ENABLED
+    nm32f *dstTexcoords = (nm32f *)calloc(maxDstSize * 3*2, sizeof(nm32f));
+    nm32f *dstWclip = (nm32f *)calloc(maxDstSize * 3, sizeof(nm32f));
+#endif //TEXTURE_ENABLED
 	int srcTreatedCount;
 	int res;
 
 	//Act
+#ifndef TEXTURE_ENABLED
 	res = triangulate(srcVertex, srcColor, srcCount, maxWidth, maxHeight, maxDstSize, dstVertex, dstColor, &srcTreatedCount);
+#else //TEXTURE_ENABLED
+	res = triangulate(srcVertex, srcColor, srcTexcoords, srcWclip, srcCount, maxWidth, maxHeight, maxDstSize, dstVertex, dstColor, dstTexcoords, dstWclip, &srcTreatedCount);
+#endif //TEXTURE_ENABLED
 	(void) res;
 	
 	//Assert
@@ -202,6 +272,14 @@ int triangulate_oneTriangleThreeDivisions_outputColorsAreCorrect()
 								{68, 68, 68, 50}, 
 								{70, 70, 70, 80} 
 							};
+#ifdef TEXTURE_ENABLED
+    nm32f srcTexcoords[3*2] = {0};
+    nm32f srcWclip[3] = {
+						 1.0,
+						 1.0,
+						 1.0
+	                    };
+#endif //TEXTURE_ENABLED
 	int maxWidth = 1;
 	int maxHeight = 1;
 	int maxDstSize = 6;
@@ -227,11 +305,19 @@ int triangulate_oneTriangleThreeDivisions_outputColorsAreCorrect()
 										{96, 96, 96, 30},
 										{83, 83, 83, 55}
 									};
+#ifdef TEXTURE_ENABLED
+    nm32f *dstTexcoords = (nm32f *)calloc(maxDstSize * 3*2, sizeof(nm32f));
+    nm32f *dstWclip = (nm32f *)calloc(maxDstSize * 3, sizeof(nm32f));
+#endif //TEXTURE_ENABLED
 	int srcTreatedCount;
 	int res;
 
 	//Act
+#ifndef TEXTURE_ENABLED
 	res = triangulate(srcVertex, srcColor, srcCount, maxWidth, maxHeight, maxDstSize, dstVertex, dstColor, &srcTreatedCount);
+#else //TEXTURE_ENABLED
+	res = triangulate(srcVertex, srcColor, srcTexcoords, srcWclip, srcCount, maxWidth, maxHeight, maxDstSize, dstVertex, dstColor, dstTexcoords, dstWclip, &srcTreatedCount);
+#endif //TEXTURE_ENABLED
 	(void) res;
 
 	//Assert
@@ -255,19 +341,35 @@ clock_t triangulate_oneTriangleOneDivision_returnsTwo()
 							9
 						};
 	v4nm32f srcColor[3] = {0};
+#ifdef TEXTURE_ENABLED
+    nm32f srcTexcoords[3*2] = {0};
+    nm32f srcWclip[3] = {
+						 1.0,
+						 1.0,
+						 1.0
+	                    };
+#endif //TEXTURE_ENABLED
 	int srcCount = 1;
 	int maxWidth = 1;
 	int maxHeight = 1;
 	int maxDstSize = 10;
 	nm32f *dstVertex = (nm32f *)calloc(maxDstSize * 9, sizeof(nm32f));
 	v4nm32f *dstColor = (v4nm32f *) calloc(maxDstSize * 3, sizeof(v4nm32f));
+#ifdef TEXTURE_ENABLED
+    nm32f *dstTexcoords = (nm32f *)calloc(maxDstSize * 3*2, sizeof(nm32f));
+    nm32f *dstWclip = (nm32f *)calloc(maxDstSize * 3, sizeof(nm32f));
+#endif //TEXTURE_ENABLED
 	int srcTreatedCount;
 	int res;
 
 	clock_t t1, t2, dt;
 	//Act
 	t1 = clock();
+#ifndef TEXTURE_ENABLED
 	res = triangulate(srcVertex, srcColor, srcCount, maxWidth, maxHeight, maxDstSize, dstVertex, dstColor, &srcTreatedCount);
+#else //TEXTURE_ENABLED
+	res = triangulate(srcVertex, srcColor, srcTexcoords, srcWclip, srcCount, maxWidth, maxHeight, maxDstSize, dstVertex, dstColor, dstTexcoords, dstWclip, &srcTreatedCount);
+#endif //TEXTURE_ENABLED
 	t2 = clock();
 	dt = t2 - t1;
 	(void) res;
