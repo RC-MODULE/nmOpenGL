@@ -158,7 +158,6 @@ static int popBackColors(Buffer *cbuf, Colors *colors)
 	}
 }
 
-#ifdef TEXTURE_ENABLED
 //      push here         
 //          |
 //          V
@@ -278,19 +277,7 @@ static int popBackWclips(Buffer *vbuf, Wclips *vert)
 		return 0;
 	}
 }
-#endif //TEXTURE_ENABLED
 
-#ifndef TEXTURE_ENABLED
-int triangulate(const nm32f *srcVertex,
-	const v4nm32f *srcColor,
-	int srcCount,
-	int maxWidth,
-	int maxHeight,
-	int maxDstSize,
-	nm32f *dstVertex,
-	v4nm32f *dstColor,
-	int *srcTreatedCount)
-#else //TEXTURE_ENABLED
 int triangulate(const nm32f *srcVertex,
 	const v4nm32f *srcColor,
     const nm32f *srcTexcoords,
@@ -304,16 +291,13 @@ int triangulate(const nm32f *srcVertex,
     nm32f *dstTexcoords,
     nm32f *dstWclip,
 	int *srcTreatedCount)
-#endif //TEXTURE_ENABLED
 {
 	int currentDstSize = 0;
     
 	Buffer verticesStack = initBuf((void *) dstVertex, maxDstSize);
 	Buffer colorsStack = initBuf((void *) dstColor, maxDstSize);
-#ifdef TEXTURE_ENABLED
     Buffer texcoordsStack = initBuf((void *) dstTexcoords, maxDstSize);
     Buffer wclipsStack = initBuf((void *) dstWclip, maxDstSize);
-#endif //TEXTURE_ENABLED
 
 	int i = 0; // make this iterator local to assign it later to srcTreatedCount
 	for (i = 0; i < srcCount; ++i) {
@@ -334,7 +318,6 @@ int triangulate(const nm32f *srcVertex,
 		a.color = srcColor[3 * i];
 		b.color = srcColor[3 * i + 1];
 		c.color = srcColor[3 * i + 2];
-#ifdef TEXTURE_ENABLED
         a.w = srcWclip[i];
         b.w = srcWclip[srcCount + i];
         c.w = srcWclip[2 * srcCount + i];
@@ -344,17 +327,9 @@ int triangulate(const nm32f *srcVertex,
 		b.t = srcTexcoords[2 * srcCount + i + srcCount]; //3 * srcCount + i
 		c.s = srcTexcoords[4 * srcCount + i]; //4 * srcCount + i
 		c.t = srcTexcoords[4 * srcCount + i + srcCount]; //5 * srcCount + i
-#endif //TEXTURE_ENABLED
 		Triangle tr{a, b, c};
 
 		// Try to triangulate the triangle
-#ifndef TEXTURE_ENABLED
-		int res = triangulateOneTriangle(tr, 
-										(nm32f) maxWidth, 
-										(nm32f) maxHeight, 
-										&verticesStack, 
-										&colorsStack);
-#else //TEXTURE_ENABLED
 		int res = triangulateOneTriangle(tr, 
 										(nm32f) maxWidth, 
 										(nm32f) maxHeight, 
@@ -362,7 +337,6 @@ int triangulate(const nm32f *srcVertex,
 										&colorsStack,
                                         &texcoordsStack,
                                         &wclipsStack);
-#endif //TEXTURE_ENABLED
 		// If the number of smaller triangles is too big
 		if (res == -1) {
 			// Finish triangulation
@@ -382,13 +356,6 @@ int triangulate(const nm32f *srcVertex,
 // Return:
 // -1 - деление не удалось, в выходном буфере нет места
 // n - текущее количество треугольников в выходном буфере
-#ifndef TEXTURE_ENABLED
-int triangulateOneTriangle(	const Triangle& tr, 
-							nm32f xMax, 
-							nm32f yMax, 
-							Buffer *verticesStack, 
-							Buffer *colorsStack)
-#else //TEXTURE_ENABLED
 int triangulateOneTriangle(	const Triangle& tr, 
 							nm32f xMax, 
 							nm32f yMax, 
@@ -396,7 +363,6 @@ int triangulateOneTriangle(	const Triangle& tr,
 							Buffer *colorsStack,
                             Buffer *texcoordsStack,
                             Buffer *wclipsStack)
-#endif //TEXTURE_ENABLED             
 {
 	// Check the free space in output buffer
 	// (atleast for input triangle if it is OK and don't be splitted)
@@ -420,7 +386,7 @@ int triangulateOneTriangle(	const Triangle& tr,
 							tr.points[2].x, tr.points[2].y, tr.points[2].z,
 						  };	
 	pushBackVertices(verticesStack, &trVertices);
-#ifdef TEXTURE_ENABLED
+
     Texcoords trTexcoords = {
 							tr.points[0].s, tr.points[0].t,
 							tr.points[1].s, tr.points[1].t,
@@ -434,7 +400,6 @@ int triangulateOneTriangle(	const Triangle& tr,
 							tr.points[2].w
 						  };	
 	pushBackWclips(wclipsStack, &trWclips);
-#endif //TEXTURE_ENABLED
 
 	int overflow = 0; // Indicate that there is no more space in output buffer
 
@@ -442,16 +407,13 @@ int triangulateOneTriangle(	const Triangle& tr,
 		// Get the triangle out of the stack
 		Vertices curTrVertices;
 		Colors curTrColors;
-#ifdef TEXTURE_ENABLED
         Texcoords curTrTexcoords;
         Wclips curTrWclips;
-#endif //TEXTURE_ENABLED
+
 		popBackVertices(verticesStack, &curTrVertices);
 		popBackColors(colorsStack, &curTrColors);
-#ifdef TEXTURE_ENABLED
 		popBackTexcoords(texcoordsStack, &curTrTexcoords);
 		popBackWclips(wclipsStack, &curTrWclips);
-#endif //TEXTURE_ENABLED
 		// Create triangle from vertices and colors
 		// to pass it to the function
 		Point a;
@@ -470,7 +432,6 @@ int triangulateOneTriangle(	const Triangle& tr,
 		a.color = curTrColors.c[0]; 
 		b.color = curTrColors.c[1]; 
 		c.color = curTrColors.c[2]; 
-#ifdef TEXTURE_ENABLED
         a.w = curTrWclips.w[0];
         b.w = curTrWclips.w[1];
         c.w = curTrWclips.w[2];
@@ -480,7 +441,6 @@ int triangulateOneTriangle(	const Triangle& tr,
 		b.t = curTrTexcoords.st[3]; 
 		c.s = curTrTexcoords.st[4]; 
 		c.t = curTrTexcoords.st[5]; 
-#endif //TEXTURE_ENABLED
         
 		Triangle tr{a, b, c};
 
@@ -509,7 +469,7 @@ int triangulateOneTriangle(	const Triangle& tr,
 											trOut1.points[1].color,
 											trOut1.points[2].color
 										};
-#ifdef TEXTURE_ENABLED
+
 				Texcoords trOut1Texcoords = {
 											trOut1.points[0].s,
 											trOut1.points[0].t,
@@ -524,14 +484,11 @@ int triangulateOneTriangle(	const Triangle& tr,
 											trOut1.points[1].w,
 											trOut1.points[2].w
 										};
-#endif //TEXTURE_ENABLED
                                         
 				pushBackVertices(verticesStack, &trOut1Vertices);
 				pushBackColors(colorsStack, &trOut1Colors);
-#ifdef TEXTURE_ENABLED
 				pushBackWclips(wclipsStack, &trOut1Wclips);
 				pushBackTexcoords(texcoordsStack, &trOut1Texcoords);
-#endif //TEXTURE_ENABLED
 
 				Vertices trOut2Vertices = {
 											trOut2.points[0].x,
@@ -549,7 +506,7 @@ int triangulateOneTriangle(	const Triangle& tr,
 											trOut2.points[1].color,
 											trOut2.points[2].color
 										};
-#ifdef TEXTURE_ENABLED
+				
 				Texcoords trOut2Texcoords = {
 											trOut2.points[0].s,
 											trOut2.points[0].t,
@@ -564,14 +521,11 @@ int triangulateOneTriangle(	const Triangle& tr,
 											trOut2.points[1].w,
 											trOut2.points[2].w
 										};
-#endif //TEXTURE_ENABLED 
                                         
 				pushBackVertices(verticesStack, &trOut2Vertices);
 				pushBackColors(colorsStack, &trOut2Colors);
-#ifdef TEXTURE_ENABLED
 				pushBackWclips(wclipsStack, &trOut2Wclips);
 				pushBackTexcoords(texcoordsStack, &trOut2Texcoords);
-#endif //TEXTURE_ENABLED
                 
 			} else {
 				// This triangle splitted is too big
@@ -599,7 +553,7 @@ int triangulateOneTriangle(	const Triangle& tr,
 										tr.points[1].color,
 										tr.points[2].color
 									};
-#ifdef TEXTURE_ENABLED
+			
             Texcoords trTexcoords = {
                                         tr.points[0].s,
                                         tr.points[0].t,
@@ -614,14 +568,11 @@ int triangulateOneTriangle(	const Triangle& tr,
                                         tr.points[1].w,
                                         tr.points[2].w
                                     }; 
-#endif //TEXTURE_ENABLED
 
 			pushFrontVertices(verticesStack, &trVertices);
 			pushFrontColors(colorsStack, &trColors);
-#ifdef TEXTURE_ENABLED
             pushFrontWclips(wclipsStack, &trWclips);
 			pushFrontTexcoords(texcoordsStack, &trTexcoords);
-#endif //TEXTURE_ENABLED
 		}		
 	}
 
@@ -660,7 +611,7 @@ int checkAndSplitFirstLargeEdge(const Triangle& tr,
 		d.y = (a.y + b.y) / 2;
 		d.z = (a.z + b.z) / 2;
 
-#if defined(TEXTURE_ENABLED) && defined (PERSPECTIVE_CORRECT_TRIANGULATION)
+#ifdef PERSPECTIVE_CORRECT_TRIANGULATION
 		//XXX: Warning. Potential division by zero
 		float oneOverWa = 1.0 / a.w;
 		float oneOverWb = 1.0 / b.w;
@@ -670,28 +621,18 @@ int checkAndSplitFirstLargeEdge(const Triangle& tr,
 		d.color.vec[1] = (a.color.vec[1] * oneOverWa + b.color.vec[1] * oneOverWb) * oneOverW;
 		d.color.vec[2] = (a.color.vec[2] * oneOverWa + b.color.vec[2] * oneOverWb) * oneOverW;
 		d.color.vec[3] = (a.color.vec[3] * oneOverWa + b.color.vec[3] * oneOverWb) * oneOverW;
-#else //TEXTURE_ENABLED && PERSPECTIVE_CORRECT_TRIANGULATION
+		d.w = (a.w * oneOverWa + b.w * oneOverWb) * oneOverW;
+		d.s = (a.s * oneOverWa + b.s * oneOverWb) * oneOverW;
+		d.t = (a.t * oneOverWa + b.t * oneOverWb) * oneOverW;
+#else //PERSPECTIVE_CORRECT_TRIANGULATION
 		d.color.vec[0] = (a.color.vec[0] + b.color.vec[0]) * 0.5;
 		d.color.vec[1] = (a.color.vec[1] + b.color.vec[1]) * 0.5;
 		d.color.vec[2] = (a.color.vec[2] + b.color.vec[2]) * 0.5;
 		d.color.vec[3] = (a.color.vec[3] + b.color.vec[3]) * 0.5;
-#endif //TEXTURE_ENABLED && PERSPECTIVE_CORRECT_TRIANGULATION
-
-#ifdef TEXTURE_ENABLED
-#ifdef PERSPECTIVE_CORRECT_TRIANGULATION
-		d.w = (a.w * oneOverWa + b.w * oneOverWb) * oneOverW;
-#else //PERSPECTIVE_CORRECT_TRIANGULATION
 		d.w = (a.w + b.w) * 0.5;
-#endif //PERSPECTIVE_CORRECT_TRIANGULATION
-
-#ifdef PERSPECTIVE_CORRECT_TRIANGULATION
-		d.s = (a.s * oneOverWa + b.s * oneOverWb) * oneOverW;
-		d.t = (a.t * oneOverWa + b.t * oneOverWb) * oneOverW;
-#else //PERSPECTIVE_CORRECT_TRIANGULATION
 		d.s = (a.s + b.s) * 0.5;
 		d.t = (a.t + b.t) * 0.5;
 #endif //PERSPECTIVE_CORRECT_TRIANGULATION
-#endif //TEXTURE_ENABLED
 		
 		trOut1 = Triangle{a, d, c};
 		trOut2 = Triangle{b, d, c};
@@ -704,7 +645,7 @@ int checkAndSplitFirstLargeEdge(const Triangle& tr,
 		d.y = (b.y + c.y) / 2;
 		d.z = (b.z + c.z) / 2;
 
-#if defined(TEXTURE_ENABLED) && defined (PERSPECTIVE_CORRECT_TRIANGULATION)
+#ifdef PERSPECTIVE_CORRECT_TRIANGULATION
 		//XXX: Warning. Potential division by zero
 		float oneOverWb = 1.0 / b.w;
 		float oneOverWc = 1.0 / c.w;
@@ -714,28 +655,18 @@ int checkAndSplitFirstLargeEdge(const Triangle& tr,
 		d.color.vec[1] = (b.color.vec[1] * oneOverWb + c.color.vec[1] * oneOverWc) * oneOverW;
 		d.color.vec[2] = (b.color.vec[2] * oneOverWb + c.color.vec[2] * oneOverWc) * oneOverW;
 		d.color.vec[3] = (b.color.vec[3] * oneOverWb + c.color.vec[3] * oneOverWc) * oneOverW;
-#else //TEXTURE_ENABLED && PERSPECTIVE_CORRECT_TRIANGULATION
+		d.w = (b.w * oneOverWb + c.w * oneOverWc) * oneOverW;
+		d.s = (b.s * oneOverWb + c.s * oneOverWc) * oneOverW;
+		d.t = (b.t * oneOverWb + c.t * oneOverWc) * oneOverW;
+#else //PERSPECTIVE_CORRECT_TRIANGULATION
 		d.color.vec[0] = (b.color.vec[0] + c.color.vec[0]) * 0.5;
 		d.color.vec[1] = (b.color.vec[1] + c.color.vec[1]) * 0.5;
 		d.color.vec[2] = (b.color.vec[2] + c.color.vec[2]) * 0.5;
 		d.color.vec[3] = (b.color.vec[3] + c.color.vec[3]) * 0.5;
-#endif //TEXTURE_ENABLED && PERSPECTIVE_CORRECT_TRIANGULATION
-
-#ifdef TEXTURE_ENABLED
-#ifdef PERSPECTIVE_CORRECT_TRIANGULATION
-		d.w = (b.w * oneOverWb + c.w * oneOverWc) * oneOverW;
-#else //PERSPECTIVE_CORRECT_TRIANGULATION
 		d.w = (b.w + c.w) * 0.5;
-#endif //PERSPECTIVE_CORRECT_TRIANGULATION
-
-#ifdef PERSPECTIVE_CORRECT_TRIANGULATION
-		d.s = (b.s * oneOverWb + c.s * oneOverWc) * oneOverW;
-		d.t = (b.t * oneOverWb + c.t * oneOverWc) * oneOverW;
-#else //PERSPECTIVE_CORRECT_TRIANGULATION
 		d.s = (b.s + c.s) * 0.5;
 		d.t = (b.t + c.t) * 0.5;
 #endif //PERSPECTIVE_CORRECT_TRIANGULATION
-#endif //TEXTURE_ENABLED
 
 		trOut1 = Triangle{b, d, a};
 		trOut2 = Triangle{c, d, a};
@@ -748,7 +679,7 @@ int checkAndSplitFirstLargeEdge(const Triangle& tr,
 		d.y = (a.y + c.y) / 2;
 		d.z = (a.z + c.z) / 2;
 
-#if defined(TEXTURE_ENABLED) && defined (PERSPECTIVE_CORRECT_TRIANGULATION)
+#ifdef PERSPECTIVE_CORRECT_TRIANGULATION
 		//XXX: Warning. Potential division by zero
 		float oneOverWa = 1.0 / a.w;
 		float oneOverWc = 1.0 / c.w;
@@ -758,28 +689,18 @@ int checkAndSplitFirstLargeEdge(const Triangle& tr,
 		d.color.vec[1] = (a.color.vec[1] * oneOverWa + c.color.vec[1] * oneOverWc) * oneOverW;
 		d.color.vec[2] = (a.color.vec[2] * oneOverWa + c.color.vec[2] * oneOverWc) * oneOverW;
 		d.color.vec[3] = (a.color.vec[3] * oneOverWa + c.color.vec[3] * oneOverWc) * oneOverW;
-#else //TEXTURE_ENABLED && PERSPECTIVE_CORRECT_TRIANGULATION
+		d.w = (a.w * oneOverWa + c.w * oneOverWc) * oneOverW;
+		d.s = (a.s * oneOverWa + c.s * oneOverWc) * oneOverW;
+		d.t = (a.t * oneOverWa + c.t * oneOverWc) * oneOverW;
+#else //PERSPECTIVE_CORRECT_TRIANGULATION
 		d.color.vec[0] = (a.color.vec[0] + c.color.vec[0]) * 0.5;
 		d.color.vec[1] = (a.color.vec[1] + c.color.vec[1]) * 0.5;
 		d.color.vec[2] = (a.color.vec[2] + c.color.vec[2]) * 0.5;
 		d.color.vec[3] = (a.color.vec[3] + c.color.vec[3]) * 0.5;
-#endif //TEXTURE_ENABLED && PERSPECTIVE_CORRECT_TRIANGULATION
-		
-#ifdef TEXTURE_ENABLED
-#ifdef PERSPECTIVE_CORRECT_TRIANGULATION
-		d.w = (a.w * oneOverWa + c.w * oneOverWc) * oneOverW;
-#else //PERSPECTIVE_CORRECT_TRIANGULATION
 		d.w = (a.w + c.w) * 0.5;
-#endif //PERSPECTIVE_CORRECT_TRIANGULATION
-
-#ifdef PERSPECTIVE_CORRECT_TRIANGULATION
-		d.s = (a.s * oneOverWa + c.s * oneOverWc) * oneOverW;
-		d.t = (a.t * oneOverWa + c.t * oneOverWc) * oneOverW;
-#else //PERSPECTIVE_CORRECT_TRIANGULATION
 		d.s = (a.s + c.s) * 0.5;
 		d.t = (a.t + c.t) * 0.5;
 #endif //PERSPECTIVE_CORRECT_TRIANGULATION
-#endif //TEXTURE_ENABLED
 
 		trOut1 = Triangle{a, d, b};
 		trOut2 = Triangle{c, d, b};
@@ -820,7 +741,7 @@ int checkAndSplitLargestEdge(	const Triangle& tr,
 		d.y = (a.y + b.y) / 2;
 		d.z = (a.z + b.z) / 2;
 
-#if defined(TEXTURE_ENABLED) && defined (PERSPECTIVE_CORRECT_TRIANGULATION)
+#ifdef PERSPECTIVE_CORRECT_TRIANGULATION
 		//XXX: Warning. Potential division by zero
 		float oneOverWa = 1.0 / a.w;
 		float oneOverWb = 1.0 / b.w;
@@ -830,29 +751,19 @@ int checkAndSplitLargestEdge(	const Triangle& tr,
 		d.color.vec[1] = (a.color.vec[1] * oneOverWa + b.color.vec[1] * oneOverWb) * oneOverW;
 		d.color.vec[2] = (a.color.vec[2] * oneOverWa + b.color.vec[2] * oneOverWb) * oneOverW;
 		d.color.vec[3] = (a.color.vec[3] * oneOverWa + b.color.vec[3] * oneOverWb) * oneOverW;
-#else //TEXTURE_ENABLED && PERSPECTIVE_CORRECT_TRIANGULATION
+		d.w = (a.w * oneOverWa + b.w * oneOverWb) * oneOverW;
+		d.s = (a.s * oneOverWa + b.s * oneOverWb) * oneOverW;
+		d.t = (a.t * oneOverWa + b.t * oneOverWb) * oneOverW;
+#else //PERSPECTIVE_CORRECT_TRIANGULATION
 		d.color.vec[0] = (a.color.vec[0] + b.color.vec[0]) * 0.5;
 		d.color.vec[1] = (a.color.vec[1] + b.color.vec[1]) * 0.5;
 		d.color.vec[2] = (a.color.vec[2] + b.color.vec[2]) * 0.5;
 		d.color.vec[3] = (a.color.vec[3] + b.color.vec[3]) * 0.5;
-#endif //TEXTURE_ENABLED && PERSPECTIVE_CORRECT_TRIANGULATION
-
-#ifdef TEXTURE_ENABLED
-#ifdef PERSPECTIVE_CORRECT_TRIANGULATION
-		d.w = (a.w * oneOverWa + b.w * oneOverWb) * oneOverW;
-#else //PERSPECTIVE_CORRECT_TRIANGULATION
 		d.w = (a.w + b.w) * 0.5;
-#endif //PERSPECTIVE_CORRECT_TRIANGULATION
-
-#ifdef PERSPECTIVE_CORRECT_TRIANGULATION
-		d.s = (a.s * oneOverWa + b.s * oneOverWb) * oneOverW;
-		d.t = (a.t * oneOverWa + b.t * oneOverWb) * oneOverW;
-#else //PERSPECTIVE_CORRECT_TRIANGULATION
 		d.s = (a.s + b.s) * 0.5;
 		d.t = (a.t + b.t) * 0.5;
 #endif //PERSPECTIVE_CORRECT_TRIANGULATION
-#endif //TEXTURE_ENABLED
-		
+
 		trOut1 = Triangle{ c, a, d };
 		trOut2 = Triangle{ c, d, b };
 		return 1;
