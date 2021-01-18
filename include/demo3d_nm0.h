@@ -182,8 +182,6 @@ public:
 	v4nm32f* normal;
 	v4nm32f* color;
 	int vertexCounter;
-	int normalCounter;
-	int colorCounter;
 
 	NMGLenum mode;
 	bool inBeginEnd;
@@ -193,8 +191,6 @@ public:
 
 	NmglBeginEndInfo(){
 		vertexCounter = 0;
-		normalCounter = 0;
-		colorCounter = 0;
 		inBeginEnd = false;
 	}
 
@@ -266,6 +262,8 @@ public:
 	Lines lineInner;
 	Points pointInner;
 	NmglBeginEndInfo beginEndInfo;
+	v4nm32f currentColor;
+	v4nm32f currentNormal;
 
 	mat4nm32f modelviewMatrix[16];
 	mat4nm32f projectionMatrix[2];
@@ -317,6 +315,15 @@ public:
 		specularExp = 0;
 		isLighting = NMGL_FALSE;
 
+		currentColor.vec[0] = (float)1.0;
+		currentColor.vec[1] = (float)1.0;
+		currentColor.vec[2] = (float)1.0;
+		currentColor.vec[3] = (float)1.0;
+
+		currentNormal.vec[0] = (float)0.0;
+		currentNormal.vec[1] = (float)0.0;
+		currentNormal.vec[2] = (float)1.0;
+		currentNormal.vec[3] = (float)0.0;
 
 		modelviewMatrixStack.base = modelviewMatrix;
 		modelviewMatrixStack.current = 0;

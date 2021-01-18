@@ -23,13 +23,15 @@ void nmglEnd ()
 	nmblas_scopy(sizeof32(Array), (float*)&cntxt->normalArray, 1, (float*)&normalArrayTmp, 1);
 	nmblas_scopy(sizeof32(Array), (float*)&cntxt->colorArray, 1, (float*)&colorArrayTmp, 1);
 
-	cntxt->vertexArray.enabled = cntxt->beginEndInfo.vertexCounter != 0;
+	NMGLboolean arrayEnabled = cntxt->beginEndInfo.vertexCounter != 0;
+	
+	cntxt->vertexArray.enabled = arrayEnabled;
 	nmglVertexPointer(4, NMGL_FLOAT, 0, cntxt->beginEndInfo.vertex);
 
-	cntxt->normalArray.enabled = cntxt->beginEndInfo.normalCounter != 0;
+	cntxt->normalArray.enabled = arrayEnabled;
 	nmglNormalPointerNM(NMGL_FLOAT, 0, cntxt->beginEndInfo.normal);
 
-	cntxt->colorArray.enabled = cntxt->beginEndInfo.colorCounter != 0;
+	cntxt->colorArray.enabled = arrayEnabled;
 	nmglColorPointer(4, NMGL_FLOAT, 0, cntxt->beginEndInfo.color);
 	
 	//printf("vertexCounter=%d\n", cntxt->beginEndInfo.vertexCounter);
