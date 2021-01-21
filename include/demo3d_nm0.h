@@ -181,20 +181,18 @@ public:
 	v4nm32f* vertex;
 	v4nm32f* normal;
 	v4nm32f* color;
+#ifdef TEXTURE_ENABLED
+	v2nm32f* texcoord;//XXX: Only one texture unit is supported.
+#endif //TEXTURE_ENABLED
 	int vertexCounter;
-	int normalCounter;
-	int colorCounter;
 
 	NMGLenum mode;
 	bool inBeginEnd;
 
-	int dummy;
 	int maxSize;
 
 	NmglBeginEndInfo(){
 		vertexCounter = 0;
-		normalCounter = 0;
-		colorCounter = 0;
 		inBeginEnd = false;
 	}
 
@@ -266,6 +264,8 @@ public:
 	Lines lineInner;
 	Points pointInner;
 	NmglBeginEndInfo beginEndInfo;
+	v4nm32f currentColor;
+	v4nm32f currentNormal;
 
 	mat4nm32f modelviewMatrix[16];
 	mat4nm32f projectionMatrix[2];
@@ -317,6 +317,15 @@ public:
 		specularExp = 0;
 		isLighting = NMGL_FALSE;
 
+		currentColor.vec[0] = (float)1.0;
+		currentColor.vec[1] = (float)1.0;
+		currentColor.vec[2] = (float)1.0;
+		currentColor.vec[3] = (float)1.0;
+
+		currentNormal.vec[0] = (float)0.0;
+		currentNormal.vec[1] = (float)0.0;
+		currentNormal.vec[2] = (float)1.0;
+		currentNormal.vec[3] = (float)0.0;
 
 		modelviewMatrixStack.base = modelviewMatrix;
 		modelviewMatrixStack.current = 0;

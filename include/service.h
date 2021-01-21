@@ -181,8 +181,11 @@ struct Point {
 	nm32f y;
 	nm32f z;
 	v4nm32f color;
-	Point() { x = 0; y = 0; z = 0; color = { 0, 0, 0, 0 }; }
-	Point(nm32f xx, nm32f yy, nm32f zz, v4nm32f col) : x(xx), y(yy), z(zz), color(col) {}
+    nm32f s;
+    nm32f t;
+    nm32f w;
+	Point() { x = 0; y = 0; z = 0; color = { 0, 0, 0, 0 }; s = 0; t = 0; w = 0;}
+	Point(nm32f xx, nm32f yy, nm32f zz, v4nm32f col, nm32f ss, nm32f tt, nm32f ww) : x(xx), y(yy), z(zz), color(col), s(ss), t(tt), w(ww) {}
 };
 
 struct Edge {
@@ -219,6 +222,16 @@ typedef struct Colors
 	v4nm32f c[3];
 } Colors;
 
+typedef struct Texcoords
+{
+	nm32f st[6];
+} Texcoords;
+
+typedef struct Wclips
+{
+	nm32f w[3];
+} Wclips;
+
 // Data structure to store Vertices and Colors in 
 // "data" buffer (allocated previously)
 typedef struct Buffer 
@@ -246,8 +259,14 @@ static int popBackVertices(Buffer *vbuf, Vertices *vert);
 static int pushBackColors(Buffer *cbuf, Colors *colors);
 static int pushFrontColors(Buffer *cbuf, Colors *colors);
 static int popBackColors(Buffer *cbuf, Colors *colors);
+static int pushBackTexcoords(Buffer *stbuf, Texcoords *texcoords);
+static int pushFrontTexcoords(Buffer *stbuf, Texcoords *texcoords);
+static int popBackTexcoords(Buffer *stbuf, Texcoords *texcoords);
+static int pushBackWclips(Buffer *wbuf, Wclips *wclips);
+static int pushFrontWclips(Buffer *wbuf, Wclips *wclips);
+static int popBackWclips(Buffer *wbuf, Wclips *wclips);
 
-int triangulateOneTriangle(const Triangle& tr, nm32f xMax, nm32f yMax, Buffer *verticesStack, Buffer *colorsStack);
+int triangulateOneTriangle(const Triangle& tr, nm32f xMax, nm32f yMax, Buffer *verticesStack, Buffer *colorsStack, Buffer *texcoordsStack, Buffer *wclipsStack);
 int splitOneTriangle(const Triangle& tr, nm32f xMax, nm32f yMax, Buffer *buf);
 
 /*
@@ -276,17 +295,27 @@ static void srcVertexInit(nm32f *srcVertex, int srcCount)
 	}
 }
 
+// Macro PERSPECTIVE_CORRECT_TRIANGULATION should be enabled when 
+// perspective correct interpolation of s,t,w is needed during texturing.
+// Later, code under this macro may be used in glHint(GL_PERSPECTIVE_CORRECTION_HINT) implementation.
+
+//#define PERSPECTIVE_CORRECT_TRIANGULATION //code under this macro should be used in glHint(define this macro 
+
 /**
 \ingroup service_api
 \brief Разбиение большого треугольника на маленькие (триангуляция)
 \param srcVertex [in] Массив вершин входных треугольников
 \param srcColor [in] Массив цветов входных треугольников
+\param srcTexcoords [in] Массив текстурных координат входных треугольников
+\param srcWclip [in] Массив координат w в пространстве отсечения (clip) входных треугольников
 \param srcCount [in] Количество входных треугольников
 \param maxWidth [in] Максимально допустимая ширина треугольника
 \param maxHeight [in] Максимально допустимая высота треугольника
 \param maxDstSize [in] Максимально допустимое число выходных треугольников 
 \param dstVertex [out] Массив вершин выходных треугольников
 \param dstColor [out] Массив цветов выходных треугольников
+\param dstTexcoords [out] Массив текстурных координат выходных треугольников
+\param dstWclip [out] Массив координат w в пространстве отсечения (clip) выходных треугольников
 \param srcTreatedCount [out] Количество обработанных входных треугольников 
 \return Итоговое количество выходных треугольников
 \par
@@ -294,12 +323,16 @@ static void srcVertexInit(nm32f *srcVertex, int srcCount)
 	<testperf>
  		<param name=" srcVertex "> im00 </param>
  		<param name=" srcColor "> im10 </param>
+ 		<param name=" srcTexcoords "> im40 </param>
+ 		<param name=" srcWclip "> im50 </param>
  		<param name=" srcCount "> 1 2 3 4 5 6 8 8 9 10 11 12 13 14 15 16 17 18 19 20 </param>
  		<param name=" maxWidth "> 2 </param>
  		<param name=" maxHeight "> 2 </param>
  		<param name=" maxDstSize "> 10 </param>
  		<param name=" dstVertex "> im20 </param>
  		<param name=" dstColor "> im30 </param>
+ 		<param name=" dstTexcoords "> im60 </param>
+ 		<param name=" dstWclip "> im70 </param>
  		<param name=" srcTreatedCount "> im0 </param>
 		<init>
 			srcVertexInit(srcVertex, 20);
@@ -309,12 +342,16 @@ static void srcVertexInit(nm32f *srcVertex, int srcCount)
 	<testperf>
  		<param name=" srcVertex "> im00 </param>
  		<param name=" srcColor "> im10 </param>
+ 		<param name=" srcTexcoords "> im40 </param>
+ 		<param name=" srcWclip "> im50 </param>
  		<param name=" srcCount "> 1 2 3 4 5 6 8 8 9 10 11 12 13 14 15 16 17 18 19 20 </param>
  		<param name=" maxWidth "> 1 </param>
  		<param name=" maxHeight "> 1 </param>
  		<param name=" maxDstSize "> 10 </param>
  		<param name=" dstVertex "> im20 </param>
  		<param name=" dstColor "> im30 </param>
+ 		<param name=" dstTexcoords "> im60 </param>
+ 		<param name=" dstWclip "> im70 </param>
  		<param name=" srcTreatedCount "> im0 </param>
 		<init>
 			srcVertexInit(srcVertex, 20);
@@ -324,12 +361,16 @@ static void srcVertexInit(nm32f *srcVertex, int srcCount)
 	<testperf>
  		<param name=" srcVertex "> im00 im10 im20 im30 im40 im50 im60 im70 </param>
  		<param name=" srcColor "> im01 im11 im21 im31 im41 im51 im61 im71 </param>
+		<param name=" srcTexcoords "> im04 im14 im24 im34 im44 im54 im64 im74 </param>
+		<param name=" srcWclip "> im05 </param>
  		<param name=" srcCount "> 1 </param>
  		<param name=" maxWidth "> 1 </param>
  		<param name=" maxHeight "> 1 </param>
  		<param name=" maxDstSize "> 10 </param>
  		<param name=" dstVertex "> im02 im12 im22 im32 im42 im52 im62 im72 </param>
  		<param name=" dstColor "> im03 im13 im23 im33 im43 im53 im63 im73 </param>
+		<param name=" dstTexcoords "> im06 im16 im26 im36 im46 im56 im66 im76 </param>
+		<param name=" dstWclip "> im07 </param>
  		<param name=" srcTreatedCount "> im0 im1 im2 im3 im4 im5 im6 im7 </param>
 		<init>
 			srcVertexInit(srcVertex, 1);
@@ -339,7 +380,7 @@ static void srcVertexInit(nm32f *srcVertex, int srcCount)
 \endxmlonly
 */
 //! \{
-int triangulate(const nm32f *srcVertex, const v4nm32f *srcColor, int srcCount, int maxWidth, int maxHeight, int maxDstSize, nm32f *dstVertex, v4nm32f *dstColor, int *srcTreatedCount);
+int triangulate(const nm32f *srcVertex, const v4nm32f *srcColor, const nm32f *srcTexcoords, const nm32f *srcWclip, int srcCount, int maxWidth, int maxHeight, int maxDstSize, nm32f *dstVertex, v4nm32f *dstColor, nm32f *dstTexcoords, nm32f *dstWclip, int *srcTreatedCount);
 //! \}
 
 #endif //__SERVICE_H__

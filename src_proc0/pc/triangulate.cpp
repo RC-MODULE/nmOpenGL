@@ -158,20 +158,146 @@ static int popBackColors(Buffer *cbuf, Colors *colors)
 	}
 }
 
+//      push here         
+//          |
+//          V
+// |-|-|-|-|-|x|x|
+// |-|-|-|-|-|x|x|
+// |-|-|-|-|-|x|x|
+static int pushBackTexcoords(Buffer *vbuf, Texcoords *vert)
+{
+	if (bufIsFull(vbuf)){
+		return -1;
+	} else {
+		vbuf->back -= 1;
+		nm32f *dst = (nm32f *) vbuf->data; 
+		for (int i = 0; i < 6; ++i){
+			dst[i * vbuf->size + vbuf->back] = vert->st[i];
+		}	
+		return 0;
+	}
+}
+
+//      push here         
+//          |
+//          V
+// |x|x|x|x|-|-|-|
+// |x|x|x|x|-|-|-|
+// |x|x|x|x|-|-|-|
+static int pushFrontTexcoords(Buffer *vbuf, Texcoords *vert)
+{
+	if (bufIsFull(vbuf)){
+		return -1;
+	} else {
+		vbuf->front += 1;
+		nm32f *dst = (nm32f *) vbuf->data; 
+		for (int i = 0; i < 6; ++i){
+			dst[i * vbuf->size + vbuf->front] = vert->st[i];
+		}	
+		return 0;
+	}
+}
+
+//   return this item         
+//          |
+//          V
+// |-|-|-|-|x|x|x|
+// |-|-|-|-|x|x|x|
+// |-|-|-|-|x|x|x|
+static int popBackTexcoords(Buffer *vbuf, Texcoords *vert)
+{
+	if (bufIsEmpty(vbuf)){
+		return -1;
+	} else {
+		nm32f *src = (nm32f *) vbuf->data; 
+		for (int i = 0; i < 6; ++i){
+			vert->st[i] = src[i * vbuf->size + vbuf->back];
+		}	
+		vbuf->back += 1;
+		return 0;
+	}
+}
+
+//      push here         
+//          |
+//          V
+// |-|-|-|-|-|x|x|
+// |-|-|-|-|-|x|x|
+// |-|-|-|-|-|x|x|
+static int pushBackWclips(Buffer *vbuf, Wclips *vert)
+{
+	if (bufIsFull(vbuf)){
+		return -1;
+	} else {
+		vbuf->back -= 1;
+		nm32f *dst = (nm32f *) vbuf->data; 
+		for (int i = 0; i < 3; ++i){
+			dst[i * vbuf->size + vbuf->back] = vert->w[i];
+		}	
+		return 0;
+	}
+}
+
+//      push here         
+//          |
+//          V
+// |x|x|x|x|-|-|-|
+// |x|x|x|x|-|-|-|
+// |x|x|x|x|-|-|-|
+static int pushFrontWclips(Buffer *vbuf, Wclips *vert)
+{
+	if (bufIsFull(vbuf)){
+		return -1;
+	} else {
+		vbuf->front += 1;
+		nm32f *dst = (nm32f *) vbuf->data; 
+		for (int i = 0; i < 3; ++i){
+			dst[i * vbuf->size + vbuf->front] = vert->w[i];
+		}	
+		return 0;
+	}
+}
+
+//   return this item         
+//          |
+//          V
+// |-|-|-|-|x|x|x|
+// |-|-|-|-|x|x|x|
+// |-|-|-|-|x|x|x|
+static int popBackWclips(Buffer *vbuf, Wclips *vert)
+{
+	if (bufIsEmpty(vbuf)){
+		return -1;
+	} else {
+		nm32f *src = (nm32f *) vbuf->data; 
+		for (int i = 0; i < 3; ++i){
+			vert->w[i] = src[i * vbuf->size + vbuf->back];
+		}	
+		vbuf->back += 1;
+		return 0;
+	}
+}
+
 int triangulate(const nm32f *srcVertex,
 	const v4nm32f *srcColor,
+    const nm32f *srcTexcoords,
+    const nm32f *srcWclip,
 	int srcCount,
 	int maxWidth,
 	int maxHeight,
 	int maxDstSize,
 	nm32f *dstVertex,
 	v4nm32f *dstColor,
+    nm32f *dstTexcoords,
+    nm32f *dstWclip,
 	int *srcTreatedCount)
 {
 	int currentDstSize = 0;
-
+    
 	Buffer verticesStack = initBuf((void *) dstVertex, maxDstSize);
 	Buffer colorsStack = initBuf((void *) dstColor, maxDstSize);
+    Buffer texcoordsStack = initBuf((void *) dstTexcoords, maxDstSize);
+    Buffer wclipsStack = initBuf((void *) dstWclip, maxDstSize);
 
 	int i = 0; // make this iterator local to assign it later to srcTreatedCount
 	for (i = 0; i < srcCount; ++i) {
@@ -192,6 +318,15 @@ int triangulate(const nm32f *srcVertex,
 		a.color = srcColor[3 * i];
 		b.color = srcColor[3 * i + 1];
 		c.color = srcColor[3 * i + 2];
+        a.w = srcWclip[i];
+        b.w = srcWclip[srcCount + i];
+        c.w = srcWclip[2 * srcCount + i];
+		a.s = srcTexcoords[i]; //0 * srcCount + i
+		a.t = srcTexcoords[i + srcCount]; //1 * srcCount + i
+		b.s = srcTexcoords[2 * srcCount + i]; //2 * srcCount + i
+		b.t = srcTexcoords[2 * srcCount + i + srcCount]; //3 * srcCount + i
+		c.s = srcTexcoords[4 * srcCount + i]; //4 * srcCount + i
+		c.t = srcTexcoords[4 * srcCount + i + srcCount]; //5 * srcCount + i
 		Triangle tr{a, b, c};
 
 		// Try to triangulate the triangle
@@ -199,7 +334,9 @@ int triangulate(const nm32f *srcVertex,
 										(nm32f) maxWidth, 
 										(nm32f) maxHeight, 
 										&verticesStack, 
-										&colorsStack);
+										&colorsStack,
+                                        &texcoordsStack,
+                                        &wclipsStack);
 		// If the number of smaller triangles is too big
 		if (res == -1) {
 			// Finish triangulation
@@ -223,7 +360,9 @@ int triangulateOneTriangle(	const Triangle& tr,
 							nm32f xMax, 
 							nm32f yMax, 
 							Buffer *verticesStack, 
-							Buffer *colorsStack)
+							Buffer *colorsStack,
+                            Buffer *texcoordsStack,
+                            Buffer *wclipsStack)
 {
 	// Check the free space in output buffer
 	// (atleast for input triangle if it is OK and don't be splitted)
@@ -233,7 +372,7 @@ int triangulateOneTriangle(	const Triangle& tr,
 	} else {
 			// do nothing here, just continue
 	}
-
+    
 	Colors trColors = {
 						tr.points[0].color, 
 						tr.points[1].color, 
@@ -247,6 +386,20 @@ int triangulateOneTriangle(	const Triangle& tr,
 							tr.points[2].x, tr.points[2].y, tr.points[2].z,
 						  };	
 	pushBackVertices(verticesStack, &trVertices);
+	
+    Texcoords trTexcoords = {
+							tr.points[0].s, tr.points[0].t,
+							tr.points[1].s, tr.points[1].t,
+							tr.points[2].s, tr.points[2].t
+						  };	
+	pushBackTexcoords(texcoordsStack, &trTexcoords);
+    
+    Wclips trWclips = {
+							tr.points[0].w,
+							tr.points[1].w,
+							tr.points[2].w
+						  };	
+	pushBackWclips(wclipsStack, &trWclips);
 
 	int overflow = 0; // Indicate that there is no more space in output buffer
 
@@ -254,8 +407,14 @@ int triangulateOneTriangle(	const Triangle& tr,
 		// Get the triangle out of the stack
 		Vertices curTrVertices;
 		Colors curTrColors;
+        Texcoords curTrTexcoords;
+        Wclips curTrWclips;
+		
 		popBackVertices(verticesStack, &curTrVertices);
 		popBackColors(colorsStack, &curTrColors);
+		popBackTexcoords(texcoordsStack, &curTrTexcoords);
+		popBackWclips(wclipsStack, &curTrWclips);
+	
 		// Create triangle from vertices and colors
 		// to pass it to the function
 		Point a;
@@ -274,6 +433,16 @@ int triangulateOneTriangle(	const Triangle& tr,
 		a.color = curTrColors.c[0]; 
 		b.color = curTrColors.c[1]; 
 		c.color = curTrColors.c[2]; 
+        a.w = curTrWclips.w[0];
+        b.w = curTrWclips.w[1];
+        c.w = curTrWclips.w[2];
+		a.s = curTrTexcoords.st[0]; 
+		a.t = curTrTexcoords.st[1]; 
+		b.s = curTrTexcoords.st[2]; 
+		b.t = curTrTexcoords.st[3]; 
+		c.s = curTrTexcoords.st[4]; 
+		c.t = curTrTexcoords.st[5]; 
+        
 		Triangle tr{a, b, c};
 
 		// Process the triangle:
@@ -301,8 +470,26 @@ int triangulateOneTriangle(	const Triangle& tr,
 											trOut1.points[1].color,
 											trOut1.points[2].color
 										};
+				
+				Texcoords trOut1Texcoords = {
+											trOut1.points[0].s,
+											trOut1.points[0].t,
+											trOut1.points[1].s,
+											trOut1.points[1].t,
+											trOut1.points[2].s,
+											trOut1.points[2].t
+										};
+                                        
+				Wclips trOut1Wclips = {
+											trOut1.points[0].w,
+											trOut1.points[1].w,
+											trOut1.points[2].w
+										};
+                                        
 				pushBackVertices(verticesStack, &trOut1Vertices);
 				pushBackColors(colorsStack, &trOut1Colors);
+				pushBackWclips(wclipsStack, &trOut1Wclips);
+				pushBackTexcoords(texcoordsStack, &trOut1Texcoords);
 
 				Vertices trOut2Vertices = {
 											trOut2.points[0].x,
@@ -320,8 +507,27 @@ int triangulateOneTriangle(	const Triangle& tr,
 											trOut2.points[1].color,
 											trOut2.points[2].color
 										};
+
+				Texcoords trOut2Texcoords = {
+											trOut2.points[0].s,
+											trOut2.points[0].t,
+											trOut2.points[1].s,
+											trOut2.points[1].t,
+											trOut2.points[2].s,
+											trOut2.points[2].t
+										};
+                                        
+				Wclips trOut2Wclips = {
+											trOut2.points[0].w,
+											trOut2.points[1].w,
+											trOut2.points[2].w
+										};
+                                        
 				pushBackVertices(verticesStack, &trOut2Vertices);
 				pushBackColors(colorsStack, &trOut2Colors);
+				pushBackWclips(wclipsStack, &trOut2Wclips);
+				pushBackTexcoords(texcoordsStack, &trOut2Texcoords);
+                
 			} else {
 				// This triangle splitted is too big
 				// There is no space in output buffer
@@ -348,9 +554,26 @@ int triangulateOneTriangle(	const Triangle& tr,
 										tr.points[1].color,
 										tr.points[2].color
 									};
+			
+            Texcoords trTexcoords = {
+                                        tr.points[0].s,
+                                        tr.points[0].t,
+                                        tr.points[1].s,
+                                        tr.points[1].t,
+                                        tr.points[2].s,
+                                        tr.points[2].t
+                                    };
+                                    
+            Wclips trWclips = {
+                                        tr.points[0].w,
+                                        tr.points[1].w,
+                                        tr.points[2].w
+                                    }; 
 
 			pushFrontVertices(verticesStack, &trVertices);
 			pushFrontColors(colorsStack, &trColors);
+            pushFrontWclips(wclipsStack, &trWclips);
+			pushFrontTexcoords(texcoordsStack, &trTexcoords);
 		}		
 	}
 
@@ -367,63 +590,6 @@ int triangulateOneTriangle(	const Triangle& tr,
 	}
 }
 
-#if 0
-int splitByFirstLargeEdge(const Triangle &tr, 
-								Triangle &trOut1, 
-								Triangle &trOut2)
-{
-	Point a = tr.points[0];
-	Point b = tr.points[1];
-	Point c = tr.points[2];
-	// If some of the sides is too big:
-	// 1. divide the triangle
-	// 2. push two output triangles back to caller
-
-	// Check ab side
-	if (fabs(a.x - b.x) > xMax || fabs(a.y - b.y) > yMax) {
-		Point d;
-		d.x = (a.x + b.x) / 2;
-		d.y = (a.y + b.y) / 2;
-		d.z = (a.z + b.z) / 2;
-		d.color.vec[0] = (a.color.vec[0] + b.color.vec[0]) / 2;
-		d.color.vec[1] = (a.color.vec[1] + b.color.vec[1]) / 2;
-		d.color.vec[2] = (a.color.vec[2] + b.color.vec[2]) / 2;
-		d.color.vec[3] = (a.color.vec[3] + b.color.vec[3]) / 2;
-		trOut1 = Triangle{a, d, c};
-		trOut2 = Triangle{b, d, c};
-		return 1;
-	}
-	// Check bc side
-	if (fabs(b.x - c.x) > xMax || fabs(b.y - c.y) > yMax) {
-		Point d;
-		d.x = (b.x + c.x) / 2;
-		d.y = (b.y + c.y) / 2;
-		d.z = (b.z + c.z) / 2;
-		d.color.vec[0] = (b.color.vec[0] + c.color.vec[0]) / 2;
-		d.color.vec[1] = (b.color.vec[1] + c.color.vec[1]) / 2;
-		d.color.vec[2] = (b.color.vec[2] + c.color.vec[2]) / 2;
-		d.color.vec[3] = (b.color.vec[3] + c.color.vec[3]) / 2;
-		trOut1 = Triangle{b, d, a};
-		trOut2 = Triangle{c, d, a};
-		return 1;
-	}
-	// Check ac side
-	if (fabs(a.x - c.x) > xMax || fabs(a.y - c.y) > yMax) {
-		Point d;
-		d.x = (a.x + c.x) / 2;
-		d.y = (a.y + c.y) / 2;
-		d.z = (a.z + c.z) / 2;
-		d.color.vec[0] = (a.color.vec[0] + c.color.vec[0]) / 2;
-		d.color.vec[1] = (a.color.vec[1] + c.color.vec[1]) / 2;
-		d.color.vec[2] = (a.color.vec[2] + c.color.vec[2]) / 2;
-		d.color.vec[3] = (a.color.vec[3] + c.color.vec[3]) / 2;
-		trOut1 = Triangle{a, d, b};
-		trOut2 = Triangle{c, d, b};
-		return 1;
-	}
-	return 0;
-}
-#endif
 void splitByLargestEdge(	const Triangle &tr, 
 						      Triangle &trOut1, 
 						      Triangle &trOut2)
@@ -452,10 +618,30 @@ void splitByLargestEdge(	const Triangle &tr,
 	d.x = (a.x + b.x) / 2;
 	d.y = (a.y + b.y) / 2;
 	d.z = (a.z + b.z) / 2;
-	d.color.vec[0] = (a.color.vec[0] + b.color.vec[0]) / 2;
-	d.color.vec[1] = (a.color.vec[1] + b.color.vec[1]) / 2;
-	d.color.vec[2] = (a.color.vec[2] + b.color.vec[2]) / 2;
-	d.color.vec[3] = (a.color.vec[3] + b.color.vec[3]) / 2;
+
+#ifdef PERSPECTIVE_CORRECT_TRIANGULATION
+	//XXX: Warning. Potential division by zero
+	float oneOverWa = 1.0 / a.w;
+	float oneOverWb = 1.0 / b.w;
+	float oneOverW = 1.0 / (oneOverWa + oneOverWb);
+
+	d.color.vec[0] = (a.color.vec[0] * oneOverWa + b.color.vec[0] * oneOverWb) * oneOverW;
+	d.color.vec[1] = (a.color.vec[1] * oneOverWa + b.color.vec[1] * oneOverWb) * oneOverW;
+	d.color.vec[2] = (a.color.vec[2] * oneOverWa + b.color.vec[2] * oneOverWb) * oneOverW;
+	d.color.vec[3] = (a.color.vec[3] * oneOverWa + b.color.vec[3] * oneOverWb) * oneOverW;
+	d.w = (a.w * oneOverWa + b.w * oneOverWb) * oneOverW;
+	d.s = (a.s * oneOverWa + b.s * oneOverWb) * oneOverW;
+	d.t = (a.t * oneOverWa + b.t * oneOverWb) * oneOverW;
+#else //PERSPECTIVE_CORRECT_TRIANGULATION
+	d.color.vec[0] = (a.color.vec[0] + b.color.vec[0]) * 0.5;
+	d.color.vec[1] = (a.color.vec[1] + b.color.vec[1]) * 0.5;
+	d.color.vec[2] = (a.color.vec[2] + b.color.vec[2]) * 0.5;
+	d.color.vec[3] = (a.color.vec[3] + b.color.vec[3]) * 0.5;
+	d.w = (a.w + b.w) * 0.5;
+	d.s = (a.s + b.s) * 0.5;
+	d.t = (a.t + b.t) * 0.5;
+#endif //PERSPECTIVE_CORRECT_TRIANGULATION
+
 	trOut1 = Triangle{ c, a, d };
 	trOut2 = Triangle{ c, d, b };
 }

@@ -16,8 +16,6 @@ void nmglBegin(NMGLenum mode)
 	cntxt->beginEndInfo.inBeginEnd = true;
 	cntxt->beginEndInfo.mode = mode;
 	cntxt->beginEndInfo.vertexCounter = 0;
-	cntxt->beginEndInfo.normalCounter = 0;
-	cntxt->beginEndInfo.colorCounter = 0;
 	//printf("begin\n");
 	
 }
