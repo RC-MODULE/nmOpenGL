@@ -21,10 +21,12 @@ static int equalf(float a, float b)
 	}
 }
 
-#define TEST_ASSERT(x) \
+#define TEST_ASSERT(x, ...) \
 if (!(x)) \
 {\
-	printf ("\nFAIL Function: %s\n     File:%s\n     Line:%d\n     Cond:%s\n\n",__FUNCTION__, __FILE__, __LINE__, #x);\
+	printf ("\nFAIL Function: %s\n     File:%s\n     Line:%d\n     Cond:%s\n",__FUNCTION__, __FILE__, __LINE__, #x);\
+	printf ("     Details: " __VA_ARGS__);\
+	printf ("\n\n");\
 	return -1;\
 }
 
@@ -33,12 +35,14 @@ if (!(x)) \
 	_accum++;\
 
 
-#define TEST_ARRAYS_EQUAL(array1, array2, size) \
+#define TEST_ARRAYS_EQUAL(array1, array2, size, ...) \
 { \
 	int __i; \
 	for (__i = 0; __i < size; ++__i){ \
 		if (!equalf(array1[__i], array2[__i])) { \
-			printf ("\nFAIL Function: %s\n     File:%s\n     Line:%d\n     Cond:%s\n\n",__FUNCTION__, __FILE__, __LINE__, "all elements of arrays are equal"); \
+			printf ("\nFAIL Function: %s\n     File:%s\n     Line:%d\n     Cond:%s\n",__FUNCTION__, __FILE__, __LINE__, "all elements of arrays are equal"); \
+			printf ("     Details: " __VA_ARGS__);\
+			printf ("\n\n");\
 			return -1; \
 		} else { \
 			/* Do nothing, continue to the next element */ \
@@ -47,19 +51,21 @@ if (!(x)) \
 }
 
 // Compare if two integer arrays are equal
-#define TEST_ARRAYS_EQUALI(array1, array2, size) \
+#define TEST_ARRAYS_EQUALI(array1, array2, size, ...) \
 { \
 	int __i; \
 	for (__i = 0; __i < size; ++__i){ \
 		if (array1[__i] != array2[__i]) { \
-			printf ("\nFAIL Function: %s\n     File:%s\n     Line:%d\n     Cond:%s\n\n",__FUNCTION__, __FILE__, __LINE__, "all elements of arrays are equal"); \
+			printf ("\nFAIL Function: %s\n     File:%s\n     Line:%d\n     Cond:%s\n",__FUNCTION__, __FILE__, __LINE__, "all elements of arrays are equal"); \
+			printf ("     Details: " __VA_ARGS__);\
+			printf ("\n\n");\
 			return -1; \
 		} else { \
 			/* Do nothing, continue to the next element */ \
 		} \
 	} \
 }
-#define TEST_VEC_ARRAYS_EQUAL(array1, array2, size) \
+#define TEST_VEC_ARRAYS_EQUAL(array1, array2, size, ...) \
 { \
 	volatile int __i; \
 	for (__i = 0; __i < size; ++__i){ \
@@ -67,7 +73,9 @@ if (!(x)) \
 			(!equalf(array1[__i].vec[1], array2[__i].vec[1])) || \
 			(!equalf(array1[__i].vec[2], array2[__i].vec[2])) || \
 			(!equalf(array1[__i].vec[3], array2[__i].vec[3]))) { \
-			printf ("\nFAIL Function: %s\n     File:%s\n     Line:%d\n     Cond:%s\n\n",__FUNCTION__, __FILE__, __LINE__, "all elements of arrays are equal"); \
+			printf ("\nFAIL Function: %s\n     File:%s\n     Line:%d\n     Cond:%s\n",__FUNCTION__, __FILE__, __LINE__, "all elements of arrays are equal"); \
+			printf ("     Details: " __VA_ARGS__);\
+			printf ("\n\n");\
 			return -1; \
 		} else { \
 			/* Do nothing, continue to the next element */ \
@@ -77,12 +85,14 @@ if (!(x)) \
 
 // Compares arrays of struct {unsigned long long vec[1]}
 // Implemented to compare RGB8888 arrays
-#define TEST_VEC1_ARRAYS_EQUALI(array1, array2, size) \
+#define TEST_VEC1_ARRAYS_EQUALI(array1, array2, size, ...) \
 { \
 	int __i; \
 	for (__i = 0; __i < size; ++__i){ \
 		if ((array1[__i].vec[0]) != (array2[__i].vec[0])) { \
-			printf ("\nFAIL Function: %s\n     File:%s\n     Line:%d\n     Cond:%s\n\n",__FUNCTION__, __FILE__, __LINE__, "all elements of arrays are equal"); \
+			printf ("\nFAIL Function: %s\n     File:%s\n     Line:%d\n     Cond:%s\n",__FUNCTION__, __FILE__, __LINE__, "all elements of arrays are equal"); \
+			printf ("     Details: " __VA_ARGS__);\
+			printf ("\n\n");\
 			return -1; \
 		} else { \
 			/* Do nothing, continue to the next element */ \
@@ -99,4 +109,11 @@ if (!(x)) \
 
 //Macro to run test. usage: RUN_TEST(functionMane_condition_result)
 #define RUN_TEST(x) if(x() == 0) printf ("OK   Function: %s\n", #x);
+
+//Macro to run test with arguments. usage: RUN_ARG_TEST(functionMane_condition_result,arg)
+#define RUN_ARG_TEST(f, arg) \
+	if(f(arg) == 0) {\
+		printf ("OK   Function: %s(%i)\n", #f, arg);\
+	}
+
 #endif /* TESTS_H_ */
