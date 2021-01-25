@@ -101,7 +101,7 @@ begin ".text_demo3d"      // начало секции кода.
     push ar6,gr6;
 
     ar0 = [--ar5];          // Адрес входного массива
-    gr2 = [--ar5];          // Адрес выходного массива
+    ar2 = [--ar5];          // Адрес выходного массива
     gr0 = [--ar5];          // Количество элементов во входном массиве
 
 	gr0 >>= 2;
@@ -124,7 +124,7 @@ begin ".text_demo3d"      // начало секции кода.
     // транслируются в теневую матрицу, а затем и в рабочую.
     rep 10 wfifo = [ar1++], ftw, wtw;
     
-    ar2 = RGB565x4;
+    ar1 = RGB565x4;
     ar3 = rMsk; 
     ar4 = R8;
     
@@ -132,8 +132,8 @@ begin ".text_demo3d"      // начало секции кода.
     rep 1 ram = [ar3];
     
     // операция взвешенного суммирования
-    rep 1 data = [ar2] with vsum ram, shift data, 0;
-    rep 1 data = [ar2] with mask ram, data, afifo;
+    rep 1 data = [ar1] with vsum ram, shift data, 0;
+    rep 1 data = [ar1] with mask ram, data, afifo;
     rep 1 [ar4] = afifo;
 
 
@@ -143,7 +143,7 @@ begin ".text_demo3d"      // начало секции кода.
     sb = 08a2a8a2ah;
     rep 24 wfifo = [ar1++], ftw, wtw;
    
-    ar2 = RGB565x4;
+    ar1 = RGB565x4;
     ar3 = gMsk; 
     ar4 = G8;
    
@@ -151,8 +151,8 @@ begin ".text_demo3d"      // начало секции кода.
     rep 1 ram = [ar3];
 
     // операция взвешенного суммирования
-    rep 1 data = [ar2] with vsum ram, shift data, 0;
-    rep 1 data = [ar2] with mask ram, shift data, afifo;
+    rep 1 data = [ar1] with vsum ram, shift data, 0;
+    rep 1 data = [ar1] with mask ram, shift data, afifo;
     
     // (можно оптимизировать с помощью взвешенного суммирования)
     rep 1 with mask , shift afifo, 0;
@@ -166,7 +166,7 @@ begin ".text_demo3d"      // начало секции кода.
     sb = 020822082h;
     rep 12 wfifo = [ar1++], ftw, wtw;
    
-    ar2 = RGB565x4;
+    ar1 = RGB565x4;
     ar3 = bMsk;
     // В B8 синий компонент начинается с бита 2 (0 - младший, справа) 
     ar4 = B8;
@@ -175,11 +175,11 @@ begin ".text_demo3d"      // начало секции кода.
     rep 1 ram = [ar3++];
 
     // Сдвинуть слово на 6 разрядов влево
-    rep 1 data = [ar2] with vsum ram, data, 0;
+    rep 1 data = [ar1] with vsum ram, data, 0;
     // Сдвинуть afifo на один разряд вправо
     rep 1 with mask , shift afifo, 0;
     // Логически сложить (or) afifo с data
-    rep 1 data = [ar2] with mask ram, data, afifo;
+    rep 1 data = [ar1] with mask ram, data, afifo;
     // Сдвинуть afifo на два разряда вправо
     // (можно оптимизировать с помощью взвешенного суммирования)
     rep 1 with mask , shift afifo, 0;
@@ -194,7 +194,7 @@ begin ".text_demo3d"      // начало секции кода.
     sb  = 002020202h;   // разбиение матрицы на 8 строк по 8 бит
     rep 32 wfifo = [ar1++], ftw, wtw;   // 32 строки (8 строк для 4-х суммирований).
                                         //  Сначала загрузятся первые 8 строк
-    ar2 = R8;
+    ar1 = R8;
     ar3 = G8;
     ar4 = B8;
     ar5 = GB88l;
@@ -202,7 +202,7 @@ begin ".text_demo3d"      // начало секции кода.
     rep 1 ram = [ar6];
     
     // Загрузить в afifo R8
-    rep 1 data = [ar2] with mask ram, 0, data;
+    rep 1 data = [ar1] with mask ram, 0, data;
     // Логически сложить R8 и G8
     rep 1 data = [ar3] with mask ram, data, afifo;
     // Сдвинуть R8 и G8
@@ -218,7 +218,7 @@ begin ".text_demo3d"      // начало секции кода.
     ar6 = gbMskh;
     rep 1 ram = [ar6];
     // Загрузить в afifo R8
-    rep 1 data = [ar2] with mask ram, 0, data;
+    rep 1 data = [ar1] with mask ram, 0, data;
     // Логически сложить R8 и G8
     rep 1 data = [ar3] with mask ram, data, afifo;
     // Сдвинуть R8 и G8
@@ -229,18 +229,12 @@ begin ".text_demo3d"      // начало секции кода.
     // Результат операции выгрузить из afifo в память
     rep 1 [ar5] = afifo;    // GB88h
     
-    // Восстановить текущий адрес в выходном массиве
-    ar2 = gr2;
-    
     // Распределить полученные 64-битные значения по 32-битным
     ar6, gr6 = [GB88l];
     [ar2++] = ar6, gr6;
     ar6, gr6 = [GB88h];
     [ar2++] = ar6, gr6 with gr0--;
     
-    // cохранить текущий адрес в выходном массиве
-    // для использования его на следующей итерации
-    gr2 = ar2;
     // Если количество значений, которые надо обработать, не равно 0,
     // продолжить обработку 
     if > goto Loop;
