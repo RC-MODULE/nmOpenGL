@@ -18,6 +18,9 @@ int convertRGB565_RGB8888_manyInputValues_manyOutputValues();
 int convertRGB565_RGB8888_FiveInputValues_FiveOutputValues();
 int convertRGB565_RGB8888_SixInputValues_SixOutputValues();
 int convertRGB565_RGB8888_SevenInputValues_SevenOutputValues();
+int convertRGB565_RGB8888_0_200_InputValues_0_200_OutputValues();
+
+int convertRGB565_RGB8888_nInputValues_nOutputValues(int n);
 
 // Performance tests
 clock_t convertRGB565_RGB8888_fourInputValues_fourOutputValues();
@@ -32,6 +35,8 @@ int main(int argc, char **argv)
     RUN_TEST(convertRGB565_RGB8888_FiveInputValues_FiveOutputValues);       
     RUN_TEST(convertRGB565_RGB8888_SixInputValues_SixOutputValues);         
     RUN_TEST(convertRGB565_RGB8888_SevenInputValues_SevenOutputValues);     
+    RUN_TEST(convertRGB565_RGB8888_0_200_InputValues_0_200_OutputValues);     
+	RUN_ARG_TEST(convertRGB565_RGB8888_nInputValues_nOutputValues, 31);
 
 	clock_t dt;
 	dt = convertRGB565_RGB8888_fourInputValues_fourOutputValues();
@@ -39,6 +44,47 @@ int main(int argc, char **argv)
     puts("OK");
 
     return dt;
+}
+
+int convertRGB565_RGB8888_nInputValues_nOutputValues(int n)
+{
+    //Arrange
+    int count = n;
+    rgb565 *srcArray = nmppsMalloc_16s(count);
+    nm32u RGB565Values[4] = {0xC979, 0xFFFF, 0xAAAA, 0x5555};
+
+    rgb8888 *dstArray = (rgb8888 *) nmppsMalloc_32s(count);
+    nm32u RGB8888Values[4] = {0x00CE2CCE, 0x00FFFFFF, 0x00AD5552, 0x0052AAAD};
+    nm32u expectedDstArray[count];
+
+    for (int i = 0; i < count; ++i) {
+        nmppsPut_32s((nm32s *) dstArray, i, 0);
+    }
+
+    for (int i = 0; i < count; ++i){
+        nmppsPut_16s(srcArray, i, RGB565Values[i % 4]);
+        expectedDstArray[i] = RGB8888Values[i % 4];
+    }
+
+    //Act
+    convertRGB565_RGB8888(srcArray, dstArray, count);
+
+    //Assert
+    TEST_ARRAYS_EQUALI(((nm32u *) dstArray), expectedDstArray, count);
+
+	nmppsFree(srcArray);
+	nmppsFree(dstArray);
+
+    return 0;
+}
+
+int convertRGB565_RGB8888_0_200_InputValues_0_200_OutputValues()
+{
+	int res = 0;
+	for (int i = 0; i < 200; ++i){
+    	res += convertRGB565_RGB8888_nInputValues_nOutputValues(i);
+	}
+	return res;
 }
 
 int convertRGB565_RGB8888_singleInputIntermediateValue_singleOutputIntermediateValue()
