@@ -49,28 +49,32 @@ int main(int argc, char **argv)
 int convertRGB565_RGB8888_nInputValues_nOutputValues(int n)
 {
     //Arrange
-    int count = n;
-    rgb565 *srcArray = nmppsMalloc_16s(count);
+	int count = n;
+    int processed_count = (count >> 2) << 2;	// nearest left multiple of 4
+    int untouched_count = 4; 
+    rgb565 *srcArray = nmppsMalloc_16s(processed_count + untouched_count);
     nm32u RGB565Values[4] = {0xC979, 0xFFFF, 0xAAAA, 0x5555};
 
-    rgb8888 *dstArray = (rgb8888 *) nmppsMalloc_32s(count);
+    rgb8888 *dstArray = (rgb8888 *) nmppsMalloc_32s(processed_count + untouched_count);
     nm32u RGB8888Values[4] = {0x00CE2CCE, 0x00FFFFFF, 0x00AD5552, 0x0052AAAD};
-    nm32u expectedDstArray[count];
-
-    for (int i = 0; i < count; ++i) {
+    nm32u expectedDstArray[processed_count + untouched_count];
+	
+	printf("Processed count is %i\n\r", processed_count);
+    for (int i = 0; i < processed_count + untouched_count; ++i) {
+        nmppsPut_16s(srcArray, i, RGB565Values[i % 4]);
         nmppsPut_32s((nm32s *) dstArray, i, 0);
+        expectedDstArray[i] = RGB8888Values[i % 4];
     }
 
-    for (int i = 0; i < count; ++i){
-        nmppsPut_16s(srcArray, i, RGB565Values[i % 4]);
-        expectedDstArray[i] = RGB8888Values[i % 4];
+    for (int i = processed_count; i < processed_count + untouched_count; ++i){
+        expectedDstArray[i] = 0;
     }
 
     //Act
     convertRGB565_RGB8888(srcArray, dstArray, count);
 
     //Assert
-    TEST_ARRAYS_EQUALI(((nm32u *) dstArray), expectedDstArray, count);
+    TEST_ARRAYS_EQUALI(((nm32u *) dstArray), expectedDstArray, processed_count + untouched_count);
 
 	nmppsFree(srcArray);
 	nmppsFree(dstArray);
