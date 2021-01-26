@@ -181,12 +181,14 @@ public:
 	v4nm32f* vertex;
 	v4nm32f* normal;
 	v4nm32f* color;
+#ifdef TEXTURE_ENABLED
+	v2nm32f* texcoord;//XXX: Only one texture unit is supported.
+#endif //TEXTURE_ENABLED
 	int vertexCounter;
 
 	NMGLenum mode;
 	bool inBeginEnd;
 
-	int dummy;
 	int maxSize;
 
 	NmglBeginEndInfo(){
