@@ -59,9 +59,13 @@ extern  NMGLubyte* mipmap; //texture memory
 
 int counter = 0;
 
+
+#define PRINTF(type,name) printf("%s, %p, sizeof32=%d\n",#type, name, sizeof(*name))
+
 template<class T> inline T* myMallocT() {
 	
 	T* result = (T*)halMalloc32(sizeof32(T));
+	//PRINTF(T, result);
 	if (result == 0) throw counter;
 	counter++;
 	return result;
@@ -69,6 +73,7 @@ template<class T> inline T* myMallocT() {
 
 template<class T> inline T* myMallocT(int count) {
 	T* result = (T*)halMalloc32(count * sizeof32(T));
+	//PRINTF(T, result);
 	if (result == 0) throw counter;
 	counter++;
 	return result;
@@ -108,7 +113,7 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 		cntxt = NMGL_Context_NM0::getContext();
 		cntxt->init(synchroData);
 
-		setHeap(1);
+		//setHeap(1);
 		cntxt->polygonsConnectors = myMallocT<PolygonsConnector>();
 
 		setHeap(10);

@@ -64,7 +64,6 @@ int nmglvsHostReadImage(int* dstImage)
 				#endif //STACK_TRACE_ENABLED
 			}
 		}
-		printf("\n");
 		hostImageRB.pop((NMGL_IMAGE*)dstImage, 1);
 	}
 	else {

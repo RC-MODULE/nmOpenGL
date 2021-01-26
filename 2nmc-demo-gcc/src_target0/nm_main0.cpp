@@ -149,7 +149,6 @@ SECTION(".text_shared0") int main()
 		angle += 1.72;
 #endif // __OPEN_GL__
 
-
 		nmglDisableClientState(NMGL_VERTEX_ARRAY);
 		nmglDisableClientState(NMGL_NORMAL_ARRAY);
 		counter++;
