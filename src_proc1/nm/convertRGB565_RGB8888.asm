@@ -7,16 +7,15 @@ data ".data_demo3d"        // секция инициализированных 
     // исходный вектор
     RGB565x4: long = 0FFFF55555555C979hl;
     // место для хранения результата вычислений
-    R8: long = 0l;
-    G8: long = 0l;
-    B8: long = 0l;
-    GB88h: long = 0l;
-    GB88l: long = 0l;
+    R8: long[32] = 0l;
+    G8: long[32] = 0l;
+    B8: long[32] = 0l;
 
     // Маска для входа X
     rMsk: long = 0f800f800f800f800hl;
     gMsk: long = 007e007e007e007e0hl;
-    bMsk: long[2] = (0001f001f001f001fhl, 000FF00FF00FF00FFhl);
+    bMsk_1: long = 0001f001f001f001fhl;
+    bMsk_2: long = 000FF00FF00FF00FFhl;
     gbMskh: long = 000FF00FFFFFFFFFFhl;
     gbMskl: long = 0FFFFFFFF00FF00FFhl;
 
@@ -88,9 +87,136 @@ data ".data_demo3d"        // секция инициализированных 
                            );
 
 end ".data_demo3d";  
+
+macro ConvertN(N)
+    // Выделить компонент R
+    ar1 = rMatrix;  
+    nb1 = 088808880h; // разбиение матрицы весовых коэффициентов
+    sbl = 020022000h;
+    sbh = 022022202h;
+    // весовые коэффициенты загружаются в буфер wfifo, одновременно с этим они 
+    // транслируются в теневую матрицу, а затем и в рабочую.
+    rep 10 wfifo = [ar1++], ftw, wtw;
+    
+    ar1 = ar0;
+    ar3 = rMsk; 
+    ar4 = R8;
+    ar5 = ar0;
+    // Загрузить маску в ram
+    rep N ram = [ar3];
+
+    
+    // операция взвешенного суммирования
+    rep N data = [ar1++] with vsum ram, shift data, 0; // !!! Увеличивается
+    rep N data = [ar5++] with mask ram, data, afifo;	// !!! Тоже увеличивается
+    rep N [ar4] = afifo;
+
+
+    // Выделить компонент G
+    ar1 = gMatrix;
+    nb1 = 0a28aa28ah;   // разбиение матрицы весовых коэффициентов
+    sb = 08a2a8a2ah;
+    rep 24 wfifo = [ar1++], ftw, wtw;
+   
+    ar1 = ar0;
+    ar3 = gMsk; 
+    ar4 = G8;
+    ar5 = ar0; 
+   
+    // Загрузить маску в ram
+    rep N ram = [ar3];
+
+
+    // операция взвешенного суммирования
+    rep N data = [ar1++] with vsum ram, shift data, 0;
+    rep N data = [ar5++] with mask ram, shift data, afifo;
+    
+    // (можно оптимизировать с помощью взвешенного суммирования)
+    rep N with mask , shift afifo, 0;
+    rep N with mask , shift afifo, 0;
+    rep N [ar4] = afifo;
+
+    // Выделить компонент B
+    ar1 = bMatrix;
+    nb1 = 088208820h;   // разбиение матрицы весовых коэффициентов
+    sb = 020822082h;
+    rep 12 wfifo = [ar1++], ftw, wtw;
+   
+    ar1 = ar0;
+    ar3 = bMsk_1;
+    gr3 = bMsk_2;
+    // В B8 синий компонент начинается с бита 2 (0 - младший, справа) 
+    ar4 = B8;
+    ar5 = ar0;
+   
+    // Загрузить маску в ram
+    rep N ram = [ar3];	// !!! Не будет работать для N > 1
+
+
+    // Сдвинуть слово на 6 разрядов влево
+    rep N data = [ar1++] with vsum ram, data, 0;
+    // Сдвинуть afifo на один разряд вправо
+    rep N with mask , shift afifo, 0;
+    // Логически сложить (or) afifo с data
+    rep N data = [ar5++] with mask ram, data, afifo;
+    // Сдвинуть afifo на два разряда вправо
+    // (можно оптимизировать с помощью взвешенного суммирования)
+    rep N with mask , shift afifo, 0;
+    rep N ram = [gr3] with mask , shift afifo, 0;
+    rep N with mask ram, afifo, 0;
+    rep N [ar4] = afifo;
+
+	ar0 = ar1;
+    
+    // Обработать младшую часть результата
+    ar1 = rgbMatrix;
+    nb1 = 080808080h;   // разбиение матрицы на 8 столбцов по 8 бит
+    sb  = 002020202h;   // разбиение матрицы на 8 строк по 8 бит
+    rep 32 wfifo = [ar1++], ftw, wtw;   // 32 строки (8 строк для 4-х суммирований).
+                                        //  Сначала загрузятся первые 8 строк
+    ar1 = R8;
+    ar3 = G8;
+    ar4 = B8;
+	gr2 = 4;
+    ar5 = ar2 + 2 with gr5 = gr2;
+    ar6 = gbMskl;
+    rep N ram = [ar6];
+
+    
+    // Загрузить в afifo R8
+    rep N data = [ar1] with mask ram, 0, data;
+    // Логически сложить R8 и G8
+    rep N data = [ar3] with mask ram, data, afifo;
+    // Сдвинуть R8 и G8
+    rep N with vsum , afifo, 0;       
+    // Сдвинуть B8 и сложить его с R8 и G8
+    ftw, wtw;                           // Загрузить следующие 8 строк
+    rep N data = [ar4] with vsum , data, afifo;
+    rep N [ar2++gr2] = afifo;
+
+    // Обработать старшую часть результата
+    ftw,wtw;                            // Загрузить следующие 8 строк
+    ar6 = gbMskh;
+    rep N ram = [ar6];
+    // Загрузить в afifo R8
+    rep N data = [ar1] with mask ram, 0, data;
+    // Логически сложить R8 и G8
+    rep N data = [ar3] with mask ram, data, afifo;
+    // Сдвинуть R8 и G8
+    rep N with vsum , afifo, 0;       
+    // Сдвинуть B8 и сложить его с R8 и G8
+    ftw, wtw;                           // Загрузить следующие 8 строк
+    rep N data = [ar4] with vsum , data, afifo;
+    // Результат операции выгрузить из afifo в память
+    rep N [ar5++gr5] = afifo;    // GB88h
+	nul;nul;nul;
+	nul;nul;nul;
+end ConvertN;
     
 begin ".text_demo3d"      // начало секции кода.
 <_convertRGB565_RGB8888>    
+	
+	ConvertTail: label;
 
     ar5 = ar7 - 2;
     push ar0,gr0;
@@ -105,142 +231,55 @@ begin ".text_demo3d"      // начало секции кода.
     gr0 = [--ar5];          // Количество элементов во входном массиве
 
 	gr0 >>= 2;
-    // Проверить размер входного массива на равенство 0
-    // Проверяется один раз при входе в функцию
-    gr0;
-    if <= goto Exit;
+    if =0 delayed goto Exit with gr1 = gr0 << 27;
+		gr1 >>= 27;
+		gr0 >>= 5;
 
-<Loop>
-    ar1, gr1 = [ar0++];     // Переписать в регистровую пару входное значение
-    [RGB565x4] = ar1, gr1;    // Переписать входное значение в переменную RGB565x4
+<Next32Reps>
+	if =0 goto StartTail; 
+	ConvertN(32);
+    goto Next32Reps with gr0--;
 
-<Convert>
-    // Выделить компонент R
-    ar1 = rMatrix;  
-    nb1 = 088808880h; // разбиение матрицы весовых коэффициентов
-    sbl = 020022000h;
-    sbh = 022022202h;
-    // весовые коэффициенты загружаются в буфер wfifo, одновременно с этим они 
-    // транслируются в теневую матрицу, а затем и в рабочую.
-    rep 10 wfifo = [ar1++], ftw, wtw;
-    
-    ar1 = RGB565x4;
-    ar3 = rMsk; 
-    ar4 = R8;
-    
-    // Загрузить маску в ram
-    rep 1 ram = [ar3];
-    
-    // операция взвешенного суммирования
-    rep 1 data = [ar1] with vsum ram, shift data, 0;
-    rep 1 data = [ar1] with mask ram, data, afifo;
-    rep 1 [ar4] = afifo;
-
-
-    // Выделить компонент G
-    ar1 = gMatrix;
-    nb1 = 0a28aa28ah;   // разбиение матрицы весовых коэффициентов
-    sb = 08a2a8a2ah;
-    rep 24 wfifo = [ar1++], ftw, wtw;
-   
-    ar1 = RGB565x4;
-    ar3 = gMsk; 
-    ar4 = G8;
-   
-    // Загрузить маску в ram
-    rep 1 ram = [ar3];
-
-    // операция взвешенного суммирования
-    rep 1 data = [ar1] with vsum ram, shift data, 0;
-    rep 1 data = [ar1] with mask ram, shift data, afifo;
-    
-    // (можно оптимизировать с помощью взвешенного суммирования)
-    rep 1 with mask , shift afifo, 0;
-    rep 1 with mask , shift afifo, 0;
-    rep 1 [ar4] = afifo;
-
-
-    // Выделить компонент B
-    ar1 = bMatrix;
-    nb1 = 088208820h;   // разбиение матрицы весовых коэффициентов
-    sb = 020822082h;
-    rep 12 wfifo = [ar1++], ftw, wtw;
-   
-    ar1 = RGB565x4;
-    ar3 = bMsk;
-    // В B8 синий компонент начинается с бита 2 (0 - младший, справа) 
-    ar4 = B8;
-   
-    // Загрузить маску в ram
-    rep 1 ram = [ar3++];
-
-    // Сдвинуть слово на 6 разрядов влево
-    rep 1 data = [ar1] with vsum ram, data, 0;
-    // Сдвинуть afifo на один разряд вправо
-    rep 1 with mask , shift afifo, 0;
-    // Логически сложить (or) afifo с data
-    rep 1 data = [ar1] with mask ram, data, afifo;
-    // Сдвинуть afifo на два разряда вправо
-    // (можно оптимизировать с помощью взвешенного суммирования)
-    rep 1 with mask , shift afifo, 0;
-    rep 1 ram = [ar3++] with mask , shift afifo, 0;
-    rep 1 with mask ram, afifo, 0;
-    rep 1 [ar4] = afifo;
-
-    
-    // Обработать младшую часть результата
-    ar1 = rgbMatrix;
-    nb1 = 080808080h;   // разбиение матрицы на 8 столбцов по 8 бит
-    sb  = 002020202h;   // разбиение матрицы на 8 строк по 8 бит
-    rep 32 wfifo = [ar1++], ftw, wtw;   // 32 строки (8 строк для 4-х суммирований).
-                                        //  Сначала загрузятся первые 8 строк
-    ar1 = R8;
-    ar3 = G8;
-    ar4 = B8;
-    ar5 = GB88l;
-    ar6 = gbMskl;
-    rep 1 ram = [ar6];
-    
-    // Загрузить в afifo R8
-    rep 1 data = [ar1] with mask ram, 0, data;
-    // Логически сложить R8 и G8
-    rep 1 data = [ar3] with mask ram, data, afifo;
-    // Сдвинуть R8 и G8
-    rep 1 with vsum , afifo, 0;       
-    // Сдвинуть B8 и сложить его с R8 и G8
-    ftw, wtw;                           // Загрузить следующие 8 строк
-    rep 1 data = [ar4] with vsum , data, afifo;
-    rep 1 [ar5] = afifo;
-    
-    // Обработать старшую часть результата
-    ar5 = GB88h;
-    ftw,wtw;                            // Загрузить следующие 8 строк
-    ar6 = gbMskh;
-    rep 1 ram = [ar6];
-    // Загрузить в afifo R8
-    rep 1 data = [ar1] with mask ram, 0, data;
-    // Логически сложить R8 и G8
-    rep 1 data = [ar3] with mask ram, data, afifo;
-    // Сдвинуть R8 и G8
-    rep 1 with vsum , afifo, 0;       
-    // Сдвинуть B8 и сложить его с R8 и G8
-    ftw, wtw;                           // Загрузить следующие 8 строк
-    rep 1 data = [ar4] with vsum , data, afifo;
-    // Результат операции выгрузить из afifo в память
-    rep 1 [ar5] = afifo;    // GB88h
-    
-    // Распределить полученные 64-битные значения по 32-битным
-    ar6, gr6 = [GB88l];
-    [ar2++] = ar6, gr6;
-    ar6, gr6 = [GB88h];
-    [ar2++] = ar6, gr6 with gr0--;
-    
-    // Если количество значений, которые надо обработать, не равно 0,
-    // продолжить обработку 
-    if > goto Loop;
-    // else
-    goto Exit;
-
+<StartTail>
+	gr1;
+	if =0 delayed goto Exit;
+		gr1--;
+		gr1 <<= 7;
+	ar1 = ConvertTail;
+	goto ar1 + gr1;
+<ConvertTail>
+	ConvertN(1); goto Exit;
+	ConvertN(2); goto Exit;
+	ConvertN(3); goto Exit;
+	ConvertN(4); goto Exit;
+	ConvertN(5); goto Exit;
+	ConvertN(6); goto Exit;
+	ConvertN(7); goto Exit;
+	ConvertN(8); goto Exit;
+	ConvertN(9); goto Exit;
+	ConvertN(10); goto Exit;
+	ConvertN(11); goto Exit;
+	ConvertN(12); goto Exit;
+	ConvertN(13); goto Exit;
+	ConvertN(14); goto Exit;
+	ConvertN(15); goto Exit;
+	ConvertN(16); goto Exit;
+	ConvertN(17); goto Exit;
+	ConvertN(18); goto Exit;
+	ConvertN(19); goto Exit;
+	ConvertN(20); goto Exit;
+	ConvertN(21); goto Exit;
+	ConvertN(22); goto Exit;
+	ConvertN(23); goto Exit;
+	ConvertN(24); goto Exit;
+	ConvertN(25); goto Exit;
+	ConvertN(26); goto Exit;
+	ConvertN(27); goto Exit;
+	ConvertN(28); goto Exit;
+	ConvertN(29); goto Exit;
+	ConvertN(30); goto Exit;
+	ConvertN(31); goto Exit;
+	
     // Примечание: флаги для "if > goto Loop" установлены операцией в правой части
     // последней скалярной операции, т.е. [ar2++] = gr6 with gr0 = gr0 - 1;
     // Установка флагов происходит только путем выполнения арифметическо-логической операции 
