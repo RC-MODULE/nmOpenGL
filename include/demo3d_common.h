@@ -24,7 +24,7 @@
 #endif
 
 //#define TRIANGULATION_ENABLED
-#define TEXTURE_ENABLED
+//#define TEXTURE_ENABLED
 //#define PROFILER0
 //#define PROFILER1
 
