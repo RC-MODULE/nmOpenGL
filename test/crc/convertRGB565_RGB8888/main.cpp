@@ -11,35 +11,25 @@
 // Performance testing
 #include "time.h"
 
-int convertRGB565_RGB8888_singleInputIntermediateValue_singleOutputIntermediateValue();
-int convertRGB565_RGB8888_singleInputMaxValue_SingleOutputMaxValue();
-int convertRGB565_RGB8888_singleInputMinValue_singleOutputMinValue();
-int convertRGB565_RGB8888_manyInputValues_manyOutputValues();
-int convertRGB565_RGB8888_FiveInputValues_FiveOutputValues();
-int convertRGB565_RGB8888_SixInputValues_SixOutputValues();
-int convertRGB565_RGB8888_SevenInputValues_SevenOutputValues();
-int convertRGB565_RGB8888_0_200_InputValues_0_200_OutputValues();
+int convertRGB565_RGB8888_4InputMinValues_4OutputMinValues();
+int convertRGB565_RGB8888_4InputMaxValues_4OutputMaxValues();
+int convertRGB565_RGB8888_0_500_InputValues_0_500_OutputValues();
 
 int convertRGB565_RGB8888_nInputValues_nOutputValues(int n);
 
 // Performance tests
-clock_t convertRGB565_RGB8888_fourInputValues_fourOutputValues();
+clock_t convertRGB565_RGB8888_perf_4InputValues_4OutputValues();
 
 int main(int argc, char **argv)
 {
     puts("convertRGB565_RGB8888 tests: ");
-    RUN_TEST(convertRGB565_RGB8888_singleInputIntermediateValue_singleOutputIntermediateValue);
-    RUN_TEST(convertRGB565_RGB8888_singleInputMaxValue_SingleOutputMaxValue);
-    RUN_TEST(convertRGB565_RGB8888_singleInputMinValue_singleOutputMinValue);
-    RUN_TEST(convertRGB565_RGB8888_manyInputValues_manyOutputValues);
-    RUN_TEST(convertRGB565_RGB8888_FiveInputValues_FiveOutputValues);       
-    RUN_TEST(convertRGB565_RGB8888_SixInputValues_SixOutputValues);         
-    RUN_TEST(convertRGB565_RGB8888_SevenInputValues_SevenOutputValues);     
-    RUN_TEST(convertRGB565_RGB8888_0_200_InputValues_0_200_OutputValues);     
-	RUN_ARG_TEST(convertRGB565_RGB8888_nInputValues_nOutputValues, 31);
+    RUN_TEST(convertRGB565_RGB8888_4InputMinValues_4OutputMinValues);
+    RUN_TEST(convertRGB565_RGB8888_4InputMaxValues_4OutputMaxValues);
+    RUN_TEST(convertRGB565_RGB8888_0_500_InputValues_0_500_OutputValues);     
+	//RUN_ARG_TEST(convertRGB565_RGB8888_nInputValues_nOutputValues, 256);
 
 	clock_t dt;
-	dt = convertRGB565_RGB8888_fourInputValues_fourOutputValues();
+	dt = convertRGB565_RGB8888_perf_4InputValues_4OutputValues();
 	
     puts("OK");
 
@@ -59,7 +49,6 @@ int convertRGB565_RGB8888_nInputValues_nOutputValues(int n)
     nm32u RGB8888Values[4] = {0x00CE2CCE, 0x00FFFFFF, 0x00AD5552, 0x0052AAAD};
     nm32u expectedDstArray[processed_count + untouched_count];
 	
-	printf("Processed count is %i\n\r", processed_count);
     for (int i = 0; i < processed_count + untouched_count; ++i) {
         nmppsPut_16s(srcArray, i, RGB565Values[i % 4]);
         nmppsPut_32s((nm32s *) dstArray, i, 0);
@@ -74,7 +63,7 @@ int convertRGB565_RGB8888_nInputValues_nOutputValues(int n)
     convertRGB565_RGB8888(srcArray, dstArray, count);
 
     //Assert
-    TEST_ARRAYS_EQUALI(((nm32u *) dstArray), expectedDstArray, processed_count + untouched_count);
+    TEST_ARRAYS_EQUALI(((nm32u *) dstArray), expectedDstArray, processed_count + untouched_count, "arg is %i", count);
 
 	nmppsFree(srcArray);
 	nmppsFree(dstArray);
@@ -82,238 +71,86 @@ int convertRGB565_RGB8888_nInputValues_nOutputValues(int n)
     return 0;
 }
 
-int convertRGB565_RGB8888_0_200_InputValues_0_200_OutputValues()
+int convertRGB565_RGB8888_0_500_InputValues_0_500_OutputValues()
 {
 	int res = 0;
-	for (int i = 0; i < 200; ++i){
+	for (int i = 0; i < 500; ++i){
     	res += convertRGB565_RGB8888_nInputValues_nOutputValues(i);
 	}
 	return res;
 }
 
-int convertRGB565_RGB8888_singleInputIntermediateValue_singleOutputIntermediateValue()
+int convertRGB565_RGB8888_4InputMinValues_4OutputMinValues()
 {
     //Arrange
-    int count = 1;
-    rgb565 *srcArray = nmppsMalloc_16s(count);    
-    rgb8888 *dstArray = new rgb8888[count];
-    rgb8888 *expectedDstArray = new rgb8888[count];
-    for (int i = 0; i < count; ++i) {
-        dstArray[i].vec[0] = 0;
+    constexpr int count = 4;
+    rgb565 *srcArray = nmppsMalloc_16s(2 * count);
+    rgb8888 *dstArray = (rgb8888 *) nmppsMalloc_32s(2 * count);
+    nm32u expectedDstArray[2 * count] = {0, 0, 0, 0, 0, 0, 0, 0};
+    for (int i = 0; i < 2 * count; ++i) {
+        nmppsPut_16s(srcArray, i, 0);
+        nmppsPut_32s((nm32s *) dstArray, i, 0);
     }
-    nmppsPut_16s(srcArray, 0, 0xC979);  
-    expectedDstArray[0].vec[0] = 0x00CE2CCE;
-    
-    //Act
-    convertRGB565_RGB8888(srcArray, dstArray, count);
-
-    //Assert
-    TEST_VEC1_ARRAYS_EQUALI(dstArray, expectedDstArray, count);
-
-	nmppsFree(srcArray);
-	delete dstArray;
-	delete expectedDstArray;
-
-    return 0;
-}
-
-int convertRGB565_RGB8888_singleInputMaxValue_SingleOutputMaxValue()
-{
-    //Arrange
-    int count = 1;
-    rgb565 *srcArray = nmppsMalloc_16s(count);   
-    rgb8888 *dstArray = new rgb8888[count];
-    rgb8888 *expectedDstArray = new rgb8888[count];
-    for (int i = 0; i < count; ++i) {
-        dstArray[i].vec[0] = 0;
-    }
-    nmppsPut_16s(srcArray, 0, 0xFFFF);   
-    expectedDstArray[0].vec[0] = 0x00FFFFFF;
 
     //Act
     convertRGB565_RGB8888(srcArray, dstArray, count);
 
     //Assert
-    TEST_VEC1_ARRAYS_EQUALI(dstArray, expectedDstArray, count);
+    TEST_ARRAYS_EQUALI(((nm32u *) dstArray), expectedDstArray, 2 * count);
 
 	nmppsFree(srcArray);
-	delete dstArray;
-	delete expectedDstArray;
+	nmppsFree(dstArray);
 
     return 0;
 }
 
-int convertRGB565_RGB8888_singleInputMinValue_singleOutputMinValue()
+int convertRGB565_RGB8888_4InputMaxValues_4OutputMaxValues()
 {
     //Arrange
-    int count = 1;
-    rgb565 *srcArray = nmppsMalloc_16s(count);    
-    rgb8888 *dstArray = new rgb8888[count];
-    rgb8888 *expectedDstArray = new rgb8888[count];
-    for (int i = 0; i < count; ++i) {
-        dstArray[i].vec[0] = 0;
+    constexpr int count = 4;
+    rgb565 *srcArray = nmppsMalloc_16s(2 * count);
+    rgb8888 *dstArray = (rgb8888 *) nmppsMalloc_32s(2 * count);
+    nm32u expectedDstArray[2 * count] = {
+											0x00FFFFFF, 
+											0x00FFFFFF, 
+											0x00FFFFFF, 
+											0x00FFFFFF, 
+											0, 
+											0, 
+											0, 
+											0
+										};
+
+    for (int i = 0; i < 2 * count; ++i) {
+        nmppsPut_16s(srcArray, i, 0xFFFF);
+        nmppsPut_32s((nm32s *) dstArray, i, 0);
     }
-    nmppsPut_16s(srcArray, 0, 0);
-    expectedDstArray[0].vec[0] = 0;
 
     //Act
     convertRGB565_RGB8888(srcArray, dstArray, count);
 
     //Assert
-    TEST_VEC1_ARRAYS_EQUALI(dstArray, expectedDstArray, count);
+    TEST_ARRAYS_EQUALI(((nm32u *) dstArray), expectedDstArray, 2 * count);
 
 	nmppsFree(srcArray);
-	delete dstArray;
-	delete expectedDstArray;
+	nmppsFree(dstArray);
 
     return 0;
 }
 
-int convertRGB565_RGB8888_manyInputValues_manyOutputValues()
+clock_t convertRGB565_RGB8888_perf_4InputValues_4OutputValues()
 {
     //Arrange
     constexpr int count = 4;
     rgb565 *srcArray = nmppsMalloc_16s(count);
     nm32u RGB565Values[count] = {0xC979, 0xFFFF, 0xAAAA, 0x5555};
-    rgb8888 *dstArray = new rgb8888[count];
-    rgb8888 *expectedDstArray = new rgb8888[count/2];
-    for (int i = 0; i < count; ++i) {
-        dstArray[i].vec[0] = 0;
-    }
-    expectedDstArray[0].vec[0] = 0x00CE2CCE | (((unsigned long long) 0x00FFFFFF) << 32);
-    expectedDstArray[1].vec[0] = 0x00AD5552 | (((unsigned long long) 0x0052AAAD) << 32);
-
-    for (int i = 0; i < count; ++i){
-        nmppsPut_16s(srcArray, i, RGB565Values[i]);
-    }
-
-    //Act
-    convertRGB565_RGB8888(srcArray, dstArray, count);
-
-    //Assert
-    TEST_VEC1_ARRAYS_EQUALI(dstArray, expectedDstArray, count/2);
-
-	nmppsFree(srcArray);
-	delete dstArray;
-	delete expectedDstArray;
-
-    return 0;
-}
-
-int convertRGB565_RGB8888_FiveInputValues_FiveOutputValues()
-{
-    //Arrange
-    constexpr int count = 6;
-    rgb565 *srcArray = nmppsMalloc_16s(count);
-    nm32u RGB565Values[count] = {0xC979, 0xFFFF, 0xAAAA, 0x5555, 0xC979, 0xFFFF};   
-    rgb8888 *dstArray = new rgb8888[count];
-    rgb8888 *expectedDstArray = new rgb8888[count];
-    for (int i = 0; i < count; ++i) {
-        dstArray[i].vec[0] = 0;
-    }
-
-    expectedDstArray[0].vec[0] = 0x00CE2CCE | (((unsigned long long) 0x00FFFFFF) << 32);
-    expectedDstArray[1].vec[0] = 0x00AD5552 | (((unsigned long long) 0x0052AAAD) << 32);
-    expectedDstArray[2].vec[0] = 0x00CE2CCE | (((unsigned long long) 0x00000000) << 32);
-
-    for (size_t i = 0; i < count; ++i){
-        nmppsPut_16s(srcArray, i, RGB565Values[i]);
-    }
-
-    //Act
-    convertRGB565_RGB8888(srcArray, dstArray, count-1);
-
-    //Assert
-    TEST_VEC1_ARRAYS_EQUALI(dstArray, expectedDstArray, count/2);
-
-	nmppsFree(srcArray);
-	delete dstArray;
-	delete expectedDstArray;
-
-    return 0;
-}
-
-int convertRGB565_RGB8888_SixInputValues_SixOutputValues()
-{
-    //Arrange
-    constexpr int count = 7;
-    rgb565 *srcArray = nmppsMalloc_16s(count);
-    nm32u RGB565Values[count] = {0xC979, 0xFFFF, 0xAAAA, 0x5555, 0xC979, 0xAAAA, 0xFFFF};    
-    rgb8888 *dstArray = new rgb8888[count];
-    rgb8888 *expectedDstArray = new rgb8888[count];
-    for (int i = 0; i < count; ++i) {
-        dstArray[i].vec[0] = 0;
-    }
-    expectedDstArray[0].vec[0] = 0x00CE2CCE | (((unsigned long long) 0x00FFFFFF) << 32);
-    expectedDstArray[1].vec[0] = 0x00AD5552 | (((unsigned long long) 0x0052AAAD) << 32);
-    expectedDstArray[2].vec[0] = 0x00CE2CCE | (((unsigned long long) 0x00AD5552) << 32);
-    expectedDstArray[3].vec[0] = 0x00000000;
-    
-    for (size_t i = 0; i < count; ++i){
-        nmppsPut_16s(srcArray, i, RGB565Values[i]);
-    }
-
-    //Act
-    convertRGB565_RGB8888(srcArray, dstArray, count-1);
-
-    //Assert
-    TEST_VEC1_ARRAYS_EQUALI(dstArray, expectedDstArray, 4);
-
-	nmppsFree(srcArray);
-	delete dstArray;
-	delete expectedDstArray;
-
-    return 0;
-}
-
-int convertRGB565_RGB8888_SevenInputValues_SevenOutputValues()
-{
-    //Arrange
-    constexpr int count = 8;
-    rgb565 *srcArray = nmppsMalloc_16s(count);
-    nm32u RGB565Values[count] = {0xC979, 0xFFFF, 0xAAAA, 0x5555, 0xC979, 0xFFFF, 0x5555, 0xFFFF};     
-    rgb8888 *dstArray = new rgb8888[count];
-    rgb8888 *expectedDstArray = new rgb8888[count];
-    for (int i = 0; i < count; ++i) {
-        dstArray[i].vec[0] = 0;
-    }
-    expectedDstArray[0].vec[0] = 0x00CE2CCE | (((unsigned long long) 0x00FFFFFF) << 32);
-    expectedDstArray[1].vec[0] = 0x00AD5552 | (((unsigned long long) 0x0052AAAD) << 32);
-    expectedDstArray[2].vec[0] = 0x00CE2CCE | (((unsigned long long) 0x00FFFFFF) << 32);
-    expectedDstArray[3].vec[0] = 0x0052AAAD | (((unsigned long long) 0x00000000) << 32);
-    
-    for (size_t i = 0; i < count; ++i){
-        nmppsPut_16s(srcArray, i, RGB565Values[i]);
-    }
-
-    //Act
-    convertRGB565_RGB8888(srcArray, dstArray, count-1);
-    
-    //Assert
-    TEST_VEC1_ARRAYS_EQUALI(dstArray, expectedDstArray, count/2);
-
-	nmppsFree(srcArray);
-	delete dstArray;
-	delete expectedDstArray;
-
-    return 0;
-}
-
-clock_t convertRGB565_RGB8888_fourInputValues_fourOutputValues()
-{
-    //Arrange
-    constexpr int count = 4;
-    rgb565 *srcArray = nmppsMalloc_16s(count);
-    nm32u RGB565Values[count] = {0xC979, 0xFFFF, 0xAAAA, 0x5555};
-    rgb8888 *dstArray = new rgb8888[count];
+    rgb8888 *dstArray = (rgb8888 *) nmppsMalloc_32s(count);
 
     for (int i = 0; i < count; ++i) {
-        dstArray[i].vec[0] = 0;
+        nmppsPut_16s(srcArray, i, RGB565Values[i]);
+        nmppsPut_32s((nm32s *) dstArray, i, 0);
     }
 
-    for (int i = 0; i < count; ++i){
-        nmppsPut_16s(srcArray, i, RGB565Values[i]);
-    }
 	clock_t t1, t2, dt;
 
     //Act
