@@ -85,7 +85,7 @@ int convertABGR32_RGB565_nInputValues_nOutputValues(int n)
     }
 
     //Act
-    int res = convertABGR32_RGB565(srcArray, dstArray, count);
+    convertABGR32_RGB565(srcArray, dstArray, count);
 
     //Assert
     // Get the elements from the dstArray and expectedDstArray, 
