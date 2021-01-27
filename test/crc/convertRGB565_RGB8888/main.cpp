@@ -13,7 +13,7 @@
 
 int convertRGB565_RGB8888_4InputMinValues_4OutputMinValues();
 int convertRGB565_RGB8888_4InputMaxValues_4OutputMaxValues();
-int convertRGB565_RGB8888_0_500_InputValues_0_500_OutputValues();
+int convertRGB565_RGB8888_0_2048_InputValues_0_2048_OutputValues();
 
 int convertRGB565_RGB8888_nInputValues_nOutputValues(int n);
 
@@ -25,7 +25,7 @@ int main(int argc, char **argv)
     puts("convertRGB565_RGB8888 tests: ");
     RUN_TEST(convertRGB565_RGB8888_4InputMinValues_4OutputMinValues);
     RUN_TEST(convertRGB565_RGB8888_4InputMaxValues_4OutputMaxValues);
-    RUN_TEST(convertRGB565_RGB8888_0_500_InputValues_0_500_OutputValues);     
+    RUN_TEST(convertRGB565_RGB8888_0_2048_InputValues_0_2048_OutputValues);     
 	//RUN_ARG_TEST(convertRGB565_RGB8888_nInputValues_nOutputValues, 256);
 
 	clock_t dt;
@@ -45,7 +45,8 @@ int convertRGB565_RGB8888_nInputValues_nOutputValues(int n)
     rgb565 *srcArray = nmppsMalloc_16s(processed_count + untouched_count);
     nm32u RGB565Values[4] = {0xC979, 0xFFFF, 0xAAAA, 0x5555};
 
-    rgb8888 *dstArray = (rgb8888 *) nmppsMalloc_32s(processed_count + untouched_count);
+    nm32u dst[processed_count + untouched_count];
+    rgb8888 *dstArray = (rgb8888 *) dst;
     nm32u RGB8888Values[4] = {0x00CE2CCE, 0x00FFFFFF, 0x00AD5552, 0x0052AAAD};
     nm32u expectedDstArray[processed_count + untouched_count];
 	
@@ -66,15 +67,14 @@ int convertRGB565_RGB8888_nInputValues_nOutputValues(int n)
     TEST_ARRAYS_EQUALI(((nm32u *) dstArray), expectedDstArray, processed_count + untouched_count, "arg is %i", count);
 
 	nmppsFree(srcArray);
-	nmppsFree(dstArray);
 
     return 0;
 }
 
-int convertRGB565_RGB8888_0_500_InputValues_0_500_OutputValues()
+int convertRGB565_RGB8888_0_2048_InputValues_0_2048_OutputValues()
 {
 	int res = 0;
-	for (int i = 0; i < 500; ++i){
+	for (int i = 0; i <= 2048; ++i){
     	res += convertRGB565_RGB8888_nInputValues_nOutputValues(i);
 	}
 	return res;
