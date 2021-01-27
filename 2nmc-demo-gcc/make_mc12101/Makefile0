@@ -127,7 +127,7 @@ $(TMP_DIR)/dumps/%.dump: $(TMP_DIR)/%.o
 $(TMP_DIR):
 	-mkdir "$(@)"
 
-$(TARGET): profile_gen $(TMP_DIR) $(OBJECTS) $(ALL_H) $(CFG) nmc4vars_win.mk Makefile profile_read
+$(TARGET): $(TMP_DIR) $(OBJECTS) $(ALL_H) $(CFG) nmc4vars_win.mk Makefile
 	$(CC) $(CC_FLAGS) $(LINKER_FLAGS) $(OBJECTS) $(LIBS)
 
 nmc4vars_win.mk:

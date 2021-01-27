@@ -104,7 +104,7 @@ default: all
 
 #$(TMP_DIR) $(OUT_DIR)  $(TARGET)
 
-all:  profile
+all:
 	
 #	$(MAKE) -j4 DEBUG=y
 #	$(MAKE) -j4

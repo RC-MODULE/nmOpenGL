@@ -59,9 +59,13 @@ extern  NMGLubyte* mipmap; //texture memory
 
 int counter = 0;
 
+
+#define PRINTF(type,name) printf("%s, %p, sizeof32=%d\n",#type, name, sizeof(*name))
+
 template<class T> inline T* myMallocT() {
 	
 	T* result = (T*)halMalloc32(sizeof32(T));
+	//PRINTF(T, result);
 	if (result == 0) throw counter;
 	counter++;
 	return result;
@@ -69,6 +73,7 @@ template<class T> inline T* myMallocT() {
 
 template<class T> inline T* myMallocT(int count) {
 	T* result = (T*)halMalloc32(count * sizeof32(T));
+	//PRINTF(T, result);
 	if (result == 0) throw counter;
 	counter++;
 	return result;
@@ -108,7 +113,7 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 		cntxt = NMGL_Context_NM0::getContext();
 		cntxt->init(synchroData);
 
-		setHeap(1);
+		//setHeap(1);
 		cntxt->polygonsConnectors = myMallocT<PolygonsConnector>();
 
 		setHeap(10);
@@ -127,6 +132,31 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 #endif //TEXTURE_ENABLED
 		cntxt->beginEndInfo.inBeginEnd = false;
 		cntxt->beginEndInfo.maxSize = BIG_NMGL_SIZE;
+
+		/*setHeap(1);
+		cntxt->buffer0 = (float*)halMalloc32(12 * NMGL_SIZE);//nmglBuffer0;
+		setHeap(2);
+		cntxt->buffer1 = (float*)halMalloc32(12 * NMGL_SIZE);//nmglBuffer1;
+		setHeap(3);
+		cntxt->buffer2 = (float*)halMalloc32(12 * NMGL_SIZE);//nmglBuffer2;
+		setHeap(4);
+		cntxt->buffer3 = (float*)halMalloc32(12 * NMGL_SIZE);//nmglBuffer3;
+		setHeap(5);
+		cntxt->buffer4 = (float*)halMalloc32(12 * NMGL_SIZE);//nmglBuffer4;
+		setHeap(7);
+		cntxt->buffer5 = (float*)halMalloc32(12 * NMGL_SIZE);//nmglBuffer5;*/
+		cntxt->buffer0 = (float*)nmglBuffer0;
+		cntxt->buffer1 = (float*)nmglBuffer1;
+		cntxt->buffer2 = (float*)nmglBuffer2;
+		cntxt->buffer3 = (float*)nmglBuffer3;
+		cntxt->buffer4 = (float*)nmglBuffer4;
+		cntxt->buffer5 = (float*)nmglBuffer5;
+		//printf("buffer0=%p\n", cntxt->buffer0);
+		//printf("buffer1=%p\n", cntxt->buffer1);
+		//printf("buffer2=%p\n", cntxt->buffer2);
+		//printf("buffer3=%p\n", cntxt->buffer3);
+		//printf("buffer4=%p\n", cntxt->buffer4);
+		//printf("buffer5=%p\n", cntxt->buffer5);
 #ifdef STACK_TRACE_ENABLED		
 		stackTraceConnector.init(&nmprofiler_trace);
 #endif //STACK_TRACE_ENABLED
@@ -195,14 +225,6 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 	cntxt->pointInner.colors = nmgllightsValues;
 	cntxt->pointInner.maxSize = NMGL_SIZE;
 	cntxt->pointInner.size = 0;
-
-
-	cntxt->buffer0 = nmglBuffer0;
-	cntxt->buffer1 = nmglBuffer1;
-	cntxt->buffer2 = nmglBuffer2;
-	cntxt->buffer3 = nmglBuffer3;
-	cntxt->buffer4 = nmglBuffer4;
-	cntxt->buffer5 = nmglBuffer5;
 
 	cntxt->dividedMasks[0].init((nm1*)dividedMasksMemory[0], (nm1*)dividedMasksMemory[1]);
 	cntxt->dividedMasks[1].init((nm1*)dividedMasksMemory[2], (nm1*)dividedMasksMemory[3]);
