@@ -37,6 +37,9 @@ extern "C" void convertABGR32_RGB565(const abgr32  *srcArray, rgb565 *dstArray, 
 /*!
 \ingroup service_api
 \brief Преобразование формата RGB565 в формат RGB8888 
+\details Количество обрабатываемых элементов должно быть кратно 4, в противном случае
+оно округляется до кратного 4 в нижнюю сторону (например, если count = 5, 
+то обработано будет 4 элемента).
 \param srcArray [in] Входной массив элементов в формате RGB565
 \param dstArray [in] Выходной массив элементов в формате RGB8888
 \param count [in] Количество элементов во входном массиве для обработки 
@@ -48,7 +51,7 @@ extern "C" void convertABGR32_RGB565(const abgr32  *srcArray, rgb565 *dstArray, 
 	<testperf>
  		<param name=" srcArray "> im00 </param>
  		<param name=" dstArray "> im10 </param>
- 		<param name=" count "> 4 8 16 20 24 28 32 36 40 128 256 512 1024 2048 4096 </param>
+ 		<param name=" count "> 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 36 40 128 256 512 1024 2048 4096 </param>
 	</testperf>
 	<testperf>
  		<param name=" srcArray "> im00 im10 im20 im30 </param>
