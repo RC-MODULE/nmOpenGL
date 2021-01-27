@@ -126,7 +126,6 @@ macro ConvertN(N)
     // Загрузить маску в ram
     rep N ram = [ar3];
 
-
     // операция взвешенного суммирования
     rep N data = [ar1++] with vsum ram, shift data, 0;
     rep N data = [ar5++] with mask ram, shift data, afifo;
@@ -150,8 +149,7 @@ macro ConvertN(N)
     ar5 = ar0;
    
     // Загрузить маску в ram
-    rep N ram = [ar3];	// !!! Не будет работать для N > 1
-
+    rep N ram = [ar3];	
 
     // Сдвинуть слово на 6 разрядов влево
     rep N data = [ar1++] with vsum ram, data, 0;
@@ -166,7 +164,7 @@ macro ConvertN(N)
     rep N with mask ram, afifo, 0;
     rep N [ar4] = afifo;
 
-	ar0 = ar1;
+	ar0 = ar1; // Сохранить сдвинутый вперёд адрес входного массива 
     
     // Обработать младшую часть результата
     ar1 = rgbMatrix;
@@ -182,7 +180,6 @@ macro ConvertN(N)
     ar6 = gbMskl;
     rep N ram = [ar6];
 
-    
     // Загрузить в afifo R8
     rep N data = [ar1] with mask ram, 0, data;
     // Логически сложить R8 и G8
@@ -192,6 +189,7 @@ macro ConvertN(N)
     // Сдвинуть B8 и сложить его с R8 и G8
     ftw, wtw;                           // Загрузить следующие 8 строк
     rep N data = [ar4] with vsum , data, afifo;
+	// Выгрузить в выходной массив чётные элементы
     rep N [ar2++gr2] = afifo;
 
     // Обработать старшую часть результата
@@ -207,9 +205,9 @@ macro ConvertN(N)
     // Сдвинуть B8 и сложить его с R8 и G8
     ftw, wtw;                           // Загрузить следующие 8 строк
     rep N data = [ar4] with vsum , data, afifo;
-    // Результат операции выгрузить из afifo в память
-    rep N [ar5++gr5] = afifo;    // GB88h
-	nul;nul;nul;
+	// Выгрузить в выходной массив нечётные элементы
+    rep N [ar5++gr5] = afifo;
+	nul;nul;nul; // Дополнение макроса (+ goto Exit после него) до 128
 	nul;nul;nul;
 end ConvertN;
     
@@ -219,7 +217,7 @@ begin ".text_demo3d"      // начало секции кода.
 	ConvertTail: label;
 
     ar5 = ar7 - 2;
-    push ar0,gr0;
+    push ar0,gr0 with gr7 = gr5;
     push ar1,gr1;
     push ar2,gr2;
     push ar3,gr3;
@@ -230,7 +228,9 @@ begin ".text_demo3d"      // начало секции кода.
     ar2 = [--ar5];          // Адрес выходного массива
     gr0 = [--ar5];          // Количество элементов во входном массиве
 
-	gr0 >>= 2;
+	// gr0 - количество 64-битных слов, кратное 32 ((count / 4) / 32)
+	// gr1 - остаток ((count / 4) % 32)
+	gr0 >>= 2;	// Количество 64-битных слов
     if =0 delayed goto Exit with gr1 = gr0 << 27;
 		gr1 >>= 27;
 		gr0 >>= 5;
@@ -241,11 +241,10 @@ begin ".text_demo3d"      // начало секции кода.
     goto Next32Reps with gr0--;
 
 <StartTail>
-	gr1;
+	ar1 = ConvertTail with gr1;
 	if =0 delayed goto Exit;
 		gr1--;
 		gr1 <<= 7;
-	ar1 = ConvertTail;
 	goto ar1 + gr1;
 <ConvertTail>
 	ConvertN(1); goto Exit;
@@ -280,8 +279,6 @@ begin ".text_demo3d"      // начало секции кода.
 	ConvertN(30); goto Exit;
 	ConvertN(31); goto Exit;
 	
-    // Примечание: флаги для "if > goto Loop" установлены операцией в правой части
-    // последней скалярной операции, т.е. [ar2++] = gr6 with gr0 = gr0 - 1;
     // Установка флагов происходит только путем выполнения арифметическо-логической операции 
     // в правой части скалярной команды (rg_asm_ru.docx, 5.1.9.5)
     // gr2 = ar2; - команда копирования регистров, которая может располагаться только 
@@ -294,7 +291,7 @@ begin ".text_demo3d"      // начало секции кода.
     pop ar3,gr3;
     pop ar2,gr2;
     pop ar1,gr1;
-    pop ar0,gr0;
+    pop ar0,gr0 with gr5 = gr7;
 
     return; 
 end ".text_demo3d";       // признак окончания секции кода.
