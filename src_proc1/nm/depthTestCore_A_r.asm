@@ -52,7 +52,14 @@ global _depthTestCore16_A_r: label;
 		gr4 = ar0	with gr2++;
 		gr5 = ar1;		
 <DepthTestMacros_start>
-	macroDepthTest(1 );
+	//macroDepthTest(1 );
+	delayed goto DepthTestMacros_end;
+		nul;
+		nul;
+.repeat 28;
+	nul;
+.endrepeat;
+
 	macroDepthTest(1 );
 	macroDepthTest(2 );
 	macroDepthTest(3 );

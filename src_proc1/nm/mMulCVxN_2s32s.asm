@@ -153,7 +153,15 @@ begin ".text_demo3d"
 		gr6 = gr2 << 1;
 		nul;
 <repNHeightStart>
-	mainLoopRepN(1 );
+	//mainLoopRepN(1 );
+	with gr7--;
+	nul;
+	if > delayed goto NextTreangle;
+		nul;
+		nul;
+	.repeat 26;
+	nul;
+	.endrepeat;
 	
 	mainLoopRepN(1 );
 	mainLoopRepN(2 );

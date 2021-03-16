@@ -110,8 +110,13 @@ begin ".text_demo3d"
 		with gr1 = gr0;
 
 <ResidualStrings>
-	RESIDUAL_STRINGS(01); //dummy
-
+	//RESIDUAL_STRINGS(01); //dummy
+	delayed goto CheckCountForExit;
+		ar6 = gr4;
+		nul;
+.repeat 28;
+	nul;
+.endrepeat;
 	RESIDUAL_STRINGS(01);
 	RESIDUAL_STRINGS(02);
 	RESIDUAL_STRINGS(03);
