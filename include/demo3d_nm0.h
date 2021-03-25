@@ -242,7 +242,9 @@ public:
 	NMGLSynchro synchro;
 	BitMask segmentMasks[36];
 	BitDividedMask dividedMasks[2];	
-	PolygonsConnector* polygonsConnectors;
+	PolygonsConnector* triangleConnectors;
+	PolygonsConnector* lineConnectors;
+	PolygonsConnector* pointConnectors;
 	PatternsArray* patterns;
 	float* buffer0;
 	float* buffer1;
@@ -1572,6 +1574,8 @@ void rasterizeL(const Lines* lines, const BitMask* masks);
 void rasterizeP(const Points* points, const BitMask* masks);
   //! \}
 
+void transferPolygons(DataForNmpu1 *data, PolygonsConnector *connector, int mode);
+
 /*!
  *  \ingroup service_api
  *  \defgroup updatePolygons updatePolygons
@@ -1612,6 +1616,8 @@ void updatePolygonsP(DataForNmpu1* data, Points* points, int count, int segX, in
 void light(v4nm32f* vertex, v4nm32f* srcNormal_dstColor, int size);
 //! \}
 
+void startCalculateColor(v4nm32f* srcVertex, v4nm32f* srcNormal, int vertexCount);
+void getCalculatedColor(v4nm32f* dstColor, int vertexCount);
 
 
 void printWindowInfo(WindowInfo* info, int mode);

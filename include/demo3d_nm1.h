@@ -51,7 +51,7 @@ public:
 
 	NMGLSynchro synchro;				///< Структура для общения процессоров друг с другом
 	ImageConnector* imageConnector;				///< Коннектор к кольцевому буферу изображений
-	PolygonsConnector* polygonsConnectors;		///< Указатель на коннекторы структуры Polygons, необходимой для передачи данных с ядра на ядро
+	int dummy;
 
 	DepthBuffer depthBuffer;			///< Структура для работы с целым буфером глубины
 	IMAGE_BUFFER_CLASS colorBuffer;		///< Структура для работы с целым цветным буфером

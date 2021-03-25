@@ -21,7 +21,6 @@ SECTION(".text_demo3d") void pointOffset(Points &src, Points &dst, int offset) {
 SECTION(".text_demo3d")
 void rasterizeP(const Points* points, const BitMask* masks){
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
-	PolygonsConnector *connector = cntxt->polygonsConnectors;
 	Points localPoint;
 	Points localPoint2;
 
@@ -35,16 +34,20 @@ void rasterizeP(const Points* points, const BitMask* masks){
 	for (int segY = 0, iSeg = 0; segY < cntxt->windowInfo.nRows; segY++) {
 		for (int segX = 0; segX < cntxt->windowInfo.nColumns; segX++, iSeg++) {
 			if (masks[iSeg].hasNotZeroBits != 0) {
-
 				int resultSize = readMask(masks[iSeg].bits, indices, count);
 				if (resultSize) {
 
-					cntxt->synchro.writeInstr(1, NMC1_COPY_SEG_FROM_IMAGE,
-						cntxt->windowInfo.x0[segX],
-						cntxt->windowInfo.y0[segY],
-						cntxt->windowInfo.x1[segX] - cntxt->windowInfo.x0[segX],
-						cntxt->windowInfo.y1[segY] - cntxt->windowInfo.y0[segY],
-						iSeg);
+					PolygonsConnector *connector = cntxt->pointConnectors + iSeg;
+					bool drawingCheck = connector->ptrHead()->count + resultSize >= POLYGONS_SIZE;
+					if (drawingCheck) {
+						cntxt->synchro.writeInstr(1, NMC1_COPY_SEG_FROM_IMAGE,
+							cntxt->windowInfo.x0[segX],
+							cntxt->windowInfo.y0[segY],
+							cntxt->windowInfo.x1[segX] - cntxt->windowInfo.x0[segX],
+							cntxt->windowInfo.y1[segY] - cntxt->windowInfo.y0[segY],
+							iSeg);
+					}
+
 
 					copyArraysByIndices((void**)points, indices, (void**)&localPoint, 3, resultSize);
 
@@ -60,23 +63,23 @@ void rasterizeP(const Points* points, const BitMask* masks){
 					int offset = 0;
 					Triangles localTrian2;
 					while (offset < resultSize) {
-						int localSize = MIN(resultSize - offset, POLYGONS_SIZE);
+						DataForNmpu1* data = connector->ptrHead();
+						int localSize = MIN(resultSize - offset, POLYGONS_SIZE - data->count);
 						pointOffset(localPoint, localPoint2, offset);
-						offset += POLYGONS_SIZE;
-						while (connector[0].isFull());
-						DataForNmpu1* poly = connector[0].ptrHead();
-						poly->count = 0;
-						updatePolygonsP(poly, &localPoint2, localSize, segX, segY);
-						connector[0].incHead();
-						cntxt->synchro.writeInstr(1, NMC1_DRAW_POINTS);
-					}	
-
-					cntxt->synchro.writeInstr(1,
-						NMC1_COPY_SEG_TO_IMAGE,
-						cntxt->windowInfo.x0[segX],
-						cntxt->windowInfo.y0[segY],
-						cntxt->windowInfo.x1[segX] - cntxt->windowInfo.x0[segX],
-						cntxt->windowInfo.y1[segY] - cntxt->windowInfo.y0[segY]);
+						offset += localSize;
+						updatePolygonsP(data, &localPoint2, localSize, segX, segY);
+						if (data->count == POLYGONS_SIZE) {
+							transferPolygons(data, connector, NMC1_DRAW_POINTS);
+						}
+					}
+					if (drawingCheck) {
+						cntxt->synchro.writeInstr(1,
+							NMC1_COPY_SEG_TO_IMAGE,
+							cntxt->windowInfo.x0[segX],
+							cntxt->windowInfo.y0[segY],
+							cntxt->windowInfo.x1[segX] - cntxt->windowInfo.x0[segX],
+							cntxt->windowInfo.y1[segY] - cntxt->windowInfo.y0[segY]);
+					}
 				}
 			}
 		}

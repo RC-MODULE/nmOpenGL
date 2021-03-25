@@ -51,7 +51,9 @@ profile0:
 	$(MAKE) -f Makefile0 profile
 profile1:
 	$(MAKE) -f Makefile1 profile
-	
+
+dump1:
+	$(MAKE) -f Makefile1 dump
 	
 vs2005: $(HOST).vcproj 
 	"$(VS80COMNTOOLS)vsvars32" && vcbuild $(HOST).vcproj

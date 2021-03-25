@@ -94,26 +94,26 @@ void updatePolygonsT(DataForNmpu1* data, Triangles* triangles, int count, int se
 #ifdef DEBUG
 	static unsigned int counter = 0;
 	for (int i = 0; i < count; i++) {
-		if(	ABS((data->x1[i] - data->x0[i])) > 32 ||
-			ABS((data->x2[i] - data->x0[i])) > 32 ||
-			ABS((data->x2[i] - data->x1[i])) > 32 ||
-			(data->y1[i] - data->y0[i]) > 32 ||
-			(data->y2[i] - data->y0[i]) > 32 ||
-			(data->y2[i] - data->y1[i]) > 32){
+		if(	ABS((data->x1[i + data->count] - data->x0[i + data->count])) > 32 ||
+			ABS((data->x2[i + data->count] - data->x0[i + data->count])) > 32 ||
+			ABS((data->x2[i + data->count] - data->x1[i + data->count])) > 32 ||
+			(data->y1[i + data->count] - data->y0[i + data->count]) > 32 ||
+			(data->y2[i + data->count] - data->y0[i + data->count]) > 32 ||
+			(data->y2[i + data->count] - data->y1[i + data->count]) > 32){
 				printf("updatePolygonsT error. counter=%d, i=%d\n", counter, i);
-				data->x0[i] = 0;
-				data->x1[i] = 0;
-				data->x2[i] = 0;
-				data->y0[i] = 0;
-				data->y1[i] = 0;
-				data->y2[i] = 0;
+				data->x0[i + data->count] = 0;
+				data->x1[i + data->count] = 0;
+				data->x2[i + data->count] = 0;
+				data->y0[i + data->count] = 0;
+				data->y1[i + data->count] = 0;
+				data->y2[i + data->count] = 0;
 			}
-		if (data->x0[i] > cntxt->windowInfo.segmentWidth + 32 ||
-			data->x1[i] > cntxt->windowInfo.segmentWidth + 32 ||
-			data->x2[i] > cntxt->windowInfo.segmentWidth + 32 ||
-			data->y0[i] > cntxt->windowInfo.segmentHeight + 32 ||
-			data->y1[i] > cntxt->windowInfo.segmentHeight + 32 ||
-			data->y2[i] > cntxt->windowInfo.segmentHeight + 32) {
+		if (data->x0[i + data->count] > cntxt->windowInfo.segmentWidth + 32 ||
+			data->x1[i + data->count] > cntxt->windowInfo.segmentWidth + 32 ||
+			data->x2[i + data->count] > cntxt->windowInfo.segmentWidth + 32 ||
+			data->y0[i + data->count] > cntxt->windowInfo.segmentHeight + 32 ||
+			data->y1[i + data->count] > cntxt->windowInfo.segmentHeight + 32 ||
+			data->y2[i + data->count] > cntxt->windowInfo.segmentHeight + 32) {
 			printf("updatePolygonsT error. counter=%d, i=%d\n", counter, i);
 			//data->x0[i] = 0;
 			//data->x1[i] = 0;
@@ -126,5 +126,5 @@ void updatePolygonsT(DataForNmpu1* data, Triangles* triangles, int count, int se
 	counter++;
 #endif // DEBUG
 	
-	data->count = count;
+	data->count += count;
 }

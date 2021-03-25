@@ -23,7 +23,6 @@ SECTION(".text_demo3d") void lineOffset(Lines &src, Lines &dst, int offset) {
 SECTION(".text_demo3d")
 void rasterizeL(const Lines* lines, const BitMask* masks){
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
-	PolygonsConnector *connector = cntxt->polygonsConnectors;
 	Lines localLine;
 	Lines localLine2;
 
@@ -42,13 +41,16 @@ void rasterizeL(const Lines* lines, const BitMask* masks){
 
 				int resultSize = readMask(masks[iSeg].bits, indices, count);
 				if (resultSize) {
-
-					cntxt->synchro.writeInstr(1, NMC1_COPY_SEG_FROM_IMAGE,
-						cntxt->windowInfo.x0[segX],
-						cntxt->windowInfo.y0[segY],
-						cntxt->windowInfo.x1[segX] - cntxt->windowInfo.x0[segX],
-						cntxt->windowInfo.y1[segY] - cntxt->windowInfo.y0[segY],
-						iSeg);
+					PolygonsConnector *connector = cntxt->lineConnectors + iSeg;
+					bool drawingCheck = connector->ptrHead()->count + resultSize >= POLYGONS_SIZE;
+					if (drawingCheck) {
+						cntxt->synchro.writeInstr(1, NMC1_COPY_SEG_FROM_IMAGE,
+							cntxt->windowInfo.x0[segX],
+							cntxt->windowInfo.y0[segY],
+							cntxt->windowInfo.x1[segX] - cntxt->windowInfo.x0[segX],
+							cntxt->windowInfo.y1[segY] - cntxt->windowInfo.y0[segY],
+							iSeg);
+					}
 
 					copyArraysByIndices((void**)lines, indices, (void**)&localLine, 5, resultSize);
 
@@ -62,25 +64,24 @@ void rasterizeL(const Lines* lines, const BitMask* masks){
 					localLine.size = resultSize;
 					
 					int offset = 0;
-					Triangles localTrian2;
 					while (offset < resultSize) {
-						int localSize = MIN(resultSize - offset, POLYGONS_SIZE);
+						DataForNmpu1* data = connector->ptrHead();
+						int localSize = MIN(resultSize - offset, POLYGONS_SIZE - data->count);
 						lineOffset(localLine, localLine2, offset);
-						offset += POLYGONS_SIZE;
-						while (connector[0].isFull());
-						DataForNmpu1* poly = connector[0].ptrHead();
-						poly->count = 0;
-						updatePolygonsL(poly, &localLine2, localSize, segX, segY);
-						connector[0].incHead();
-						cntxt->synchro.writeInstr(1, NMC1_DRAW_LINES);
+						offset += localSize;
+						updatePolygonsL(data, &localLine2, localSize, segX, segY);
+						if (data->count == POLYGONS_SIZE) {
+							transferPolygons(data, connector, NMC1_DRAW_LINES);
+						}
 					}	
-
-					cntxt->synchro.writeInstr(1,
-						NMC1_COPY_SEG_TO_IMAGE,
-						cntxt->windowInfo.x0[segX],
-						cntxt->windowInfo.y0[segY],
-						cntxt->windowInfo.x1[segX] - cntxt->windowInfo.x0[segX],
-						cntxt->windowInfo.y1[segY] - cntxt->windowInfo.y0[segY]);
+					if (drawingCheck) {
+						cntxt->synchro.writeInstr(1,
+							NMC1_COPY_SEG_TO_IMAGE,
+							cntxt->windowInfo.x0[segX],
+							cntxt->windowInfo.y0[segY],
+							cntxt->windowInfo.x1[segX] - cntxt->windowInfo.x0[segX],
+							cntxt->windowInfo.y1[segY] - cntxt->windowInfo.y0[segY]);
+					}
 				}
 			}
 		}

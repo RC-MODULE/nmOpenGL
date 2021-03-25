@@ -7,7 +7,6 @@
 #include "ringbuffer.h"
 #include "nmprofiler.h"
 #include "cache.h"
-#include "nmprofiler.h"
 
 #include "nmgl.h"
 
@@ -69,11 +68,12 @@ template<class T> T* myMallocT() {
 	return result;
 }
 
-SECTION(".data_imu0A") NMGL_Context_NM1 context;
+SECTION(".data_imu0A") NMGL_Context_NM1 nmglContext;
 SECTION(".data_imu0") NMGL_Context_NM1 *NMGL_Context_NM1::context;
 
 SECTION(".text_nmglvs") int nmglvsNm1Init()
 {
+
 #ifdef TEXTURE_ENABLED
 	halLedOn(1);
 #endif //TEXTURE_ENABLED
@@ -87,9 +87,8 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 			throw -1;
 		}
 		setHeap(0);
-		NMGL_Context_NM1::bind(&context);
+		NMGL_Context_NM1::bind(&nmglContext);
 		cntxt = NMGL_Context_NM1::getContext();
-		cntxt->polygonsConnectors = myMallocT<PolygonsConnector>();
 		
 		setHeap(11);
 		cntxt->patterns = myMallocT<PatternsArray>();
@@ -118,19 +117,17 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 
 	NMGLSynchroData* synchroData = (NMGLSynchroData*)halSyncAddr((int*)cntxt->patterns, 0);
 	cntxt->synchro.init(synchroData);
-	PolygonsArray* polygonsData = (PolygonsArray*)halSyncAddr(0, 0);
-	cntxt->polygonsConnectors[0].init(polygonsData);
 #ifdef TEST_NMGL_TEX_FUNC
     halSyncAddr((void*)cntxt, 0);
 #endif //TEST_NMGL_TEX_FUNC
 
 	halHostSync(0x600DB00F);	// send ok to host
-
-	msdInit();
 	
 #ifdef __GNUC__
+	halDmaInit();
 	halInstrCacheEnable();
 #endif // __GNUC__
+	msdInit();
 	cntxt->smallColorBuff.init(segImage, WIDTH_SEG, HEIGHT_SEG);
 	cntxt->smallDepthBuff.init(segZBuff, WIDTH_SEG, HEIGHT_SEG);
 

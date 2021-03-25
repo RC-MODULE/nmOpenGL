@@ -17,22 +17,27 @@ SECTION(".data_imu2") int sizes[COUNT];
 	
 SECTION(".data_imu3")	nm32u dst[SIZE];
 
-
+extern "C" {
+	void start_trace();
+	void stop_trace();
+}
 
 int main()
 {		
 	unsigned int crc = 0;
 	clock_t t0, t1;
-	nmppsRandUniform_32u(src1,SIZE);
-	nmppsRandUniform_32u(src2,SIZE);
-	nmppsSet_32u(dst,0xCDCDCDCD,SIZE);
+	//nmppsRandUniform_32u(src1,SIZE);
+	//nmppsRandUniform_32u(src2,SIZE);
+	//nmppsSet_32u(dst,0xCDCDCDCD,SIZE);
 	for(int i=0;i<COUNT;i++){
 		ppSrc1[i] = src1 + 2 * i;
 		ppSrc2[i] = src2 + 2 * i;
 		ppDst[i] = dst;
-		sizes[i] = 16;
+		sizes[i] = 2;
 	}
+	start_trace();
 	mAndVxN_32u(ppSrc1, ppSrc2, ppDst, sizes, COUNT);
+	stop_trace();
 	nmppsCrcAcc_32u(dst,SIZE,&crc);
 	return crc>>2;
 }

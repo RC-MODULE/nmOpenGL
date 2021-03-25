@@ -6,13 +6,17 @@
 #include "nmgl.h"
 #include "nmglvs_nmc0.h"
 #include "nmprofiler.h"
-//#include "stacktrace.h"
 
 
 
 SECTION(".text_shared0") int main()
 {
 	halSleep(500);
+
+#if defined(__GNUC__) && defined(DEBUG)
+	nmprofiler_init();
+	//nmprofiler_disable();
+#endif // __GNUC__
 
 	nmglvsNm0Init();
 
@@ -93,16 +97,10 @@ SECTION(".text_shared0") int main()
 	float materialSpec[4] = { 0,0,0,1 };
 	float materialDiffuse[4] = { 0,0,0,1 };
 	nmglMaterialf(NMGL_FRONT_AND_BACK, NMGL_SHININESS, 15);
-	//float angle = 1.72 * 38;
 	float angle = 0;
 	NMGLenum error;
 	unsigned time;
 
-	/*nmglEnable(NMGL_LIGHT1);
-	float lightVector2[4] = { 0, 0.707, 0.707, 0 };
-	nmglLightfv(NMGL_LIGHT1, NMGL_POSITION, lightVector);
-	float lightDiffuse2[4] = { 1, 1, 0, 1 };
-	nmglLightfv(NMGL_LIGHT1, NMGL_DIFFUSE, lightDiffuse);*/
 	int counter = 0;
 	while(nmglvsNm0Run()){
 		nmglEnableClientState(NMGL_VERTEX_ARRAY);
@@ -152,17 +150,6 @@ SECTION(".text_shared0") int main()
 		nmglDisableClientState(NMGL_VERTEX_ARRAY);
 		nmglDisableClientState(NMGL_NORMAL_ARRAY);
 		counter++;
-		if (counter == 256) {
-			//PROFILER_PRINT2TBL();
-			//nmprofiler_disable();
-			//return 0;
-		}
-		//nmglFinish();
-		//PROFILER_PRINT2TBL();				//  std 
-		//for (; nmprofiler_trace.tail<nmprofiler_trace.head; nmprofiler_trace.tail++) {
-		//	TraceData* item = nmprofiler_trace.ptrTail();
-		//	printf("t:%x\tfunc:%x\tdir:%d\thead:%d\n", item->time, item->func, item->dir, item->counter);
-		//}
 		nmglvsSwapBuffer();
 	}
 	//halFree(vertices_DDR);

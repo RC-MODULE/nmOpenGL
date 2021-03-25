@@ -96,8 +96,6 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 
 	NMGLSynchroData* synchroData;
 	NMGL_Context_NM0 *cntxt;
-	PolygonsArray* polygonsData;
-
 
 	try {
 		int fromHost = halHostSync(0xC0DE0000);		// send handshake to host
@@ -114,15 +112,28 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 		cntxt->init(synchroData);
 
 		//setHeap(1);
-		cntxt->polygonsConnectors = myMallocT<PolygonsConnector>();
+		cntxt->triangleConnectors = myMallocT<PolygonsConnector>(36);
+		cntxt->lineConnectors = myMallocT<PolygonsConnector>(36);
+		cntxt->pointConnectors = myMallocT<PolygonsConnector>(36);
 
 		setHeap(10);
-		polygonsData = myMallocT<PolygonsArray>();
-		polygonsData->init();
-		for(int i = 0; i< COUNT_POLYGONS_BUFFER; i++){
-			polygonsData->ptr(i)->count = 0;
+
+		PolygonsArray* trianData = myMallocT<PolygonsArray>(36);
+		PolygonsArray* lineData = myMallocT<PolygonsArray>(36);
+		PolygonsArray* pointsData = myMallocT<PolygonsArray>(36);
+		for (int seg = 0; seg < 36; seg++) {
+			trianData[seg].init();
+			trianData[seg].ptr(0)->count = 0;
+			cntxt->triangleConnectors[seg].init(trianData + seg);
+
+			lineData[seg].init();
+			lineData[seg].ptr(0)->count = 0;
+			cntxt->lineConnectors[seg].init(lineData + seg);
+
+			pointsData[seg].init();
+			pointsData[seg].ptr(0)->count = 0;
+			cntxt->pointConnectors[seg].init(pointsData + seg);
 		}
-		cntxt->polygonsConnectors[0].init(polygonsData);
 
 		cntxt->beginEndInfo.vertex = myMallocT<v4nm32f>(BIG_NMGL_SIZE);
 		cntxt->beginEndInfo.normal = myMallocT<v4nm32f>(BIG_NMGL_SIZE);
@@ -133,30 +144,12 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 		cntxt->beginEndInfo.inBeginEnd = false;
 		cntxt->beginEndInfo.maxSize = BIG_NMGL_SIZE;
 
-		/*setHeap(1);
-		cntxt->buffer0 = (float*)halMalloc32(12 * NMGL_SIZE);//nmglBuffer0;
-		setHeap(2);
-		cntxt->buffer1 = (float*)halMalloc32(12 * NMGL_SIZE);//nmglBuffer1;
-		setHeap(3);
-		cntxt->buffer2 = (float*)halMalloc32(12 * NMGL_SIZE);//nmglBuffer2;
-		setHeap(4);
-		cntxt->buffer3 = (float*)halMalloc32(12 * NMGL_SIZE);//nmglBuffer3;
-		setHeap(5);
-		cntxt->buffer4 = (float*)halMalloc32(12 * NMGL_SIZE);//nmglBuffer4;
-		setHeap(7);
-		cntxt->buffer5 = (float*)halMalloc32(12 * NMGL_SIZE);//nmglBuffer5;*/
 		cntxt->buffer0 = (float*)nmglBuffer0;
 		cntxt->buffer1 = (float*)nmglBuffer1;
 		cntxt->buffer2 = (float*)nmglBuffer2;
 		cntxt->buffer3 = (float*)nmglBuffer3;
 		cntxt->buffer4 = (float*)nmglBuffer4;
 		cntxt->buffer5 = (float*)nmglBuffer5;
-		//printf("buffer0=%p\n", cntxt->buffer0);
-		//printf("buffer1=%p\n", cntxt->buffer1);
-		//printf("buffer2=%p\n", cntxt->buffer2);
-		//printf("buffer3=%p\n", cntxt->buffer3);
-		//printf("buffer4=%p\n", cntxt->buffer4);
-		//printf("buffer5=%p\n", cntxt->buffer5);
 #ifdef STACK_TRACE_ENABLED		
 		stackTraceConnector.init(&nmprofiler_trace);
 #endif //STACK_TRACE_ENABLED
@@ -175,7 +168,6 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 	halHostSync(0x600DB00F);	// send ok to host
 	
 	cntxt->patterns = (PatternsArray*)halSyncAddr(synchroData, 1);
-	halSyncAddr(polygonsData, 1);
 #ifdef TEST_NMGL_TEX_FUNC
 	cntxtAddr_nm1 = (void*)halSyncAddr(0, 1);
 #ifndef __NM__
@@ -236,8 +228,8 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 		cntxt->segmentMasks[i].init((nm1*)masksBits[i]);
 	}
 #ifdef __GNUC__
-	halDmaInitC();
 	halInstrCacheEnable();
+	//halDmaInitC();
 #endif // __GNUC__
 #ifdef STACK_TRACE_ENABLED
 	halHostSyncAddr(&nmprofiler_trace);

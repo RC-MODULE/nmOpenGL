@@ -102,27 +102,14 @@ OBJECTS     = $(addprefix $(TMP_DIR)/, $(OBJECTS_C) $(OBJECTS_CPP)  $(OBJECTS_AS
 .PHONY:all  clean skip
 
 .DEFAULT_GOAL=default
-default: $(TARGET) 
+default: $(PROFILE) $(TARGET)
 
 #$(TMP_DIR) $(OUT_DIR)  $(TARGET)
 
-all:  $(TARGET)
-	
-#	$(MAKE) -j4 DEBUG=y
-#	$(MAKE) -j4
+all: $(TARGET)
 
-#generate nmc-dumps
-DUMPS 		= $(addprefix $(TMP_DIR)/dumps/, $(notdir $(patsubst %.o,%.dump,$(OBJECTS))))
-dumps: $(TMP_DIR)/dumps
-	$(MAKE) -f Makefile0 $(DUMPS)
-
-$(TMP_DIR)/dumps:
-	mkdir $(TMP_DIR)\dumps
-	
-$(TMP_DIR)/dumps/%.dump: $(TMP_DIR)/%.o
-	nmc-objdump $< -d -S -x >> $@
-	
-	
+dump:
+	nmc-objdump -D $(PROJECT).abs > $(PROJECT).dasm
 	
 $(TMP_DIR):
 	-mkdir "$(@)"
@@ -146,30 +133,9 @@ $(TMP_DIR)/%.o: %.c  $(ALL_H) $(CFG)
 	$(CC) $(CC_FLAGS) -c $(<) -o$(@) $(INC_DIRS)
 	
 	
-profile:	
+$(PROFILE):
 	python $(HAL)/script/profiler.py > $(PROFILE)
-	$(MAKE)
+profile: $(TARGET)
 	python $(HAL)/script/profiler.py $(MAP) > $(PROFILE)
-	
-profile_gen:	
-	python $(HAL)/script/profiler.py > $(PROFILE)
-profile_read:	
-	python $(HAL)/script/profiler.py $(MAP) > $(PROFILE)
-	
-
-#========================== Visual Studio  ===================
-export ALL_CPP ALL_ASM ALL_C ALL_H
-
-PROVIDER = host-x64
-
-$(PROVIDER).vcxproj :	premake5.lua 
-	premake5 vs2015
-
-$(PROVIDER).vcproj :	premake5.lua 
-	premake5 vs2005
-
-vs2015:   $(PROVIDER).vcxproj
-#	"$(VS140COMNTOOLS)vsvars32" && msbuild $(PROVIDER).vcxproj
-#	"$(VS140COMNTOOLS)vsvars32" && msbuild $(PROJECT).vcxproj /p:Configuration=Release /p:Platform=x64
 
 include $(ROOT)/clean.mk

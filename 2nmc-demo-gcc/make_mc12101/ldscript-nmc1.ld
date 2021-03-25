@@ -120,6 +120,10 @@ SECTIONS
   {
     *(.data_shared3);
   } > EMI3
+  .trace.bss : ALIGN(0x8)
+  {
+    *(.data_shared3);
+  } > EMI3
   .data_hal_syncro : ALIGN(0x8)
   {
     *(.data_hal_syncro);

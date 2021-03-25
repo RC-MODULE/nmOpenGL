@@ -13,7 +13,9 @@ using namespace tex_nm1;
 SECTION(".data_imu0") TrianglesInfo triangles;
 #endif //TEXTURE_ENABLED
 
+
 void printDataForNmpu1(DataForNmpu1* data);
+
 SECTION(".text_demo3d") void drawTriangles(PolygonsConnector *connector) {
 	NMGL_Context_NM1 *context = NMGL_Context_NM1::getContext();
 
@@ -54,6 +56,7 @@ SECTION(".text_demo3d") void drawTriangles(PolygonsConnector *connector) {
 			(nm32u**)context->ppPtrns2_2s, 
 			(nm32u**)context->ppPtrnsCombined_2s, 
 			context->nSizePtrn32 + point_x3, localSize);
+
 
 		//проверка активирования теста глубины
 		if (context->depthBuffer.enabled == NMGL_FALSE) {
@@ -98,7 +101,6 @@ SECTION(".text_demo3d") void drawTriangles(PolygonsConnector *connector) {
 			context->valuesC + point,
 			mulC,
 			localSize);
-
 		//mulBuffer теперь хранит цвет
 
 #ifdef TEXTURE_ENABLED
@@ -135,6 +137,8 @@ SECTION(".text_demo3d") void drawTriangles(PolygonsConnector *connector) {
 
 		//функция накладывает маску на буфер с цветами 
 		//и копирует треугольник в изображение
+
+	
 		PROFILER_SIZE(fullSize);
 		MASK_FUNC(mulC,
 			zMaskBuffer,
@@ -145,6 +149,5 @@ SECTION(".text_demo3d") void drawTriangles(PolygonsConnector *connector) {
 		countTrangles -= SMALL_SIZE;
 		point += SMALL_SIZE;
 	}
-
 	return;
 }

@@ -44,13 +44,13 @@ void updatePolygonsL(DataForNmpu1* data, Lines* lines, int count, int segX, int 
 //#ifdef DEBUG
 	static unsigned int counter = 0;
 	for (int i = 0; i < count; i++) {
-		if (ABS(data->x1[i] - data->x0[i]) >= 32 ||
-			data->y1[i] - data->y0[i] >= 32) {
+		if (ABS(data->x1[i + data->count] - data->x0[i + data->count]) >= 32 ||
+			data->y1[i + data->count] - data->y0[i + data->count] >= 32) {
 			//printf("updatePolygonsL error. counter=%i, i=%d\n", counter, i);
-			data->x0[i] = 0;
-			data->x1[i] = 0;
-			data->y0[i] = 0;
-			data->y1[i] = 0;
+			data->x0[i+ data->count] = 0;
+			data->x1[i+ data->count] = 0;
+			data->y0[i+ data->count] = 0;
+			data->y1[i+ data->count] = 0;
 		}
 	}
 	counter++;
@@ -58,6 +58,6 @@ void updatePolygonsL(DataForNmpu1* data, Lines* lines, int count, int segX, int 
 
 	
 	
-	data->count = count;
+	data->count += count;
 	
 }

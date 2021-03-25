@@ -125,6 +125,10 @@ int nmglvsHostInit()
 #endif
 	
 	//nmc0, sync4
-	halSync(0, 0);
+	ok = halSync(0, 0);
+	if (ok != 0x600D600D) {
+		printf("Error!!\n");
+		return 1;
+	}
 	return 0;
 };

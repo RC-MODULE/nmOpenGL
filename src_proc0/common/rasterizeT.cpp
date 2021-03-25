@@ -73,16 +73,19 @@ void rasterizeT(const Triangles* triangles, const BitMask* masks){
 	for (int segY = 0, iSeg = 0; segY < cntxt->windowInfo.nRows; segY++) {
 		for (int segX = 0; segX < cntxt->windowInfo.nColumns; segX++, iSeg++) {
 			if (masks[iSeg].hasNotZeroBits != 0) {
-				//printf("addr=%p,ind=%p, count=%d\n", masks[iSeg].bits, indices, count);
 				int resultSize = readMask(masks[iSeg].bits, indices, count);
 				if (resultSize) {
+					PolygonsConnector *connector = cntxt->triangleConnectors + iSeg;
+					bool drawingCheck = connector->ptrHead()->count + resultSize >= POLYGONS_SIZE;
+					if (drawingCheck) {
+						cntxt->synchro.writeInstr(1, NMC1_COPY_SEG_FROM_IMAGE,
+							cntxt->windowInfo.x0[segX],
+							cntxt->windowInfo.y0[segY],
+							cntxt->windowInfo.x1[segX] - cntxt->windowInfo.x0[segX],
+							cntxt->windowInfo.y1[segY] - cntxt->windowInfo.y0[segY],
+							iSeg);
+					}
 
-					cntxt->synchro.writeInstr(1, NMC1_COPY_SEG_FROM_IMAGE,
-						cntxt->windowInfo.x0[segX],
-						cntxt->windowInfo.y0[segY],
-						cntxt->windowInfo.x1[segX] - cntxt->windowInfo.x0[segX],
-						cntxt->windowInfo.y1[segY] - cntxt->windowInfo.y0[segY],
-						iSeg);
 #ifdef TEXTURE_ENABLED
 					if (cntxt->texState.textureEnabled) {
 						copyArraysByIndices((void**)triangles, indices, (void**)&localTrian, 16, resultSize);
@@ -98,26 +101,25 @@ void rasterizeT(const Triangles* triangles, const BitMask* masks){
 
 					int offset = 0;
 					Triangles localTrian2;
-					PolygonsConnector *connector = cntxt->polygonsConnectors;
 					while (offset < resultSize) {
-						while (connector->isFull()) {
-							halSleep(2);
-						}
 						DataForNmpu1* data = connector->ptrHead();
 						int localSize = MIN(resultSize - offset, POLYGONS_SIZE - data->count);
 						triangleOffset(localTrian, localTrian2, offset);
 						offset += localSize;
-						updatePolygonsT(data, &localTrian2, localSize, segX, segY);						
-						connector->incHead();
-						cntxt->synchro.writeInstr(1, NMC1_DRAW_TRIANGLES, iSeg);
+						updatePolygonsT(data, &localTrian2, localSize, segX, segY);
+						if (data->count == POLYGONS_SIZE) {
+							transferPolygons(data, connector, NMC1_DRAW_TRIANGLES);
+						}
+					}
+					if (drawingCheck) {
+						cntxt->synchro.writeInstr(1,
+							NMC1_COPY_SEG_TO_IMAGE,
+							cntxt->windowInfo.x0[segX],
+							cntxt->windowInfo.y0[segY],
+							cntxt->windowInfo.x1[segX] - cntxt->windowInfo.x0[segX],
+							cntxt->windowInfo.y1[segY] - cntxt->windowInfo.y0[segY]);
 					}
 
-					cntxt->synchro.writeInstr(1,
-						NMC1_COPY_SEG_TO_IMAGE,
-						cntxt->windowInfo.x0[segX],
-						cntxt->windowInfo.y0[segY],
-						cntxt->windowInfo.x1[segX] - cntxt->windowInfo.x0[segX],
-						cntxt->windowInfo.y1[segY] - cntxt->windowInfo.y0[segY]);
 				}
 			}
 		}
