@@ -54,24 +54,6 @@ macro copyCol(src, dst, srcOffset, dstOffset, n)
 	if > goto Loop;
 end copyCol;
 
-// Copies n 32-bit words from vreg src to dst (dst - odd address)
-// predefined: vlen
-// modifies: ar5, gr3, gr7, dst
-macro copyVregAtOddAddress(src, dst, n)
-	own bufToOutput: label;
-	// Copy vreg to buf
-	ar5 = buf;
-	fpu 0 rep vlen [ar5++] = src;
-	// Copy buf to output
-	gr3 = n;	// Number of words to copy
-	ar5 = buf;
-<bufToOutput>	
-	gr7 = [ar5++];
-	[dst++] = gr7;
-	gr3 = gr3 - 1;
-	if > goto bufToOutput;
-end copyVregAtOddAddress;
-
 // Extracts gr0 pairs of coordinates (xy or zw) from coordAddr1 and coordAddr2,
 // splits it and save to the one-dimensional array starting at ar4.
 // Predefined:
@@ -175,12 +157,6 @@ begin ".text_demo3d"			// начало секции кода
 	gr6;
 	if =0 goto Exit;
 
-	// return 
-	gr3 = 11;
-	ar3 = ar3 + gr3;
-	gr3 = [ar3];
-	[retVal] = gr3;
-	goto Exit;
 
 	// Выгрузка координат x точек A всех треугольников для mode=GL_TRIANGLES
 	// Get number of triangles 
@@ -209,14 +185,23 @@ begin ".text_demo3d"			// начало секции кода
 	// that should be extracted for A or B or C points.
 	// Get xy coordinates of A points
 	gr0 = gr1;	// gr0 - loop counter	
-	gr2 = gr1;
-	ar4 = ar2 + gr2;	// Output address of Y coordinates
+	gr3 = 2;
+	ar4 = ar3 + 1;	// Output address of Y coordinates
+	ar3 = ar3 + gr3;
 	extractPair(ar0, ar0 + 12, 24);
 	// Get zw coordinates of A points
 	gr0 = gr1;	// gr0 - loop counter	
-	ar2 = ar4 with gr2 = gr1;
-	ar4 = ar2 + gr2;	// Start address of W coordinates
+	ar4 = ar3 + 1;	// Output address of W coordinates
+	ar3 = ar3 + gr3;
 	extractPair(ar0 + 2, ar0 + 14, 24);
+	
+		// return 
+		gr3 = 11;
+		ar3 = ar3 + gr3;
+		gr3 = [ar3];
+		[retVal] = gr3;
+		goto Exit;
+
 	// Get xy coordinates of B points
 	gr0 = gr1;	// gr0 - loop counter	
 	ar2 = ar4 with gr2 = gr1;
