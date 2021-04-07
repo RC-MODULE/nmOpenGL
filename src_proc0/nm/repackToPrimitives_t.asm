@@ -14,7 +14,6 @@ data ".data_demo3d"        //секция инициализированных �
 	M01: word[2] = (float(0), float(1)); // extract Y0,Y1 from (X0,Y0;X1,Y1)T vec
 	buf: word[64];					// buf to copy odd words from vreg to mem
 	vertCount: word;				// number of input vertexes (used only in GL_TRIANGLES)
-	tmpAddress: word;				// used to remember address of y or w row
 	retVal: word;					// return value
 	dstVertex: word;
 	dstColorEnd: word;
@@ -30,11 +29,11 @@ macro copyCol(src, dst, srcOffset, dstOffset, n)
 	gr5 = n;	
 	ar0 = src;			//rg input
 	gr0 = srcOffset;
-	ar2 = src + 2;		//ba input
+	ar2 = ar0 + 2;		//ba input
 	gr2 = srcOffset;
 	ar4 = dst;			//rg output
 	gr4 = dstOffset;
-	ar6 = dst + 2;		//ba output
+	ar6 = ar4 + 2;		//ba output
 	gr6 = dstOffset;
 <Loop>
 	gr7 = 32;	// gr7 - max number of pairs to load into vreg 
@@ -77,7 +76,6 @@ macro extractPair(coordAddr1, coordAddr2, delta)
 	gr5 = ar5;
 	ar6 = coordAddr2;
 	gr6 = ar6;
-	[tmpAddress] = ar4;	// used to copy y0 to ar4 at the end of macro
 <getLoop>
 	// gr2 - max number of coordinates that can be extracted in one iteration
 	// vreg0 contains 32 pairs of xy, vreg1 contains 32 pairs of xy
@@ -111,26 +109,19 @@ macro extractPair(coordAddr1, coordAddr2, delta)
 	gr6 = ar6;
 	// Extract first coordinate of the pair (x or z)
 	ar5 = M10;
+	ar4 = [ar3++];
 	fpu 0 rep vlen vreg4 = [ar5];
 	fpu 0 .matrix vreg2 = vreg4 * .trans (vreg0, vreg1);
-	fpu 0 rep vlen [ar2++] = vreg2;	
+	fpu 0 rep vlen [ar4++] = vreg2;	
 	// Extract second coordinate of the pair (y or w)
 	ar5 = M01;
+	ar4 = [ar3++];
 	fpu 0 rep vlen vreg4 = [ar5];
 	fpu 0 .matrix vreg2 = vreg4 * .trans (vreg0, vreg1);
 	fpu 0 rep vlen [ar4++] = vreg2;	
 <endLoop>	
 	gr0  = gr0 - gr2;
 	if > goto getLoop;
-	// Copy Y_0 or W_0 coordinate of A, B or C vertex of the first triangle
-	// to the ar4, because it can be overwritten by X or Z coordinate in case
-	// of the odd number of triangles:
-	// ar4 = [ar0 + 1];
-	ar5 = coordAddr1; 
-	ar5++;
-	gr5 = [ar5];
-	ar5 = [tmpAddress];
-	[ar5] = gr5;
 end extractPair; 
 
 begin ".text_demo3d"			// начало секции кода
@@ -146,17 +137,17 @@ begin ".text_demo3d"			// начало секции кода
     
     ar0 = [--ar5];  // input vertexes
     ar1 = [--ar5];  // input colors
-    ar2 = [--ar5];  // output vertexes (input texture coords)
+    ar2 = [--ar5];  // input texture coords
     ar3 = [--ar5];  // output vertices
     gr6 = [--ar5];  // input: count of input vertexes 
     [vertCount] = gr6;	// Used in GL_TRIANGLES
 	[dstVertex] = ar2;
 
+
 	gr0 = 0;
 	[retVal] = gr0;
 	gr6;
 	if =0 goto Exit;
-
 
 	// Выгрузка координат x точек A всех треугольников для mode=GL_TRIANGLES
 	// Get number of triangles 
@@ -181,47 +172,74 @@ begin ".text_demo3d"			// начало секции кода
 	//IDIV32(gr1, gr6, gr0);	// gr1 - res, gr6 - division, gr0 - divider
 							// This macro modifies ar5 and gr7
 	[retVal] = gr1;
-	// gr1 is a number of output triangles and a total number of pairs (xy or zw) 
-	// that should be extracted for A or B or C points.
+	// gr1 is a number of output triangles and a total number of pairs 
+	// (xy or zw) that should be extracted for A or B or C points.
+
+	// Get x, y, z, w, s, t of A points
 	// Get xy coordinates of A points
 	gr0 = gr1;	// gr0 - loop counter	
-	gr3 = 2;
-	ar4 = ar3 + 1;	// Output address of Y coordinates
-	ar3 = ar3 + gr3;
 	extractPair(ar0, ar0 + 12, 24);
 	// Get zw coordinates of A points
 	gr0 = gr1;	// gr0 - loop counter	
-	ar4 = ar3 + 1;	// Output address of W coordinates
-	ar3 = ar3 + gr3;
 	extractPair(ar0 + 2, ar0 + 14, 24);
-	
-		// return 
-		gr3 = 11;
-		ar3 = ar3 + gr3;
-		gr3 = [ar3];
-		[retVal] = gr3;
-		goto Exit;
+	// Get st coordinates of A points
+	gr0 = gr1;	// gr0 - loop counter	
+	extractPair(ar2, ar2 + 6, 12);
+		
+	ar3++;
+	ar3++;	// Skip dummy int
 
+	// Get x, y, z, w, s, t of B points
 	// Get xy coordinates of B points
 	gr0 = gr1;	// gr0 - loop counter	
-	ar2 = ar4 with gr2 = gr1;
-	ar4 = ar2 + gr2;	// Start address of Y coordinates
 	extractPair(ar0 + 4, ar0 + 16, 24);
 	// Get zw coordinates of B points
 	gr0 = gr1;	// gr0 - loop counter	
-	ar2 = ar4 with gr2 = gr1;
-	ar4 = ar2 + gr2;	// Start address of W coordinates
 	extractPair(ar0 + 6, ar0 + 18, 24);
+	// Get st coordinates of B points
+	gr0 = gr1;	// gr0 - loop counter	
+	extractPair(ar2 + 2, ar2 + 8, 12);
+
+	ar3++;	// Skip output color
+	ar3++;	// Skip dummy int
+
+
+	// Get x, y, z, w, s, t of C points
 	// Get xy coordinates of C points
 	gr0 = gr1;	// gr0 - loop counter	
-	ar2 = ar4 with gr2 = gr1;
-	ar4 = ar2 + gr2;	// Start address of Y coordinates
 	extractPair(ar0 + 8, ar0 + 20, 24);
 	// Get zw coordinates of C points
 	gr0 = gr1;	// gr0 - loop counter	
-	ar2 = ar4 with gr2 = gr1;
-	ar4 = ar2 + gr2;	// Start address of W coordinates
 	extractPair(ar0 + 10, ar0 + 22, 24);
+	// Get st coordinates of C points
+	gr0 = gr1;	// gr0 - loop counter	
+	extractPair(ar2 + 4, ar2 + 10, 12);
+	
+	ar3 = [ar7 - 6];
+	ar3 += 6;	// Address of A_color pointer
+	gr3 = [ar3];
+	copyCol(ar1, gr3, 12, 4, gr1);
+	ar3 += 8;	// Address of A_color pointer
+	gr3 = [ar3];
+	copyCol(ar1 + 4, gr3, 12, 4, gr1);
+	ar3 += 8;	// Address of A_color pointer
+	gr3 = [ar3];
+	copyCol(ar1 + 8, gr3, 12, 4, gr1);
+	
+	//ar3 = [ar7 - 6];
+	//ar3 += 6;
+	//gr3 = [ar3];
+	//ar3 = gr3;
+	//gr3 = float(9);
+	//[ar3] = gr3;
+	//goto Exit;
+	
+		// return 
+		//gr3 = 11;
+		//ar3 = ar3 + gr3;
+		//gr3 = [ar3];
+		//[retVal] = gr3;
+		goto Exit;
 
 	// Extract colors
 	// In case of GL_TRIANGLES the number of output colors is equal to the

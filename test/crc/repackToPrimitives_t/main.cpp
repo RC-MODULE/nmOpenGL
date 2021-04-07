@@ -39,12 +39,34 @@ clock_t vertexPrimitiveRepack_modeIsGL_TRIANGLES_48Vertices();
 //	int vertexAmount);
 //
 
+// Количество ячеек, которые должны остаться неизменными после работы функции
+#define ZERO_COUNT 0 
+
 void Print(nm32f *ptr, size_t size)
 {
 	for (int i = 0; i < size; ++i){
-		printf("%f ", ptr[i]);
+		printf("%4.1f ", ptr[i]);
 	}
 	puts("");
+}
+
+void PrintV4nm32f(v4nm32f *ptr, size_t size)
+{
+	for (int i = 0; i < size; ++i){
+		for (int j = 0; j < 4; ++j){
+			printf("%4.1f ", ptr[i].vec[j]);
+		}
+	}
+	puts("");
+}
+
+void ZeroV4nm32f(v4nm32f *ptr, size_t size)
+{
+	for (int i = 0; i < size; ++i){
+		for (int j = 0; j < 4; ++j){
+			ptr[i].vec[j] = 0.0;
+		}
+	}
 }
 
 int analyzeStackParams()
@@ -54,27 +76,33 @@ int analyzeStackParams()
 	constexpr int expectedTrianglesCount = trianglesCount + trianglesCount % 2;
 	constexpr int outputCoordCount = 4 * 3 * expectedTrianglesCount;	// number of output vertexes
 
-    v4nm32f     srcVertex[vertCount] = {0};
-    v4nm32f     srcColor[vertCount] = {0};
-    v2nm32f     srcTex[vertCount] = {0};
-	float x0[expectedTrianglesCount];
-	float y0[expectedTrianglesCount];
-	float z0[expectedTrianglesCount];
-	float w0[expectedTrianglesCount];
-	float s0[expectedTrianglesCount];
-	float t0[expectedTrianglesCount];
-	float x1[expectedTrianglesCount];
-	float y1[expectedTrianglesCount];
-	float z1[expectedTrianglesCount];
-	float w1[expectedTrianglesCount];
-	float s1[expectedTrianglesCount];
-	float t1[expectedTrianglesCount];
-	float x2[expectedTrianglesCount];
-	float y2[expectedTrianglesCount];
-	float z2[expectedTrianglesCount];
-	float w2[expectedTrianglesCount];
-	float s2[expectedTrianglesCount];
-	float t2[expectedTrianglesCount];
+    v4nm32f     srcVertex[vertCount];
+    v4nm32f     srcColor[vertCount];
+    v2nm32f     srcTex[vertCount];
+	float x0[expectedTrianglesCount + ZERO_COUNT];
+	float y0[expectedTrianglesCount + ZERO_COUNT];
+	float z0[expectedTrianglesCount + ZERO_COUNT];
+	float w0[expectedTrianglesCount + ZERO_COUNT];
+	float s0[expectedTrianglesCount + ZERO_COUNT];
+	float t0[expectedTrianglesCount + ZERO_COUNT];
+    v4nm32f color0[expectedTrianglesCount + ZERO_COUNT];
+
+	float x1[expectedTrianglesCount + ZERO_COUNT];
+	float y1[expectedTrianglesCount + ZERO_COUNT];
+	float z1[expectedTrianglesCount + ZERO_COUNT];
+	float w1[expectedTrianglesCount + ZERO_COUNT];
+	float s1[expectedTrianglesCount + ZERO_COUNT];
+	float t1[expectedTrianglesCount + ZERO_COUNT];
+    v4nm32f color1[expectedTrianglesCount + ZERO_COUNT];
+	
+	float x2[expectedTrianglesCount + ZERO_COUNT];
+	float y2[expectedTrianglesCount + ZERO_COUNT];
+	float z2[expectedTrianglesCount + ZERO_COUNT];
+	float w2[expectedTrianglesCount + ZERO_COUNT];
+	float s2[expectedTrianglesCount + ZERO_COUNT];
+	float t2[expectedTrianglesCount + ZERO_COUNT];
+    v4nm32f color2[expectedTrianglesCount + ZERO_COUNT];
+
 	TrianglePointers dst;
 	dst.v0.x = x0;
 	dst.v0.y = y0;
@@ -82,90 +110,130 @@ int analyzeStackParams()
 	dst.v0.w = w0;
 	dst.v0.s = s0;
 	dst.v0.t = t0;
+	dst.v0.color = color0;
+
 	dst.v1.x = x1;
 	dst.v1.y = y1;
 	dst.v1.z = z1;
 	dst.v1.w = w1;
 	dst.v1.s = s1;
 	dst.v1.t = t1;
-	dst.v2.x = x1;
-	dst.v2.y = y1;
-	dst.v2.z = z1;
-	dst.v2.w = w1;
-	dst.v2.s = s1;
-	dst.v2.t = t1;
+	dst.v1.color = color1;
 
-    for (int i = 0; i < vertCount; i++)
-        for (int j = 0; j < 4; j++)
+	dst.v2.x = x2;
+	dst.v2.y = y2;
+	dst.v2.z = z2;
+	dst.v2.w = w2;
+	dst.v2.s = s2;
+	dst.v2.t = t2;
+	dst.v2.color = color2;
+
+    for (int i = 0; i < vertCount; i++){
+        for (int j = 0; j < 4; j++){
             srcVertex[i].vec[j] = (float)(4 * i + j);
+            srcColor[i].vec[j] = (float)(4 * i + j);
+		}
+	}
 
-    nm32f expectedDstVertex[outputCoordCount + expectedTrianglesCount]  = {0};
-    for (int i = 0; i < trianglesCount; i++){
-		x0[i] = srcVertex[3 * i].vec[0];
-		y0[i] = srcVertex[3 * i].vec[1];
-		z0[i] = srcVertex[3 * i].vec[2];
-		w0[i] = srcVertex[3 * i].vec[3];
-		//s0[i];
-		//t0[i];
-		x1[i] = srcVertex[3 * i + 1].vec[0];
-		y1[i] = srcVertex[3 * i + 1].vec[1];
-		z1[i] = srcVertex[3 * i + 1].vec[2];
-		w1[i] = srcVertex[3 * i + 1].vec[3];
-		//s1[i];
-		//t1[i];
-		x2[i] = srcVertex[3 * i + 2].vec[0];
-		y2[i] = srcVertex[3 * i + 2].vec[1];
-		z2[i] = srcVertex[3 * i + 2].vec[2];
-		w2[i] = srcVertex[3 * i + 2].vec[3];
-		//s2[i];
-		//t2[i];
+    for (int i = 0; i < vertCount; i++){
+		srcTex[i].v0 = (float)(2 * i);
+		srcTex[i].v1 = (float)(2 * i + 1);
 	}
-	if (trianglesCount % 2){
-		x0[expectedTrianglesCount - 1] = x0[expectedTrianglesCount - 2];
-		y0[expectedTrianglesCount - 1] = y0[expectedTrianglesCount - 2];
-		z0[expectedTrianglesCount - 1] = z0[expectedTrianglesCount - 2];
-		w0[expectedTrianglesCount - 1] = w0[expectedTrianglesCount - 2];
-		//s0[i];
-		//t0[i];
-		x1[expectedTrianglesCount - 1] = x1[expectedTrianglesCount - 2];
-		y1[expectedTrianglesCount - 1] = y1[expectedTrianglesCount - 2];
-		z1[expectedTrianglesCount - 1] = z1[expectedTrianglesCount - 2];
-		w1[expectedTrianglesCount - 1] = w1[expectedTrianglesCount - 2];
-		//s1[i];
-		//t1[i];
-		x2[expectedTrianglesCount - 1] = x2[expectedTrianglesCount - 2];
-		y2[expectedTrianglesCount - 1] = y2[expectedTrianglesCount - 2];
-		z2[expectedTrianglesCount - 1] = z2[expectedTrianglesCount - 2];
-		w2[expectedTrianglesCount - 1] = w2[expectedTrianglesCount - 2];
-		//s2[i];
-		//t2[i];
-	} else {
-		// Do not correct 
-	}
+
+    //nm32f expectedDstVertex[outputCoordCount + expectedTrianglesCount]  = {0};
+    //for (int i = 0; i < trianglesCount; i++){
+	//	x0[i] = srcVertex[3 * i].vec[0];
+	//	y0[i] = srcVertex[3 * i].vec[1];
+	//	z0[i] = srcVertex[3 * i].vec[2];
+	//	w0[i] = srcVertex[3 * i].vec[3];
+	//	s0[i] = srcTex[3 * i].v0;
+	//	t0[i] = srcTex[3 * i].v1;
+	//	
+	//	x1[i] = srcVertex[3 * i + 1].vec[0];
+	//	y1[i] = srcVertex[3 * i + 1].vec[1];
+	//	z1[i] = srcVertex[3 * i + 1].vec[2];
+	//	w1[i] = srcVertex[3 * i + 1].vec[3];
+	//	s1[i] = srcTex[3 * i + 1].v0;
+	//	t1[i] = srcTex[3 * i + 1].v1;
+
+	//	x2[i] = srcVertex[3 * i + 2].vec[0];
+	//	y2[i] = srcVertex[3 * i + 2].vec[1];
+	//	z2[i] = srcVertex[3 * i + 2].vec[2];
+	//	w2[i] = srcVertex[3 * i + 2].vec[3];
+	//	s2[i] = srcTex[3 * i + 2].v0;
+	//	t2[i] = srcTex[3 * i + 2].v1;
+	//}
+	//if (trianglesCount % 2){
+	//	x0[expectedTrianglesCount - 1] = x0[expectedTrianglesCount - 2];
+	//	y0[expectedTrianglesCount - 1] = y0[expectedTrianglesCount - 2];
+	//	z0[expectedTrianglesCount - 1] = z0[expectedTrianglesCount - 2];
+	//	w0[expectedTrianglesCount - 1] = w0[expectedTrianglesCount - 2];
+	//	s0[expectedTrianglesCount - 1] = s0[expectedTrianglesCount - 2];
+	//	t0[expectedTrianglesCount - 1] = t0[expectedTrianglesCount - 2];
+
+	//	x1[expectedTrianglesCount - 1] = x1[expectedTrianglesCount - 2];
+	//	y1[expectedTrianglesCount - 1] = y1[expectedTrianglesCount - 2];
+	//	z1[expectedTrianglesCount - 1] = z1[expectedTrianglesCount - 2];
+	//	w1[expectedTrianglesCount - 1] = w1[expectedTrianglesCount - 2];
+	//	s1[expectedTrianglesCount - 1] = s1[expectedTrianglesCount - 2];
+	//	t1[expectedTrianglesCount - 1] = t1[expectedTrianglesCount - 2];
+
+	//	x2[expectedTrianglesCount - 1] = x2[expectedTrianglesCount - 2];
+	//	y2[expectedTrianglesCount - 1] = y2[expectedTrianglesCount - 2];
+	//	z2[expectedTrianglesCount - 1] = z2[expectedTrianglesCount - 2];
+	//	w2[expectedTrianglesCount - 1] = w2[expectedTrianglesCount - 2];
+	//	s2[expectedTrianglesCount - 1] = s2[expectedTrianglesCount - 2];
+	//	t2[expectedTrianglesCount - 1] = t2[expectedTrianglesCount - 2];
+	//} else {
+	//	// Do not correct 
+	//}
+
+	//ZeroV4nm32f(color0, expectedTrianglesCount + ZERO_COUNT);
+	//ZeroV4nm32f(color1, expectedTrianglesCount + ZERO_COUNT);
+	//ZeroV4nm32f(color2, expectedTrianglesCount + ZERO_COUNT);
+	color1[3].vec[0] = 0.9;
+	color1[3].vec[1] = 0.9;
+	color1[3].vec[2] = 0.9;
+	color1[3].vec[3] = 0.9;
 
 	// Act
     int res;
 	res = repackToPrimitives_t(srcVertex, srcColor, srcTex, &dst, vertCount);
-	printf("dst pointer = %p \n\r", &dst);
-	printf("dst.v0 pointer = %p \n\r", &(dst.v0));
-	printf("dst.v1 pointer = %p \n\r", &(dst.v1));
-	printf("dst.v2 pointer = %p \n\r", &(dst.v2));
-	printf("dst.v1.w pointer = %p \n\r", &(dst.v1.w));
-	printf("dst.v1.w = %x \n\r", dst.v1.w);
-	printf("res = %p \n\r", res);
+	//printf("dst pointer = %p \n\r", &dst);
+	//printf("dst.v0 pointer = %p \n\r", &(dst.v0));
+	//printf("dst.v1 pointer = %p \n\r", &(dst.v1));
+	//printf("dst.v2 pointer = %p \n\r", &(dst.v2));
+	//printf("dst.v0.color pointer = %p \n\r", &(dst.v0.color[0].vec[0]));
+	//printf("dst.v1.w pointer = %p \n\r", &(dst.v1.w));
+	//printf("dst.v1.w = %x \n\r", dst.v1.w);
+	//printf("res = %i\n\r", res);
 
-	Print(x0, expectedTrianglesCount);
-	Print(y0, expectedTrianglesCount);
-	Print(z0, expectedTrianglesCount);
-	Print(w0, expectedTrianglesCount);
-	Print(x1, expectedTrianglesCount);
-	Print(y1, expectedTrianglesCount);
-	Print(z1, expectedTrianglesCount);
-	Print(w1, expectedTrianglesCount);
-	Print(x2, expectedTrianglesCount);
-	Print(y2, expectedTrianglesCount);
-	Print(z2, expectedTrianglesCount);
-	Print(w2, expectedTrianglesCount);
+	puts("Coordinates");
+	Print(x0, expectedTrianglesCount + ZERO_COUNT);
+	Print(y0, expectedTrianglesCount + ZERO_COUNT);
+	Print(z0, expectedTrianglesCount + ZERO_COUNT);
+	Print(w0, expectedTrianglesCount + ZERO_COUNT);
+	Print(x1, expectedTrianglesCount + ZERO_COUNT);
+	Print(y1, expectedTrianglesCount + ZERO_COUNT);
+	Print(z1, expectedTrianglesCount + ZERO_COUNT);
+	Print(w1, expectedTrianglesCount + ZERO_COUNT);
+	Print(x2, expectedTrianglesCount + ZERO_COUNT);
+	Print(y2, expectedTrianglesCount + ZERO_COUNT);
+	Print(z2, expectedTrianglesCount + ZERO_COUNT);
+	Print(w2, expectedTrianglesCount + ZERO_COUNT);
+
+	puts("Texture coordinates");
+	Print(s0, expectedTrianglesCount + ZERO_COUNT);
+	Print(t0, expectedTrianglesCount + ZERO_COUNT);
+	Print(s1, expectedTrianglesCount + ZERO_COUNT);
+	Print(t1, expectedTrianglesCount + ZERO_COUNT);
+	Print(s2, expectedTrianglesCount + ZERO_COUNT);
+	Print(t2, expectedTrianglesCount + ZERO_COUNT);
+
+	puts("Colors:");
+	PrintV4nm32f(color0, expectedTrianglesCount + ZERO_COUNT);
+	PrintV4nm32f(color1, expectedTrianglesCount + ZERO_COUNT);
+	PrintV4nm32f(color2, expectedTrianglesCount + ZERO_COUNT);
 
 	// Assert
     //TEST_ARRAYS_EQUAL (dstVertex, expectedDstVertex, outputCoordCount + expectedTrianglesCount);
