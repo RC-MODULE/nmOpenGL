@@ -71,7 +71,7 @@ void ZeroV4nm32f(v4nm32f *ptr, size_t size)
 
 int analyzeStackParams()
 {
-	constexpr int trianglesCount = 3;							// number of output triangles
+	constexpr int trianglesCount = 1;							// number of output triangles
     constexpr int vertCount = trianglesCount * 3;				// number of input vertexes
 	constexpr int expectedTrianglesCount = trianglesCount + trianglesCount % 2;
 	constexpr int outputCoordCount = 4 * 3 * expectedTrianglesCount;	// number of output vertexes
@@ -199,14 +199,19 @@ int analyzeStackParams()
 	// Act
     int res;
 	res = repackToPrimitives_t(srcVertex, srcColor, srcTex, &dst, vertCount);
-	//printf("dst pointer = %p \n\r", &dst);
+	printf("srcVertex = %p \n\r", srcVertex);
+	printf("srcColor = %p \n\r", srcColor);
+	printf("srcTex = %p \n\r", srcTex);
+	printf("dst = %p \n\r", &dst);
 	//printf("dst.v0 pointer = %p \n\r", &(dst.v0));
 	//printf("dst.v1 pointer = %p \n\r", &(dst.v1));
 	//printf("dst.v2 pointer = %p \n\r", &(dst.v2));
-	//printf("dst.v0.color pointer = %p \n\r", &(dst.v0.color[0].vec[0]));
+	printf("dst.v0.color pointer = %p \n\r", dst.v0.color);
 	//printf("dst.v1.w pointer = %p \n\r", &(dst.v1.w));
 	//printf("dst.v1.w = %x \n\r", dst.v1.w);
-	//printf("res = %i\n\r", res);
+	printf("dst.v0 address = %x \n\r", &dst.v0);
+	printf("dst.v0.x address = %x \n\r", dst.v0.x);
+	printf("res = %x\n\r", res);
 
 	puts("Coordinates");
 	Print(x0, expectedTrianglesCount + ZERO_COUNT);

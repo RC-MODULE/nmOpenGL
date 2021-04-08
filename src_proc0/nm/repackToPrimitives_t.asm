@@ -45,10 +45,10 @@ macro copyCol(src, dst, srcOffset, dstOffset, n)
 				// at the end of the loop
 	gr3--;		 
 	vlen = gr3;
-	fpu 0 rep vlen vreg0 = [ar0++gr0];	// copy rg components into vreg0
-	fpu 0 rep vlen vreg1 = [ar2++gr2];	// copy ba components into vreg1
-	fpu 0 rep vlen [ar4++gr4] = vreg0;	// copy rg components from vreg0 to dst
-	fpu 0 rep vlen [ar6++gr6] = vreg1;	// copy ba components from vreg1 to dst	
+	fpu 1 rep vlen vreg0 = [ar0++gr0];	// copy rg components into vreg0
+	fpu 1 rep vlen vreg1 = [ar2++gr2];	// copy ba components into vreg1
+	fpu 1 rep vlen [ar4++gr4] = vreg0;	// copy rg components from vreg0 to dst
+	fpu 1 rep vlen [ar6++gr6] = vreg1;	// copy ba components from vreg1 to dst	
 	gr5  = gr5 - gr7;
 	if > goto Loop;
 end copyCol;
@@ -135,13 +135,15 @@ begin ".text_demo3d"			// начало секции кода
     push ar4,gr4;
     push ar6,gr6;   // don't forget about pop
     
+
     ar0 = [--ar5];  // input vertexes
     ar1 = [--ar5];  // input colors
     ar2 = [--ar5];  // input texture coords
     ar3 = [--ar5];  // output vertices
     gr6 = [--ar5];  // input: count of input vertexes 
     [vertCount] = gr6;	// Used in GL_TRIANGLES
-	[dstVertex] = ar2;
+	[dstVertex] = ar3;
+
 
 
 	gr0 = 0;
@@ -215,7 +217,7 @@ begin ".text_demo3d"			// начало секции кода
 	gr0 = gr1;	// gr0 - loop counter	
 	extractPair(ar2 + 4, ar2 + 10, 12);
 	
-	ar3 = [ar7 - 6];
+	ar3 = [dstVertex];
 	ar3 += 6;	// Address of A_color pointer
 	gr3 = [ar3];
 	copyCol(ar1, gr3, 12, 4, gr1);
@@ -226,63 +228,40 @@ begin ".text_demo3d"			// начало секции кода
 	gr3 = [ar3];
 	copyCol(ar1 + 8, gr3, 12, 4, gr1);
 	
-	//ar3 = [ar7 - 6];
-	//ar3 += 6;
-	//gr3 = [ar3];
-	//ar3 = gr3;
-	//gr3 = float(9);
-	//[ar3] = gr3;
-	//goto Exit;
-	
-		// return 
-		//gr3 = 11;
-		//ar3 = ar3 + gr3;
+		//ar3 = [dstVertex];
+		//ar3 += 6;
 		//gr3 = [ar3];
-		//[retVal] = gr3;
-		goto Exit;
-
-	// Extract colors
-	// In case of GL_TRIANGLES the number of output colors is equal to the
-	// number of input colors (and vertexes)
-	gr6 = [vertCount]; 
-	gr0 = gr6 << 1; 	// total number of pairs rg and ba for gr1 vertexes
-<colLoop>
-	gr2 = 32;	
-	gr0 - gr2;
-	if >= goto CopyColor;
-	gr2 = gr0;
-<CopyColor>
-	gr3 = gr2;
-	gr3--;
-	vlen = gr3;
-	fpu 0 rep vlen vreg0 = [ar1++];	// copy from input colors into vreg
-	fpu 0 rep vlen [ar3++] = vreg0; // copy from vreg into output colors	
-	[dstColorEnd] = ar3;
-	gr0  = gr0 - gr2;
-	if > goto colLoop;
-
+		//ar3 = gr3;
+		//gr3 = float(9);
+		//[ar3] = gr3;
+		//ar3 = [ar7 - 6];
+		//[retVal] = ar3;
+		//goto Exit;
+	
 	// Check the parity
 	// !!! In case of odd output triangles extend the output with the last triangle
 	// Check if number of triangles is odd
 	gr4 = [parity];
 	gr4;
 	if =0 goto Exit; 
-	ar4 = [dstVertex] with gr4 = gr1 - 1;
-	ar4 = ar4 + gr4 with gr4 = gr1; 	// last element (n) in the row
-	ar2 = ar4 - 1 with gr2 = gr1;	 	// penultimate element (n - 1) in the row 
 
-	.repeat 12;
-	gr3 = [ar2++gr2];
-	[ar4++gr4] = gr3;
+	ar3 = [dstVertex] with gr4 = gr1 - 1;
+	.repeat 6;
+	ar4 = [ar3++] with gr4 = gr4 - 1;
+	gr2 = [ar4 + gr4] with gr4++; 
+	[ar4 + gr4] = gr2 with gr4 = gr1 - 1;
 	.endrepeat;
-
-	ar4 = [dstColorEnd];
-	ar2 = ar4;
-	ar2 -= 12;
-
-	.repeat 12;
-	gr3 = [ar2++];
-	[ar4++] = gr3;
+	ar3 = ar3 + 2;	// Skip colors and dummy
+	.repeat 6;
+	ar4 = [ar3++] with gr4 = gr4 - 1;
+	gr2 = [ar4 + gr4] with gr4++;
+	[ar4 + gr4] = gr2 with gr4 = gr1 - 1;
+	.endrepeat;
+	ar3 = ar3 + 2;
+	.repeat 6;
+	ar4 = [ar3++] with gr4 = gr4 - 1;
+	gr2 = [ar4 + gr4] with gr4++;
+	[ar4 + gr4] = gr2 with gr4 = gr1 - 1;
 	.endrepeat;
 
 <Exit>
