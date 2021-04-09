@@ -246,23 +246,52 @@ begin ".text_demo3d"			// начало секции кода
 	if =0 goto Exit; 
 
 	ar3 = [dstVertex] with gr4 = gr1 - 1;
+
 	.repeat 6;
 	ar4 = [ar3++] with gr4 = gr4 - 1;
 	gr2 = [ar4 + gr4] with gr4++; 
 	[ar4 + gr4] = gr2 with gr4 = gr1 - 1;
 	.endrepeat;
-	ar3 = ar3 + 2;	// Skip colors and dummy
+	ar4 = [ar3++] with gr4 = gr1 - 1;
+	ar0 = ar4 with gr0 = gr4 - 1;
+	gr0 <<= 2;
+	gr4 <<= 2;	
+	ar0 += gr0;
+	ar4 += gr4;
+	fpu 0 rep 2 vreg0 = [ar0++];
+	fpu 0 rep 2 [ar4++] = vreg0;
+
+	ar3 = ar3 + 1;	// Skip dummy
+
 	.repeat 6;
 	ar4 = [ar3++] with gr4 = gr4 - 1;
 	gr2 = [ar4 + gr4] with gr4++;
 	[ar4 + gr4] = gr2 with gr4 = gr1 - 1;
 	.endrepeat;
-	ar3 = ar3 + 2;
+	ar4 = [ar3++] with gr4 = gr1 - 1;
+	ar0 = ar4 with gr0 = gr4 - 1;
+	gr0 <<= 2;
+	gr4 <<= 2;	
+	ar0 += gr0;
+	ar4 += gr4;
+	fpu 0 rep 2 vreg0 = [ar0++];
+	fpu 0 rep 2 [ar4++] = vreg0;
+
+	ar3 = ar3 + 1;	// Skip dummy
+
 	.repeat 6;
 	ar4 = [ar3++] with gr4 = gr4 - 1;
 	gr2 = [ar4 + gr4] with gr4++;
 	[ar4 + gr4] = gr2 with gr4 = gr1 - 1;
 	.endrepeat;
+	ar4 = [ar3++] with gr4 = gr1 - 1;
+	ar0 = ar4 with gr0 = gr4 - 1;
+	gr0 <<= 2;
+	gr4 <<= 2;	
+	ar0 += gr0;
+	ar4 += gr4;
+	fpu 0 rep 2 vreg0 = [ar0++];
+	fpu 0 rep 2 [ar4++] = vreg0;
 
 <Exit>
 	gr7 = [retVal];
