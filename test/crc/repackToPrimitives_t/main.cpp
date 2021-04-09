@@ -40,7 +40,7 @@ clock_t vertexPrimitiveRepack_modeIsGL_TRIANGLES_48Vertices();
 //
 
 // Количество ячеек, которые должны остаться неизменными после работы функции
-#define ZERO_COUNT 0 
+//#define ZERO_COUNT 0 
 
 void Print(nm32f *ptr, size_t size)
 {
@@ -72,36 +72,42 @@ void ZeroV4nm32f(v4nm32f *ptr, size_t size)
 int analyzeStackParams()
 {
 	constexpr int trianglesCount = 1;							// number of output triangles
+	constexpr int ZERO_COUNT = 0;							
     constexpr int vertCount = trianglesCount * 3;				// number of input vertexes
 	constexpr int expectedTrianglesCount = trianglesCount + trianglesCount % 2;
-	constexpr int outputCoordCount = 4 * 3 * expectedTrianglesCount;	// number of output vertexes
+	// 10 floats - x, y, z, w, s, t, r, g, b, a
+	// ZERO_COUNT - number of triangles at the end that should not be touched
+	constexpr int outputCoordCount = 10 * 3 * (expectedTrianglesCount + ZERO_COUNT);	// number of output coords
 
     v4nm32f     srcVertex[vertCount];
     v4nm32f     srcColor[vertCount];
     v2nm32f     srcTex[vertCount];
-	float x0[expectedTrianglesCount + ZERO_COUNT];
-	float y0[expectedTrianglesCount + ZERO_COUNT];
-	float z0[expectedTrianglesCount + ZERO_COUNT];
-	float w0[expectedTrianglesCount + ZERO_COUNT];
-	float s0[expectedTrianglesCount + ZERO_COUNT];
-	float t0[expectedTrianglesCount + ZERO_COUNT];
-    v4nm32f color0[expectedTrianglesCount + ZERO_COUNT];
+	nm32f real_output[outputCoordCount] = {0};
+	nm32f expected_output[outputCoordCount] = {0};
 
-	float x1[expectedTrianglesCount + ZERO_COUNT];
-	float y1[expectedTrianglesCount + ZERO_COUNT];
-	float z1[expectedTrianglesCount + ZERO_COUNT];
-	float w1[expectedTrianglesCount + ZERO_COUNT];
-	float s1[expectedTrianglesCount + ZERO_COUNT];
-	float t1[expectedTrianglesCount + ZERO_COUNT];
-    v4nm32f color1[expectedTrianglesCount + ZERO_COUNT];
+	float		*x0 = real_output;
+	float		*y0 = x0 + expectedTrianglesCount + ZERO_COUNT;
+	float		*z0 = y0 + expectedTrianglesCount + ZERO_COUNT;
+	float		*w0 = z0 + expectedTrianglesCount + ZERO_COUNT;
+	float		*s0 = w0 + expectedTrianglesCount + ZERO_COUNT;
+	float		*t0 = s0 + expectedTrianglesCount + ZERO_COUNT;
+    v4nm32f	*color0 = (v4nm32f *)(t0 + expectedTrianglesCount + ZERO_COUNT);
+
+	float		*x1 = real_output + 10 * (expectedTrianglesCount + ZERO_COUNT);
+	float		*y1 = x1 + expectedTrianglesCount + ZERO_COUNT;
+	float		*z1 = y1 + expectedTrianglesCount + ZERO_COUNT;
+	float		*w1 = z1 + expectedTrianglesCount + ZERO_COUNT;
+	float		*s1 = w1 + expectedTrianglesCount + ZERO_COUNT;
+	float		*t1 = s1 + expectedTrianglesCount + ZERO_COUNT;
+    v4nm32f *color1 = (v4nm32f *)(t1 + expectedTrianglesCount + ZERO_COUNT);
 	
-	float x2[expectedTrianglesCount + ZERO_COUNT];
-	float y2[expectedTrianglesCount + ZERO_COUNT];
-	float z2[expectedTrianglesCount + ZERO_COUNT];
-	float w2[expectedTrianglesCount + ZERO_COUNT];
-	float s2[expectedTrianglesCount + ZERO_COUNT];
-	float t2[expectedTrianglesCount + ZERO_COUNT];
-    v4nm32f color2[expectedTrianglesCount + ZERO_COUNT];
+	float		*x2 = real_output + 10 * 2 * (expectedTrianglesCount + ZERO_COUNT);
+	float		*y2 = x2 + expectedTrianglesCount + ZERO_COUNT;
+	float		*z2 = y2 + expectedTrianglesCount + ZERO_COUNT;
+	float		*w2 = z2 + expectedTrianglesCount + ZERO_COUNT;
+	float		*s2 = w2 + expectedTrianglesCount + ZERO_COUNT;
+	float		*t2 = s2 + expectedTrianglesCount + ZERO_COUNT;
+    v4nm32f	*color2 = (v4nm32f *)(t2 + expectedTrianglesCount + ZERO_COUNT);
 
 	TrianglePointers dst;
 	dst.v0.x = x0;
@@ -140,7 +146,7 @@ int analyzeStackParams()
 		srcTex[i].v1 = (float)(2 * i + 1);
 	}
 
-    //nm32f expectedDstVertex[outputCoordCount + expectedTrianglesCount]  = {0};
+    nm32f expectedDstVertex[outputCoordCount + expectedTrianglesCount]  = {0};
     //for (int i = 0; i < trianglesCount; i++){
 	//	x0[i] = srcVertex[3 * i].vec[0];
 	//	y0[i] = srcVertex[3 * i].vec[1];
