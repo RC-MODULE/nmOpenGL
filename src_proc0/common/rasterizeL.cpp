@@ -71,7 +71,7 @@ void rasterizeL(const Lines* lines, const BitMask* masks){
 						offset += localSize;
 						updatePolygonsL(data, &localLine2, localSize, segX, segY);
 						if (data->count == POLYGONS_SIZE) {
-							transferPolygons(data, connector, NMC1_DRAW_LINES);
+							transferPolygons(connector, NMC1_DRAW_LINES);
 						}
 					}	
 					if (drawingCheck) {

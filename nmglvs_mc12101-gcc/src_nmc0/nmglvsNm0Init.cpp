@@ -60,12 +60,11 @@ extern  NMGLubyte* mipmap; //texture memory
 int counter = 0;
 
 
-#define PRINTF(type,name) printf("%s, %p, sizeof32=%d\n",#type, name, sizeof(*name))
 
 template<class T> inline T* myMallocT() {
 	
 	T* result = (T*)halMalloc32(sizeof32(T));
-	//PRINTF(T, result);
+	//printf("%s, %p, sizeof32=%d\n", typeid(T).name(), result, sizeof(*result));
 	if (result == 0) throw counter;
 	counter++;
 	return result;
@@ -73,7 +72,7 @@ template<class T> inline T* myMallocT() {
 
 template<class T> inline T* myMallocT(int count) {
 	T* result = (T*)halMalloc32(count * sizeof32(T));
-	//PRINTF(T, result);
+	//printf("%s, %p, sizeof32=%d\n", typeid(T).name(), result, sizeof(*result));
 	if (result == 0) throw counter;
 	counter++;
 	return result;
@@ -84,10 +83,10 @@ SECTION(".data_imu0") NMGL_Context_NM0 *NMGL_Context_NM0::context;
 SECTION(".text_nmglvs") int nmglvsNm0Init()
 {
 #if defined(__GNUC__) && defined(DEBUG) && defined(STACK_TRACE_ENABLED)
-	nmprofiler_init();
+	//nmprofiler_init();
 #endif // __GNUC__
 #ifdef TEXTURE_ENABLED
-	halLedOn(0);
+	//halLedOn(0);
 #endif //TEXTURE_ENABLED
 
 
@@ -102,16 +101,20 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 		if (fromHost != 0xC0DE0086) {					// get  handshake from host
 			return 1;
 		}
-		setHeap(8);
+		setHeap(7);
 		synchroData = myMallocT<NMGLSynchroData>();
 		synchroData->init();
 
 		setHeap(7);
 		NMGL_Context_NM0::create(synchroData);	
 		cntxt = NMGL_Context_NM0::getContext();
-		cntxt->init(synchroData);
+		cntxt->synchro.init(synchroData);
+		
+		//printf("sizeof32=%d\n", sizeof32(cntxt->synchro));
+		//printf("sizeof32=%d\n", sizeof32(CommandNm1));
+		cntxt->init();		
 
-		//setHeap(1);
+		setHeap(8);
 		cntxt->triangleConnectors = myMallocT<PolygonsConnector>(36);
 		cntxt->lineConnectors = myMallocT<PolygonsConnector>(36);
 		cntxt->pointConnectors = myMallocT<PolygonsConnector>(36);
@@ -220,13 +223,7 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 
 	cntxt->dividedMasks[0].init((nm1*)dividedMasksMemory[0], (nm1*)dividedMasksMemory[1]);
 	cntxt->dividedMasks[1].init((nm1*)dividedMasksMemory[2], (nm1*)dividedMasksMemory[3]);
-
-
-	nmglViewport(0, 0, WIDTH_IMAGE, HEIGHT_IMAGE);
-	int countSegs = cntxt->windowInfo.nColumns * cntxt->windowInfo.nRows;
-	for (int i = 0; i < countSegs; i++) {
-		cntxt->segmentMasks[i].init((nm1*)masksBits[i]);
-	}
+	
 #ifdef __GNUC__
 	halInstrCacheEnable();
 	//halDmaInitC();
@@ -238,7 +235,11 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 	halHostSync((int)0x600d600d);
 	nmglClearColor(0, 0, 0, 1.0f);
 	nmglClearDepthf(1);
-
+	nmglViewport(0, 0, WIDTH_IMAGE, HEIGHT_IMAGE);
+	int countSegs = cntxt->windowInfo.nColumns * cntxt->windowInfo.nRows;
+	for (int i = 0; i < countSegs; i++) {
+		cntxt->segmentMasks[i].init((nm1*)masksBits[i]);
+	}
 	return 0;
 } 
 

@@ -15,8 +15,8 @@ int main()
 { 
 	halSleep(500);
 #if defined(__GNUC__) && defined(DEBUG)
-	nmprofiler_init();
-	nmprofiler_disable();
+	//nmprofiler_init();
+	//nmprofiler_disable();
 #endif // __GNUC__
 
 	nmglvsNm1Init();

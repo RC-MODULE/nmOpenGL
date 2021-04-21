@@ -106,8 +106,6 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 		maxInnerCount = 3 * NMGL_SIZE;
 		break;
 	case NMGL_TRIANGLE_FAN:
-		maxInnerCount = NMGL_SIZE + 2;
-		break;
 	case NMGL_TRIANGLE_STRIP:
 		maxInnerCount = NMGL_SIZE + 2;
 		break;
@@ -118,8 +116,6 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 		maxInnerCount = NMGL_SIZE + 1;
 		break;
 	case NMGL_LINE_LOOP:
-		maxInnerCount = NMGL_SIZE;
-		break;
 	case NMGL_POINTS:
 		maxInnerCount = NMGL_SIZE;
 		break;
@@ -157,10 +153,10 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			(float*)&cntxt->materialEmissive, 
 			(float*)(cntxt->ambientMul + MAX_LIGHTS), 4);
 	}
-	//reverseMatrix3x3in4x4(cntxt->modelviewMatrixStack.top(), &cntxt->normalMatrix);
-	while (!vertexAM.isEmpty()) {
-		//int localSize = MIN(count - pointVertex, maxInnerCount);
-		int localSize = vertexAM.pop(cntxt->buffer0) / cntxt->vertexArray.size;
+
+	for (int pointer = 0; pointer < count; pointer += maxInnerCount) {
+		int localSize = MIN(count - pointer, maxInnerCount);
+		vertexAM.pop(cntxt->buffer0);
 		switch (cntxt->vertexArray.size)
 		{
 		case 2:

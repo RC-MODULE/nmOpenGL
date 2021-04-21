@@ -8,12 +8,13 @@
 
 
 SECTION(".text_demo3d")
-void transferPolygons(DataForNmpu1 *data, PolygonsConnector *connector, int mode) {
+void transferPolygons(PolygonsConnector *connector, int mode) {
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
+	DataForNmpu1 *data = connector->ptrHead();
 	connector->incHead();
 	while (connector->isFull()) {
 		halSleep(2);
 	}
 	connector->ptrHead()->count = 0;
-	cntxt->synchro.writeInstr(1, mode, (int)connector + 0x40000);
+	cntxt->synchro.writeInstr(1, mode, (int)halMapAddrTo(connector, 1));
 }

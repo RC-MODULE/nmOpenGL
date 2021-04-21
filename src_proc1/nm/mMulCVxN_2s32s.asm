@@ -43,8 +43,12 @@ data ".data_demo3d"
 						   0a8000000_00000000hl,
 						   0a8000000_00000000hl,
 						   0a8000000_00000000hl);
-		global _addC4DepthTest: word = 07FFFFFFFh;
+		//global _addC4DepthTest: word = 07FFFFFFFh;
+
 end ".data_demo3d";
+
+extern _addC4DepthTest: word;
+
 global _mMulCVxN_2s32s: label;
 global _mMulCVxN_2s_RGB8888: label;
 
@@ -149,6 +153,7 @@ begin ".text_demo3d"
 	gr4 = [ar1++];		//height
 	ar4 = repNHeightStart	with gr4 <<= 5;
 	delayed goto ar4+gr4;
+	//delayed goto ar4;
 		gr2 >>= 1;			//ширина в 64-битных словах
 		gr6 = gr2 << 1;
 		nul;

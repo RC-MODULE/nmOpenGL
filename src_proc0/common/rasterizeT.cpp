@@ -108,7 +108,7 @@ void rasterizeT(const Triangles* triangles, const BitMask* masks){
 						offset += localSize;
 						updatePolygonsT(data, &localTrian2, localSize, segX, segY);
 						if (data->count == POLYGONS_SIZE) {
-							transferPolygons(data, connector, NMC1_DRAW_TRIANGLES);
+							transferPolygons(connector, NMC1_DRAW_TRIANGLES);
 						}
 					}
 					if (drawingCheck) {

@@ -122,6 +122,7 @@ public:
 		task.type = MSD_DMA_2D;
 		task.callback = callback;
 		msdAdd(task, 1);
+		// nmppmCopy_32s((nm32s*)mCursor, mWidth, (nm32s*)image.mCursor, image.getWidth(), height, width);
 	}
 
 	void popWindow(ImageBufferRgb8888 &image, int width, int height, msdCallback callback = 0) {
@@ -134,6 +135,7 @@ public:
 		task.type = MSD_DMA_2D;
 		task.callback = callback;
 		msdAdd(task, 1);
+		// nmppmCopy_32s((nm32s*)image.mCursor, image.getWidth(), (nm32s*)mCursor, mWidth, height, width);
 	}
 };
 

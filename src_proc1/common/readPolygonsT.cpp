@@ -9,8 +9,12 @@
 
 SECTION(".data_demo3d") static volatile int copyId[10];
 
+extern Pattern patternsPack[POLYGONS_SIZE];
+
 //SECTION(".text_demo3d") void readPolygonsT(DataForNmpu1* data){
 SECTION(".text_demo3d") int getAddrPtrnsT(DataForNmpu1* data) {
+	clock_t t0, t1;
+	t0 = clock();
 	NMGL_Context_NM1 *cntxt = NMGL_Context_NM1::getContext();
 	int size = data->count;
 	int offset0 = 0;
@@ -22,14 +26,13 @@ SECTION(".text_demo3d") int getAddrPtrnsT(DataForNmpu1* data) {
 
 	DataForNmpu1* dataTmp = (DataForNmpu1*)cntxt->buffer0;
 	offset0 += sizeof32(DataForNmpu1);
-	int* localTable = (int*)cntxt->buffer1 + offset1;
+	//int* localTable = (int*)cntxt->buffer1 + offset1;
+	int* localTable = cntxt->fillInnerTable;
 	offset1 += sizeof32(cntxt->patterns->table_dydx);
 
-	msdAdd(data, dataTmp, sizeof32(DataForNmpu1), 0);
-	msdAdd(data->z, cntxt->valuesZ, sizeof32(cntxt->patterns->table_dydx), 0);
-	nmppsCopy_32s(cntxt->patterns->table_dydx, localTable, sizeof32(cntxt->patterns->table_dydx));
+	nmppsCopy_32s((nm32s*)data, (nm32s*)dataTmp, 7 * POLYGONS_SIZE);
 	
-
+	
 	int* dx02 = cntxt->buffer0 + offset0;
 	offset0 += POLYGONS_SIZE;
 	int* dx01 = cntxt->buffer1 + offset1;
@@ -61,29 +64,18 @@ SECTION(".text_demo3d") int getAddrPtrnsT(DataForNmpu1* data) {
 	offset2 += POLYGONS_SIZE;
 	int* temp3 = cntxt->buffer1 + offset1;
 	offset1 += POLYGONS_SIZE;
-	int* imageOffset = cntxt->buffer0 + offset0;
-	offset0 += POLYGONS_SIZE;
 	int* alignDistance = cntxt->buffer1 + offset1;
 	offset1 += POLYGONS_SIZE;
 
-	int** srcPackTmp02 = (int**)cntxt->buffer0 + offset0;
-	offset0 += POLYGONS_SIZE;
-	int** srcPackTmp01 = (int**)cntxt->buffer1 + offset1;
-	offset1 += POLYGONS_SIZE;
-	int** srcPackTmp12 = (int**)cntxt->buffer2 + offset2;
-	offset2 += POLYGONS_SIZE;
-	int** dstPackTmp02 = (int**)cntxt->buffer0 + offset0;
-	offset0 += POLYGONS_SIZE;
-	int** dstPackTmp01 = (int**)cntxt->buffer0 + offset0;
-	offset0 += POLYGONS_SIZE;
-	int** dstPackTmp12 = (int**)cntxt->buffer0 + offset0;
-	offset0 += POLYGONS_SIZE;
-	int* sizePackTmp02 = (int*)cntxt->buffer1 + offset1;
-	offset1 += POLYGONS_SIZE;
-	int* sizePackTmp01 = (int*)cntxt->buffer1 + offset1;
-	offset1 += POLYGONS_SIZE;
-	int* sizePackTmp12 = (int*)cntxt->buffer1 + offset1;
-	offset1 += POLYGONS_SIZE;
+	int** srcPackTmp02 = cntxt->ppSrcPackPtrns;
+	int** srcPackTmp01 = cntxt->ppSrcPackPtrns + size;
+	int** srcPackTmp12 = cntxt->ppSrcPackPtrns + 2 * size;
+	int** dstPackTmp02 = cntxt->ppDstPackPtrns;
+	int** dstPackTmp01 = cntxt->ppDstPackPtrns + size;
+	int** dstPackTmp12 = cntxt->ppDstPackPtrns + 2 * size;
+	int* sizePackTmp02 = cntxt->nSizePtrn32;
+	int* sizePackTmp01 = cntxt->nSizePtrn32 + size;
+	int* sizePackTmp12 = cntxt->nSizePtrn32 + 2 * size;
 #ifdef DEBUG
 	if (offset0 > SIZE_BUFFER_NM1 || offset1 > SIZE_BUFFER_NM1 || offset2 > SIZE_BUFFER_NM1) {
 		printf("error!! \n");
@@ -93,22 +85,8 @@ SECTION(".text_demo3d") int getAddrPtrnsT(DataForNmpu1* data) {
 	}
 #endif // DEBUG	
 
-#ifdef __GNUC__
-	int height = (size + (SMALL_SIZE - 1)) / SMALL_SIZE;	//высота с учетом неполных строк
-	
-	nmppmCopy_32s((nm32s*)cntxt->ppPtrns1_2s, 0, (nm32s*)dstPackTmp02, SMALL_SIZE, height, SMALL_SIZE);
-	nmppmCopy_32s((nm32s*)cntxt->ppPtrns2_2s, 0, (nm32s*)dstPackTmp01, SMALL_SIZE, height, SMALL_SIZE);
-	nmppmCopy_32s((nm32s*)cntxt->ppPtrns2_2s, 0, (nm32s*)dstPackTmp12, SMALL_SIZE, height, SMALL_SIZE);	 
-	 
-#else 
-	for (int i = 0; i < size; i++) {
-		dstPackTmp02[i] = (nm32s*)cntxt->ppPtrns1_2s[i % SMALL_SIZE];
-		dstPackTmp01[i] = (nm32s*)cntxt->ppPtrns2_2s[i % SMALL_SIZE];
-		dstPackTmp12[i] = (nm32s*)cntxt->ppPtrns2_2s[i % SMALL_SIZE];
-	}
-#endif
 	msdWaitDma(0);
-
+	
 	nmppsSub_32s(dataTmp->x1, dataTmp->x0, dx01, size);
 	nmppsSub_32s(dataTmp->x2, dataTmp->x0, dx02, size);	
 	nmppsSub_32s(dataTmp->x2, dataTmp->x1, dx12, size);	 
@@ -127,6 +105,19 @@ SECTION(".text_demo3d") int getAddrPtrnsT(DataForNmpu1* data) {
 	nmppsMulC_32s(dy01, WIDTH_PTRN / 16, sizePackTmp01, size);
 	
 
+#ifdef __GNUC__
+	nmppsCopy_32s((nm32s*)cntxt->ppPtrns1_2s, (nm32s*)dstPackTmp02, size);
+	nmppsCopy_32s((nm32s*)cntxt->ppPtrns2_2s, (nm32s*)dstPackTmp01, size);
+	nmppsAdd_32s((nm32s*)dstPackTmp01, sizePackTmp01, (nm32s*)dstPackTmp12, size);
+#else
+	for(int i = 0; i < size; i++){
+		cntxt->ppDstPackPtrns[0 * size + i] = cntxt->buffer1 + i * sizeof32(Pattern);
+		cntxt->ppDstPackPtrns[1 * size + i] = cntxt->buffer2 + i * sizeof32(Pattern);
+		int dy01 = data->y1[i] - data->y0[i];
+		cntxt->ppDstPackPtrns[2 * size + i] = cntxt->buffer2 + i * sizeof32(Pattern) + dy01 * WIDTH_PTRN / 16;
+	}
+#endif
+	
 	// get ptrnNumbers	 
 	selectPaintSide(dataTmp->crossProducts, 0, NPATTERNS / 2, temp3, size);	 
 	nmppsMulC_AddV_AddC_32s(dy02, WIDTH_TABLE, dx02, WIDTH_TABLE / 2, temp2, size);
@@ -150,15 +141,13 @@ SECTION(".text_demo3d") int getAddrPtrnsT(DataForNmpu1* data) {
 	nmppsAdd_32s(temp2, temp3, temp0, size);
 	nmppsMulC_32s(temp0, sizeof32(Pattern), temp1, size);
 	baseAddrOffs_32s((nm32s*)cntxt->patterns->ptrns, temp1, srcPackTmp12, size);
-
-
-
+	
 	// get imageOffset	 
 	nmppsClipCC_32s(minX, 0, imageWidth, temp0, size);	 
 	nmppsClipCC_32s(dataTmp->y0, 0, imageHeight, temp1, size);	 
-	nmppsMulC_AddV_AddC_32s(temp1, imageWidth, temp0, 0, imageOffset, size);	 
-	nmppsAndC_32u((nm32u*)imageOffset, 1, (nm32u*)alignDistance, size);	 
-	nmppsAndC_32u((nm32u*)imageOffset, 0xFFFFFFFE, (nm32u*)imageOffset, size);
+	nmppsMulC_AddV_AddC_32s(temp1, imageWidth, temp0, 0, cntxt->imageOffsets, size);
+	nmppsAndC_32u((nm32u*)cntxt->imageOffsets, 1, (nm32u*)alignDistance, size);
+	nmppsAndC_32u((nm32u*)cntxt->imageOffsets, 0xFFFFFFFE, (nm32u*)cntxt->imageOffsets, size);
 
 	//ptrnInner	 
 	absIfNegElse0(minX, temp3, size);	 
@@ -176,44 +165,14 @@ SECTION(".text_demo3d") int getAddrPtrnsT(DataForNmpu1* data) {
 	nmppsSub_32s(temp3, temp1, temp1, size);	 	
 	nmppsMerge_32s(temp0, temp1, (nm32s*)cntxt->ptrnSizes, size); 
 
+	copyPacket_32s(cntxt->ppSrcPackPtrns,
+		cntxt->ppDstPackPtrns,
+		cntxt->nSizePtrn32, 3 * size);
 
-	baseAddrOffs_32s((nm32s*)cntxt->smallColorBuff.mData, imageOffset, cntxt->imagePoints, size);	 
-	baseAddrOffs_32s((nm32s*)cntxt->smallDepthBuff.mData, imageOffset, cntxt->zBuffPoints, size);
-	 
-	nmppsConvert_32s8s(dataTmp->color, (nm8s*)cntxt->valuesC, 4 * size);	 
-	//nmppsCopy_32s(dataTmp->z, cntxt->valuesZ, size);
-	 
-	mergePtrnsAddr3(srcPackTmp02, srcPackTmp01, srcPackTmp12, SMALL_SIZE, cntxt->ppSrcPackPtrns, size);	 
-#ifdef __GNUC__
-	mergePtrnsAddr3((nm32s**)sizePackTmp02, (nm32s**)sizePackTmp01, (nm32s**)sizePackTmp12, SMALL_SIZE, (nm32s**)cntxt->nSizePtrn32, size);
-#else
-	int point = 0;
-	int counter = 0;
-	int count = size;
-	int step = SMALL_SIZE;
-	while (count > 0) {
-		int localSize = MIN(step, count);
-		for (int i = 0; i<localSize; i++) {
-			cntxt->nSizePtrn32[3 * point + i] = sizePackTmp02[point + i];
-			cntxt->nSizePtrn32[3 * point + localSize + i] = sizePackTmp01[point + i];
-			cntxt->nSizePtrn32[3 * point + 2 * localSize + i] = sizePackTmp12[point + i];
-		}
-		point += step;
-		count -= step;
-	}
-#endif
-
-	msdWaitDma(0);
-
-#ifdef __GNUC__
-	nmppsAdd_32s((int*)dstPackTmp12, sizePackTmp01, (int*)dstPackTmp12, size);
-#else
-	for (int i = 0; i < size; i++) {
-		dstPackTmp12[i] += sizePackTmp01[i];
-	}
-#endif
-	mergePtrnsAddr3(dstPackTmp02, dstPackTmp01, dstPackTmp12, SMALL_SIZE, cntxt->ppDstPackPtrns, size);
-
+	mAndVxN_32u((nm32u**)cntxt->ppPtrns1_2s,
+		(nm32u**)cntxt->ppPtrns2_2s,
+		(nm32u**)cntxt->ppPtrnsCombined_2s,
+		cntxt->nSizePtrn32, size);
 #ifdef TEXTURE_ENABLED
 	if (cntxt->texState.textureEnabled) {
 		for (int i = 0; i < size; i++) {
@@ -306,15 +265,6 @@ SECTION(".text_demo3d") int getAddrPtrnsT(DataForNmpu1* data) {
 			cntxt->ptrnSizes[i].width++;
 		}
 
-		cntxt->imagePoints[i] = nmppsAddr_32s((nm32s*)cntxt->smallColorBuff.mData, imageOffset[i]);
-		cntxt->zBuffPoints[i] = nmppsAddr_32s((nm32s*)cntxt->smallDepthBuff.mData, imageOffset[i]);
-
-		cntxt->valuesC[i]  = (data->color[4 * i + 0] & 0xFF);
-		cntxt->valuesC[i] |= (data->color[4 * i + 1] & 0xFF) << 8;
-		cntxt->valuesC[i] |= (data->color[4 * i + 2] & 0xFF) << 16;
-		cntxt->valuesC[i] |= (data->color[4 * i + 3] & 0xFF) << 24;
-
-		cntxt->valuesZ[i] = data->z[i];
 	}*/
 	return 0;
 }

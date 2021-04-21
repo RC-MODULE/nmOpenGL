@@ -1,21 +1,24 @@
 #include "nmpp.h"
+#include "hal.h"
 #include "stdio.h"
 #include "time.h"
-#include "demo3d_nm1.h"
+#include "section-hal.h"
+//#include "demo3d_nm1.h"
 
 ///////////////////////////////////////////////////////////////////////////////////////
-#define SIZE 16384
+#define SIZE 8192
 #define COUNT 32
 
-SECTION(".data_imu1")	int src[SIZE];
+INSECTION(".data_imu1")	int src[SIZE];
 		
-SECTION(".data_imu2") int* ppSrc[COUNT];
-SECTION(".data_imu2") int* ppDst[COUNT];
-SECTION(".data_imu2") int sizes[COUNT];
+INSECTION(".data_imu2") int* ppSrc[COUNT];
+INSECTION(".data_imu2") int* ppDst[COUNT];
+INSECTION(".data_imu2") int sizes[COUNT];
 	
-SECTION(".data_imu3")	int dst[SIZE];
+INSECTION(".data_imu3")	int dst[SIZE];
 
-
+extern "C" void copy_vec_test(void* src, void* dst, int size, int count);
+extern "C" void copy_risc_test(void* src, void* dst, int size, int count);
 
 int main()
 {		
@@ -26,9 +29,31 @@ int main()
 	for(int i=0;i<COUNT;i++){
 		ppSrc[i] = src;
 		ppDst[i] = dst;
-		sizes[i] = 16;
+		sizes[i] = 0;
 	}
-	copyPacket_32s(ppSrc, ppDst, sizes, COUNT);
+
+	// t0 = clock();
+	// nmppsCopy_32s(src, dst, SIZE);
+	// t1 = clock();
+	// printf("nmppsCopy=%d\n", (int)(t1-t0));
+	// t0 = clock();
+	// halCopyRISC(src, dst, SIZE);
+	// t1 = clock();
+	// printf("halCopyRISC=%d\n", (int)(t1-t0));
+
+	for(int i=0; i <= 32; i++){
+		t0 = clock();
+		copy_vec_test(src, dst, i, 1);
+		t1 = clock();
+		printf("vec[%d]=%d\n", i, (int)(t1-t0));
+
+		t0 = clock();
+		copy_risc_test(src, dst, i, 1);
+		t1 = clock();
+		printf("risc[%d]=%d\n\n", i, (int)(t1-t0));
+	}
+	
 	nmppsCrcAcc_32s(dst,SIZE,&crc);
-	return crc>>2;
+	//return crc>>2;
+	return t1-t0;
 }

@@ -92,7 +92,7 @@ void updatePolygonsT(DataForNmpu1* data, Triangles* triangles, int count, int se
 #endif //TEXTURE_ENABLED
 
 #ifdef DEBUG
-	static unsigned int counter = 0;
+	/*static unsigned int counter = 0;
 	for (int i = 0; i < count; i++) {
 		if(	ABS((data->x1[i + data->count] - data->x0[i + data->count])) > 32 ||
 			ABS((data->x2[i + data->count] - data->x0[i + data->count])) > 32 ||
@@ -115,15 +115,15 @@ void updatePolygonsT(DataForNmpu1* data, Triangles* triangles, int count, int se
 			data->y1[i + data->count] > cntxt->windowInfo.segmentHeight + 32 ||
 			data->y2[i + data->count] > cntxt->windowInfo.segmentHeight + 32) {
 			printf("updatePolygonsT error. counter=%d, i=%d\n", counter, i);
-			//data->x0[i] = 0;
-			//data->x1[i] = 0;
-			//data->x2[i] = 0;
-			//data->y0[i] = 0;
-			//data->y1[i] = 0;
-			//data->y2[i] = 0;
+			data->x0[i] = 0;
+			data->x1[i] = 0;
+			data->x2[i] = 0;
+			data->y0[i] = 0;
+			data->y1[i] = 0;
+			data->y2[i] = 0;
 		}
 	}
-	counter++;
+	counter++;*/
 #endif // DEBUG
 	
 	data->count += count;

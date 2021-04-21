@@ -28,28 +28,13 @@ void nmglFlush (){
 			}
 
 			if (trian_connector->ptrHead()->count) {
-				trian_connector->incHead();
-				while (trian_connector->isFull()) {
-					halSleep(2);
-				}
-				trian_connector->ptrHead()->count = 0;
-				cntxt->synchro.writeInstr(1, NMC1_DRAW_TRIANGLES, (int)trian_connector + 0x40000);
+				transferPolygons(trian_connector, NMC1_DRAW_TRIANGLES);
 			}
 			if (line_connector->ptrHead()->count) {
-				line_connector->incHead();
-				while (line_connector->isFull()) {
-					halSleep(2);
-				}
-				line_connector->ptrHead()->count = 0;
-				cntxt->synchro.writeInstr(1, NMC1_DRAW_LINES, (int)line_connector + 0x40000);
+				transferPolygons(line_connector, NMC1_DRAW_LINES);
 			}
 			if (point_connector->ptrHead()->count) {
-				point_connector->incHead();
-				while (point_connector->isFull()) {
-					halSleep(2);
-				}
-				point_connector->ptrHead()->count = 0;
-				cntxt->synchro.writeInstr(1, NMC1_DRAW_POINTS, (int)point_connector + 0x40000);
+				transferPolygons(point_connector, NMC1_DRAW_POINTS);
 			}
 
 			if(drawingCheck){

@@ -19,16 +19,21 @@ endif
 BOARD    = mc12101
 HOST     = $(BOARD)-host
 
-TARGET0 ?= main0.abs
-TARGET1 ?= main1.abs
 ifdef DEBUG
-TARGET0 ?= main0d.abs
-TARGET1 ?= main1d.abs
+PROJECT0 = main0d
+PROJECT1 = main1d
+else
+PROJECT0 = main0
+PROJECT1 = main1
 endif
+
+
+TARGET0 = $(PROJECT0).abs
+TARGET1 = $(PROJECT1).abs
 
 VS ?= vs2015 
 #PATH:=$(MC12101)/bin;$(PATH)
-all: $(TARGET0) $(TARGET1)  $(HOST)
+all: $(TARGET0) $(TARGET1)
 
 nm0 $(TARGET0): 
 ifdef DEBUG
@@ -52,14 +57,16 @@ profile0:
 profile1:
 	$(MAKE) -f Makefile1 profile
 
+dump0:
+	nmc-objdump -D $(PROJECT0).abs > $(PROJECT0).dasm
 dump1:
-	$(MAKE) -f Makefile1 dump
+	nmc-objdump -D $(PROJECT1).abs > $(PROJECT1).dasm
 	
 vs2005: $(HOST).vcproj 
-	"$(VS80COMNTOOLS)vsvars32" && vcbuild $(HOST).vcproj
+#	"$(VS80COMNTOOLS)vsvars32" && vcbuild $(HOST).vcproj
 
 vs2015:	$(HOST).vcxproj
-	"$(VS140COMNTOOLS)vsvars32" && msbuild $(HOST).vcxproj /p:Configuration=Release /p:Platform=x64
+#	"$(VS140COMNTOOLS)vsvars32" && msbuild $(HOST).vcxproj /p:Configuration=Release /p:Platform=x64
 #	"$(VS140COMNTOOLS)vsvars32" && msbuild $(HOST).vcxproj /p:Configuration=Debug /p:Platform=x64
 
 $(HOST).vcproj:

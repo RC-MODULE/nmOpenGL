@@ -12,9 +12,10 @@
 SECTION(".text_shared0") int main()
 {
 	halSleep(500);
+	halSetProcessorNo(0);
 
 #if defined(__GNUC__) && defined(DEBUG)
-	nmprofiler_init();
+	//nmprofiler_init();
 	//nmprofiler_disable();
 #endif // __GNUC__
 
@@ -136,9 +137,18 @@ SECTION(".text_shared0") int main()
 		nmglMaterialfv(NMGL_FRONT_AND_BACK, NMGL_DIFFUSE, materialDiffuse);
 		nmglMaterialfv(NMGL_FRONT_AND_BACK, NMGL_SPECULAR, materialSpec);
 		nmglRotatef(angle, 0.707, 0.707, 0);
+		//nmglRotatef(1.72 * 13, 0.707, 0.707, 0);
 		nmglTranslatef(150, 150, 0);
 		PROFILER_SIZE(amountPolygons2);
 		nmglDrawArrays(NMGL_TRIANGLES, 0, 3 * amountPolygons2);
+		/*nmglBegin(NMGL_TRIANGLES);
+		for (int i = 0; i < 16; i++) {
+			nmglVertex3f(vertices_DDR2[0], vertices_DDR2[1], vertices_DDR2[2]);
+			nmglVertex3f(vertices_DDR2[4], vertices_DDR2[5], vertices_DDR2[6]);
+			nmglVertex3f(vertices_DDR2[8], vertices_DDR2[9], vertices_DDR2[10]);
+		}
+		nmglEnd();*/
+		
 #ifdef __OPEN_GL__
 		//angle += 0.03;
 		angle += 1.72;

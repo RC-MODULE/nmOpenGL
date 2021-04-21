@@ -69,7 +69,7 @@ void rasterizeP(const Points* points, const BitMask* masks){
 						offset += localSize;
 						updatePolygonsP(data, &localPoint2, localSize, segX, segY);
 						if (data->count == POLYGONS_SIZE) {
-							transferPolygons(data, connector, NMC1_DRAW_POINTS);
+							transferPolygons(connector, NMC1_DRAW_POINTS);
 						}
 					}
 					if (drawingCheck) {

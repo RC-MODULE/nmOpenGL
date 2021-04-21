@@ -7,7 +7,6 @@
 #define __DEMO3D_COMMON_H_INCLUDED__
 #include "nmtype.h"
 #include "nmgltype.h"
-#include "nmsynchro.h"
 #include "ringbuffert.h"
 #include "pattern.h"
 
@@ -79,6 +78,33 @@ struct Rectangle {
 	int width;
 	int height;
 };
+
+/*struct TrianglePackage{
+	int x0[POLYGONS_SIZE];
+	int y0[POLYGONS_SIZE];
+	int x1[POLYGONS_SIZE];
+	int y1[POLYGONS_SIZE];
+	int x2[POLYGONS_SIZE];
+	int y2[POLYGONS_SIZE];
+	int crossProducts[POLYGONS_SIZE];
+};
+
+struct LinePackage{
+	int x0[POLYGONS_SIZE];
+	int y0[POLYGONS_SIZE];
+	int x1[POLYGONS_SIZE];
+	int y1[POLYGONS_SIZE];
+	int crossProducts[POLYGONS_SIZE];
+};
+
+struct PointPackage {
+	int x0[POLYGONS_SIZE];
+	int y0[POLYGONS_SIZE];
+	int x1[POLYGONS_SIZE];
+	int y1[POLYGONS_SIZE];
+	int crossProducts[POLYGONS_SIZE];
+};*/
+
 
 /**
 *  \brief Структура для передачи полигонов от nmpu0 к nmpu1.

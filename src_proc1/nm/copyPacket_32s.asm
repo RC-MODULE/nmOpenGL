@@ -2,9 +2,12 @@
 //void copyPacket_32s(nm32s** pSrc, nm32s** pDst, int* size, int count);
 
 macro copy_repN(N)
-	delayed goto endCopy;
+	if > delayed goto Next;
 		rep N data=[ar0++]	with data;
 		rep N [ar6++] = afifo;
+	delayed goto endProgram;
+		nul;
+		nul;
 end copy_repN;
 
 begin ".text_demo3d"
@@ -16,22 +19,26 @@ global _copyPacket_32u: label;
 	ar5 = ar7-2;
 	push ar0,gr0	with gr7 = gr5;
 	push ar1,gr1;
+	push ar2,gr2;
 	push ar6,gr6;
 	startCopy: label;
 	
-	gr1 = [--ar5];
 	ar1 = [--ar5];
+	ar2 = [--ar5];
 	gr0 = [--ar5];
 	gr6 = [--ar5];
 	gr5 = [gr0]		with gr0++;	
-	ar5 = startCopy with gr5 <<= 1;
+	ar5 = startCopy with gr5 <<= 2;
 <Next>
 	delayed goto ar5+gr5;
-		ar0 = [gr1]		with gr1++;
-		ar6 = [ar1++];
-		gr6--;
+		gr5 = [gr0]		with gr0++;	
+		ar0 = [ar1++]	with gr5 <<= 2;
+		ar6 = [ar2++]	with gr6--;
 <startCopy>
-	delayed goto endCopy;
+	if > delayed goto Next;
+		nul;
+		nul;
+	delayed goto endProgram;
 		nul;
 		nul;
 	copy_repN(1 );
@@ -66,11 +73,9 @@ global _copyPacket_32u: label;
 	copy_repN(30);
 	copy_repN(31);
 	copy_repN(32);
-<endCopy>
-	if > delayed goto Next;
-		gr5 = [gr0]		with gr0++;	
-		gr5<<=1;
+<endProgram>
 	pop ar6,gr6;
+	pop ar2,gr2;
 	pop ar1,gr1;
 	pop ar0,gr0		with gr5 = gr7;
 	return;
