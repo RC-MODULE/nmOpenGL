@@ -27,6 +27,9 @@ int vertexPrimitiveRepack_modeIsGL_TRIANGLES15Vertexes_returns6();
 int vertexPrimitiveRepack_modeIsGL_TRIANGLES45Vertexes_returns16();
 int vertexPrimitiveRepack_modeIsGL_TRIANGLES90Vertexes_returns30();
 
+//int repackToPrimitives_t_0_200_OutputTriangles_AllDataAreCorrect();
+int repackToPrimitives_t_nOutputTriangles(int n);
+
 // Performance tests
 clock_t vertexPrimitiveRepack_modeIsGL_TRIANGLES_192Vertices();
 clock_t vertexPrimitiveRepack_modeIsGL_TRIANGLES_48Vertices();
@@ -39,8 +42,6 @@ clock_t vertexPrimitiveRepack_modeIsGL_TRIANGLES_48Vertices();
 //	int vertexAmount);
 //
 
-// Количество ячеек, которые должны остаться неизменными после работы функции
-//#define ZERO_COUNT 0 
 
 void Print(nm32f *ptr, size_t size)
 {
@@ -69,21 +70,67 @@ void ZeroV4nm32f(v4nm32f *ptr, size_t size)
 	}
 }
 
-int analyzeStackParams()
+
+int main(int argc, char **argv)
 {
-	constexpr int trianglesCount = 1;							// number of output triangles
-	constexpr int ZERO_COUNT = 0;							
-    constexpr int vertCount = trianglesCount * 3;				// number of input vertexes
-	constexpr int expectedTrianglesCount = trianglesCount + trianglesCount % 2;
+    //puts("VertexPrimitiveRepack tests: ");
+    //RUN_TEST(vertexPrimitiveRepack_modeIsGL_TRIANGLES_dstVertexLengthIsCorrect);
+    //RUN_TEST(vertexPrimitiveRepack_modeIsGL_TRIANGLES_dstVertexIsCorrect);
+    //RUN_TEST(vertexPrimitiveRepack_modeIsGL_TRIANGLES_dstColorLengthIsCorrect);
+    //RUN_TEST(vertexPrimitiveRepack_modeIsGL_TRIANGLES_dstColorIsCorrect);
+    //RUN_TEST(vertexPrimitiveRepack_modeIsGL_TRIANGLES81Triangles_dstVertexLengthIsCorrect);
+	//RUN_TEST(vertexPrimitiveRepack_modeIsGL_TRIANGLES81Triangles_dstVertexIsCorrect);
+    //RUN_TEST(vertexPrimitiveRepack_modeIsGL_TRIANGLES81_dstColorLengthIsCorrect);
+	//RUN_TEST(vertexPrimitiveRepack_modeIsGL_TRIANGLES81_dstColorIsCorrect);
+    //RUN_TEST(vertexPrimitiveRepack_modeIsGL_TRIANGLES90Triangles_dstVertexLengthIsCorrect);
+	//RUN_TEST(vertexPrimitiveRepack_modeIsGL_TRIANGLES90Triangles_dstVertexIsCorrect);
+    //RUN_TEST(vertexPrimitiveRepack_modeIsGL_TRIANGLES90_dstColorLengthIsCorrect);
+	//RUN_TEST(vertexPrimitiveRepack_modeIsGL_TRIANGLES90_dstColorIsCorrect);
+	//RUN_TEST(vertexPrimitiveRepack_modeIsGL_TRIANGLES15Vertexes_returns6);
+	//RUN_TEST(vertexPrimitiveRepack_modeIsGL_TRIANGLES45Vertexes_returns16);
+	//RUN_TEST(vertexPrimitiveRepack_modeIsGL_TRIANGLES90Vertexes_returns30);	
+
+	//puts("");
+    //puts("Performance tests: ");
+	//clock_t dt[2];
+	//dt[0] = vertexPrimitiveRepack_modeIsGL_TRIANGLES_192Vertices();
+	//dt[1] = vertexPrimitiveRepack_modeIsGL_TRIANGLES_48Vertices();
+	//for (int i = 0; i < 2; ++i){
+	//	printf("dt[%i] = %i\n\r", i + 1, (int)dt[i]);
+	//}
+
+    //puts("OK");
+	//RUN_TEST(repackToPrimitives_t_0_200_OutputTriangles_AllDataAreCorrect);
+	RUN_ARG_TEST(repackToPrimitives_t_nOutputTriangles, 64);	// >= 65 doesn't work, may be because of memory
+	return 0;
+}
+
+int repackToPrimitives_t_nOutputTriangles(int n)
+{
+	int trianglesCount = n;							// number of output triangles
+	// Количество ячеек, которые должны остаться неизменными после работы функции
+	// Это число должно быть чётным, от него зависит адрес, с которого начинаются
+	// некоторые массивы выходных координат. Функция пишет каждую координату 
+	// по 64 бита (векторный процессор), так что выходной адрес должен быть чётным.
+	int ZERO_COUNT = 4;							
+    int vertCount = trianglesCount * 3;				// number of input vertexes
+	int expectedTrianglesCount = trianglesCount + trianglesCount % 2;
 	// 10 floats - x, y, z, w, s, t, r, g, b, a
 	// ZERO_COUNT - number of triangles at the end that should not be touched
-	constexpr int outputCoordCount = 10 * 3 * (expectedTrianglesCount + ZERO_COUNT);	// number of output coords
+	int outputCoordCount = 10 * 3 * (expectedTrianglesCount + ZERO_COUNT);	// number of output coords
 
     v4nm32f     srcVertex[vertCount];
     v4nm32f     srcColor[vertCount];
     v2nm32f     srcTex[vertCount];
-	nm32f real_output[outputCoordCount] = {0};
-	nm32f expected_output[outputCoordCount] = {0};
+	nm32f real_output[outputCoordCount];
+	nm32f expected_output[outputCoordCount];
+	
+	// Initialize these arrays explicitly because variable-length arrays
+	// can not be initialized
+	for (int i = 0; i < outputCoordCount; ++i){
+		real_output[i] = 0;
+		expected_output[i] = 0;
+	}
 
 	float		*x0 = real_output;
 	float		*y0 = x0 + expectedTrianglesCount + ZERO_COUNT;
@@ -146,146 +193,120 @@ int analyzeStackParams()
 		srcTex[i].v1 = (float)(2 * i + 1);
 	}
 
-    nm32f expectedDstVertex[outputCoordCount + expectedTrianglesCount]  = {0};
-    //for (int i = 0; i < trianglesCount; i++){
-	//	x0[i] = srcVertex[3 * i].vec[0];
-	//	y0[i] = srcVertex[3 * i].vec[1];
-	//	z0[i] = srcVertex[3 * i].vec[2];
-	//	w0[i] = srcVertex[3 * i].vec[3];
-	//	s0[i] = srcTex[3 * i].v0;
-	//	t0[i] = srcTex[3 * i].v1;
-	//	
-	//	x1[i] = srcVertex[3 * i + 1].vec[0];
-	//	y1[i] = srcVertex[3 * i + 1].vec[1];
-	//	z1[i] = srcVertex[3 * i + 1].vec[2];
-	//	w1[i] = srcVertex[3 * i + 1].vec[3];
-	//	s1[i] = srcTex[3 * i + 1].v0;
-	//	t1[i] = srcTex[3 * i + 1].v1;
+	float		*x0_exp = expected_output;
+	float		*y0_exp = x0_exp + expectedTrianglesCount + ZERO_COUNT;
+	float		*z0_exp = y0_exp + expectedTrianglesCount + ZERO_COUNT;
+	float		*w0_exp = z0_exp + expectedTrianglesCount + ZERO_COUNT;
+	float		*s0_exp = w0_exp + expectedTrianglesCount + ZERO_COUNT;
+	float		*t0_exp = s0_exp + expectedTrianglesCount + ZERO_COUNT;
+    v4nm32f	*color0_exp = (v4nm32f *)(t0_exp + expectedTrianglesCount + ZERO_COUNT);
 
-	//	x2[i] = srcVertex[3 * i + 2].vec[0];
-	//	y2[i] = srcVertex[3 * i + 2].vec[1];
-	//	z2[i] = srcVertex[3 * i + 2].vec[2];
-	//	w2[i] = srcVertex[3 * i + 2].vec[3];
-	//	s2[i] = srcTex[3 * i + 2].v0;
-	//	t2[i] = srcTex[3 * i + 2].v1;
-	//}
-	//if (trianglesCount % 2){
-	//	x0[expectedTrianglesCount - 1] = x0[expectedTrianglesCount - 2];
-	//	y0[expectedTrianglesCount - 1] = y0[expectedTrianglesCount - 2];
-	//	z0[expectedTrianglesCount - 1] = z0[expectedTrianglesCount - 2];
-	//	w0[expectedTrianglesCount - 1] = w0[expectedTrianglesCount - 2];
-	//	s0[expectedTrianglesCount - 1] = s0[expectedTrianglesCount - 2];
-	//	t0[expectedTrianglesCount - 1] = t0[expectedTrianglesCount - 2];
+	float		*x1_exp = expected_output + 10 * (expectedTrianglesCount + ZERO_COUNT);
+	float		*y1_exp = x1_exp + expectedTrianglesCount + ZERO_COUNT;
+	float		*z1_exp = y1_exp + expectedTrianglesCount + ZERO_COUNT;
+	float		*w1_exp = z1_exp + expectedTrianglesCount + ZERO_COUNT;
+	float		*s1_exp = w1_exp + expectedTrianglesCount + ZERO_COUNT;
+	float		*t1_exp = s1_exp + expectedTrianglesCount + ZERO_COUNT;
+    v4nm32f *color1_exp = (v4nm32f *)(t1_exp + expectedTrianglesCount + ZERO_COUNT);
+	
+	float		*x2_exp = expected_output + 10 * 2 * (expectedTrianglesCount + ZERO_COUNT);
+	float		*y2_exp = x2_exp + expectedTrianglesCount + ZERO_COUNT;
+	float		*z2_exp = y2_exp + expectedTrianglesCount + ZERO_COUNT;
+	float		*w2_exp = z2_exp + expectedTrianglesCount + ZERO_COUNT;
+	float		*s2_exp = w2_exp + expectedTrianglesCount + ZERO_COUNT;
+	float		*t2_exp = s2_exp + expectedTrianglesCount + ZERO_COUNT;
+    v4nm32f	*color2_exp = (v4nm32f *)(t2_exp + expectedTrianglesCount + ZERO_COUNT);
 
-	//	x1[expectedTrianglesCount - 1] = x1[expectedTrianglesCount - 2];
-	//	y1[expectedTrianglesCount - 1] = y1[expectedTrianglesCount - 2];
-	//	z1[expectedTrianglesCount - 1] = z1[expectedTrianglesCount - 2];
-	//	w1[expectedTrianglesCount - 1] = w1[expectedTrianglesCount - 2];
-	//	s1[expectedTrianglesCount - 1] = s1[expectedTrianglesCount - 2];
-	//	t1[expectedTrianglesCount - 1] = t1[expectedTrianglesCount - 2];
+    for (int i = 0; i < trianglesCount; i++){
+		x0_exp[i] = srcVertex[3 * i].vec[0];
+		y0_exp[i] = srcVertex[3 * i].vec[1];
+		z0_exp[i] = srcVertex[3 * i].vec[2];
+		w0_exp[i] = srcVertex[3 * i].vec[3];
+		s0_exp[i] = srcTex[3 * i].v0;
+		t0_exp[i] = srcTex[3 * i].v1;
+		color0_exp[i].vec[0] = srcColor[3 * i].vec[0];
+		color0_exp[i].vec[1] = srcColor[3 * i].vec[1];
+		color0_exp[i].vec[2] = srcColor[3 * i].vec[2];
+		color0_exp[i].vec[3] = srcColor[3 * i].vec[3];
+		
+		x1_exp[i] = srcVertex[3 * i + 1].vec[0];
+		y1_exp[i] = srcVertex[3 * i + 1].vec[1];
+		z1_exp[i] = srcVertex[3 * i + 1].vec[2];
+		w1_exp[i] = srcVertex[3 * i + 1].vec[3];
+		s1_exp[i] = srcTex[3 * i + 1].v0;
+		t1_exp[i] = srcTex[3 * i + 1].v1;
+		color1_exp[i].vec[0] = srcColor[3 * i + 1].vec[0];
+		color1_exp[i].vec[1] = srcColor[3 * i + 1].vec[1];
+		color1_exp[i].vec[2] = srcColor[3 * i + 1].vec[2];
+		color1_exp[i].vec[3] = srcColor[3 * i + 1].vec[3];
 
-	//	x2[expectedTrianglesCount - 1] = x2[expectedTrianglesCount - 2];
-	//	y2[expectedTrianglesCount - 1] = y2[expectedTrianglesCount - 2];
-	//	z2[expectedTrianglesCount - 1] = z2[expectedTrianglesCount - 2];
-	//	w2[expectedTrianglesCount - 1] = w2[expectedTrianglesCount - 2];
-	//	s2[expectedTrianglesCount - 1] = s2[expectedTrianglesCount - 2];
-	//	t2[expectedTrianglesCount - 1] = t2[expectedTrianglesCount - 2];
-	//} else {
-	//	// Do not correct 
-	//}
+		x2_exp[i] = srcVertex[3 * i + 2].vec[0];
+		y2_exp[i] = srcVertex[3 * i + 2].vec[1];
+		z2_exp[i] = srcVertex[3 * i + 2].vec[2];
+		w2_exp[i] = srcVertex[3 * i + 2].vec[3];
+		s2_exp[i] = srcTex[3 * i + 2].v0;
+		t2_exp[i] = srcTex[3 * i + 2].v1;
+		color2_exp[i].vec[0] = srcColor[3 * i + 2].vec[0];
+		color2_exp[i].vec[1] = srcColor[3 * i + 2].vec[1];
+		color2_exp[i].vec[2] = srcColor[3 * i + 2].vec[2];
+		color2_exp[i].vec[3] = srcColor[3 * i + 2].vec[3];
+	}
+	if (trianglesCount % 2){
+		x0_exp[expectedTrianglesCount - 1] = x0_exp[expectedTrianglesCount - 2];
+		y0_exp[expectedTrianglesCount - 1] = y0_exp[expectedTrianglesCount - 2];
+		z0_exp[expectedTrianglesCount - 1] = z0_exp[expectedTrianglesCount - 2];
+		w0_exp[expectedTrianglesCount - 1] = w0_exp[expectedTrianglesCount - 2];
+		s0_exp[expectedTrianglesCount - 1] = s0_exp[expectedTrianglesCount - 2];
+		t0_exp[expectedTrianglesCount - 1] = t0_exp[expectedTrianglesCount - 2];
+		color0_exp[expectedTrianglesCount - 1].vec[0] = color0_exp[expectedTrianglesCount - 2].vec[0];
+		color0_exp[expectedTrianglesCount - 1].vec[1] = color0_exp[expectedTrianglesCount - 2].vec[1];
+		color0_exp[expectedTrianglesCount - 1].vec[2] = color0_exp[expectedTrianglesCount - 2].vec[2];
+		color0_exp[expectedTrianglesCount - 1].vec[3] = color0_exp[expectedTrianglesCount - 2].vec[3];
 
-	//ZeroV4nm32f(color0, expectedTrianglesCount + ZERO_COUNT);
-	//ZeroV4nm32f(color1, expectedTrianglesCount + ZERO_COUNT);
-	//ZeroV4nm32f(color2, expectedTrianglesCount + ZERO_COUNT);
-	color1[3].vec[0] = 0.9;
-	color1[3].vec[1] = 0.9;
-	color1[3].vec[2] = 0.9;
-	color1[3].vec[3] = 0.9;
+		x1_exp[expectedTrianglesCount - 1] = x1_exp[expectedTrianglesCount - 2];
+		y1_exp[expectedTrianglesCount - 1] = y1_exp[expectedTrianglesCount - 2];
+		z1_exp[expectedTrianglesCount - 1] = z1_exp[expectedTrianglesCount - 2];
+		w1_exp[expectedTrianglesCount - 1] = w1_exp[expectedTrianglesCount - 2];
+		s1_exp[expectedTrianglesCount - 1] = s1_exp[expectedTrianglesCount - 2];
+		t1_exp[expectedTrianglesCount - 1] = t1_exp[expectedTrianglesCount - 2];
+		color1_exp[expectedTrianglesCount - 1].vec[0] = color1_exp[expectedTrianglesCount - 2].vec[0];
+		color1_exp[expectedTrianglesCount - 1].vec[1] = color1_exp[expectedTrianglesCount - 2].vec[1];
+		color1_exp[expectedTrianglesCount - 1].vec[2] = color1_exp[expectedTrianglesCount - 2].vec[2];
+		color1_exp[expectedTrianglesCount - 1].vec[3] = color1_exp[expectedTrianglesCount - 2].vec[3];
+
+		x2_exp[expectedTrianglesCount - 1] = x2_exp[expectedTrianglesCount - 2];
+		y2_exp[expectedTrianglesCount - 1] = y2_exp[expectedTrianglesCount - 2];
+		z2_exp[expectedTrianglesCount - 1] = z2_exp[expectedTrianglesCount - 2];
+		w2_exp[expectedTrianglesCount - 1] = w2_exp[expectedTrianglesCount - 2];
+		s2_exp[expectedTrianglesCount - 1] = s2_exp[expectedTrianglesCount - 2];
+		t2_exp[expectedTrianglesCount - 1] = t2_exp[expectedTrianglesCount - 2];
+		color2_exp[expectedTrianglesCount - 1].vec[0] = color2_exp[expectedTrianglesCount - 2].vec[0];
+		color2_exp[expectedTrianglesCount - 1].vec[1] = color2_exp[expectedTrianglesCount - 2].vec[1];
+		color2_exp[expectedTrianglesCount - 1].vec[2] = color2_exp[expectedTrianglesCount - 2].vec[2];
+		color2_exp[expectedTrianglesCount - 1].vec[3] = color2_exp[expectedTrianglesCount - 2].vec[3];
+	} else {
+		// Do not correct 
+	}
 
 	// Act
     int res;
 	res = repackToPrimitives_t(srcVertex, srcColor, srcTex, &dst, vertCount);
-	printf("srcVertex = %p \n\r", srcVertex);
-	printf("srcColor = %p \n\r", srcColor);
-	printf("srcTex = %p \n\r", srcTex);
-	printf("dst = %p \n\r", &dst);
-	//printf("dst.v0 pointer = %p \n\r", &(dst.v0));
-	//printf("dst.v1 pointer = %p \n\r", &(dst.v1));
-	//printf("dst.v2 pointer = %p \n\r", &(dst.v2));
-	printf("dst.v0.color pointer = %p \n\r", dst.v0.color);
-	//printf("dst.v1.w pointer = %p \n\r", &(dst.v1.w));
-	//printf("dst.v1.w = %x \n\r", dst.v1.w);
-	printf("dst.v0 address = %x \n\r", &dst.v0);
-	printf("dst.v0.x address = %x \n\r", dst.v0.x);
-	printf("res = %x\n\r", res);
-
-	puts("Coordinates");
-	Print(x0, expectedTrianglesCount + ZERO_COUNT);
-	Print(y0, expectedTrianglesCount + ZERO_COUNT);
-	Print(z0, expectedTrianglesCount + ZERO_COUNT);
-	Print(w0, expectedTrianglesCount + ZERO_COUNT);
-	Print(x1, expectedTrianglesCount + ZERO_COUNT);
-	Print(y1, expectedTrianglesCount + ZERO_COUNT);
-	Print(z1, expectedTrianglesCount + ZERO_COUNT);
-	Print(w1, expectedTrianglesCount + ZERO_COUNT);
-	Print(x2, expectedTrianglesCount + ZERO_COUNT);
-	Print(y2, expectedTrianglesCount + ZERO_COUNT);
-	Print(z2, expectedTrianglesCount + ZERO_COUNT);
-	Print(w2, expectedTrianglesCount + ZERO_COUNT);
-
-	puts("Texture coordinates");
-	Print(s0, expectedTrianglesCount + ZERO_COUNT);
-	Print(t0, expectedTrianglesCount + ZERO_COUNT);
-	Print(s1, expectedTrianglesCount + ZERO_COUNT);
-	Print(t1, expectedTrianglesCount + ZERO_COUNT);
-	Print(s2, expectedTrianglesCount + ZERO_COUNT);
-	Print(t2, expectedTrianglesCount + ZERO_COUNT);
-
-	puts("Colors:");
-	PrintV4nm32f(color0, expectedTrianglesCount + ZERO_COUNT);
-	PrintV4nm32f(color1, expectedTrianglesCount + ZERO_COUNT);
-	PrintV4nm32f(color2, expectedTrianglesCount + ZERO_COUNT);
 
 	// Assert
-    //TEST_ARRAYS_EQUAL (dstVertex, expectedDstVertex, outputCoordCount + expectedTrianglesCount);
+    TEST_ARRAYS_EQUAL(real_output, expected_output, outputCoordCount);
 
     return 0;
 }
-//
 
-
-int main(int argc, char **argv)
-{
-    //puts("VertexPrimitiveRepack tests: ");
-    //RUN_TEST(vertexPrimitiveRepack_modeIsGL_TRIANGLES_dstVertexLengthIsCorrect);
-    //RUN_TEST(vertexPrimitiveRepack_modeIsGL_TRIANGLES_dstVertexIsCorrect);
-    //RUN_TEST(vertexPrimitiveRepack_modeIsGL_TRIANGLES_dstColorLengthIsCorrect);
-    //RUN_TEST(vertexPrimitiveRepack_modeIsGL_TRIANGLES_dstColorIsCorrect);
-    //RUN_TEST(vertexPrimitiveRepack_modeIsGL_TRIANGLES81Triangles_dstVertexLengthIsCorrect);
-	//RUN_TEST(vertexPrimitiveRepack_modeIsGL_TRIANGLES81Triangles_dstVertexIsCorrect);
-    //RUN_TEST(vertexPrimitiveRepack_modeIsGL_TRIANGLES81_dstColorLengthIsCorrect);
-	//RUN_TEST(vertexPrimitiveRepack_modeIsGL_TRIANGLES81_dstColorIsCorrect);
-    //RUN_TEST(vertexPrimitiveRepack_modeIsGL_TRIANGLES90Triangles_dstVertexLengthIsCorrect);
-	//RUN_TEST(vertexPrimitiveRepack_modeIsGL_TRIANGLES90Triangles_dstVertexIsCorrect);
-    //RUN_TEST(vertexPrimitiveRepack_modeIsGL_TRIANGLES90_dstColorLengthIsCorrect);
-	//RUN_TEST(vertexPrimitiveRepack_modeIsGL_TRIANGLES90_dstColorIsCorrect);
-	//RUN_TEST(vertexPrimitiveRepack_modeIsGL_TRIANGLES15Vertexes_returns6);
-	//RUN_TEST(vertexPrimitiveRepack_modeIsGL_TRIANGLES45Vertexes_returns16);
-	//RUN_TEST(vertexPrimitiveRepack_modeIsGL_TRIANGLES90Vertexes_returns30);	
-
-	//puts("");
-    //puts("Performance tests: ");
-	//clock_t dt[2];
-	//dt[0] = vertexPrimitiveRepack_modeIsGL_TRIANGLES_192Vertices();
-	//dt[1] = vertexPrimitiveRepack_modeIsGL_TRIANGLES_48Vertices();
-	//for (int i = 0; i < 2; ++i){
-	//	printf("dt[%i] = %i\n\r", i + 1, (int)dt[i]);
-	//}
-
-    //puts("OK");
-	RUN_TEST(analyzeStackParams);
-	return 0;
-}
+//int repackToPrimitives_t_0_200_OutputTriangles_AllDataAreCorrect()
+//{
+//	int res = 0;
+//	for (int i = 65; i < 66; ++i){
+//		printf("%i: \n\r", i);
+//    	res += repackToPrimitives_t_nOutputTriangles(i);
+//	}
+//	return res;
+//}
 
 int vertexPrimitiveRepack_modeIsGL_TRIANGLES_dstVertexLengthIsCorrect()
 {
