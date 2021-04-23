@@ -222,10 +222,10 @@ begin ".text_demo3d"			// начало секции кода
 	ar3 += 6;	// Address of A_color pointer
 	gr3 = [ar3];
 	copyCol(ar1, gr3, 12, 4, gr1);
-	ar3 += 8;	// Address of A_color pointer
+	ar3 += 8;	// Address of B_color pointer
 	gr3 = [ar3];
 	copyCol(ar1 + 4, gr3, 12, 4, gr1);
-	ar3 += 8;	// Address of A_color pointer
+	ar3 += 8;	// Address of C_color pointer
 	gr3 = [ar3];
 	copyCol(ar1 + 8, gr3, 12, 4, gr1);
 	
