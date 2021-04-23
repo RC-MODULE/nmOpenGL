@@ -133,6 +133,7 @@ begin ".text_demo3d"			// начало секции кода
     push ar2,gr2;
     push ar3,gr3;
     push ar4,gr4;
+    push ar5,gr5;
     push ar6,gr6;   // don't forget about pop
     
 
@@ -296,6 +297,7 @@ begin ".text_demo3d"			// начало секции кода
 <Exit>
 	gr7 = [retVal];
     pop ar6,gr6;
+    pop ar5,gr5;
     pop ar4,gr4;
     pop ar3,gr3;
     pop ar2,gr2;
