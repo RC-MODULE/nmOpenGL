@@ -262,7 +262,7 @@ begin ".text_demo3d"			// начало секции кода
 	fpu 0 rep 2 vreg0 = [ar0++];
 	fpu 0 rep 2 [ar4++] = vreg0;
 
-	ar3 = ar3 + 1;	// Skip dummy
+	ar3 = ar3 + 1 with gr4 = gr1 - 1;	// Skip dummy
 
 	.repeat 6;
 	ar4 = [ar3++] with gr4 = gr4 - 1;
@@ -278,7 +278,7 @@ begin ".text_demo3d"			// начало секции кода
 	fpu 0 rep 2 vreg0 = [ar0++];
 	fpu 0 rep 2 [ar4++] = vreg0;
 
-	ar3 = ar3 + 1;	// Skip dummy
+	ar3 = ar3 + 1 with gr4 = gr1 - 1;	// Skip dummy
 
 	.repeat 6;
 	ar4 = [ar3++] with gr4 = gr4 - 1;
