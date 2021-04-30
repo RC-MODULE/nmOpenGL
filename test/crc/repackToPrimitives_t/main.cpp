@@ -27,7 +27,7 @@ int vertexPrimitiveRepack_modeIsGL_TRIANGLES15Vertexes_returns6();
 int vertexPrimitiveRepack_modeIsGL_TRIANGLES45Vertexes_returns16();
 int vertexPrimitiveRepack_modeIsGL_TRIANGLES90Vertexes_returns30();
 
-//int repackToPrimitives_t_0_200_OutputTriangles_AllDataAreCorrect();
+int repackToPrimitives_t_0_200_OutputTriangles_AllDataAreCorrect();
 int repackToPrimitives_t_nOutputTriangles(int n);
 
 // Performance tests
@@ -100,8 +100,8 @@ int main(int argc, char **argv)
 	//}
 
     //puts("OK");
-	//RUN_TEST(repackToPrimitives_t_0_200_OutputTriangles_AllDataAreCorrect);
-	RUN_ARG_TEST(repackToPrimitives_t_nOutputTriangles, 64);	// >= 65 doesn't work, may be because of memory
+	RUN_TEST(repackToPrimitives_t_0_200_OutputTriangles_AllDataAreCorrect);
+	//RUN_ARG_TEST(repackToPrimitives_t_nOutputTriangles, 65);	// >= 65 doesn't work, may be because of memory
 	return 0;
 }
 
@@ -288,6 +288,7 @@ int repackToPrimitives_t_nOutputTriangles(int n)
 		// Do not correct 
 	}
 
+
 	// Act
     int res;
 	res = repackToPrimitives_t(srcVertex, srcColor, srcTex, &dst, vertCount);
@@ -298,15 +299,14 @@ int repackToPrimitives_t_nOutputTriangles(int n)
     return 0;
 }
 
-//int repackToPrimitives_t_0_200_OutputTriangles_AllDataAreCorrect()
-//{
-//	int res = 0;
-//	for (int i = 65; i < 66; ++i){
-//		printf("%i: \n\r", i);
-//    	res += repackToPrimitives_t_nOutputTriangles(i);
-//	}
-//	return res;
-//}
+int repackToPrimitives_t_0_200_OutputTriangles_AllDataAreCorrect()
+{
+	int res = 0;
+	for (int i = 0; i < 200; ++i){
+    	res += repackToPrimitives_t_nOutputTriangles(i);
+	}
+	return res;
+}
 
 int vertexPrimitiveRepack_modeIsGL_TRIANGLES_dstVertexLengthIsCorrect()
 {

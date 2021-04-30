@@ -72,10 +72,13 @@ macro extractPair(coordAddr1, coordAddr2, delta)
 	own endLoop: label;
 	own Extract: label;
 	own indirectCopy: label;
+	push ar2, gr2;
 	ar5 = coordAddr1;
 	gr5 = ar5;
 	ar6 = coordAddr2;
 	gr6 = ar6;
+	ar4 = [ar3++];
+	ar2 = [ar3++];
 <getLoop>
 	// gr2 - max number of coordinates that can be extracted in one iteration
 	// vreg0 contains 32 pairs of xy, vreg1 contains 32 pairs of xy
@@ -109,19 +112,18 @@ macro extractPair(coordAddr1, coordAddr2, delta)
 	gr6 = ar6;
 	// Extract first coordinate of the pair (x or z)
 	ar5 = M10;
-	ar4 = [ar3++];
 	fpu 0 rep vlen vreg4 = [ar5];
 	fpu 0 .matrix vreg2 = vreg4 * .trans (vreg0, vreg1);
 	fpu 0 rep vlen [ar4++] = vreg2;	
 	// Extract second coordinate of the pair (y or w)
 	ar5 = M01;
-	ar4 = [ar3++];
 	fpu 0 rep vlen vreg4 = [ar5];
 	fpu 0 .matrix vreg2 = vreg4 * .trans (vreg0, vreg1);
-	fpu 0 rep vlen [ar4++] = vreg2;	
+	fpu 0 rep vlen [ar2++] = vreg2;	
 <endLoop>	
 	gr0  = gr0 - gr2;
 	if > goto getLoop;
+	pop ar2, gr2;
 end extractPair; 
 
 begin ".text_demo3d"			// начало секции кода
@@ -136,7 +138,6 @@ begin ".text_demo3d"			// начало секции кода
     push ar5,gr5;
     push ar6,gr6;   // don't forget about pop
     
-
     ar0 = [--ar5];  // input vertexes
     ar1 = [--ar5];  // input colors
     ar2 = [--ar5];  // input texture coords
@@ -144,8 +145,6 @@ begin ".text_demo3d"			// начало секции кода
     gr6 = [--ar5];  // input: count of input vertexes 
     [vertCount] = gr6;	// Used in GL_TRIANGLES
 	[dstVertex] = ar3;
-
-
 
 	gr0 = 0;
 	[retVal] = gr0;
