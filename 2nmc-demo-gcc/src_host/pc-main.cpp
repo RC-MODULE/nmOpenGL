@@ -16,18 +16,12 @@
 #include <string>
 #include <iomanip>
 #include <sstream>
-#include <mutex>
 
 using namespace std;
 
-const int step = 8;
-int max = 0;
-mutex mut;
-vector<int> reps;
-
 int currentImage[WIDTH_IMAGE * HEIGHT_IMAGE];
 
-void update_count_rep(const map<string, map<string, string>> &dump_dict, const vector<string> &trace, vector<int> &reps);
+/*void update_count_rep(const map<string, map<string, string>> &dump_dict, const vector<string> &trace, vector<int> &reps);
 void get_dump_dict(string file_name, map<string, map<string, string>> &dump_map);
 
 bool myRun() {
@@ -67,7 +61,7 @@ void trace_func(int trace_addr, int trace_size, map<string, map<string,string>> 
 			max = (reps[i] > max) ? reps[i] : max;
 		}
 	}
-}
+}*/
 
 
 int main()
@@ -150,7 +144,7 @@ int main()
 		if (counter>=256 && flag) {
 			//halProfilerPrint2xml("main0d.map", 0, "../perf0.xml");
 			//return 0;
-			//halProfilerPrint2xml("main1d.map", 1, "../perf1.xml");
+			//halProfilerPrint2xml("main1d.map", 1, "../perf1_ptrn_nm1.xml");
 			//return 0;
 			flag = 0;
 		}
