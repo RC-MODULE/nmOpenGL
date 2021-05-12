@@ -84,7 +84,7 @@ int main()
 		return 0;
 
 	VS_CreateImage("Source Image", 1, WIDTH_IMAGE, HEIGHT_IMAGE, VS_RGB32, 0);	// Create window for 8-bit source grayscale image
-	VS_CreateImage("Source Image", 2, step * 32, step * 32, VS_RGB32, 0);	// Create window for 8-bit source grayscale image
+	//VS_CreateImage("Source Image", 2, step * 32, step * 32, VS_RGB32, 0);	// Create window for 8-bit source grayscale image
 	VS_OpRunForward();
 
 	float* vertices = new float[4000 * 12];
@@ -129,17 +129,17 @@ int main()
 
 	//std::thread thr(trace_func, trace_addr, trace_size, dump_map, 10);
 	//thr.detach();
-	while(myRun())	{
+	while (VS_Run()) {
 #ifdef EMULATION
 		halSleep(100);
 #endif //EMULATION
 		nmglvsHostReadImage(currentImage);
 		VS_SetData(1, currentImage);
-		if (max > 0) {
+		/*if (max > 0) {
 			for (int i = 0; i < 32; i++) {
 				VS_RectangleF(2, step * i, 32.0 * step * (1 - (float)reps[i] / (1.2 * max)), step * (i + 1), 32.0 * step, VS_WHITE, VS_BLACK);
 			}
-		}
+		}*/
 		counter++;
 		if (counter>=256 && flag) {
 			//halProfilerPrint2xml("main0d.map", 0, "../perf0.xml");
