@@ -8,6 +8,7 @@
 #include "stdio.h"
 #include "link.h"
 #include "led.h"
+#include "hal.h"
 
 #define NMC1_CLEAR 					0xF0010000
 #define NMC1_DRAW_TRIANGLES 		0xF0020000
@@ -43,17 +44,53 @@
 
 #define SYNCHRO_EXIT 1
 
-#ifdef __GNUC__
-struct CommandNm1{
-	int instr_nmc1;
-	int params[7];
+enum StoredTypes {
+	TYPE_NULL,
+	TYPE_POINTER,
+	TYPE_INT,
+	TYPE_UNSIGNED_INT,
+	TYPE_FLOAT,
+	TYPE_BOOL
 };
-#else
-struct CommandNm1{
-	int instr_nmc1;
-	long long params[7];
+struct CommandArgument {
+	union {
+		void* p;
+		int i;
+		unsigned int ui;	
+		float f;
+		bool b; 
+	};
+	StoredTypes storedType = TYPE_NULL;
+
+	CommandArgument() {
+		storedType = TYPE_NULL;
+	}
+	CommandArgument(void* value) {
+		p = value;
+		storedType = TYPE_POINTER;
+	}
+	CommandArgument(unsigned int value) {
+		ui = value;
+		storedType = TYPE_UNSIGNED_INT;
+	}
+	CommandArgument(int value) {
+		i = value;
+		storedType = TYPE_INT;
+	}
+	CommandArgument(float value) {
+		f = value;
+		storedType = TYPE_FLOAT;
+	}
+	CommandArgument(bool value) {
+		b = value;
+		storedType = TYPE_BOOL;
+	}
 };
-#endif
+
+struct CommandNm1{
+	int instr;
+	CommandArgument params[7];
+};
 
 #define PRIORITY_SIZE 256
 //#define PRIORITY_SIZE 2
@@ -75,25 +112,16 @@ public:
 		counter = 0;
 	}
 
-	inline void writeInstr(int priority,
-		int instr,
-		int param0 = 0,
-		int param1 = 0,
-		int param2 = 0,
-		int param3 = 0,
-		int param4 = 0,
-		int param5 = 0) {
+	inline void pushInstr(CommandNm1 *command){
 		while (connector.isFull());
-		CommandNm1* command = connector.ptrHead();
-		command->instr_nmc1 = instr;
-		command->params[0] = param0;
-		command->params[1] = param1;
-		command->params[2] = param2;
-		command->params[3] = param3;
-		command->params[4] = param4;
-		command->params[5] = param5;
+		CommandNm1* commandRB = connector.ptrHead();
+		commandRB->instr = command->instr;
+		for (int i = 0; i < 7; i++) {
+			commandRB->params[i] = command->params[i];
+		}
 		(*connector.pHead)++;
 	}
+
 	inline bool isEmpty() {
 		return connector.isEmpty();
 	}
@@ -115,6 +143,11 @@ public:
 
 	inline void popInstr(CommandNm1 *command) {
 		connector.pop(command, 1);
+		for (int i = 0; i < 7; i++) {
+			if (command->params[i].storedType == TYPE_POINTER) {
+				command->params[i].p = halMapAddrFrom(command->params[i].p, 0);
+			}
+		}
 	}
 };
 

@@ -128,14 +128,17 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 			trianData[seg].init();
 			trianData[seg].ptr(0)->count = 0;
 			cntxt->triangleConnectors[seg].init(trianData + seg);
+			cntxt->triangleConnectors[seg].ringbufferDataPointer = trianData + seg;
 
 			lineData[seg].init();
 			lineData[seg].ptr(0)->count = 0;
 			cntxt->lineConnectors[seg].init(lineData + seg);
+			cntxt->lineConnectors[seg].ringbufferDataPointer = lineData + seg;
 
 			pointsData[seg].init();
 			pointsData[seg].ptr(0)->count = 0;
 			cntxt->pointConnectors[seg].init(pointsData + seg);
+			cntxt->pointConnectors[seg].ringbufferDataPointer = pointsData + seg;
 		}
 
 		cntxt->beginEndInfo.vertex = myMallocT<v4nm32f>(BIG_NMGL_SIZE);

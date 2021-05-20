@@ -19,6 +19,7 @@ INSECTION(".data_imu3")	int dst[SIZE];
 
 extern "C" void copy_vec_test(void* src, void* dst, int size, int count);
 extern "C" void copy_risc_test(void* src, void* dst, int size, int count);
+extern "C" void copy_dma_test(void* src, void* dst, int size, int count);
 
 int main()
 {		

@@ -3,6 +3,8 @@
 #include "nmpp.h"
 #include "nmgl.h"
 #include "myserverdma.h"
+#include "ringbuffert.h"
+#include "demo3d_common.h"
 
 #ifndef __NM__
 typedef void DepthCore32(nm32s &buffZ, nm32s &trianSrcZ, nm32s &trianDstZ);

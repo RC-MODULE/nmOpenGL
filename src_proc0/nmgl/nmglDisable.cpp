@@ -10,6 +10,7 @@
 SECTION(".text_nmgl")
 void nmglDisable(NMGLenum cap) {
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
+	CommandNm1 command;
 	switch (cap) {
 
 	case NMGL_ALPHA_TEST:
@@ -33,7 +34,9 @@ void nmglDisable(NMGLenum cap) {
 		break;	
 
 	case NMGL_DEPTH_TEST:
-		cntxt->synchro.writeInstr(1, NMC1_DEPTH, NMGL_FALSE);
+		command.instr = NMC1_DEPTH;
+		command.params[0] = CommandArgument(NMGL_FALSE);
+		cntxt->synchro.pushInstr(&command);
 		break;
 	
 	case NMGL_DITHER:
@@ -95,7 +98,11 @@ void nmglDisable(NMGLenum cap) {
 	case NMGL_TEXTURE_2D:
 		cntxt->texState.texUnits[cntxt->texState.activeTexUnitIndex].enabled = NMGL_FALSE;
 		cntxt->texState.textureEnabled = cntxt->texState.textureEnabled & (~((unsigned int)1 << cntxt->texState.activeTexUnitIndex));
-		cntxt->synchro.writeInstr(1, NMC1_TEXTURE2D, NMGL_FALSE);
+
+		command.instr = NMC1_TEXTURE2D;
+		command.params[0] = CommandArgument(NMGL_FALSE);
+		cntxt->synchro.pushInstr(&command);
+		//cntxt->synchro.writeInstr(1, NMC1_TEXTURE2D, NMGL_FALSE);
 		break;
 	
 	case NMGL_CLIP_PLANE0:

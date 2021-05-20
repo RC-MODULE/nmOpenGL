@@ -177,7 +177,7 @@ PROFILE_BEGIN( 16 ,0);
 	FUNCTION( __Z5and4vPiS_S_S_S_i ,  "and4vPiS_S_S_S_i");//  000000002006cf98  [ .text_demo3d ]
 	FUNCTION( __Z14setSegmentMaskP9s_v2nm32fS0_P7BitMaski ,      "setSegmentMaskP9");//  000000002006cff2  [ .text_demo3d ]
 	FUNCTION( __Z14splitTrianglesP16TrianglePointersiiiiS0_Pi ,  "splitTrianglesP1");//  000000002006d170  [ .text_demo3d ]
-	FUNCTION( __Z16transferPolygonsP22HalRingBufferConnectorI12DataForNmpu1Li4EEi ,  "transferPolygons");//  000000002006d514  [ .text_demo3d ]
+	FUNCTION( __Z16transferPolygonsP21MyRingBufferConnectorI12DataForNmpu1Li4EEi ,  "transferPolygons");//  000000002006d514  [ .text_demo3d ]
 	FUNCTION( __Z15updatePolygonsLP12DataForNmpu1P5Linesiii ,    "updatePolygonsLP");//  000000002006d76c  [ .text_demo3d ]
 	FUNCTION( __Z15updatePolygonsPP12DataForNmpu1P6Pointsiii ,   "updatePolygonsPP");//  000000002006d936  [ .text_demo3d ]
 	FUNCTION( __Z15updatePolygonsTP12DataForNmpu1P9Trianglesiii ,  "updatePolygonsTP");//  000000002006d9e8  [ .text_demo3d ]

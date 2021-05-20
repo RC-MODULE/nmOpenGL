@@ -77,13 +77,15 @@ void rasterizeT(const Triangles* triangles, const BitMask* masks){
 				if (resultSize) {
 					PolygonsConnector *connector = cntxt->triangleConnectors + iSeg;
 					bool drawingCheck = connector->ptrHead()->count + resultSize >= POLYGONS_SIZE;
+					CommandNm1 command;
 					if (drawingCheck) {
-						cntxt->synchro.writeInstr(1, NMC1_COPY_SEG_FROM_IMAGE,
-							cntxt->windowInfo.x0[segX],
-							cntxt->windowInfo.y0[segY],
-							cntxt->windowInfo.x1[segX] - cntxt->windowInfo.x0[segX],
-							cntxt->windowInfo.y1[segY] - cntxt->windowInfo.y0[segY],
-							iSeg);
+						command.instr = NMC1_COPY_SEG_FROM_IMAGE;
+						command.params[0] = CommandArgument(cntxt->windowInfo.x0[segX]);
+						command.params[1] = CommandArgument(cntxt->windowInfo.y0[segY]);
+						command.params[2] = CommandArgument(cntxt->windowInfo.x1[segX] - cntxt->windowInfo.x0[segX]);
+						command.params[3] = CommandArgument(cntxt->windowInfo.y1[segY] - cntxt->windowInfo.y0[segY]);
+						command.params[4] = CommandArgument(iSeg);
+						cntxt->synchro.pushInstr(&command);
 					}
 
 #ifdef TEXTURE_ENABLED
@@ -112,12 +114,8 @@ void rasterizeT(const Triangles* triangles, const BitMask* masks){
 						}
 					}
 					if (drawingCheck) {
-						cntxt->synchro.writeInstr(1,
-							NMC1_COPY_SEG_TO_IMAGE,
-							cntxt->windowInfo.x0[segX],
-							cntxt->windowInfo.y0[segY],
-							cntxt->windowInfo.x1[segX] - cntxt->windowInfo.x0[segX],
-							cntxt->windowInfo.y1[segY] - cntxt->windowInfo.y0[segY]);
+						command.instr = NMC1_COPY_SEG_TO_IMAGE;
+						cntxt->synchro.pushInstr(&command);
 					}
 
 				}

@@ -22,7 +22,7 @@ SECTION(".text_demo3d") void NMGL_Clear(NMGL_Context_NM1 *context, CommandNm1 *c
 	int heightSeg = context->smallClearColorBuff.getHeight();
 	copyImageCounterColor = 0;
 	copyImageCounterDepth = 0;
-	switch (command->params[0])
+	switch (command->params[0].i)
 	{
 	case NMGL_COLOR_BUFFER_BIT:
 		context->smallClearColorBuff.clear();

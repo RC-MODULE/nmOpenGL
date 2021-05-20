@@ -1,10 +1,6 @@
 #include "demo3d_common.h"
 #include "demo3d_nm1.h"
 #include "nmgldef.h"
-#include <nmpp.h>
-#include "imagebuffer.h"
-#include "cache.h"
-#include "nmprofiler.h"
 
 int totalSum(nm32s* pVec, int size);
 

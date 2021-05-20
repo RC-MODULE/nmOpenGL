@@ -15,6 +15,9 @@ void transferPolygons(PolygonsConnector *connector, int mode) {
 	while (connector->isFull()) {
 		halSleep(2);
 	}
+	CommandNm1 command;
+	command.instr = mode;
+	command.params[0] = CommandArgument(connector->ringbufferDataPointer);
 	connector->ptrHead()->count = 0;
-	cntxt->synchro.writeInstr(1, mode, (int)halMapAddrTo(connector, 1));
+	cntxt->synchro.pushInstr(&command);
 }

@@ -171,10 +171,11 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 	//cntxt->valuesC = valuesC;
 	//cntxt->zBuffPoints = zBuffPoints;
 	//cntxt->imagePoints = imagePoints;
-	cntxt->valuesZ = cntxt->buffer2;
+	int end = 0;
+	cntxt->valuesZ = cntxt->buffer2 + end;
 	cntxt->valuesC = cntxt->buffer2 + POLYGONS_SIZE;
 	cntxt->zBuffPoints = (nm32s**)(cntxt->buffer2 + 2 * POLYGONS_SIZE);
-	cntxt->imagePoints = (nm32s**)(cntxt->buffer2 + 3 * POLYGONS_SIZE);
+	cntxt->imagePoints = (nm32s**)(cntxt->buffer2 + 4 * POLYGONS_SIZE);
 
 	cntxt->t0 = clock();
 	cntxt->pointSize = 1;

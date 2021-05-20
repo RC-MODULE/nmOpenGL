@@ -47,8 +47,8 @@ solution "demo3d-mc12101"
 	 
 	  configuration "Debug"
 		   defines { "DEBUG"}
-		   buildcommands {"make DEBUG=y -f Makefile0"}
-		   rebuildcommands {"make -B DEBUG=y -f Makefile0"}
+		   buildcommands {"make -f Makefile0 DEBUG=y"}
+		   rebuildcommands {"make -B -f Makefile0 DEBUG=y"}
 		   cleancommands {"make clean"}
 		   
 	  configuration "Release"
@@ -65,8 +65,8 @@ solution "demo3d-mc12101"
 	 
 	  configuration "Debug"
 		   defines { "DEBUG"}
-		   buildcommands {"make DEBUG=y -f Makefile1"}
-		   rebuildcommands {"make -B DEBUG=y -f Makefile1"}
+		   buildcommands {"make -f Makefile1 DEBUG=y"}
+		   rebuildcommands {"make -B -f Makefile1 DEBUG=y"}
 		   cleancommands {"make clean"}
 		   
 	  configuration "Release"

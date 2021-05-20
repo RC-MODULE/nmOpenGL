@@ -10,11 +10,15 @@ int totalSum(nm32s* pVec, int size);
 
 SECTION(".text_demo3d") void NMGL_DrawTriangles(NMGL_Context_NM1 *context, CommandNm1 *command) {
 
-	PolygonsConnector *connector = (PolygonsConnector*)halMapAddrFrom((void*)command->params[0], 0);
+	PolygonsArray *data = (PolygonsArray*)command->params[0].p;
+	PolygonsConnector connector;
+	connector.init(data);
 
-	DataForNmpu1* poly = connector->ptrTail();
-	PROFILER_SIZE(poly->count);
+	DataForNmpu1* poly = connector.ptrTail();
+	//nmprofiler_enable();
+	//PROFILER_SIZE(poly->count);	
 	getAddrPtrnsT(poly);
+	//nmprofiler_disable();
 
 	int countTriangles = poly->count;
 
@@ -27,7 +31,7 @@ SECTION(".text_demo3d") void NMGL_DrawTriangles(NMGL_Context_NM1 *context, Comma
 	msdWaitDma(1);
 
 	poly->count = 0;
-	connector->incTail();
+	connector.incTail();
 
 	drawPrimitives(context, countTriangles);
 	return;

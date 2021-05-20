@@ -142,9 +142,15 @@ struct DataForNmpu1 {
 	DataForNmpu1() : count(0) {};
 };
 
+template <class T, int SIZE> class MyRingBufferConnector : public HalRingBufferConnector<T, SIZE> {
+	int dummy;
+public:
+	HalRingBufferData<T, SIZE>* ringbufferDataPointer;
+
+};
 
 typedef HalRingBufferData<DataForNmpu1, COUNT_POLYGONS_BUFFER> PolygonsArray;
-typedef HalRingBufferConnector<DataForNmpu1, COUNT_POLYGONS_BUFFER> PolygonsConnector;
+typedef MyRingBufferConnector<DataForNmpu1, COUNT_POLYGONS_BUFFER> PolygonsConnector;
 
 //typedef int matrix[16];
 typedef struct s_mat4nm32f{

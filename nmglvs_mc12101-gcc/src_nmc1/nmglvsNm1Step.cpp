@@ -17,7 +17,7 @@ SECTION(".text_nmglvs") int nmglvsNm1Step()
 	NMGL_Context_NM1 *cntxt = NMGL_Context_NM1::getContext();
 	CommandNm1 *command = NMGL_ReadCommandNm1();	
 
-	switch (command->instr_nmc1) {
+	switch (command->instr) {
 
 	case NMC1_CLEAR: 
 		NMGL_Clear(cntxt, command);
