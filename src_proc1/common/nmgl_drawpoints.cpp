@@ -8,7 +8,7 @@
 
 
 SECTION(".text_demo3d") void NMGL_DrawPoints(NMGL_Context_NM1 *context, CommandNm1 *command) {
-	PolygonsConnector *connector = (PolygonsConnector*)command->params[0].p, 0;
+	PolygonsConnector *connector = (PolygonsConnector*)command->params[0].p;
 
 	DataForNmpu1* poly = connector->ptrTail();
 
