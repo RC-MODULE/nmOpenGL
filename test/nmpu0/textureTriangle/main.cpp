@@ -139,7 +139,6 @@ int main ()
 	synchroData.init();
 	NMGL_Context_NM0::create(&synchroData);	
 	test_cntxt = NMGL_Context_NM0::getContext();
-	test_cntxt->init(&synchroData);
 	
     //Массивы растеризованных и закрашенных треугольников
 	nm32s pSrcTriangle[WIDTH_PTRN * HEIGHT_PTRN * 1];
