@@ -9,13 +9,10 @@
 
 SECTION(".text_shared0") int main()
 {
-	halSleep(3000);
+
+#if defined(__GNUC__) && defined(DEBUG)
 	//nmprofiler_init();
 	//nmprofiler_enable();
-
-#if defined(__GNUC__) && defined(PROFILER0)
-	nmprofiler_init();
-	nmprofiler_enable();
 #endif // __GNUC__
 
 	nmglvsNm0Init();

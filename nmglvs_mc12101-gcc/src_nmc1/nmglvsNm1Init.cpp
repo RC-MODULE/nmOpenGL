@@ -78,6 +78,8 @@ SECTION(".data_imu0") NMGL_Context_NM1 *NMGL_Context_NM1::context;
 
 SECTION(".text_nmglvs") int nmglvsNm1Init()
 {
+	halSleep(500);
+
 #ifdef TEXTURE_ENABLED
 	//halLedOn(1);
 #endif //TEXTURE_ENABLED

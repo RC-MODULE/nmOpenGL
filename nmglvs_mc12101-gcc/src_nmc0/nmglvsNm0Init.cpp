@@ -82,16 +82,9 @@ SECTION(".data_imu0") NMGL_Context_NM0 *NMGL_Context_NM0::context;
 
 SECTION(".text_nmglvs") int nmglvsNm0Init()
 {
-#if defined(__GNUC__) && defined(DEBUG) && defined(STACK_TRACE_ENABLED)
-	//nmprofiler_init();
-#endif // __GNUC__
-#ifdef TEXTURE_ENABLED
-	//halLedOn(0);
-#endif //TEXTURE_ENABLED
-
+	halSleep(500);
 
 	halSetProcessorNo(0);
-
 
 	NMGLSynchroData* synchroData;
 	NMGL_Context_NM0 *cntxt;
@@ -156,9 +149,7 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 		cntxt->buffer3 = (float*)nmglBuffer3;
 		cntxt->buffer4 = (float*)nmglBuffer4;
 		cntxt->buffer5 = (float*)nmglBuffer5;
-#ifdef STACK_TRACE_ENABLED		
-		stackTraceConnector.init(&nmprofiler_trace);
-#endif //STACK_TRACE_ENABLED
+
 		//Allocate memory for textures.
 		//Must be in EMI. 
 		//EMI has enough space and does not require address mapping at mc12101

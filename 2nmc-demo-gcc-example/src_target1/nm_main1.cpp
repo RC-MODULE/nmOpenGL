@@ -6,10 +6,9 @@
 
 int main()
 { 
-	halSleep(3000);
-#if defined(PROFILER1) && defined(__GNUC__)
-	nmprofiler_init();
-	nmprofiler_disable();
+#if defined(__GNUC__) && defined(DEBUG)
+	//nmprofiler_init();
+	//nmprofiler_disable();
 #endif // (PROFILER1) && defined(__GNUC__)
 	nmglvsNm1Init();
 	while (nmglvsNm1Run()) {
