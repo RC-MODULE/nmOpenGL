@@ -42,7 +42,7 @@ struct PatternsArray {
  *  \details Details
  *  
  */
-void fillPtrnsInit(unsigned char* dst, int* table_dydx, unsigned char color);
+void fillPtrnsInit(unsigned int* dst, int* table_dydx, unsigned int color);
 
 /*!
  *  \brief Функция инициализации 8-битных паттернов линий
@@ -54,7 +54,7 @@ void fillPtrnsInit(unsigned char* dst, int* table_dydx, unsigned char color);
  *  \details Details
  *  
  */
-void linePtrnsInit(unsigned char* dst, int* table, unsigned char  color);
+void linePtrnsInit(unsigned int* dst, int* table, unsigned int  color);
 
 /*!
  *  \brief Функция инициализации 8-битных паттернов точек
@@ -66,7 +66,7 @@ void linePtrnsInit(unsigned char* dst, int* table, unsigned char  color);
  *  \details Details
  *  
  */
-void pointPtrnsInit(unsigned char* dst, unsigned char color);
+void pointPtrnsInit(unsigned int* dst, unsigned int color);
 
-void create_tabl_dydx(unsigned char* srcPatterns, int* dydx, int width, int height);
+void create_tabl_dydx(unsigned int* srcPatterns, int* dydx, int width, int height);
 void hostCreatePatterns(PatternsArray* patterns);

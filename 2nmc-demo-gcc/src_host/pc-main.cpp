@@ -73,7 +73,7 @@ int main()
 		if (counter>=256 && flag) {
 			//halProfilerPrint2xml("main0d.map", 0, "../perf0.xml");
 			//return 0;
-			//halProfilerPrint2xml("main1d.map", 1, "../perf1_ptrn_nm1.xml");
+			//halProfilerPrint2xml("main1d.map", 1, "../perf1_init.xml");
 			//return 0;
 			flag = 0;
 		}

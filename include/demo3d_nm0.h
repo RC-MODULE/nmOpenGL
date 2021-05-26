@@ -246,13 +246,13 @@ public:
 	PolygonsConnector* triangleConnectors;
 	PolygonsConnector* lineConnectors;
 	PolygonsConnector* pointConnectors;
-	PatternsArray* patterns;
 	float* buffer0;
 	float* buffer1;
 	float* buffer2;
 	float* buffer3;
 	float* buffer4;
 	float* buffer5;
+	int dummy;
 	
 	int isUseTwoSidedMode;
 	NMGLenum error;

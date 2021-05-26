@@ -164,7 +164,7 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 	}
 	halHostSync(0x600DB00F);	// send ok to host
 	
-	cntxt->patterns = (PatternsArray*)halSyncAddr(synchroData, 1);
+	halSyncAddr(synchroData, 1);
 #ifdef TEST_NMGL_TEX_FUNC
 	cntxtAddr_nm1 = (void*)halSyncAddr(0, 1);
 #ifndef __NM__
@@ -222,9 +222,6 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 	halInstrCacheEnable();
 	//halDmaInitC();
 #endif // __GNUC__
-#ifdef STACK_TRACE_ENABLED
-	halHostSyncAddr(&nmprofiler_trace);
-#endif //STACK_TRACE_ENABLED
 	//sync4
 	halHostSync((int)0x600d600d);
 	nmglClearColor(0, 0, 0, 1.0f);
