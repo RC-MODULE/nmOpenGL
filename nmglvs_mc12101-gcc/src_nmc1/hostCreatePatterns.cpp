@@ -1,12 +1,11 @@
+#include "hal.h"
 #include "nmpp.h"
-#include "demo3d_nm1.h"
 #include "pattern.h"
-
 
 void hostCreatePatterns(PatternsArray* patterns){
 	int size = NPATTERNS * WIDTH_PTRN * HEIGHT_PTRN;
-	nm32u* temp0 = (nm32u*)nmppsMalloc_32u(size);
-	nm8s* temp1 = (nm8s*)nmppsMalloc_8s(size / 4);
+	nm32u* temp0 = (nm32u*)halMalloc32(size);
+	nm8s* temp1 = (nm8s*)halMalloc32(size / 4);
 
 	nm32s* temp32s = (nm32s*)temp0;
 	nm8s* temp8s = temp1;
@@ -27,6 +26,6 @@ void hostCreatePatterns(PatternsArray* patterns){
 	nmppsConvert_8s4s(temp8s, temp4s, LINE_PATTERNS_AMOUNT*WIDTH_PTRN*HEIGHT_PTRN);
 	nmppsConvert_4s2s(temp4s, patterns->linePtrns, LINE_PATTERNS_AMOUNT*WIDTH_PTRN*HEIGHT_PTRN);
 
-	nmppsFree(temp0);
-	nmppsFree(temp1);
+	halFree(temp0);
+	halFree(temp1);
 }

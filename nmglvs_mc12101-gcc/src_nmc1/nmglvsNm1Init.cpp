@@ -7,6 +7,7 @@
 #include "ringbuffer.h"
 #include "cache.h"
 #include "link.h"
+#include "pattern.h"
 
 #include "nmgl.h"
 
@@ -100,6 +101,8 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 		cntxt->patterns = myMallocT<PatternsArray>();
 		
 		setHeap(13);
+		hostCreatePatterns(cntxt->patterns);
+
 		imagesData = myMallocT<ImageData>();
 		imagesData->init();
 		cntxt->imageConnector = myMallocT<ImageConnector>();
@@ -121,7 +124,7 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 
 	halHostSync(0x600DB00F);	// send ok to host
 
-	NMGLSynchroData* synchroData = (NMGLSynchroData*)halSyncAddr((int*)cntxt->patterns, 0);
+	NMGLSynchroData* synchroData = (NMGLSynchroData*)halSyncAddr(0, 0);
 	nmglSynchro.init(synchroData);
 #ifdef TEST_NMGL_TEX_FUNC
     halSyncAddr((void*)cntxt, 0);
@@ -138,10 +141,7 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 
 	cntxt->smallClearColorBuff.init(colorClearBuff, WIDTH_SEG, HEIGHT_SEG);
 	cntxt->smallClearDepthBuff.init(depthClearBuff, WIDTH_SEG, HEIGHT_SEG);
-
-	//sync0
-	halHostSyncAddr(cntxt->patterns);
-
+	
 	cntxt->buffer0 = pool0;
 	cntxt->buffer1 = pool1;
 	cntxt->buffer2 = pool2;

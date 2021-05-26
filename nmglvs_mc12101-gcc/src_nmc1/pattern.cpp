@@ -1,13 +1,8 @@
 #include "pattern.h"
-#define _USE_MATH_DEFINES
+#include "nmpp.h"
 #include "math.h"
-#include "stdio.h"
-#include "windows.h"
-#include <iostream>
-#include <fstream>
-using namespace std;
 
-#define abs(a) (((a) < 0) ? -(a) : (a))
+#define M_PI 3.14159265358979323846
 
 static void setPixel(unsigned int* dst, int x, int y, unsigned int color);
 //static void fillRow(unsigned int* dst, int x1, int x2, int y, unsigned int color);
@@ -28,7 +23,7 @@ void fillPtrnsInit(unsigned int* dst, int* table_dydx, unsigned int color) {
 		dst[i] = 0;
 	}
 
-	int r = max(WIDTH_PTRN, HEIGHT_PTRN);
+	int r = MAX(WIDTH_PTRN, HEIGHT_PTRN);
 	float stepA = M_PI / AMOUNT_ANGLES;
 	for (float angle = 0; angle < AMOUNT_ANGLES/4; angle++) {
 		for (int off = 0; off < OFFSETS; off++, cntRight++, cntLeft++) {
@@ -103,7 +98,7 @@ void linePtrnsInit(unsigned int* dst, int* table, unsigned int color) {
 		dst[i] = 0;
 	}
 	float stepA = M_PI / AMOUNT_ANGLES;
-	int r = 2 * max(WIDTH_PTRN, HEIGHT_PTRN);
+	int r = 2 * MAX(WIDTH_PTRN, HEIGHT_PTRN);
 	for (float angle = 0; angle < AMOUNT_ANGLES / 2; angle++, cnt++) {
 		drawLine(dst + cnt * size, 0, 0, r * cos(angle * stepA), r * sin(angle * stepA), color);
 	}
@@ -166,12 +161,12 @@ static void fillRow(unsigned int* dst, int x1, int x2, int y, unsigned int color
 
 
 static void drawLine(unsigned int* dst, int x1, int y1, int x2, int y2, unsigned int color) {
-	int deltaX = abs(x2 - x1);
-	int deltaY = abs(y2 - y1);
+	int deltaX = ABS(x2 - x1);
+	int deltaY = ABS(y2 - y1);
 	int signX = x1 < x2 ? 1 : -1;
 	int signY = y1 < y2 ? 1 : -1;
 
-	if (abs(deltaX) > abs(deltaY)) {
+	if (ABS(deltaX) > ABS(deltaY)) {
 		int deltaError = deltaY;
 		int error = 0;
 		while (x1 != x2) {
@@ -205,8 +200,8 @@ static void fillSide(unsigned int* dst, int x1, int y1, int x2, int y2, unsigned
 	int dx = (deltaX > 0) ? 1 : -1;
 	int dy = (deltaY > 0) ? 1 : -1;
 	double k, err;
-	if (abs(deltaX) >= abs(deltaY)) {
-		k = 2 * (double)fabs(deltaY) / fabs(deltaX);
+	if (ABS(deltaX) >= ABS(deltaY)) {
+		k = 2 * (double)ABS(deltaY) / ABS(deltaX);
 		err = 0;
 		int y = y1;
 		for (int x = x1; x != x2; x += dx) {
@@ -235,7 +230,7 @@ static void fillSide(unsigned int* dst, int x1, int y1, int x2, int y2, unsigned
 		}
 	}
 	else {
-		k = 2 * (double)fabs(deltaX) / fabs(deltaY);
+		k = 2 * (double)ABS(deltaX) / ABS(deltaY);
 		err = 0;
 		int x = x1;
 		for (int y = y1; y != y2; y += dy) {
@@ -262,7 +257,7 @@ static void fillSide(unsigned int* dst, int x1, int y1, int x2, int y2, unsigned
 	float b = y1 - k * x1;
 	for (int y = 0; y < HEIGHT_PTRN; y++) {
 		for (int x = 0; x < WIDTH_PTRN; x++) {
-			if (fabs(deltaX) > fabs(deltaY)) {
+			if (fABS(deltaX) > fABS(deltaY)) {
 				float yRefp = k * ((float)x) + b;
 				float yRefs = k * ((float)x) + b;
 				if (topLeftSide == 0 && (yRefp <= y + 0.5) ||
