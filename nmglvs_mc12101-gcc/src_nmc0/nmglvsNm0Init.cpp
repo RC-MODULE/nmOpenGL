@@ -5,6 +5,7 @@
 #include "demo3d_nm0.h"
 #include "cache.h"
 #include "ringbuffer.h"
+#include "hostsynchro.h"
 
 #ifdef STACK_TRACE_ENABLED
 #include "stacktrace.h"
@@ -88,24 +89,28 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 
 	NMGLSynchroData* synchroData;
 	NMGL_Context_NM0 *cntxt;
+	ImageData* imagesData;
 
 	try {
 		int fromHost = halHostSync(0xC0DE0000);		// send handshake to host
 		if (fromHost != 0xC0DE0086) {					// get  handshake from host
 			return 1;
 		}
+		int fromNm1 = halSync(0xC0DE0000, 1);
+		if (fromNm1 != 0xC0DE0001) {					// get  handshake from nm1
+			return 1;
+		}
 		setHeap(7);
+
 		synchroData = myMallocT<NMGLSynchroData>();
 		synchroData->init();
+		halSyncAddr(synchroData, 1);
+		HostSynchroSlave synhcroWithHost;
 
 		setHeap(7);
-		NMGL_Context_NM0::create(synchroData);	
+		NMGL_Context_NM0::create();
 		cntxt = NMGL_Context_NM0::getContext();
-		cntxt->synchro.init(synchroData);
-		
-		//printf("sizeof32=%d\n", sizeof32(cntxt->synchro));
-		//printf("sizeof32=%d\n", sizeof32(CommandNm1));
-		cntxt->init();		
+		cntxt->synchro.init(synchroData);		
 
 		setHeap(8);
 		cntxt->triangleConnectors = myMallocT<PolygonsConnector>(36);
@@ -113,8 +118,9 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 		cntxt->pointConnectors = myMallocT<PolygonsConnector>(36);
 
 		setHeap(10);
+		
 
-		PolygonsArray* trianData = myMallocT<PolygonsArray>(36);
+		PolygonsArray* trianData =   myMallocT<PolygonsArray>(36);
 		PolygonsArray* lineData = myMallocT<PolygonsArray>(36);
 		PolygonsArray* pointsData = myMallocT<PolygonsArray>(36);
 		for (int seg = 0; seg < 36; seg++) {
@@ -154,6 +160,20 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 		//Must be in EMI. 
 		//EMI has enough space and does not require address mapping at mc12101
 		setHeap(12);
+
+		imagesData = (ImageData*)halSyncAddr(0, 1);
+
+#ifdef TEST_NMGL_TEX_FUNC
+		cntxtAddr_nm1 = (void*)halSyncAddr(0, 1);
+#ifndef __NM__
+		cntxtAddr_nm1 = 0; //static shared memory is not supported in x86 model
+#endif //__NM__
+
+#endif //TEST_NMGL_TEX_FUNC
+		int ok = halSync(0x600DB00F, 1);
+		if(ok != 0x600DB00F){
+			throw 2;
+		}
 #ifdef TEXTURE_ENABLED
 		mipmap = myMallocT<NMGLubyte>(MIPMAP_MEM_SIZE); 
 #endif //TEXTURE_ENABLED
@@ -162,17 +182,7 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 		halHostSync(0xDEADB00F);
 		return e;
 	}
-	halHostSync(0x600DB00F);	// send ok to host
-	
-	halSyncAddr(synchroData, 1);
-#ifdef TEST_NMGL_TEX_FUNC
-	cntxtAddr_nm1 = (void*)halSyncAddr(0, 1);
-#ifndef __NM__
-	cntxtAddr_nm1 = 0; //static shared memory is not supported in x86 model
-#endif //__NM__
-       	   
-#endif //TEST_NMGL_TEX_FUNC
-	halHostSync(0x600DB00F);	// send ok to host
+	halHostSyncAddr(imagesData);
 
 	cntxt->pointRadius = 1;
 
@@ -223,7 +233,7 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 	//halDmaInitC();
 #endif // __GNUC__
 	//sync4
-	halHostSync((int)0x600d600d);
+	
 	nmglClearColor(0, 0, 0, 1.0f);
 	nmglClearDepthf(1);
 	nmglViewport(0, 0, WIDTH_IMAGE, HEIGHT_IMAGE);
@@ -231,6 +241,7 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 	for (int i = 0; i < countSegs; i++) {
 		cntxt->segmentMasks[i].init((nm1*)masksBits[i]);
 	}
+	halSync(0x600D600D, 1);
 	return 0;
 } 
 

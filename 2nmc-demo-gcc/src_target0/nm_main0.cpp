@@ -11,9 +11,6 @@
 
 SECTION(".text_shared0") int main()
 {
-	halSleep(500);
-	halSetProcessorNo(0);
-
 #if defined(__GNUC__) && defined(DEBUG)
 	//nmprofiler_init();
 	//nmprofiler_disable();
