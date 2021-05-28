@@ -84,41 +84,13 @@ int nmglvsHostInit()
 		return -1;
 	}
 
-	for (int i = 0; i < NUM_NM_CORES; i++) {
-		int handshake = halSync(0xC0DE0086, i);
-		if (handshake != (0xC0DE0000 | i)) {
-			printf("Handshake with mc12101-nmc%d error!\n", i);
-			return -1;
-		}
+	int handshake = halSync(0xC0DE0086, 0);
+	if (handshake != 0xC0DE0000) {
+		printf("Handshake with mc12101-nmc0 error!\n");
+		return -1;
 	}
-	for (int i = 0; i < NUM_NM_CORES; i++) {
-		int ok = halSync(0, i);
-		if (ok != 0x600DB00F) {
-			printf("Memory nmc%d allocation error!\n", i);
-			return -2;
-		}
-	}
-	for (int i = 0; i < NUM_NM_CORES; i++) {
-		int ok = halSync(0, i);
-		if (ok != 0x600DB00F) {
-			printf("Interprocessor allocation error!\n", i);
-			return -3;
-		}
-	}
-//----------------init-nmc1------------------------------
-	//nmc1, sync0
-	int ok;
-//----------------init-ringbuffer-------------
-	//nmc1, sync3
-	ImageData* nmImageRB = (ImageData*)halSyncAddr(0, 1);
 
+	ImageData* nmImageRB = (ImageData*)halSyncAddr(0, 0);
 	hostImageRB.init(nmImageRB, writeMem, readMem);
-	
-	//nmc0, sync4
-	ok = halSync(0, 0);
-	if (ok != 0x600D600D) {
-		printf("Error!!\n");
-		return 1;
-	}
 	return 0;
 };

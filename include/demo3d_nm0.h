@@ -228,7 +228,7 @@ private:
 	NMGL_Context_NM0() {};		// недоступный конструктор
 	~NMGL_Context_NM0() {};		// и деструктор
 public:	
-	inline static void create(NMGLSynchroData* synchroData) {
+	inline static void create() {
 		context = (NMGL_Context_NM0*)halMalloc32(sizeof32(NMGL_Context_NM0));
 		context->init();
 	}

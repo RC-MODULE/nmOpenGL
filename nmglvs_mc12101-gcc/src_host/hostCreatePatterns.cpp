@@ -6,7 +6,7 @@
 void hostCreatePatterns(PatternsArray* patterns){
 	int size = NPATTERNS * WIDTH_PTRN * HEIGHT_PTRN;
 	nm32u* temp0 = (nm32u*)nmppsMalloc_32u(size);
-	nm8s* temp1 = (nm8s*)nmppsMalloc_8s(size / 4);
+	nm8s* temp1 = (nm8s*)nmppsMalloc_8s(size);
 
 	nm32s* temp32s = (nm32s*)temp0;
 	nm8s* temp8s = temp1;

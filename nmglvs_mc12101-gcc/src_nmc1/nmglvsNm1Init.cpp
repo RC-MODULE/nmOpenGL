@@ -81,18 +81,18 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 {
 	halSleep(500);
 
-//TEXTURING_PART
-	//halLedOn(1);
-//TEXTURING_PART
 	halSetProcessorNo(1);
 	//---------- start nm program ------------
 	NMGL_Context_NM1 *cntxt;
 	ImageData* imagesData;
 	try {
-		int fromHost = halHostSync(0xC0DE0001);		// send handshake to host
-		if (fromHost != 0xC0DE0086) {					// get  handshake from host
+		int fromNm0 = halSync(0xC0DE0001, 0);		// send handshake to host
+		if (fromNm0 != 0xC0DE0000) {					// get  handshake from host
 			throw -1;
 		}
+		NMGLSynchroData* synchroData = (NMGLSynchroData*)halSyncAddr(0, 0);
+		nmglSynchro.init(synchroData);
+
 		setHeap(0);
 		NMGL_Context_NM1::bind(&nmglContext);
 		cntxt = NMGL_Context_NM1::getContext();
@@ -115,22 +115,19 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 		cntxt->depthBuffer.init(depthImage, WIDTH_IMAGE, HEIGHT_IMAGE);
 		cntxt->texState.init();
 	}
-	catch (int &e){
+	catch (int &e) {
 		if (e == -2) {
-			halHostSync((int)0xDEADB00F);	// send error allocation memory to host
+			halSync((int)0xDEADB00F);	// send error allocation memory to host
 		}
 		return e;
 	}
-
-	halHostSync(0x600DB00F);	// send ok to host
-
-	NMGLSynchroData* synchroData = (NMGLSynchroData*)halSyncAddr(0, 0);
-	nmglSynchro.init(synchroData);
+	halSyncAddr(imagesData, 0);
 #ifdef TEST_NMGL_TEX_FUNC
-    halSyncAddr((void*)cntxt, 0);
+	halSyncAddr((void*)cntxt, 0);
 #endif //TEST_NMGL_TEX_FUNC
+	halSync(0x600DB00F, 0);	// send ok to host
 
-	halHostSync(0x600DB00F);	// send ok to host
+	
 	
 #ifdef __GNUC__
 	halInstrCacheEnable();
@@ -157,7 +154,6 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 		cntxt->minusOne[j] = -1;
 	}
 	//sync3
-	halHostSyncAddr(imagesData);
 	nmppsCopy_32s(cntxt->patterns->table_dydx, cntxt->fillInnerTable, sizeof32(cntxt->patterns->table_dydx));	
 
 	cntxt->ptrnInnPoints = ptrnInnPoints;
@@ -169,12 +165,7 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 	cntxt->ppDstPackPtrns = ppDstPackPtrns;
 	cntxt->nSizePtrn32 = nSizePtrn32;
 
-	//cntxt->valuesZ = valuesZ;
-	//cntxt->valuesC = valuesC;
-	//cntxt->zBuffPoints = zBuffPoints;
-	//cntxt->imagePoints = imagePoints;
-	int end = 0;
-	cntxt->valuesZ = cntxt->buffer2 + end;
+	cntxt->valuesZ = cntxt->buffer2 + 0;
 	cntxt->valuesC = cntxt->buffer2 + POLYGONS_SIZE;
 	cntxt->zBuffPoints = (nm32s**)(cntxt->buffer2 + 2 * POLYGONS_SIZE);
 	cntxt->imagePoints = (nm32s**)(cntxt->buffer2 + 4 * POLYGONS_SIZE);
@@ -200,7 +191,8 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 	cntxt->w0 = w0;
 	cntxt->w1 = w1;
 	cntxt->w2 = w2;
-//TEXTURING_PART
+
+	halSync(0x600D600D, 0);
 	return 0;
 } 
 
