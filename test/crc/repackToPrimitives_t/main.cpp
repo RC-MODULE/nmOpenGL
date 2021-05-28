@@ -105,6 +105,12 @@ int main(int argc, char **argv)
 	return 0;
 }
 
+#ifdef TEXTURE_ENABLED
+#define ATTR_PER_VERTEX 10 
+#else
+#define ATTR_PER_VERTEX 8
+#endif
+
 int repackToPrimitives_t_nOutputTriangles(int n)
 {
 	int trianglesCount = n;							// number of output triangles
@@ -112,12 +118,14 @@ int repackToPrimitives_t_nOutputTriangles(int n)
 	// Это число должно быть чётным, от него зависит адрес, с которого начинаются
 	// некоторые массивы выходных координат. Функция пишет каждую координату 
 	// по 64 бита (векторный процессор), так что выходной адрес должен быть чётным.
+	// ZERO_COUNT - number of triangles at the end that should not be touched
 	int ZERO_COUNT = 4;							
     int vertCount = trianglesCount * 3;				// number of input vertexes
 	int expectedTrianglesCount = trianglesCount + trianglesCount % 2;
+	int outputTrianglesCount = expectedTrianglesCount + ZERO_COUNT;
 	// 10 floats - x, y, z, w, s, t, r, g, b, a
-	// ZERO_COUNT - number of triangles at the end that should not be touched
-	int outputCoordCount = 10 * 3 * (expectedTrianglesCount + ZERO_COUNT);	// number of output coords
+	//  8 floats - x, y, z, w,       r, g, b, a
+	int outputCoordCount = ATTR_PER_VERTEX * 3 * outputTrianglesCount;	// number of output coords
 
     v4nm32f     srcVertex[vertCount];
     v4nm32f     srcColor[vertCount];
@@ -133,52 +141,70 @@ int repackToPrimitives_t_nOutputTriangles(int n)
 	}
 
 	float		*x0 = real_output;
-	float		*y0 = x0 + expectedTrianglesCount + ZERO_COUNT;
-	float		*z0 = y0 + expectedTrianglesCount + ZERO_COUNT;
-	float		*w0 = z0 + expectedTrianglesCount + ZERO_COUNT;
-	float		*s0 = w0 + expectedTrianglesCount + ZERO_COUNT;
-	float		*t0 = s0 + expectedTrianglesCount + ZERO_COUNT;
-    v4nm32f	*color0 = (v4nm32f *)(t0 + expectedTrianglesCount + ZERO_COUNT);
+	float		*y0 = x0 + outputTrianglesCount;
+	float		*z0 = y0 + outputTrianglesCount;
+	float		*w0 = z0 + outputTrianglesCount;
+#ifdef TEXTURE_ENABLED
+	float		*s0 = w0 + outputTrianglesCount;
+	float		*t0 = s0 + outputTrianglesCount;
+    v4nm32f	*color0 = (v4nm32f *)(t0 + outputTrianglesCount);
+#else
+    v4nm32f	*color0 = (v4nm32f *)(w0 + outputTrianglesCount);
+#endif
 
-	float		*x1 = real_output + 10 * (expectedTrianglesCount + ZERO_COUNT);
-	float		*y1 = x1 + expectedTrianglesCount + ZERO_COUNT;
-	float		*z1 = y1 + expectedTrianglesCount + ZERO_COUNT;
-	float		*w1 = z1 + expectedTrianglesCount + ZERO_COUNT;
-	float		*s1 = w1 + expectedTrianglesCount + ZERO_COUNT;
-	float		*t1 = s1 + expectedTrianglesCount + ZERO_COUNT;
-    v4nm32f *color1 = (v4nm32f *)(t1 + expectedTrianglesCount + ZERO_COUNT);
+	float		*x1 = real_output + ATTR_PER_VERTEX * outputTrianglesCount;
+	float		*y1 = x1 + outputTrianglesCount;
+	float		*z1 = y1 + outputTrianglesCount;
+	float		*w1 = z1 + outputTrianglesCount;
+#ifdef TEXTURE_ENABLED
+	float		*s1 = w1 + outputTrianglesCount;
+	float		*t1 = s1 + outputTrianglesCount;
+    v4nm32f *color1 = (v4nm32f *)(t1 + outputTrianglesCount);
+#else
+    v4nm32f *color1 = (v4nm32f *)(w1 + outputTrianglesCount);
+#endif
 	
-	float		*x2 = real_output + 10 * 2 * (expectedTrianglesCount + ZERO_COUNT);
-	float		*y2 = x2 + expectedTrianglesCount + ZERO_COUNT;
-	float		*z2 = y2 + expectedTrianglesCount + ZERO_COUNT;
-	float		*w2 = z2 + expectedTrianglesCount + ZERO_COUNT;
-	float		*s2 = w2 + expectedTrianglesCount + ZERO_COUNT;
-	float		*t2 = s2 + expectedTrianglesCount + ZERO_COUNT;
-    v4nm32f	*color2 = (v4nm32f *)(t2 + expectedTrianglesCount + ZERO_COUNT);
+	float		*x2 = real_output + ATTR_PER_VERTEX * 2 * outputTrianglesCount;
+	float		*y2 = x2 + outputTrianglesCount;
+	float		*z2 = y2 + outputTrianglesCount;
+	float		*w2 = z2 + outputTrianglesCount;
+#ifdef TEXTURE_ENABLED
+	float		*s2 = w2 + outputTrianglesCount;
+	float		*t2 = s2 + outputTrianglesCount;
+    v4nm32f	*color2 = (v4nm32f *)(t2 + outputTrianglesCount);
+#else
+    v4nm32f	*color2 = (v4nm32f *)(w2 + outputTrianglesCount);
+#endif
 
 	TrianglePointers dst;
 	dst.v0.x = x0;
 	dst.v0.y = y0;
 	dst.v0.z = z0;
 	dst.v0.w = w0;
+#ifdef TEXTURE_ENABLED
 	dst.v0.s = s0;
 	dst.v0.t = t0;
+#endif
 	dst.v0.color = color0;
 
 	dst.v1.x = x1;
 	dst.v1.y = y1;
 	dst.v1.z = z1;
 	dst.v1.w = w1;
+#ifdef TEXTURE_ENABLED
 	dst.v1.s = s1;
 	dst.v1.t = t1;
+#endif
 	dst.v1.color = color1;
 
 	dst.v2.x = x2;
 	dst.v2.y = y2;
 	dst.v2.z = z2;
 	dst.v2.w = w2;
+#ifdef TEXTURE_ENABLED
 	dst.v2.s = s2;
 	dst.v2.t = t2;
+#endif
 	dst.v2.color = color2;
 
     for (int i = 0; i < vertCount; i++){
@@ -187,43 +213,58 @@ int repackToPrimitives_t_nOutputTriangles(int n)
             srcColor[i].vec[j] = (float)(4 * i + j);
 		}
 	}
-
+#ifdef TEXTURE_ENABLED
     for (int i = 0; i < vertCount; i++){
 		srcTex[i].v0 = (float)(2 * i);
 		srcTex[i].v1 = (float)(2 * i + 1);
 	}
+#endif
 
 	float		*x0_exp = expected_output;
-	float		*y0_exp = x0_exp + expectedTrianglesCount + ZERO_COUNT;
-	float		*z0_exp = y0_exp + expectedTrianglesCount + ZERO_COUNT;
-	float		*w0_exp = z0_exp + expectedTrianglesCount + ZERO_COUNT;
-	float		*s0_exp = w0_exp + expectedTrianglesCount + ZERO_COUNT;
-	float		*t0_exp = s0_exp + expectedTrianglesCount + ZERO_COUNT;
-    v4nm32f	*color0_exp = (v4nm32f *)(t0_exp + expectedTrianglesCount + ZERO_COUNT);
+	float		*y0_exp = x0_exp + outputTrianglesCount;
+	float		*z0_exp = y0_exp + outputTrianglesCount;
+	float		*w0_exp = z0_exp + outputTrianglesCount;
+#ifdef TEXTURE_ENABLED
+	float		*s0_exp = w0_exp + outputTrianglesCount;
+	float		*t0_exp = s0_exp + outputTrianglesCount;
+    v4nm32f	*color0_exp = (v4nm32f *)(t0_exp + outputTrianglesCount);
+#else
+    v4nm32f	*color0_exp = (v4nm32f *)(w0_exp + outputTrianglesCount);
+#endif
 
-	float		*x1_exp = expected_output + 10 * (expectedTrianglesCount + ZERO_COUNT);
-	float		*y1_exp = x1_exp + expectedTrianglesCount + ZERO_COUNT;
-	float		*z1_exp = y1_exp + expectedTrianglesCount + ZERO_COUNT;
-	float		*w1_exp = z1_exp + expectedTrianglesCount + ZERO_COUNT;
-	float		*s1_exp = w1_exp + expectedTrianglesCount + ZERO_COUNT;
-	float		*t1_exp = s1_exp + expectedTrianglesCount + ZERO_COUNT;
-    v4nm32f *color1_exp = (v4nm32f *)(t1_exp + expectedTrianglesCount + ZERO_COUNT);
+	float		*x1_exp = expected_output + ATTR_PER_VERTEX * outputTrianglesCount;
+	float		*y1_exp = x1_exp + outputTrianglesCount;
+	float		*z1_exp = y1_exp + outputTrianglesCount;
+	float		*w1_exp = z1_exp + outputTrianglesCount;
+#ifdef TEXTURE_ENABLED
+	float		*s1_exp = w1_exp + outputTrianglesCount;
+	float		*t1_exp = s1_exp + outputTrianglesCount;
+    v4nm32f *color1_exp = (v4nm32f *)(t1_exp + outputTrianglesCount);
+#else
+    v4nm32f *color1_exp = (v4nm32f *)(w1_exp + outputTrianglesCount);
+#endif
 	
-	float		*x2_exp = expected_output + 10 * 2 * (expectedTrianglesCount + ZERO_COUNT);
-	float		*y2_exp = x2_exp + expectedTrianglesCount + ZERO_COUNT;
-	float		*z2_exp = y2_exp + expectedTrianglesCount + ZERO_COUNT;
-	float		*w2_exp = z2_exp + expectedTrianglesCount + ZERO_COUNT;
-	float		*s2_exp = w2_exp + expectedTrianglesCount + ZERO_COUNT;
-	float		*t2_exp = s2_exp + expectedTrianglesCount + ZERO_COUNT;
-    v4nm32f	*color2_exp = (v4nm32f *)(t2_exp + expectedTrianglesCount + ZERO_COUNT);
+	float		*x2_exp = expected_output + ATTR_PER_VERTEX * 2 * outputTrianglesCount;
+	float		*y2_exp = x2_exp + outputTrianglesCount;
+	float		*z2_exp = y2_exp + outputTrianglesCount;
+	float		*w2_exp = z2_exp + outputTrianglesCount;
+#ifdef TEXTURE_ENABLED
+	float		*s2_exp = w2_exp + outputTrianglesCount;
+	float		*t2_exp = s2_exp + outputTrianglesCount;
+    v4nm32f	*color2_exp = (v4nm32f *)(t2_exp + outputTrianglesCount);
+#else
+    v4nm32f	*color2_exp = (v4nm32f *)(w2_exp + outputTrianglesCount);
+#endif
 
     for (int i = 0; i < trianglesCount; i++){
 		x0_exp[i] = srcVertex[3 * i].vec[0];
 		y0_exp[i] = srcVertex[3 * i].vec[1];
 		z0_exp[i] = srcVertex[3 * i].vec[2];
 		w0_exp[i] = srcVertex[3 * i].vec[3];
+#ifdef TEXTURE_ENABLED
 		s0_exp[i] = srcTex[3 * i].v0;
 		t0_exp[i] = srcTex[3 * i].v1;
+#endif
 		color0_exp[i].vec[0] = srcColor[3 * i].vec[0];
 		color0_exp[i].vec[1] = srcColor[3 * i].vec[1];
 		color0_exp[i].vec[2] = srcColor[3 * i].vec[2];
@@ -233,8 +274,10 @@ int repackToPrimitives_t_nOutputTriangles(int n)
 		y1_exp[i] = srcVertex[3 * i + 1].vec[1];
 		z1_exp[i] = srcVertex[3 * i + 1].vec[2];
 		w1_exp[i] = srcVertex[3 * i + 1].vec[3];
+#ifdef TEXTURE_ENABLED
 		s1_exp[i] = srcTex[3 * i + 1].v0;
 		t1_exp[i] = srcTex[3 * i + 1].v1;
+#endif
 		color1_exp[i].vec[0] = srcColor[3 * i + 1].vec[0];
 		color1_exp[i].vec[1] = srcColor[3 * i + 1].vec[1];
 		color1_exp[i].vec[2] = srcColor[3 * i + 1].vec[2];
@@ -244,8 +287,10 @@ int repackToPrimitives_t_nOutputTriangles(int n)
 		y2_exp[i] = srcVertex[3 * i + 2].vec[1];
 		z2_exp[i] = srcVertex[3 * i + 2].vec[2];
 		w2_exp[i] = srcVertex[3 * i + 2].vec[3];
+#ifdef TEXTURE_ENABLED
 		s2_exp[i] = srcTex[3 * i + 2].v0;
 		t2_exp[i] = srcTex[3 * i + 2].v1;
+#endif
 		color2_exp[i].vec[0] = srcColor[3 * i + 2].vec[0];
 		color2_exp[i].vec[1] = srcColor[3 * i + 2].vec[1];
 		color2_exp[i].vec[2] = srcColor[3 * i + 2].vec[2];
@@ -256,8 +301,10 @@ int repackToPrimitives_t_nOutputTriangles(int n)
 		y0_exp[expectedTrianglesCount - 1] = y0_exp[expectedTrianglesCount - 2];
 		z0_exp[expectedTrianglesCount - 1] = z0_exp[expectedTrianglesCount - 2];
 		w0_exp[expectedTrianglesCount - 1] = w0_exp[expectedTrianglesCount - 2];
+#ifdef TEXTURE_ENABLED
 		s0_exp[expectedTrianglesCount - 1] = s0_exp[expectedTrianglesCount - 2];
 		t0_exp[expectedTrianglesCount - 1] = t0_exp[expectedTrianglesCount - 2];
+#endif
 		color0_exp[expectedTrianglesCount - 1].vec[0] = color0_exp[expectedTrianglesCount - 2].vec[0];
 		color0_exp[expectedTrianglesCount - 1].vec[1] = color0_exp[expectedTrianglesCount - 2].vec[1];
 		color0_exp[expectedTrianglesCount - 1].vec[2] = color0_exp[expectedTrianglesCount - 2].vec[2];
@@ -267,8 +314,10 @@ int repackToPrimitives_t_nOutputTriangles(int n)
 		y1_exp[expectedTrianglesCount - 1] = y1_exp[expectedTrianglesCount - 2];
 		z1_exp[expectedTrianglesCount - 1] = z1_exp[expectedTrianglesCount - 2];
 		w1_exp[expectedTrianglesCount - 1] = w1_exp[expectedTrianglesCount - 2];
+#ifdef TEXTURE_ENABLED
 		s1_exp[expectedTrianglesCount - 1] = s1_exp[expectedTrianglesCount - 2];
 		t1_exp[expectedTrianglesCount - 1] = t1_exp[expectedTrianglesCount - 2];
+#endif
 		color1_exp[expectedTrianglesCount - 1].vec[0] = color1_exp[expectedTrianglesCount - 2].vec[0];
 		color1_exp[expectedTrianglesCount - 1].vec[1] = color1_exp[expectedTrianglesCount - 2].vec[1];
 		color1_exp[expectedTrianglesCount - 1].vec[2] = color1_exp[expectedTrianglesCount - 2].vec[2];
@@ -278,8 +327,10 @@ int repackToPrimitives_t_nOutputTriangles(int n)
 		y2_exp[expectedTrianglesCount - 1] = y2_exp[expectedTrianglesCount - 2];
 		z2_exp[expectedTrianglesCount - 1] = z2_exp[expectedTrianglesCount - 2];
 		w2_exp[expectedTrianglesCount - 1] = w2_exp[expectedTrianglesCount - 2];
+#ifdef TEXTURE_ENABLED
 		s2_exp[expectedTrianglesCount - 1] = s2_exp[expectedTrianglesCount - 2];
 		t2_exp[expectedTrianglesCount - 1] = t2_exp[expectedTrianglesCount - 2];
+#endif
 		color2_exp[expectedTrianglesCount - 1].vec[0] = color2_exp[expectedTrianglesCount - 2].vec[0];
 		color2_exp[expectedTrianglesCount - 1].vec[1] = color2_exp[expectedTrianglesCount - 2].vec[1];
 		color2_exp[expectedTrianglesCount - 1].vec[2] = color2_exp[expectedTrianglesCount - 2].vec[2];
@@ -288,13 +339,13 @@ int repackToPrimitives_t_nOutputTriangles(int n)
 		// Do not correct 
 	}
 
-
 	// Act
     int res;
 	res = repackToPrimitives_t(srcVertex, srcColor, srcTex, &dst, vertCount);
 
 	// Assert
     TEST_ARRAYS_EQUAL(real_output, expected_output, outputCoordCount);
+    //TEST_ARRAYS_EQUAL(x0, x0_exp, outputTrianglesCount);
 
     return 0;
 }

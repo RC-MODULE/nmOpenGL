@@ -1,11 +1,10 @@
-// int repackToPrimitives_t(const v4nm32f *srcVertex,
+// int repackToPrimitives_t_without_textures(const v4nm32f *srcVertex,
 // 		const v4nm32f *srcColor,
 // 		const v2nm32f *srcTex,
 // 		TrianglePointers *dstVertex,
 // 		int vertexAmount);
 
-global _repackToPrimitives_t: label;// объявление глобальной метки
-extern ___errno: label;
+global _repackToPrimitives_t_without_textures: label;// объявление глобальной метки
 //import from rtmacro.mlb;
 extern IDiv32: label;
 
@@ -13,7 +12,6 @@ data ".data_demo3d"        //секция инициализированных �
 	M10: word[2] = (float(1), float(0)); // extract X0,X1 from (X0,Y0;X1,Y1)T vec
 	M01: word[2] = (float(0), float(1)); // extract Y0,Y1 from (X0,Y0;X1,Y1)T vec
 	buf: word[64];					// buf to copy odd words from vreg to mem
-	vertCount: word;				// number of input vertexes (used only in GL_TRIANGLES)
 	retVal: word;					// return value
 	dstVertex: word;
 	dstColorEnd: word;
@@ -127,7 +125,7 @@ macro extractPair(coordAddr1, coordAddr2, delta)
 end extractPair; 
 
 begin ".text_demo3d"			// начало секции кода
-<_repackToPrimitives_t>	// определение глобальной метки
+<_repackToPrimitives_t_without_textures>	// определение глобальной метки
     ar5 = ar7 - 2;
     
     push ar0,gr0;
@@ -143,7 +141,6 @@ begin ".text_demo3d"			// начало секции кода
     ar2 = [--ar5];  // input texture coords
     ar3 = [--ar5];  // output vertices
     gr6 = [--ar5];  // input: count of input vertexes 
-    [vertCount] = gr6;	// Used in GL_TRIANGLES
 	[dstVertex] = ar3;
 
 	gr0 = 0;
@@ -177,67 +174,51 @@ begin ".text_demo3d"			// начало секции кода
 	// gr1 is a number of output triangles and a total number of pairs 
 	// (xy or zw) that should be extracted for A or B or C points.
 
-	// Get x, y, z, w, s, t of A points
+	// Get x, y, z, w of A points
 	// Get xy coordinates of A points
 	gr0 = gr1;	// gr0 - loop counter	
 	extractPair(ar0, ar0 + 12, 24);
 	// Get zw coordinates of A points
 	gr0 = gr1;	// gr0 - loop counter	
 	extractPair(ar0 + 2, ar0 + 14, 24);
-	// Get st coordinates of A points
-	gr0 = gr1;	// gr0 - loop counter	
-	extractPair(ar2, ar2 + 6, 12);
 		
 	ar3++;
 	ar3++;	// Skip dummy int
 
-	// Get x, y, z, w, s, t of B points
+	// Get x, y, z, w of B points
 	// Get xy coordinates of B points
 	gr0 = gr1;	// gr0 - loop counter	
 	extractPair(ar0 + 4, ar0 + 16, 24);
 	// Get zw coordinates of B points
 	gr0 = gr1;	// gr0 - loop counter	
 	extractPair(ar0 + 6, ar0 + 18, 24);
-	// Get st coordinates of B points
-	gr0 = gr1;	// gr0 - loop counter	
-	extractPair(ar2 + 2, ar2 + 8, 12);
 
 	ar3++;	// Skip output color
 	ar3++;	// Skip dummy int
 
-
-	// Get x, y, z, w, s, t of C points
+	// Get x, y, z, w of C points
 	// Get xy coordinates of C points
 	gr0 = gr1;	// gr0 - loop counter	
 	extractPair(ar0 + 8, ar0 + 20, 24);
 	// Get zw coordinates of C points
 	gr0 = gr1;	// gr0 - loop counter	
 	extractPair(ar0 + 10, ar0 + 22, 24);
-	// Get st coordinates of C points
-	gr0 = gr1;	// gr0 - loop counter	
-	extractPair(ar2 + 4, ar2 + 10, 12);
 	
 	ar3 = [dstVertex];
-	ar3 += 6;	// Address of A_color pointer
+	// Get colors of A points
+	ar3 += 4;	// Address of A_color pointer
 	gr3 = [ar3];
 	copyCol(ar1, gr3, 12, 4, gr1);
-	ar3 += 8;	// Address of B_color pointer
+	// Get colors of B points
+	ar3 += 6;	// Address of B_color pointer
 	gr3 = [ar3];
 	copyCol(ar1 + 4, gr3, 12, 4, gr1);
-	ar3 += 8;	// Address of C_color pointer
+	// Get colors of C points
+	ar3 += 6;	// Address of C_color pointer
 	gr3 = [ar3];
 	copyCol(ar1 + 8, gr3, 12, 4, gr1);
 	
-		//ar3 = [dstVertex];
-		//ar3 += 6;
-		//gr3 = [ar3];
-		//ar3 = gr3;
-		//gr3 = float(9);
-		//[ar3] = gr3;
-		//ar3 = [ar7 - 6];
-		//[retVal] = ar3;
-		//goto Exit;
-	
+<CheckParity>
 	// Check the parity
 	// !!! In case of odd output triangles extend the output with the last triangle
 	// Check if number of triangles is odd
@@ -246,12 +227,13 @@ begin ".text_demo3d"			// начало секции кода
 	if =0 goto Exit; 
 
 	ar3 = [dstVertex] with gr4 = gr1 - 1;
-
-	.repeat 6;
+	// Correct x, y, z, w of A points
+	.repeat 4;
 	ar4 = [ar3++] with gr4 = gr4 - 1;
 	gr2 = [ar4 + gr4] with gr4++; 
 	[ar4 + gr4] = gr2 with gr4 = gr1 - 1;
 	.endrepeat;
+	// Correct the colors of A points 
 	ar4 = [ar3++] with gr4 = gr1 - 1;
 	ar0 = ar4 with gr0 = gr4 - 1;
 	gr0 <<= 2;
@@ -263,11 +245,13 @@ begin ".text_demo3d"			// начало секции кода
 
 	ar3 = ar3 + 1 with gr4 = gr1 - 1;	// Skip dummy
 
-	.repeat 6;
+	// Correct x, y, z, w of B points
+	.repeat 4;
 	ar4 = [ar3++] with gr4 = gr4 - 1;
 	gr2 = [ar4 + gr4] with gr4++;
 	[ar4 + gr4] = gr2 with gr4 = gr1 - 1;
 	.endrepeat;
+	// Correct the colors of B points 
 	ar4 = [ar3++] with gr4 = gr1 - 1;
 	ar0 = ar4 with gr0 = gr4 - 1;
 	gr0 <<= 2;
@@ -279,11 +263,13 @@ begin ".text_demo3d"			// начало секции кода
 
 	ar3 = ar3 + 1 with gr4 = gr1 - 1;	// Skip dummy
 
-	.repeat 6;
+	// Correct x, y, z, w of C points
+	.repeat 4;
 	ar4 = [ar3++] with gr4 = gr4 - 1;
 	gr2 = [ar4 + gr4] with gr4++;
 	[ar4 + gr4] = gr2 with gr4 = gr1 - 1;
 	.endrepeat;
+	// Correct the colors of C points 
 	ar4 = [ar3++] with gr4 = gr1 - 1;
 	ar0 = ar4 with gr0 = gr4 - 1;
 	gr0 <<= 2;
