@@ -1,5 +1,6 @@
 #include "demo3d_nm0.h"
 #include "nmgl.h"
+#include "lighting.h"
 
 
 #pragma code_section ".text_nmgl"
@@ -7,6 +8,7 @@
 SECTION(".text_nmgl")
 void nmglMaterialf(NMGLenum face, NMGLenum pname, NMGLfloat param) {
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
+	LightingInfo* lightingInfo = &cntxt->lightingInfo;
 	if(face != NMGL_FRONT_AND_BACK || pname != NMGL_SHININESS){
 		cntxt->error = NMGL_INVALID_ENUM;
 		return;
@@ -15,6 +17,6 @@ void nmglMaterialf(NMGLenum face, NMGLenum pname, NMGLfloat param) {
 		cntxt->error = NMGL_INVALID_VALUE;
 	}
 	else {
-		cntxt->specularExp = param;
+		lightingInfo->specularExp = param;
 	}
 }

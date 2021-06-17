@@ -53,9 +53,9 @@ SECTION(".text_shared0") int main()
 
 	setHeap(10);
 	float* vertices_DDR = (float*)halMalloc32(2000 * 12);
-	float* normal_DDR = (float*)halMalloc32(2000 * 9);
+	float* normal_DDR = (float*)halMalloc32(2000 * 12);
 	float* vertices_DDR2 = (float*)halMalloc32(2000 * 12);
-	float* normal_DDR2 = (float*)halMalloc32(2000 * 9);
+	float* normal_DDR2 = (float*)halMalloc32(2000 * 12);
 	int ok;
 	int amountPolygons = halHostSync(0);
 

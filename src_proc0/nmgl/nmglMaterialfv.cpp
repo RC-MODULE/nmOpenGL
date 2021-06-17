@@ -1,5 +1,6 @@
 #include "demo3d_nm0.h"
 #include "nmgl.h"
+#include "lighting.h"
 
 
 #pragma code_section ".text_nmgl"
@@ -7,6 +8,7 @@
 SECTION(".text_nmgl")
 void nmglMaterialfv(NMGLenum face, NMGLenum pname, const NMGLfloat *params) {
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
+	LightingInfo* lightingInfo = &cntxt->lightingInfo;
 	if(face != NMGL_FRONT_AND_BACK){
 		cntxt->error = NMGL_INVALID_ENUM;
 		return;
@@ -15,30 +17,30 @@ void nmglMaterialfv(NMGLenum face, NMGLenum pname, const NMGLfloat *params) {
 	{
 	case NMGL_AMBIENT:
 	case NMGL_AMBIENT_AND_DIFFUSE:
-		cntxt->materialAmbient.vec[0] = params[0];
-		cntxt->materialAmbient.vec[1] = params[1];
-		cntxt->materialAmbient.vec[2] = params[2];
-		cntxt->materialAmbient.vec[3] = params[3];
+		lightingInfo->materialAmbient.vec[0] = params[0];
+		lightingInfo->materialAmbient.vec[1] = params[1];
+		lightingInfo->materialAmbient.vec[2] = params[2];
+		lightingInfo->materialAmbient.vec[3] = params[3];
 		if(pname==NMGL_AMBIENT){
 			break;
 		}
 	case NMGL_DIFFUSE:
-		cntxt->materialDiffuse.vec[0] = params[0];
-		cntxt->materialDiffuse.vec[1] = params[1];
-		cntxt->materialDiffuse.vec[2] = params[2];
-		cntxt->materialDiffuse.vec[3] = params[3];
+		lightingInfo->materialDiffuse.vec[0] = params[0];
+		lightingInfo->materialDiffuse.vec[1] = params[1];
+		lightingInfo->materialDiffuse.vec[2] = params[2];
+		lightingInfo->materialDiffuse.vec[3] = params[3];
 		break;
 	case NMGL_SPECULAR:
-		cntxt->materialSpecular.vec[0] = params[0];
-		cntxt->materialSpecular.vec[1] = params[1];
-		cntxt->materialSpecular.vec[2] = params[2];
-		cntxt->materialSpecular.vec[3] = params[3];
+		lightingInfo->materialSpecular.vec[0] = params[0];
+		lightingInfo->materialSpecular.vec[1] = params[1];
+		lightingInfo->materialSpecular.vec[2] = params[2];
+		lightingInfo->materialSpecular.vec[3] = params[3];
 		break;
 	case NMGL_EMISSION:
-		cntxt->materialEmissive.vec[0] = params[0];
-		cntxt->materialEmissive.vec[1] = params[1];
-		cntxt->materialEmissive.vec[2] = params[2];
-		cntxt->materialEmissive.vec[3] = params[3];
+		lightingInfo->materialEmissive.vec[0] = params[0];
+		lightingInfo->materialEmissive.vec[1] = params[1];
+		lightingInfo->materialEmissive.vec[2] = params[2];
+		lightingInfo->materialEmissive.vec[3] = params[3];
 		break;
 	case NMGL_SHININESS:
 		if (params[0] < 0 || params[0]>128) {
@@ -46,7 +48,7 @@ void nmglMaterialfv(NMGLenum face, NMGLenum pname, const NMGLfloat *params) {
 			break;
 		}
 		else {
-			cntxt->specularExp = params[0];
+			lightingInfo->specularExp = params[0];
 		}
 		break;
 	default:

@@ -103,13 +103,13 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 		setHeap(13);
 		hostCreatePatterns(cntxt->patterns);
 
-		imagesData = myMallocT<ImageData>();
-		imagesData->init();
+		imagesData = (ImageData*)halSyncAddr(0, 0);
 		cntxt->imageConnector = myMallocT<ImageConnector>();
 		cntxt->imageConnector->init(imagesData);
 
+		DepthImage* depthImage = (DepthImage*)halSyncAddr(0, 0);
 		setHeap(11);
-		DepthImage* depthImage = myMallocT<DepthImage>();
+		
 
 		cntxt->colorBuffer.init(cntxt->imageConnector->ptrHead(), WIDTH_IMAGE, HEIGHT_IMAGE);
 		cntxt->depthBuffer.init(depthImage, WIDTH_IMAGE, HEIGHT_IMAGE);
@@ -121,7 +121,6 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 		}
 		return e;
 	}
-	halSyncAddr(imagesData, 0);
 #ifdef TEST_NMGL_TEX_FUNC
 	halSyncAddr((void*)cntxt, 0);
 #endif //TEST_NMGL_TEX_FUNC
@@ -136,8 +135,8 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 	cntxt->smallColorBuff.init(segImage, WIDTH_SEG, HEIGHT_SEG);
 	cntxt->smallDepthBuff.init(segZBuff, WIDTH_SEG, HEIGHT_SEG);
 
-	cntxt->smallClearColorBuff.init(colorClearBuff, WIDTH_SEG, HEIGHT_SEG);
-	cntxt->smallClearDepthBuff.init(depthClearBuff, WIDTH_SEG, HEIGHT_SEG);
+	//cntxt->smallClearColorBuff.init(colorClearBuff, WIDTH_SEG, HEIGHT_SEG);
+	//cntxt->smallClearDepthBuff.init(depthClearBuff, WIDTH_SEG, HEIGHT_SEG);
 	
 	cntxt->buffer0 = pool0;
 	cntxt->buffer1 = pool1;

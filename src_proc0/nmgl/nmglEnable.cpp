@@ -113,33 +113,18 @@ void nmglEnable(NMGLenum cap) {
 		break;
 
 	case NMGL_LIGHTING:
-		cntxt->isLighting = NMGL_TRUE;
+		cntxt->lightingInfo.isLighting = NMGL_TRUE;
 		break;
 
 	case NMGL_LIGHT0:
-		cntxt->isEnabledLight[0] = true;
-		break;
-
 	case NMGL_LIGHT1:
-		cntxt->isEnabledLight[1] = true;
-		break;
 	case NMGL_LIGHT2:
-		cntxt->isEnabledLight[2] = true;
-		break;
 	case NMGL_LIGHT3:
-		cntxt->isEnabledLight[3] = true;
-		break;
 	case NMGL_LIGHT4:
-		cntxt->isEnabledLight[4] = true;
-		break;
 	case NMGL_LIGHT5:
-		cntxt->isEnabledLight[5] = true;
-		break;
 	case NMGL_LIGHT6:
-		cntxt->isEnabledLight[6] = true;
-		break;
 	case NMGL_LIGHT7:
-		cntxt->isEnabledLight[7] = true;
+		cntxt->lightingInfo.isEnabledLight[cap - NMGL_LIGHT0] = true;
 		break;
 	}
 }

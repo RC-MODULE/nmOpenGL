@@ -30,7 +30,6 @@ SECTION("text_nmgl") void perpectiveDivView(CombinePointers &vertex, WindowInfo 
 	nmppsDiv_32f(vertex.y, vertex.w, tmpBuf + 1 * NMGL_SIZE, size);
 	nmppsDiv_32f(vertex.z, vertex.w, tmpBuf + 2 * NMGL_SIZE, size);
 
-
 	nmppsMulC_AddC_32f(tmpBuf + 0 * NMGL_SIZE, windowInfo.viewportMulX, windowInfo.viewportAddX, vertex.x, size);		//X	
 	nmppsMulC_AddC_32f(tmpBuf + 1 * NMGL_SIZE, windowInfo.viewportMulY, windowInfo.viewportAddY, vertex.y, size);		//Y	
 	nmppsMulC_AddC_32f(tmpBuf + 2 * NMGL_SIZE, windowInfo.viewportMulZ, windowInfo.viewportAddZ, vertex.z, size);		//Z
@@ -72,9 +71,12 @@ SECTION("text_demo3d") void clipSelect(TrianglePointers *src, float* srcColor, i
 	}
 }
 
+void printMatrix(mat4nm32f* matrix);
+
 
 SECTION(".text_nmgl")
 void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
+
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
 	if (cntxt->vertexArray.enabled == NMGL_FALSE) {
 		return;
@@ -145,13 +147,8 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 //TEXTURING_PART
 	}
 
-	if (cntxt->isLighting) {
-		mulC_v4nm32f(cntxt->lightAmbient, cntxt->pMaterialAmbient, cntxt->ambientMul, MAX_LIGHTS + 1);
-		mulC_v4nm32f(cntxt->lightDiffuse, cntxt->pMaterialDiffuse, cntxt->diffuseMul, MAX_LIGHTS);
-		mulC_v4nm32f(cntxt->lightSpecular, &cntxt->materialSpecular, cntxt->specularMul, MAX_LIGHTS);
-		nmppsAdd_32f((float*)(cntxt->ambientMul + MAX_LIGHTS), 
-			(float*)&cntxt->materialEmissive, 
-			(float*)(cntxt->ambientMul + MAX_LIGHTS), 4);
+	if (cntxt->lightingInfo.isLighting) {
+		cntxt->lightingInfo.update();
 	}
 
 	for (int pointer = 0; pointer < count; pointer += maxInnerCount) {
@@ -213,7 +210,7 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 		//normal in colorOrNormal
 		//Освещение или наложение цветов
 		//nmprofiler_enable();
-		if (cntxt->isLighting) {
+		if (cntxt->lightingInfo.isLighting) {
 			PROFILER_SIZE(localSize);
 			light(vertexResult, colorOrNormal, localSize);
 		}
@@ -381,7 +378,6 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			}
 #else
 			pushToTriangles(trianPointers, cntxt->trianInner, primCount);
-
 			findMinMax3(cntxt->trianInner.x0, cntxt->trianInner.x1, cntxt->trianInner.x2,
 				cntxt->buffer0, cntxt->buffer1,
 				cntxt->trianInner.size);
@@ -391,9 +387,10 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 
 			v2nm32f *minXY = (v2nm32f*)cntxt->buffer4;
 			v2nm32f *maxXY = (v2nm32f*)cntxt->buffer4 + 3 * NMGL_SIZE;
+
 			nmppsMerge_32f(cntxt->buffer0, cntxt->buffer2, (float*)minXY, cntxt->trianInner.size);
 			nmppsMerge_32f(cntxt->buffer1, cntxt->buffer3, (float*)maxXY, cntxt->trianInner.size);
-			PROFILER_SIZE(cntxt->lineInner.size);
+			
 			setSegmentMask(minXY, maxXY, cntxt->segmentMasks, cntxt->trianInner.size);
 			rasterizeT(&cntxt->trianInner, cntxt->segmentMasks);
 #endif //TRIANGULATION_ENABLED

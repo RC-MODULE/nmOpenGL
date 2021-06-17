@@ -1,7 +1,6 @@
 #ifndef DEMO3D_NM1_H 
 #define DEMO3D_NM1_H 
 
-#include "nmtype.h"
 #include "nmgl.h"
 #include "demo3d_common.h"
 #include "imagebuffer.h"
@@ -36,6 +35,8 @@ public:
 	static void free() {
 		//halFree(context);
 	}
+	long long unsigned colorClearValueTwice[8];
+	long long unsigned depthClearValueTwice[8];
 
 	Pattern* primitivePack_2s;
 	
@@ -54,12 +55,10 @@ public:
 	clock_t t0, t1;	
 
 	DepthBuffer depthBuffer;			///< Структура для работы с целым буфером глубины
-	IMAGE_BUFFER_CLASS colorBuffer;		///< Структура для работы с целым цветным буфером
-	IMAGE_BUFFER_CLASS smallColorBuff;	///< Структура для работы с куском буфера цвета, лежащим во внутренней памяти
-	IMAGE_BUFFER_CLASS smallDepthBuff;	///< Структура для работы с куском буфера глубины, лежащим во внутренней памяти
+	ImageBufferRgb8888 colorBuffer;		///< Структура для работы с целым цветным буфером
+	ImageBufferRgb8888 smallColorBuff;	///< Структура для работы с куском буфера цвета, лежащим во внутренней памяти
+	ImageBufferRgb8888 smallDepthBuff;	///< Структура для работы с куском буфера глубины, лежащим во внутренней памяти	
 
-	IMAGE_BUFFER_CLASS smallClearColorBuff;		///< Структура для работы с куском буфера цвета, предназначенным для очистки буфера цвета
-	IMAGE_BUFFER_CLASS smallClearDepthBuff;		///< Структура для работы с куском буфера глубины, предназначенным для очистки буфера глубины
 
 	nm32s** zBuffPoints;				///
 	nm32s** imagePoints;
@@ -71,9 +70,9 @@ public:
 
 	Vector2* ptrnInnPoints;
 	Size* ptrnSizes;
-	nm32s* imageOffsets;
-	nm32s* valuesZ;
-	nm32s* valuesC;
+	int* imageOffsets;
+	int* valuesZ;
+	int* valuesC;
 	int dummy;
 
 	// TEXTURING PART

@@ -40,6 +40,7 @@ SECTION(".text_demo3d") void triangleOffset(Triangles &src, Triangles &dst, int 
 SECTION(".text_demo3d")
 void rasterizeT(const Triangles* triangles, const BitMask* masks){
 
+
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
 
 	int count = triangles->size;
