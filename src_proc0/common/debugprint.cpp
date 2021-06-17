@@ -53,6 +53,17 @@ void printTrianglePointers(TrianglePointers* data, int elementsAmount) {
 
 }
 
+void printMatrix(mat4nm32f* matrix) {
+	printf("matrix=%p\n", matrix);
+	for (int i = 0; i < 4; i++) {
+		for (int j = 0;j < 4; j++) {
+			printf("%f ", matrix->matr[i * 4 + j]);
+		}
+		printf(".\n");
+	}
+
+}
+
 void printWindowInfo(WindowInfo* info, int mode){
 	printf("WindowInfo=%p\n", info);
 	printf("Segment size={%d, %d}\n", info->segmentWidth, info->segmentHeight);

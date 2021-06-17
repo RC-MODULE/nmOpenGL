@@ -11,6 +11,9 @@ SECTION(".data_demo3d") static volatile int copyId[10];
 
 extern Pattern patternsPack[POLYGONS_SIZE];
 
+
+int totalSum(nm32s* pVec, int size);
+
 //SECTION(".text_demo3d") void readPolygonsT(DataForNmpu1* data){
 SECTION(".text_demo3d") int getAddrPtrnsT(DataForNmpu1* data) {
 	clock_t t0, t1;
@@ -165,6 +168,8 @@ SECTION(".text_demo3d") int getAddrPtrnsT(DataForNmpu1* data) {
 	nmppsSub_32s(temp3, temp1, temp1, size);	 	
 	nmppsMerge_32s(temp0, temp1, (nm32s*)cntxt->ptrnSizes, size); 
 
+	int fullSize = totalSum(cntxt->nSizePtrn32, 3 * size);
+	PROFILER_SIZE(fullSize);
 	copyPacket_32s(cntxt->ppSrcPackPtrns,
 		cntxt->ppDstPackPtrns,
 		cntxt->nSizePtrn32, 3 * size);

@@ -91,6 +91,6 @@ int nmglvsHostInit()
 	}
 
 	ImageData* nmImageRB = (ImageData*)halSyncAddr(0, 0);
-	hostImageRB.init(nmImageRB, writeMem, readMem);
+	hostImageRB.init(nmImageRB, writeMem0, readMem0);
 	return 0;
 };

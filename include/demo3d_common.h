@@ -5,7 +5,6 @@
  */
 #ifndef __DEMO3D_COMMON_H_INCLUDED__
 #define __DEMO3D_COMMON_H_INCLUDED__
-#include "nmtype.h"
 #include "nmgltype.h"
 #include "ringbuffert.h"
 #include "pattern.h"

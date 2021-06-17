@@ -32,6 +32,7 @@ inline void normalize_v4nm32f(v4nm32f* src, v4nm32f* dst, int size, v2nm32f* tmp
 SECTION(".text_demo3d")
 void light(v4nm32f* vertex, v4nm32f* srcNormalDstColor, int countVertex) {
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
+	LightingInfo *lightingInfo = &cntxt->lightingInfo;
 	v4nm32f *resultColor = (v4nm32f*)cntxt->buffer4;
 	v2nm32f *n_dot_vp = (v2nm32f*)(cntxt->buffer0 + 6 * NMGL_SIZE);
 	v2nm32f *n_dot_h_in_srm = (v2nm32f*)(cntxt->buffer1 + 6 * NMGL_SIZE);
@@ -42,15 +43,15 @@ void light(v4nm32f* vertex, v4nm32f* srcNormalDstColor, int countVertex) {
 	set_v4nm32f(resultColor, &cntxt->tmp, countVertex);
 
 	for (int light = 0; light < MAX_LIGHTS; light++) {
-		if (!cntxt->isEnabledLight[light]) {
+		if (!lightingInfo->isEnabledLight[light]) {
 			continue;
 		}
 
-		if (cntxt->lightPosition[light].vec[3] == 0) {
-			set_v4nm32f((v4nm32f*)cntxt->buffer1, cntxt->lightPosition + light, countVertex);
+		if (lightingInfo->lightPosition[light].vec[3] == 0) {
+			set_v4nm32f((v4nm32f*)cntxt->buffer1, lightingInfo->lightPosition + light, countVertex);
 		}
 		else {
-			subCRev_v4nm32f(vertex, cntxt->lightPosition + light, (v4nm32f*)cntxt->buffer1, countVertex);
+			subCRev_v4nm32f(vertex, lightingInfo->lightPosition + light, (v4nm32f*)cntxt->buffer1, countVertex);
 		}
 		normalize_v4nm32f((v4nm32f*)cntxt->buffer1, (v4nm32f*)cntxt->buffer2, countVertex,
 			(v2nm32f*)cntxt->buffer0, (v2nm32f*)cntxt->buffer3);
@@ -74,19 +75,19 @@ void light(v4nm32f* vertex, v4nm32f* srcNormalDstColor, int countVertex) {
 		//printCrc(cntxt->buffer3, 2 * countVertex, "dst");
 		//printf("\n");
 		replaceEq0_32f((float*)cntxt->buffer3, (float*)cntxt->buffer3, 2 * countVertex, 1.0f);
-		pow_32f(cntxt->buffer3, (float*)n_dot_h_in_srm, cntxt->specularExp, 2 * countVertex, cntxt->buffer2);
+		pow_32f(cntxt->buffer3, (float*)n_dot_h_in_srm, lightingInfo->specularExp, 2 * countVertex, cntxt->buffer2);
 		
-		baseLighti(cntxt->ambientMul + light,
+		baseLighti(lightingInfo->ambientMul + light,
 			n_dot_vp,
-			cntxt->diffuseMul + light,
+			lightingInfo->diffuseMul + light,
 			n_dot_h_in_srm,
-			cntxt->specularMul + light,
+			lightingInfo->specularMul + light,
 			(v4nm32f*)cntxt->buffer2,
 			countVertex);
 
 		nmppsAdd_32f(cntxt->buffer2, (float*)resultColor, (float*)resultColor, 4 * countVertex);
 	}
-	addC_v4nm32f((v4nm32f*)resultColor, &cntxt->ambientMul[MAX_LIGHTS],
+	addC_v4nm32f((v4nm32f*)resultColor, &lightingInfo->ambientMul[MAX_LIGHTS],
 		(v4nm32f*)srcNormalDstColor, countVertex);
 
 	

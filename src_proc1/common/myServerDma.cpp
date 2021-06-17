@@ -2,6 +2,7 @@
 #include "demo3d_nm1.h"
 #include <nmpp.h>
 #include "myserverdma.h"
+#include "dma.h"
 
 int cbUpdate();
 

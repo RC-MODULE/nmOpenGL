@@ -22,6 +22,7 @@
 #define NMC1_DEPTH_FUNC 			0xF00A0000
 #define NMC1_COPY_SEG_FROM_IMAGE 	0xF00B0000
 #define NMC1_COPY_SEG_TO_IMAGE 		0xF00C0000
+#define NMC1_FINISH					0xF00D0000
 
 #define NMC1_SET_ACTIVE_TEXTURE 	0xF0800000
 #define NMC1_BIND_ACTIVE_TEX_OBJECT	0xF0810000
@@ -104,12 +105,9 @@ private:
 	HalRingBufferConnector<CommandNm1, PRIORITY_SIZE> connector;
 	int dummy;
 public:
-	int time;
-	int counter;
 
 	void init(NMGLSynchroData* synchroData) {
 		connector.init(synchroData);
-		counter = 0;
 	}
 
 	inline void pushInstr(CommandNm1 *command){
@@ -133,12 +131,9 @@ public:
 	HalRingBufferConnector<CommandNm1, PRIORITY_SIZE> connector;
 	int dummy;
 public:
-	int time;
-	int counter;
 
 	void init(NMGLSynchroData* synchroData) {
 		connector.init(synchroData);
-		counter = 0;
 	}
 
 	inline void popInstr(CommandNm1 *command) {

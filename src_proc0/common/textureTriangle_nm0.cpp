@@ -1,5 +1,6 @@
 
 #include "demo3d_common.h"
+#include "nmblas.h"
 #include "demo3d_nm0.h"
 #include "nmgltex_nm0.h"
 #include "nmgltex_common.h"

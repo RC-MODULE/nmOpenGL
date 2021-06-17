@@ -11,9 +11,9 @@ solution "demo3d-mc12101"
 		kind "ConsoleApp"
 		language "C++"
 		files { "../../include/*.h","../src_host/*.cpp","../src_host/*.c", "../../nmglvs_mc12101-gcc/src_host/*.cpp"}
-		libdirs { "$(MC12101)/lib","$(VSHELL)/lib","$(NMPP)/lib","$(HAL)/lib","$(VSHELL)/lib","$(SIGNALPLOT64)/lib","$(BOOST)/stage/lib"}
-		includedirs { "$(MC12101)/include","$(HAL)/include","$(VSHELL)/include","$(SIGNALPLOT64)/include","$(NMPP)/include","$(BOOST)","../../include"}
-		links { "mc12101load.lib","vshell.lib","signalplot64.lib","mc12101-nmc4-0","mc12101-nmc4-1"}
+		libdirs { "$(MC12101)/lib","$(VSHELL)/lib","$(NMPP)/lib","$(HAL)/lib"}
+		includedirs { "$(MC12101)/include","$(HAL)/include","$(VSHELL)/include","$(NMPP)/include","../../include"}
+		links { "mc12101load.lib","vshell.lib"}
 		configuration {"Debug","x86"}
 			links { "nmpp-x86d.lib","hal-mc12101-x86d.lib"}
 			targetsuffix ("-x86")

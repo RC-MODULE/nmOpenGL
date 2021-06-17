@@ -5,7 +5,6 @@
 #include "demo3d_nm0.h"
 #include "cache.h"
 #include "ringbuffer.h"
-#include "hostsynchro.h"
 
 #ifdef STACK_TRACE_ENABLED
 #include "stacktrace.h"
@@ -91,11 +90,13 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 	NMGL_Context_NM0 *cntxt;
 	ImageData* imagesData;
 
+
+	int fromHost = halHostSync(0xC0DE0000);		// send handshake to host
+	if (fromHost != 0xC0DE0086) {					// get  handshake from host
+		return 1;
+	}
+
 	try {
-		int fromHost = halHostSync(0xC0DE0000);		// send handshake to host
-		if (fromHost != 0xC0DE0086) {					// get  handshake from host
-			return 1;
-		}
 		int fromNm1 = halSync(0xC0DE0000, 1);
 		if (fromNm1 != 0xC0DE0001) {					// get  handshake from nm1
 			return 1;
@@ -105,7 +106,6 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 		synchroData = myMallocT<NMGLSynchroData>();
 		synchroData->init();
 		halSyncAddr(synchroData, 1);
-		HostSynchroSlave synhcroWithHost;
 
 		setHeap(7);
 		NMGL_Context_NM0::create();
@@ -160,9 +160,13 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 		//Must be in EMI. 
 		//EMI has enough space and does not require address mapping at mc12101
 		setHeap(12);
-
-		imagesData = (ImageData*)halSyncAddr(0, 1);
-
+		imagesData = myMallocT<ImageData>();
+		imagesData->init();
+		cntxt->imageConnector.init(imagesData);
+		halSyncAddr(imagesData, 1);
+		
+		DepthImage* depthImage = myMallocT<DepthImage>();
+		halSyncAddr(depthImage, 1);
 #ifdef TEST_NMGL_TEX_FUNC
 		cntxtAddr_nm1 = (void*)halSyncAddr(0, 1);
 #ifndef __NM__
@@ -179,10 +183,8 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 #endif //TEXTURE_ENABLED
 	}
 	catch (int& e) {
-		halHostSync(0xDEADB00F);
 		return e;
 	}
-	halHostSyncAddr(imagesData);
 
 	cntxt->pointRadius = 1;
 
@@ -242,6 +244,10 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 		cntxt->segmentMasks[i].init((nm1*)masksBits[i]);
 	}
 	halSync(0x600D600D, 1);
+
+
+
+	halHostSyncAddr(imagesData);
 	return 0;
 } 
 

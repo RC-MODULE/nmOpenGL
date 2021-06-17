@@ -5,13 +5,11 @@
 int main()
 { 
 #if defined(__GNUC__) && defined(DEBUG)
-	nmprofiler_init();
+	//nmprofiler_init();
 	//nmprofiler_disable();
 #endif // __GNUC__
 
-	nmprofiler_enable();
 	nmglvsNm1Init();
-	nmprofiler_disable();
 
 	while (nmglvsNm1Run()) {
 		nmglvsNm1Step();

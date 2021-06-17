@@ -114,6 +114,11 @@ public:
 		return mCursor;
 	}
 
+	inline void* setCursor(int i) {
+		mCursor = nmppsAddr_32s((nm32s*)mData, i);
+		return mCursor;
+	}
+
 	void pushWindow(ImageBufferRgb8888 &image, int width, int height, msdCallback callback = 0) {
 		task.src = mCursor;
 		task.dst = image.mCursor;
