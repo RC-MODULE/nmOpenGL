@@ -64,65 +64,26 @@ void printMatrix(mat4nm32f* matrix) {
 
 }
 
-void printWindowInfo(WindowInfo* info, int mode){
+void printWindowInfo(WindowInfo* info){
 	printf("WindowInfo=%p\n", info);
-	printf("Segment size={%d, %d}\n", info->segmentWidth, info->segmentHeight);
-	printf("nColumns=%d, nRows=%d\n", info->nColumns, info->nRows);
+	//printf("Segment size={%d, %d}\n", info->segmentWidth, info->segmentHeight);
+	//printf("nColumns=%d, nRows=%d\n", info->nColumns, info->nRows);
 
-	switch (mode) {
-	case 1:
-		printf("int\n");
-		for (int y = 0; y < info->nRows; y++) {
-			printf("lowerLeft : ");
-			for (int x = 0; x < info->nColumns; x++) {
-				printf("{%3d,%3d} ", info->x0[x], info->y0[y]);
-			}
-			printf("\n");
-			printf("upperRight: ");
-			for (int x = 0; x < info->nColumns; x++) {
-				printf("{%3d,%3d} ", info->x1[x], info->y1[y]);
-			}
-			printf("\n\n");
+	/*printf("v2nm32f\n");
+	for (int y = 0, iSeg = 0; y < info->nRows; y++) {
+		printf("lowerLeft : ");
+		for (int x = 0; x < info->nColumns; x++, iSeg++) {
+			printf("{%3.0f,%3.0f} ", info->lowerLeft[iSeg].v0, info->lowerLeft[iSeg].v1);
 		}
-		break;
-	case 2:
-		printf("float\n");
-		for (int y = 0, iSeg = 0; y < info->nRows; y++) {
-			printf("lowerLeft : ");
-			for (int x = 0; x < info->nColumns; x++, iSeg++) {
-				printf("{%3.0f,%3.0f} ", info->x0_f[x], info->y0_f[y]);
-			}
-			printf("\n");
-			iSeg -= info->nColumns;
-			printf("upperRight: ");
-			for (int x = 0; x < info->nColumns; x++, iSeg++) {
-				printf("{%3.0f,%3.0f} ", info->x1_f[x], info->y1_f[y]);
-			}
-			printf("\n\n");
+		printf("\n");
+		
+		iSeg -= info->nColumns;
+		printf("upperRight: ");
+		for (int x = 0; x < info->nColumns; x++, iSeg++) {
+			printf("{%3.0f,%3.0f} ", info->upperRight[iSeg].v0, info->upperRight[iSeg].v1);
 		}
-		break;
-
-	case 3:
-		printf("v2nm32f\n");
-		for (int y = 0, iSeg = 0; y < info->nRows; y++) {
-			printf("lowerLeft : ");
-			for (int x = 0; x < info->nColumns; x++, iSeg++) {
-				printf("{%3.0f,%3.0f} ", info->lowerLeft[iSeg].v0, info->lowerLeft[iSeg].v1);
-			}
-			printf("\n");
-			
-			iSeg -= info->nColumns;
-			printf("upperRight: ");
-			for (int x = 0; x < info->nColumns; x++, iSeg++) {
-				printf("{%3.0f,%3.0f} ", info->upperRight[iSeg].v0, info->upperRight[iSeg].v1);
-			}
-			printf("\n\n");
-		}
-		break;
-	default:
-		break;
-	}
-
+		printf("\n\n");
+	}*/
 }
 
 void printBitMask(BitMask *bitmask, int nSeg, int elementAmount){

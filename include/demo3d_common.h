@@ -180,26 +180,27 @@ struct Array {
  *  \author Жиленков Иван
  */
 struct WindowInfo {
-	int x0[20];
-	int y0[20];
-	int x1[20];
-	int y1[20];
-	float x0_f[20];
-	float y0_f[20];
-	float x1_f[20];
-	float y1_f[20];
+	Rectangle segments[40];
 	v2nm32f lowerLeft[40];
 	v2nm32f upperRight[40];
-	int segmentWidth;
-	int segmentHeight;
 	float viewportMulX;
 	float viewportMulY;
 	float viewportMulZ;
 	float viewportAddX;
 	float viewportAddY;
 	float viewportAddZ;
-	int nColumns;
-	int nRows;
+	int nSegments;
+	int dummy;
+	Size imageSize;
 };
 
+struct NMGL_ScissorTest {
+	Rectangle segments[40];
+	v2nm32f lowerLeft[40];
+	v2nm32f upperRight[40];
+	Vector2 origin;
+	Size size;
+	int isEnabled;
+	int nSegments;
+};
 #endif

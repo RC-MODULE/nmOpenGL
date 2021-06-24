@@ -286,7 +286,7 @@ public:
 
 	
 	WindowInfo windowInfo;				///< Информация о расположении и размерах сегментов в изображении. Модифицируется функцией nmglViewport
-
+	NMGL_ScissorTest scissorTest;
 	v4nm32f tmp;						
 
 	LightingInfo lightingInfo;
@@ -345,8 +345,6 @@ public:
 		}
 		normalMatrix.matr[15] = 0.0f;
 
-		windowInfo.segmentWidth = WIDTH_SEG;
-		windowInfo.segmentHeight = HEIGHT_SEG;
 		windowInfo.viewportMulZ = (1 - 0) * 0.5f * ZBUFF_MAX;
 		windowInfo.viewportAddZ = (1 + 0) * 0.5f * ZBUFF_MAX;
 
@@ -1516,9 +1514,9 @@ void transferPolygons(PolygonsConnector *connector, int mode);
  *  
  */
  //! \{
-void updatePolygonsT(DataForNmpu1* data, Triangles* triangles, int count, int segX, int segY);
-void updatePolygonsL(DataForNmpu1* data, Lines* lines, int count, int segX, int segY);
-void updatePolygonsP(DataForNmpu1* data, Points* points, int count, int segX, int segY);
+void updatePolygonsT(DataForNmpu1* data, Triangles* triangles, int count, v2nm32f lowerLeft);
+void updatePolygonsL(DataForNmpu1* data, Lines* lines, int count, v2nm32f lowerLeft);
+void updatePolygonsP(DataForNmpu1* data, Points* points, int count, v2nm32f lowerLeft);
 //! \}
 
 /*!

@@ -42,6 +42,7 @@ public:
 	
 	PatternsArray* patterns;			///< Указатель на массив всевозможных двухбитных паттернов
 	int fillInnerTable[SIZE_TABLE];
+	ImageConnector imageConnector;				///< Коннектор к кольцевому буферу изображений
 
 	nm32s** ppSrcPackPtrns;				///< Массив указателей нужных в данный момент двухбитных паттернов. Должен быть размера 3 * POLYGONS_SIZE
 	nm32s** ppDstPackPtrns;				///< Массив указателей назначения копируемых двухбитных паттернов
@@ -51,7 +52,7 @@ public:
 	int* buffer1;						///< Указатель на временный буфер 1. Размер должен быть не меньше SIZE_BUFFER_NM1
 	int* buffer2;						///< Указатель на временный буфер 2. Размер должен быть не меньше SIZE_BUFFER_NM1
 	int pointSize;						///< Диаметр точек в режиме отрисовки GL_POINTS. Не должен быть больше 32
-	ImageConnector* imageConnector;				///< Коннектор к кольцевому буферу изображений
+
 	clock_t t0, t1;	
 
 	DepthBuffer depthBuffer;			///< Структура для работы с целым буфером глубины
