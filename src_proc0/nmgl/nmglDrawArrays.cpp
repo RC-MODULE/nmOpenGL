@@ -35,6 +35,7 @@ SECTION("text_nmgl") void perpectiveDivView(CombinePointers &vertex, WindowInfo 
 	nmppsMulC_AddC_32f(tmpBuf + 2 * NMGL_SIZE, windowInfo.viewportMulZ, windowInfo.viewportAddZ, vertex.z, size);		//Z
 }
 
+
 template < typename T >
 inline void copyVec(const void* src, void* dst, size_t size) {
 	nmblas_scopy(size * sizeof32(T), (float*)src, 1, (float*)dst, 1);

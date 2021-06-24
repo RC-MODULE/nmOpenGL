@@ -39,9 +39,20 @@ SECTION(".text_demo3d") void triangleOffset(Triangles &src, Triangles &dst, int 
 
 SECTION(".text_demo3d")
 void rasterizeT(const Triangles* triangles, const BitMask* masks){
-
-
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
+	int nSegments = 0;
+	Rectangle* segments;
+	v2nm32f* lowerLeft;
+	if (!cntxt->scissorTest.isEnabled) {
+		nSegments = cntxt->windowInfo.nSegments;
+		segments = cntxt->windowInfo.segments;
+		lowerLeft = cntxt->windowInfo.lowerLeft;
+	}
+	else {
+		nSegments = cntxt->scissorTest.nSegments;
+		segments = cntxt->scissorTest.segments;
+		lowerLeft = cntxt->scissorTest.lowerLeft;
+	}
 
 	int count = triangles->size;
 
@@ -70,54 +81,51 @@ void rasterizeT(const Triangles* triangles, const BitMask* masks){
 	}
 	// TEXTURING_PART
 
-
-	for (int segY = 0, iSeg = 0; segY < cntxt->windowInfo.nRows; segY++) {
-		for (int segX = 0; segX < cntxt->windowInfo.nColumns; segX++, iSeg++) {
-			if (masks[iSeg].hasNotZeroBits != 0) {
-				int resultSize = readMask(masks[iSeg].bits, indices, count);
-				if (resultSize) {
-					PolygonsConnector *connector = cntxt->triangleConnectors + iSeg;
-					bool drawingCheck = connector->ptrHead()->count + resultSize >= POLYGONS_SIZE;
-					CommandNm1 command;
-					if (drawingCheck) {
-						command.instr = NMC1_COPY_SEG_FROM_IMAGE;
-						command.params[0] = CommandArgument(cntxt->windowInfo.x0[segX]);
-						command.params[1] = CommandArgument(cntxt->windowInfo.y0[segY]);
-						command.params[2] = CommandArgument(cntxt->windowInfo.x1[segX] - cntxt->windowInfo.x0[segX]);
-						command.params[3] = CommandArgument(cntxt->windowInfo.y1[segY] - cntxt->windowInfo.y0[segY]);
-						command.params[4] = CommandArgument(iSeg);
-						cntxt->synchro.pushInstr(&command);
-					}
-
-					if (cntxt->texState.textureEnabled) {
-						// TEXTURING_PART
-						copyArraysByIndices((void**)triangles, indices, (void**)&localTrian, 16, resultSize);
-					}
-					else {
-						copyArraysByIndices((void**)triangles, indices, (void**)&localTrian, 7, resultSize);
-					}
-					copyColorByIndices_BGRA_RGBA(triangles->colors, indices, (v4nm32s*)localTrian.colors, resultSize);
-					localTrian.size = resultSize;
-
-					int offset = 0;
-					Triangles localTrian2;
-					while (offset < resultSize) {
-						DataForNmpu1* data = connector->ptrHead();
-						int localSize = MIN(resultSize - offset, POLYGONS_SIZE - data->count);
-						triangleOffset(localTrian, localTrian2, offset);
-						offset += localSize;
-						updatePolygonsT(data, &localTrian2, localSize, segX, segY);
-						if (data->count == POLYGONS_SIZE) {
-							transferPolygons(connector, NMC1_DRAW_TRIANGLES);
-						}
-					}
-					if (drawingCheck) {
-						command.instr = NMC1_COPY_SEG_TO_IMAGE;
-						cntxt->synchro.pushInstr(&command);
-					}
-
+	for (int iSeg = 0; iSeg < nSegments; iSeg++) {
+		if (masks[iSeg].hasNotZeroBits != 0) {
+			int resultSize = readMask(masks[iSeg].bits, indices, count);
+			if (resultSize) {
+				PolygonsConnector *connector = cntxt->triangleConnectors + iSeg;
+				bool drawingCheck = connector->ptrHead()->count + resultSize >= POLYGONS_SIZE;
+				CommandNm1 command;
+				if (drawingCheck) {
+					command.instr = NMC1_COPY_SEG_FROM_IMAGE;
+					command.params[0] = CommandArgument(segments[iSeg].x);
+					command.params[1] = CommandArgument(segments[iSeg].y);
+					command.params[2] = CommandArgument(segments[iSeg].width);
+					command.params[3] = CommandArgument(segments[iSeg].height);
+					command.params[4] = CommandArgument(iSeg);
+					cntxt->synchro.pushInstr(&command);
 				}
+
+				if (cntxt->texState.textureEnabled) {
+					// TEXTURING_PART
+					copyArraysByIndices((void**)triangles, indices, (void**)&localTrian, 16, resultSize);
+				}
+				else {
+					copyArraysByIndices((void**)triangles, indices, (void**)&localTrian, 7, resultSize);
+				}
+				copyColorByIndices_BGRA_RGBA(triangles->colors, indices, (v4nm32s*)localTrian.colors, resultSize);
+				localTrian.size = resultSize;
+
+				int offset = 0;
+				Triangles localTrian2;
+				while (offset < resultSize) {
+					DataForNmpu1* data = connector->ptrHead();
+					int localSize = MIN(resultSize - offset, POLYGONS_SIZE - data->count);
+					triangleOffset(localTrian, localTrian2, offset);
+					offset += localSize;
+					updatePolygonsT(data, &localTrian2, localSize, lowerLeft[iSeg]);
+					if (data->count == POLYGONS_SIZE) {
+						transferPolygons(connector, NMC1_DRAW_TRIANGLES);
+					}
+				}
+				if (drawingCheck) {
+					command.instr = NMC1_COPY_SEG_TO_IMAGE;
+					cntxt->synchro.pushInstr(&command);
+				}
+
 			}
-		}
+		}	
 	}
 }

@@ -104,14 +104,13 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 		hostCreatePatterns(cntxt->patterns);
 
 		imagesData = (ImageData*)halSyncAddr(0, 0);
-		cntxt->imageConnector = myMallocT<ImageConnector>();
-		cntxt->imageConnector->init(imagesData);
+		cntxt->imageConnector.init(imagesData);
 
 		DepthImage* depthImage = (DepthImage*)halSyncAddr(0, 0);
 		setHeap(11);
 		
 
-		cntxt->colorBuffer.init(cntxt->imageConnector->ptrHead(), WIDTH_IMAGE, HEIGHT_IMAGE);
+		cntxt->colorBuffer.init(cntxt->imageConnector.ptrHead(), WIDTH_IMAGE, HEIGHT_IMAGE);
 		cntxt->depthBuffer.init(depthImage, WIDTH_IMAGE, HEIGHT_IMAGE);
 		cntxt->texState.init();
 	}

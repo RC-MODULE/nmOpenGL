@@ -162,6 +162,11 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 		setHeap(12);
 		imagesData = myMallocT<ImageData>();
 		imagesData->init();
+		for (int i = 0; i < COUNT_IMAGE_BUFFER; i++) {
+			for (int j = 0; j < WIDTH_IMAGE * HEIGHT_IMAGE; j++) {
+				((int*)imagesData->ptr(i))[j] = 0;
+			}
+		}
 		cntxt->imageConnector.init(imagesData);
 		halSyncAddr(imagesData, 1);
 		
@@ -238,7 +243,11 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 	nmglClearColor(0, 0, 0, 1.0f);
 	nmglClearDepthf(1);
 	nmglViewport(0, 0, WIDTH_IMAGE, HEIGHT_IMAGE);
-	int countSegs = cntxt->windowInfo.nColumns * cntxt->windowInfo.nRows;
+	cntxt->windowInfo.imageSize.width = WIDTH_IMAGE;
+	cntxt->windowInfo.imageSize.height = HEIGHT_IMAGE;
+	nmglScissor(0, 0, WIDTH_IMAGE, HEIGHT_IMAGE);
+	nmglDisable(NMGL_SCISSOR_TEST);
+	int countSegs = cntxt->windowInfo.nSegments;
 	for (int i = 0; i < countSegs; i++) {
 		cntxt->segmentMasks[i].init((nm1*)masksBits[i]);
 	}

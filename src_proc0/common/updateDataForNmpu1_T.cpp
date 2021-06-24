@@ -34,9 +34,8 @@
 
 SECTION(".text_demo3d")
 //void updateDataForNmpu1_T(DataForNmpu1* data, Triangles* triangles, int count, int segX, int segY){
-void updatePolygonsT(DataForNmpu1* data, Triangles* triangles, int count, int segX, int segY){
-	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
-
+void updatePolygonsT(DataForNmpu1* data, Triangles* triangles, int count, v2nm32f lowerLeft){
+	NMGL_Context_NM0* cntxt = NMGL_Context_NM0::getContext();
 	float* temp0 = cntxt->buffer0 + 2 * NMGL_SIZE;
 	float* temp1 = cntxt->buffer1 + 2 * NMGL_SIZE;
 	float* temp2 = cntxt->buffer2 + 2 * NMGL_SIZE;
@@ -50,16 +49,16 @@ void updatePolygonsT(DataForNmpu1* data, Triangles* triangles, int count, int se
 	nmppsSub_32f(triangles->y2, triangles->y0, temp3, count);
 	nmppsMul_Mul_Sub_32f(temp1, temp2, temp3, temp0, (float*)data->crossProducts + data->count, count);
 
-	nmppsSubC_32f(triangles->x0, temp0, cntxt->windowInfo.x0_f[segX], count);
-	nmppsSubC_32f(triangles->y0, temp1, cntxt->windowInfo.y0_f[segY], count);
+	nmppsSubC_32f(triangles->x0, temp0, lowerLeft.v0, count);
+	nmppsSubC_32f(triangles->y0, temp1, lowerLeft.v1, count);
 	nmppsConvert_32f32s_rounding(temp0, data->x0 + data->count, 0, count);
 	nmppsConvert_32f32s_rounding(temp1, data->y0 + data->count, 0, count);
-	nmppsSubC_32f(triangles->x1, temp0, cntxt->windowInfo.x0_f[segX], count);
-	nmppsSubC_32f(triangles->y1, temp1, cntxt->windowInfo.y0_f[segY], count);
+	nmppsSubC_32f(triangles->x1, temp0, lowerLeft.v0, count);
+	nmppsSubC_32f(triangles->y1, temp1, lowerLeft.v1, count);
 	nmppsConvert_32f32s_rounding(temp0, data->x1 + data->count, 0, count);
 	nmppsConvert_32f32s_rounding(temp1, data->y1 + data->count, 0, count);
-	nmppsSubC_32f(triangles->x2, temp0, cntxt->windowInfo.x0_f[segX], count);
-	nmppsSubC_32f(triangles->y2, temp1, cntxt->windowInfo.y0_f[segY], count);
+	nmppsSubC_32f(triangles->x2, temp0, lowerLeft.v0, count);
+	nmppsSubC_32f(triangles->y2, temp1, lowerLeft.v1, count);
 	nmppsConvert_32f32s_rounding(temp0, data->x2 + data->count, 0, count);
 	nmppsConvert_32f32s_rounding(temp1, data->y2 + data->count, 0, count);
 	
