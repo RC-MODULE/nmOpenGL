@@ -248,8 +248,7 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 	cntxt->windowInfo.imageSize.height = HEIGHT_IMAGE;
 	nmglScissor(0, 0, WIDTH_IMAGE, HEIGHT_IMAGE);
 	nmglDisable(NMGL_SCISSOR_TEST);
-	int countSegs = cntxt->windowInfo.nSegments;
-	for (int i = 0; i < countSegs; i++) {
+	for (int i = 0; i < 36; i++) {
 		cntxt->segmentMasks[i].init((nm1*)masksBits[i]);
 	}
 	halSync(0x600D600D, 1);

@@ -23,19 +23,10 @@ int firstNonZeroIndx_32s(int* pSrcVec, int nSize);
 SECTION(".text_demo3d")
 void setSegmentMask(v2nm32f* minXY, v2nm32f* maxXY, BitMask* masks, int size){
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
-	int nSegments = 0;
-	v2nm32f* lowerLimit;
-	v2nm32f* upperLimit;
-	if (!cntxt->scissorTest.isEnabled) {
-		nSegments = cntxt->windowInfo.nSegments;
-		lowerLimit = cntxt->windowInfo.lowerLeft;
-		upperLimit = cntxt->windowInfo.upperRight;
-	}
-	else {
-		nSegments = cntxt->scissorTest.nSegments;
-		lowerLimit = cntxt->scissorTest.lowerLeft;
-		upperLimit = cntxt->scissorTest.upperRight;
-	}
+
+	int nSegments = cntxt->currentSegments->count;
+	v2nm32f* lowerLimit = cntxt->currentSegments->lowerLeft;
+	v2nm32f* upperLimit = cntxt->currentSegments->upperRight;
 
 	for (int iSeg = 0; iSeg < nSegments; iSeg++) {
 

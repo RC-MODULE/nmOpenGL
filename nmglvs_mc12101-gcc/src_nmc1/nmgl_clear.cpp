@@ -20,10 +20,6 @@ SECTION(".text_demo3d") int depthBufferClearPartCallback() {
 }
 
 
-extern MyDmaServer<MSD_SIZE, MSD_NUM_CHANNELS> dmaServer;
-extern MyDmaClient<MSD_SIZE> dmaClient[MSD_NUM_CHANNELS];
-
-
 SECTION(".text_demo3d") void NMGL_Clear(NMGL_Context_NM1 *context, CommandNm1 *command){
 	
 	int widthImage = context->colorBuffer.getWidth();

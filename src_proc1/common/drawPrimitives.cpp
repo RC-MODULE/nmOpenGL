@@ -13,19 +13,18 @@ SECTION(".text_demo3d") void drawPrimitives(NMGL_Context_NM1 *context, int count
 	nm32s* mulZ = (nm32s*)context->buffer0;
 	nm32s* mulC = (nm32s*)context->buffer0;
 	nm32s* zMaskBuffer = (nm32s*)context->buffer1;
+	PatternPack *patternPack = &context->patternPack;
 
 	for(int point = 0; point < countPrimitives; point += SMALL_SIZE){
 		int localSize = MIN(countPrimitives - point, SMALL_SIZE);
-		//PROFILER_SIZE(localSize);
-		//int fullSize = totalSum(context->nSizePtrn32 + point, localSize);
 
 		//проверка активирования теста глубины
 		if (context->depthBuffer.enabled == NMGL_FALSE) {
 			//PROFILER_SIZE(fullSize);
 			mMulCVxN_2s32s(
-				context->primitivePack_2s + point,
-				context->ptrnInnPoints + point,
-				context->ptrnSizes + point,
+				patternPack->patterns + point,
+				patternPack->origins + point,
+				patternPack->sizes + point,
 				context->minusOne,
 				zMaskBuffer,
 				localSize);
@@ -34,9 +33,9 @@ SECTION(".text_demo3d") void drawPrimitives(NMGL_Context_NM1 *context, int count
 			//умножение бинарных масок на Z
 			//PROFILER_SIZE(fullSize);
 			mMulCVxN_2s32s(
-				context->primitivePack_2s + point,
-				context->ptrnInnPoints + point,
-				context->ptrnSizes + point,
+				patternPack->patterns + point,
+				patternPack->origins + point,
+				patternPack->sizes + point,
 				context->valuesZ + point,
 				mulZ,
 				localSize);
@@ -50,15 +49,15 @@ SECTION(".text_demo3d") void drawPrimitives(NMGL_Context_NM1 *context, int count
 				WIDTH_SEG,
 				mulZ,
 				zMaskBuffer,
-				context->ptrnSizes + point,
+				patternPack->sizes + point,
 				localSize);
 		}
 		//color v4nm8s in imgOffset
 		//PROFILER_SIZE(fullSize);
 		mMulCVxN_2s_RGB8888(
-			context->primitivePack_2s + point,
-			context->ptrnInnPoints + point,
-			context->ptrnSizes + point,
+			patternPack->patterns + point,
+			patternPack->origins + point,
+			patternPack->sizes + point,
 			context->valuesC + point,
 			mulC,
 			localSize);
@@ -85,11 +84,11 @@ SECTION(".text_demo3d") void drawPrimitives(NMGL_Context_NM1 *context, int count
 			triangles.z2 = context->w2 + point; 
 
 			textureTriangle(
-				context->primitivePack_2s + point,
+					patternPack->patterns + point,
 					&triangles,
 					(nm32s**)(context->imagePoints + point),
-                    context->ptrnInnPoints + point,
-                    context->ptrnSizes + point,
+					patternPack->origins + point,
+					patternPack->sizes + point,
                     mulC,
                     mulC,
                     localSize);
@@ -103,7 +102,7 @@ SECTION(".text_demo3d") void drawPrimitives(NMGL_Context_NM1 *context, int count
 		mMaskVxN_32s(mulC,
 			zMaskBuffer,
 			(nm32s**)(context->imagePoints + point), WIDTH_SEG,
-			context->ptrnSizes + point,
+			patternPack->sizes + point,
 			localSize);
 
 	}	

@@ -40,19 +40,10 @@ SECTION(".text_demo3d") void triangleOffset(Triangles &src, Triangles &dst, int 
 SECTION(".text_demo3d")
 void rasterizeT(const Triangles* triangles, const BitMask* masks){
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
-	int nSegments = 0;
-	Rectangle* segments;
-	v2nm32f* lowerLeft;
-	if (!cntxt->scissorTest.isEnabled) {
-		nSegments = cntxt->windowInfo.nSegments;
-		segments = cntxt->windowInfo.segments;
-		lowerLeft = cntxt->windowInfo.lowerLeft;
-	}
-	else {
-		nSegments = cntxt->scissorTest.nSegments;
-		segments = cntxt->scissorTest.segments;
-		lowerLeft = cntxt->scissorTest.lowerLeft;
-	}
+
+	int nSegments = cntxt->currentSegments->count;
+	Rectangle* rectangles = cntxt->currentSegments->rectangles;
+	v2nm32f* lowerLeft = cntxt->currentSegments->lowerLeft;
 
 	int count = triangles->size;
 
@@ -90,10 +81,10 @@ void rasterizeT(const Triangles* triangles, const BitMask* masks){
 				CommandNm1 command;
 				if (drawingCheck) {
 					command.instr = NMC1_COPY_SEG_FROM_IMAGE;
-					command.params[0] = CommandArgument(segments[iSeg].x);
-					command.params[1] = CommandArgument(segments[iSeg].y);
-					command.params[2] = CommandArgument(segments[iSeg].width);
-					command.params[3] = CommandArgument(segments[iSeg].height);
+					command.params[0] = CommandArgument(rectangles[iSeg].x);
+					command.params[1] = CommandArgument(rectangles[iSeg].y);
+					command.params[2] = CommandArgument(rectangles[iSeg].width);
+					command.params[3] = CommandArgument(rectangles[iSeg].height);
 					command.params[4] = CommandArgument(iSeg);
 					cntxt->synchro.pushInstr(&command);
 				}

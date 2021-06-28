@@ -13,6 +13,7 @@
 #include "nmprofiler.h"
 
 SECTION(".data_imu5")	v4nm32f vertexResult[3 * NMGL_SIZE];
+//SECTION(".data_imu6")	v4nm32f colorResult[3 * NMGL_SIZE];
 SECTION(".data_imu6")	v4nm32f colorOrNormal[3 * NMGL_SIZE];
 SECTION(".data_imu6")	v2nm32f texResult[3 * NMGL_SIZE];
 

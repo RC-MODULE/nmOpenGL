@@ -13,6 +13,7 @@
 
 SECTION(".data_imu1")	int pool0[SIZE_BUFFER_NM1];
 SECTION(".data_imu1")	Pattern patternsPack[POLYGONS_SIZE];
+SECTION(".data_imu0")	Pattern* ppPatternsPack[POLYGONS_SIZE];
 SECTION(".data_imu2")	int pool1[SIZE_BUFFER_NM1];
 SECTION(".data_imu3")	int pool2[SIZE_BUFFER_NM1];
 
@@ -42,14 +43,6 @@ SECTION(".data_imu0") float w0[POLYGONS_SIZE];
 SECTION(".data_imu0") float w1[POLYGONS_SIZE];
 SECTION(".data_imu0") float w2[POLYGONS_SIZE];
 #endif //TEXTURE_ENABLED
-
-SECTION(".data_shmem1") nm32s* ppSrcPackPtrns[3 * POLYGONS_SIZE];
-SECTION(".data_shmem1") nm32s* ppDstPackPtrns[3 * POLYGONS_SIZE];
-SECTION(".data_shmem1") nm32s nSizePtrn32[3 * POLYGONS_SIZE];
-
-
-SECTION(".data_shmem1") nm32s colorClearBuff[WIDTH_SEG * HEIGHT_SEG];
-SECTION(".data_shmem1") nm32s depthClearBuff[WIDTH_SEG * HEIGHT_SEG];
 
 
 int exitNM1 = 0;
@@ -143,28 +136,30 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 	cntxt->buffer0 = pool0;
 	cntxt->buffer1 = pool1;
 	cntxt->buffer2 = pool2;
-	cntxt->primitivePack_2s = patternsPack;
+	cntxt->buffers[0].init(pool0, SIZE_BUFFER_NM1);
+	cntxt->buffers[1].init(pool1, SIZE_BUFFER_NM1);
+	cntxt->buffers[2].init(pool2, SIZE_BUFFER_NM1);
+
+	cntxt->patternPack.patterns = patternsPack;
+	cntxt->patternPack.origins = ptrnInnPoints;
+	cntxt->patternPack.sizes = ptrnSizes;
+	cntxt->patternPack.imagePositions = imageOffsets;
+	cntxt->patternPack.ppPattern = ppPatternsPack;
 
 	for (int j = 0; j < POLYGONS_SIZE; j++) {
 		cntxt->ppPtrns1_2s[j] = (Pattern*)cntxt->buffer1 + j;
 		cntxt->ppPtrns2_2s[j] = (Pattern*)cntxt->buffer2 + j;
-		cntxt->ppPtrnsCombined_2s[j] = cntxt->primitivePack_2s + j;
+		cntxt->ppPtrnsCombined_2s[j] = cntxt->patternPack.patterns + j;
+		cntxt->patternPack.ppPattern[j] = cntxt->patternPack.patterns + j;
 	}
 
 	for (int j = 0; j < SMALL_SIZE; j++) {
 		cntxt->minusOne[j] = -1;
 	}
 	//sync3
-	nmppsCopy_32s(cntxt->patterns->table_dydx, cntxt->fillInnerTable, sizeof32(cntxt->patterns->table_dydx));	
+	nmppsCopy_32s(cntxt->patterns->fillTable, cntxt->fillInnerTable, sizeof32(cntxt->patterns->fillTable));
 
-	cntxt->ptrnInnPoints = ptrnInnPoints;
-	cntxt->ptrnSizes = ptrnSizes;
 	cntxt->imageOffsets = imageOffsets;
-	
-
-	cntxt->ppSrcPackPtrns = ppSrcPackPtrns;
-	cntxt->ppDstPackPtrns = ppDstPackPtrns;
-	cntxt->nSizePtrn32 = nSizePtrn32;
 
 	cntxt->valuesZ = cntxt->buffer2 + 0;
 	cntxt->valuesC = cntxt->buffer2 + POLYGONS_SIZE;

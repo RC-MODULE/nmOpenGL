@@ -15,10 +15,12 @@ SECTION(".text_demo3d") void NMGL_DrawTriangles(NMGL_Context_NM1 *context, Comma
 	connector.init(data);
 
 	DataForNmpu1* poly = connector.ptrTail();
-	//nmprofiler_enable();
-	//PROFILER_SIZE(poly->count);	
-	getAddrPtrnsT(poly);
-	//nmprofiler_disable();
+	DataForNmpu1* dataTmp = (DataForNmpu1*)context->buffers[0].alloc(sizeof32(DataForNmpu1));
+	nmppsCopy_32s((nm32s*)poly, (nm32s*)dataTmp, 7 * POLYGONS_SIZE);
+	dataTmp->count = poly->count;
+	getAddrPtrnsT(dataTmp);
+	context->buffers[0].free(sizeof32(DataForNmpu1));
+	
 
 	int countTriangles = poly->count;
 

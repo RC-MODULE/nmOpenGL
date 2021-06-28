@@ -1,4 +1,5 @@
 #pragma once
+#include "nmglmath.h"
 
 #define MAX_SIDE_POLYGON				32
 #define HEIGHT_PTRN						MAX_SIDE_POLYGON
@@ -28,8 +29,17 @@ struct PatternsArray {
 	Pattern ptrns[FILL_PATTERNS_AMOUNT];
 	Pattern linePtrns[LINE_PATTERNS_AMOUNT];
 	Pattern pointPtrns[POINT_PATTERNS_AMOUNT];
-	int table_dydx[SIZE_TABLE];
+	int fillTable[SIZE_TABLE];
 	int lineTable[SIZE_TABLE];
+};
+
+struct PatternPack {
+    Pattern* patterns;
+	Pattern** ppPattern;	/// Указатель на список указателей на паттерны
+    Vector2* origins;   /// x, y
+    Size* sizes;     /// width, height
+	int* imagePositions;
+    int count;
 };
 
 /*!
