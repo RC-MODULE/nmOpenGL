@@ -20,7 +20,6 @@ void nmglViewport(NMGLint x, NMGLint y, NMGLsizei width, NMGLsizei height) {
 	cntxt->windowInfo.viewportAddX = x + width / 2;
 	cntxt->windowInfo.viewportMulY = -height / 2;
 	cntxt->windowInfo.viewportAddY = y - height / 2 + HEIGHT_IMAGE;
-	cntxt->windowInfo.nSegments = 0;
 	int endX = x + width;
 	int endY = y + height;
 	int nSegments = 0;
@@ -28,17 +27,17 @@ void nmglViewport(NMGLint x, NMGLint y, NMGLsizei width, NMGLsizei height) {
 		for (int x0 = x; x0 < endX; x0 += WIDTH_SEG, nSegments++) {
 			int localWidth = MIN(WIDTH_SEG, endX - x0);
 			int localHeight = MIN(HEIGHT_SEG, endY - y0);
-			cntxt->windowInfo.segments[nSegments].x = x0;
-			cntxt->windowInfo.segments[nSegments].y = HEIGHT_IMAGE - y0 - localHeight;
-			cntxt->windowInfo.segments[nSegments].width = localWidth;
-			cntxt->windowInfo.segments[nSegments].height = localHeight;
-			cntxt->windowInfo.lowerLeft[nSegments].v0 = x0;
-			cntxt->windowInfo.lowerLeft[nSegments].v1 = HEIGHT_IMAGE - y0 - localHeight;
-			cntxt->windowInfo.upperRight[nSegments].v0 = x0 + localWidth;
-			cntxt->windowInfo.upperRight[nSegments].v1 = HEIGHT_IMAGE - y0;
+			cntxt->windowInfo.segments.rectangles[nSegments].x = x0;
+			cntxt->windowInfo.segments.rectangles[nSegments].y = HEIGHT_IMAGE - y0 - localHeight;
+			cntxt->windowInfo.segments.rectangles[nSegments].width = localWidth;
+			cntxt->windowInfo.segments.rectangles[nSegments].height = localHeight;
+			cntxt->windowInfo.segments.lowerLeft[nSegments].v0 = x0;
+			cntxt->windowInfo.segments.lowerLeft[nSegments].v1 = HEIGHT_IMAGE - y0 - localHeight;
+			cntxt->windowInfo.segments.upperRight[nSegments].v0 = x0 + localWidth;
+			cntxt->windowInfo.segments.upperRight[nSegments].v1 = HEIGHT_IMAGE - y0;
 		}
 	}
 
 	
-	cntxt->windowInfo.nSegments = nSegments;
+	cntxt->windowInfo.segments.count = nSegments;
 }

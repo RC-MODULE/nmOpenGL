@@ -13,7 +13,6 @@ void nmglScissor (NMGLint x, NMGLint y, NMGLsizei width, NMGLsizei height){
 	cntxt->scissorTest.origin.y = y;
 	cntxt->scissorTest.size.width = width;
 	cntxt->scissorTest.size.height = height;
-	cntxt->scissorTest.nSegments = 0;
 	int endX = x + width;
 	int endY = y + height;
 	int nSegments = 0;
@@ -21,15 +20,15 @@ void nmglScissor (NMGLint x, NMGLint y, NMGLsizei width, NMGLsizei height){
 		for (int x0 = x; x0 < endX; x0 += WIDTH_SEG, nSegments++) {
 			int localWidth = MIN(WIDTH_SEG, endX - x0);
 			int localHeight = MIN(HEIGHT_SEG, endY - y0);
-			cntxt->scissorTest.segments[nSegments].x = x0;
-			cntxt->scissorTest.segments[nSegments].y = HEIGHT_IMAGE - y0 - localHeight;
-			cntxt->scissorTest.segments[nSegments].width = localWidth;
-			cntxt->scissorTest.segments[nSegments].height = localHeight;
-			cntxt->scissorTest.lowerLeft[nSegments].v0 = x0;
-			cntxt->scissorTest.lowerLeft[nSegments].v1 = HEIGHT_IMAGE - y0 - localHeight;
-			cntxt->scissorTest.upperRight[nSegments].v0 = x0 + localWidth;
-			cntxt->scissorTest.upperRight[nSegments].v1 = HEIGHT_IMAGE - y0;
+			cntxt->scissorTest.segments.rectangles[nSegments].x = x0;
+			cntxt->scissorTest.segments.rectangles[nSegments].y = HEIGHT_IMAGE - y0 - localHeight;
+			cntxt->scissorTest.segments.rectangles[nSegments].width = localWidth;
+			cntxt->scissorTest.segments.rectangles[nSegments].height = localHeight;
+			cntxt->scissorTest.segments.lowerLeft[nSegments].v0 = x0;
+			cntxt->scissorTest.segments.lowerLeft[nSegments].v1 = HEIGHT_IMAGE - y0 - localHeight;
+			cntxt->scissorTest.segments.upperRight[nSegments].v0 = x0 + localWidth;
+			cntxt->scissorTest.segments.upperRight[nSegments].v1 = HEIGHT_IMAGE - y0;
 		}
 	}
-	cntxt->scissorTest.nSegments = nSegments;
+	cntxt->scissorTest.segments.count = nSegments;
 }

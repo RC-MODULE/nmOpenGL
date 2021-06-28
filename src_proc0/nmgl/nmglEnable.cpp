@@ -91,6 +91,7 @@ void nmglEnable(NMGLenum cap) {
 	
 	case NMGL_SCISSOR_TEST:
 		cntxt->scissorTest.isEnabled = NMGL_TRUE;
+		cntxt->currentSegments = &cntxt->scissorTest.segments;
 		break;
 		
 	case NMGL_STENCIL_TEST:

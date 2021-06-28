@@ -93,6 +93,7 @@ void nmglDisable(NMGLenum cap) {
 	
 	case NMGL_SCISSOR_TEST:
 		cntxt->scissorTest.isEnabled = NMGL_FALSE;
+		cntxt->currentSegments = &cntxt->windowInfo.segments;
 		break;
 		
 	case NMGL_STENCIL_TEST:

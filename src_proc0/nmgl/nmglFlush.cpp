@@ -9,16 +9,9 @@ void nmglFlush (){
 
 //#ifdef USED_POLYGONS_BUFFER
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
-	Rectangle* segments;
-	int nSegments;
-	if (!cntxt->scissorTest.isEnabled) {
-		segments = cntxt->windowInfo.segments;
-		nSegments = cntxt->windowInfo.nSegments;
-	}
-	else {
-		segments = cntxt->scissorTest.segments;
-		nSegments = cntxt->scissorTest.nSegments;
-	}
+
+	int nSegments = cntxt->currentSegments->count;
+	Rectangle* rectangles = cntxt->currentSegments->rectangles;
 
 	for (int iSeg = 0; iSeg < nSegments; iSeg++) {
 		PolygonsConnector *trian_connector = cntxt->triangleConnectors + iSeg;
@@ -28,13 +21,14 @@ void nmglFlush (){
 							line_connector->ptrHead()->count > 0 ||
 							point_connector->ptrHead()->count > 0;
 
+
 		CommandNm1 command;
 		if (drawingCheck) {
 			command.instr = NMC1_COPY_SEG_FROM_IMAGE;
-			command.params[0] = CommandArgument(segments[iSeg].x);
-			command.params[1] = CommandArgument(segments[iSeg].y);
-			command.params[2] = CommandArgument(segments[iSeg].width);
-			command.params[3] = CommandArgument(segments[iSeg].height);
+			command.params[0] = CommandArgument(rectangles[iSeg].x);
+			command.params[1] = CommandArgument(rectangles[iSeg].y);
+			command.params[2] = CommandArgument(rectangles[iSeg].width);
+			command.params[3] = CommandArgument(rectangles[iSeg].height);
 			command.params[4] = CommandArgument(iSeg);
 			cntxt->synchro.pushInstr(&command);
 		}

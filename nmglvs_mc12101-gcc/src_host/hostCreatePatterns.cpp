@@ -12,7 +12,7 @@ void hostCreatePatterns(PatternsArray* patterns){
 	nm8s* temp8s = temp1;
 	nm4s* temp4s = (nm4s*)temp0;
 
-	fillPtrnsInit(temp0, patterns->table_dydx, 1);
+	fillPtrnsInit(temp0, patterns->fillTable, 1);
 	nmppsConvert_32s8s(temp32s, temp8s, NPATTERNS*WIDTH_PTRN*HEIGHT_PTRN);
 	nmppsConvert_8s4s(temp8s, temp4s, NPATTERNS*WIDTH_PTRN*HEIGHT_PTRN);
 	nmppsConvert_4s2s(temp4s, patterns->ptrns, NPATTERNS*WIDTH_PTRN*HEIGHT_PTRN);

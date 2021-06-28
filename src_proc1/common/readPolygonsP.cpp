@@ -9,6 +9,7 @@
 //SECTION(".text_demo3d") void readPolygonsL(DataForNmpu1* data){
 SECTION(".text_demo3d") int getAddrPtrnsP(DataForNmpu1* data) {
 	NMGL_Context_NM1 *cntxt = NMGL_Context_NM1::getContext();
+	PatternPack * patternPack = &cntxt->patternPack;
 	int size = data->count;
 	int offset0 = 0;
 	int offset1 = 0;
@@ -40,6 +41,9 @@ SECTION(".text_demo3d") int getAddrPtrnsP(DataForNmpu1* data) {
 	int* imageOffset = cntxt->buffer0 + offset0;
 	offset0 += POLYGONS_SIZE;
 	
+	int** srcPackTmp = (int**)(cntxt->buffer0 + 0 * size);
+	int** dstPackTmp = (int**)(cntxt->buffer0 + 1 * size);
+	int* sizePackTmp = (cntxt->buffer0 + offset0 + 2 * size);
 #ifdef DEBUG
 	if (offset0 > SIZE_BUFFER_NM1 || offset1 > SIZE_BUFFER_NM1) {
 		printf("error!! \n");
@@ -53,9 +57,9 @@ SECTION(".text_demo3d") int getAddrPtrnsP(DataForNmpu1* data) {
 	nmppsSubC_32s(dataTmp->y0, pointSize / 2, minY, size);
 	nmppsAddC_32s(dataTmp->y0, pointSize / 2, maxY, size);
 
-	nmppsSet_32s((nm32s*)cntxt->ppSrcPackPtrns, (int)&cntxt->patterns->pointPtrns[pointSize - 1], size);
-	nmppsSet_32s((nm32s*)cntxt->nSizePtrn32, pointSize * WIDTH_PTRN / 16, size);
-	nmppsCopy_32s((nm32s*)cntxt->ppPtrnsCombined_2s, (int*)cntxt->ppDstPackPtrns, size);
+	nmppsSet_32s((nm32s*)srcPackTmp, (int)&cntxt->patterns->pointPtrns[pointSize - 1], size);
+	nmppsSet_32s((nm32s*)sizePackTmp, pointSize * WIDTH_PTRN / 16, size);
+	nmppsCopy_32s((nm32s*)cntxt->ppPtrnsCombined_2s, (int*)dstPackTmp, size);
 	int imageWidth = cntxt->smallColorBuff.getWidth();
 	int imageHeight = cntxt->smallColorBuff.getHeight();
 	nmppsClipCC_32s(minX, 0, imageWidth, temp0, size);
@@ -76,20 +80,20 @@ SECTION(".text_demo3d") int getAddrPtrnsP(DataForNmpu1* data) {
 	absIfNegElse0(minX, temp1, size);
 	absIfNegElse0(minY, temp2, size);
 	nmppsSub_32s(temp1, temp0, temp3, size);
-	nmppsMerge_32s(temp3, temp2, (nm32s*)cntxt->ptrnInnPoints, size);
+	nmppsMerge_32s(temp3, temp2, (nm32s*)patternPack->origins, size);
 	nmppsAdd_32s(temp4, temp0, temp1, size);
 	nmppsAddC_32s(temp4, 1, temp1, size);
 	nmppsAndC_32u((nm32u*)temp1, 0xFFFFFFFE, (nm32u*)temp4, size);
-	nmppsMerge_32s(temp4, temp5, (nm32s*)cntxt->ptrnSizes, size);
+	nmppsMerge_32s(temp4, temp5, (nm32s*)patternPack->sizes, size);
 	baseAddrOffs_32s((nm32s*)cntxt->smallColorBuff.mData, imageOffset, cntxt->imagePoints, size);
 	baseAddrOffs_32s((nm32s*)cntxt->smallDepthBuff.mData, imageOffset, cntxt->zBuffPoints, size);
 
 	nmppsConvert_32s8s(dataTmp->color, (nm8s*)cntxt->valuesC, 4 * size);
 	nmppsCopy_32s(dataTmp->z, cntxt->valuesZ, size);
 
-	copyPacket_32s(cntxt->ppSrcPackPtrns,
-		cntxt->ppDstPackPtrns,
-		cntxt->nSizePtrn32, size);
+	copyPacket_32s(srcPackTmp,
+		dstPackTmp,
+		sizePackTmp, size);
 	//этот кусок кода является си-реализацией этой функции и является более наглядным	
 	/*for (int i = 0; i < size; i++) {
 		int pointSize = cntxt->pointSize;

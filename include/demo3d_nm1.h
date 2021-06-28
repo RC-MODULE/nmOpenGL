@@ -7,7 +7,8 @@
 #include "myserverdma.h"
 #include "nmgltex_nm1.h"
 #include "nmsynchro.h"
-
+#include "nmbuffer.h"
+#define BUFFERS_COUNT 3
 
 void selectPatterns(nm32s* dydxTable, nm32s* dX, nm32s* dY, nm32s* x0, nm32s* pPtrnPaintSide, nm32s** pSrcPack, int nSize, int* pTmp);
 
@@ -37,29 +38,27 @@ public:
 	}
 	long long unsigned colorClearValueTwice[8];
 	long long unsigned depthClearValueTwice[8];
-
-	Pattern* primitivePack_2s;
+	PatternPack patternPack;
 	
 	PatternsArray* patterns;			///< Указатель на массив всевозможных двухбитных паттернов
+	int dummy;
 	int fillInnerTable[SIZE_TABLE];
 	ImageConnector imageConnector;				///< Коннектор к кольцевому буферу изображений
-
-	nm32s** ppSrcPackPtrns;				///< Массив указателей нужных в данный момент двухбитных паттернов. Должен быть размера 3 * POLYGONS_SIZE
-	nm32s** ppDstPackPtrns;				///< Массив указателей назначения копируемых двухбитных паттернов
-	nm32s* nSizePtrn32;					///< Размеры копируемого куска паттерна (в 32-разрядных словах)
+	int* imageOffsets;
 
 	int* buffer0;						///< Указатель на временный буфер 0. Размер должен быть не меньше SIZE_BUFFER_NM1
 	int* buffer1;						///< Указатель на временный буфер 1. Размер должен быть не меньше SIZE_BUFFER_NM1
 	int* buffer2;						///< Указатель на временный буфер 2. Размер должен быть не меньше SIZE_BUFFER_NM1
 	int pointSize;						///< Диаметр точек в режиме отрисовки GL_POINTS. Не должен быть больше 32
 
+	SimpleBuffer<int> buffers[BUFFERS_COUNT];
 	clock_t t0, t1;	
 
 	DepthBuffer depthBuffer;			///< Структура для работы с целым буфером глубины
 	ImageBufferRgb8888 colorBuffer;		///< Структура для работы с целым цветным буфером
 	ImageBufferRgb8888 smallColorBuff;	///< Структура для работы с куском буфера цвета, лежащим во внутренней памяти
 	ImageBufferRgb8888 smallDepthBuff;	///< Структура для работы с куском буфера глубины, лежащим во внутренней памяти	
-
+	Size segmentSize;
 
 	nm32s** zBuffPoints;				///
 	nm32s** imagePoints;
@@ -68,13 +67,9 @@ public:
 	Pattern* ppPtrns2_2s[POLYGONS_SIZE];	///< Массив указателей на второй пак локальных паттернов
 	Pattern* ppPtrnsCombined_2s[POLYGONS_SIZE]; ///< Массив указателей на комбинированный пак первых и вторых локальных паттернов
 	nm32s minusOne[SMALL_SIZE];				///< массив со значения -1
-
-	Vector2* ptrnInnPoints;
-	Size* ptrnSizes;
-	int* imageOffsets;
+	
 	int* valuesZ;
 	int* valuesC;
-	int dummy;
 
 	// TEXTURING PART
 	float* x0;
@@ -401,6 +396,9 @@ int getAddrPtrnsT(DataForNmpu1* data);
 int getAddrPtrnsL(DataForNmpu1* data);
 int getAddrPtrnsP(DataForNmpu1* data);
  //! \}
+
+
+void getPatternsPackT(DataForNmpu1* data, PatternsArray* patternsArray, Size* imageSize, PatternPack * patternPack, SimpleBuffer<int> *buffers);
 
 /*!
  *  \brief Функция отрисовки примитивов на изображении

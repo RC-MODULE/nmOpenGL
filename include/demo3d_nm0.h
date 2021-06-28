@@ -247,6 +247,7 @@ public:
 	NMGL_SynchroMasterRingBuffer synchro;
 	BitMask segmentMasks[36];
 	BitDividedMask dividedMasks[2];	
+	ImageSegments* currentSegments;
 	PolygonsConnector* triangleConnectors;
 	PolygonsConnector* lineConnectors;
 	PolygonsConnector* pointConnectors;
@@ -255,8 +256,7 @@ public:
 	float* buffer2;
 	float* buffer3;
 	float* buffer4;
-	float* buffer5;
-	int dummy;
+	float* buffer5;	
 	
 	int isUseTwoSidedMode;
 	NMGLenum error;
@@ -297,6 +297,7 @@ public:
 	ImageConnector imageConnector;
 	
 	void init(){
+		currentSegments = &windowInfo.segments;
 
 		currentMatrixStack = &modelviewMatrixStack;
 		isUseTwoSidedMode = NMGL_FALSE;
