@@ -114,13 +114,13 @@ int main(int argc, char **argv)
 int repackToPrimitives_t_nOutputTriangles(int n)
 {
 	int trianglesCount = n;							// number of output triangles
-	// Количество ячеек, которые должны остаться неизменными после работы функции
+	// ZERO_COUNT - количество выходных параметров, которые должны остаться неизменными после работы функции
 	// Это число должно быть чётным, от него зависит адрес, с которого начинаются
 	// некоторые массивы выходных координат. Функция пишет каждую координату 
 	// по 64 бита (векторный процессор), так что выходной адрес должен быть чётным.
 	// ZERO_COUNT - number of triangles at the end that should not be touched
 	int ZERO_COUNT = 4;							
-    int vertCount = trianglesCount * 3;				// number of input vertexes
+    int vertCount = trianglesCount * 3;				// number of input vertices
 	int expectedTrianglesCount = trianglesCount + trianglesCount % 2;
 	int outputTrianglesCount = expectedTrianglesCount + ZERO_COUNT;
 	// 10 floats - x, y, z, w, s, t, r, g, b, a
@@ -139,7 +139,8 @@ int repackToPrimitives_t_nOutputTriangles(int n)
 		real_output[i] = 0;
 		expected_output[i] = 0;
 	}
-
+	
+	//	Set real output pointers, i.e. dst
 	float		*x0 = real_output;
 	float		*y0 = x0 + outputTrianglesCount;
 	float		*z0 = y0 + outputTrianglesCount;
@@ -207,6 +208,7 @@ int repackToPrimitives_t_nOutputTriangles(int n)
 #endif
 	dst.v2.color = color2;
 
+	// Initialize input arrays: coords, colors and textures (if texturing is enabled)
     for (int i = 0; i < vertCount; i++){
         for (int j = 0; j < 4; j++){
             srcVertex[i].vec[j] = (float)(4 * i + j);
@@ -219,7 +221,8 @@ int repackToPrimitives_t_nOutputTriangles(int n)
 		srcTex[i].v1 = (float)(2 * i + 1);
 	}
 #endif
-
+	
+	// Initialize expected output
 	float		*x0_exp = expected_output;
 	float		*y0_exp = x0_exp + outputTrianglesCount;
 	float		*z0_exp = y0_exp + outputTrianglesCount;
