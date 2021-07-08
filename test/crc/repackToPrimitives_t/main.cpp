@@ -111,6 +111,115 @@ int main(int argc, char **argv)
 #define ATTR_PER_VERTEX 8
 #endif
 
+void initializeInput(v4nm32f *srcVertex, v4nm32f *srcColor, v2nm32f *srcTex, int vertCount)
+{
+    for (int i = 0; i < vertCount; i++){
+        for (int j = 0; j < 4; j++){
+            srcVertex[i].vec[j] = (float)(4 * i + j);
+            srcColor[i].vec[j] = (float)(4 * i + j);
+		}
+	}
+#ifdef TEXTURE_ENABLED
+    for (int i = 0; i < vertCount; i++){
+		srcTex[i].v0 = (float)(2 * i);
+		srcTex[i].v1 = (float)(2 * i + 1);
+	}
+#endif
+}
+
+void initializeExpectedOutput(TrianglePointers *dst_exp, 
+		v4nm32f *srcVertex, 
+		v4nm32f *srcColor, 
+		v2nm32f *srcTex, 
+		int trianglesCount, 
+		int expectedTrianglesCount,
+		int outputTrianglesCount)
+{
+
+    for (int i = 0; i < trianglesCount; i++){
+		dst_exp->v0.x[i] = srcVertex[3 * i].vec[0];
+		dst_exp->v0.y[i] = srcVertex[3 * i].vec[1];
+		dst_exp->v0.z[i] = srcVertex[3 * i].vec[2];
+		dst_exp->v0.w[i] = srcVertex[3 * i].vec[3];
+#ifdef TEXTURE_ENABLED
+		dst_exp->v0.s[i] = srcTex[3 * i].v0;
+		dst_exp->v0.t[i] = srcTex[3 * i].v1;
+#endif
+		dst_exp->v0.color[i].vec[0] = srcColor[3 * i].vec[0];
+		dst_exp->v0.color[i].vec[1] = srcColor[3 * i].vec[1];
+		dst_exp->v0.color[i].vec[2] = srcColor[3 * i].vec[2];
+		dst_exp->v0.color[i].vec[3] = srcColor[3 * i].vec[3];
+		
+		dst_exp->v1.x[i] = srcVertex[3 * i + 1].vec[0];
+		dst_exp->v1.y[i] = srcVertex[3 * i + 1].vec[1];
+		dst_exp->v1.z[i] = srcVertex[3 * i + 1].vec[2];
+		dst_exp->v1.w[i] = srcVertex[3 * i + 1].vec[3];
+#ifdef TEXTURE_ENABLED
+		dst_exp->v1.s[i] = srcTex[3 * i + 1].v0;
+		dst_exp->v1.t[i] = srcTex[3 * i + 1].v1;
+#endif
+		dst_exp->v1.color[i].vec[0] = srcColor[3 * i + 1].vec[0];
+		dst_exp->v1.color[i].vec[1] = srcColor[3 * i + 1].vec[1];
+		dst_exp->v1.color[i].vec[2] = srcColor[3 * i + 1].vec[2];
+		dst_exp->v1.color[i].vec[3] = srcColor[3 * i + 1].vec[3];
+
+		dst_exp->v2.x[i] = srcVertex[3 * i + 2].vec[0];
+		dst_exp->v2.y[i] = srcVertex[3 * i + 2].vec[1];
+		dst_exp->v2.z[i] = srcVertex[3 * i + 2].vec[2];
+		dst_exp->v2.w[i] = srcVertex[3 * i + 2].vec[3];
+#ifdef TEXTURE_ENABLED
+		dst_exp->v2.s[i] = srcTex[3 * i + 2].v0;
+		dst_exp->v2.t[i] = srcTex[3 * i + 2].v1;
+#endif
+		dst_exp->v2.color[i].vec[0] = srcColor[3 * i + 2].vec[0];
+		dst_exp->v2.color[i].vec[1] = srcColor[3 * i + 2].vec[1];
+		dst_exp->v2.color[i].vec[2] = srcColor[3 * i + 2].vec[2];
+		dst_exp->v2.color[i].vec[3] = srcColor[3 * i + 2].vec[3];
+	}
+	if (trianglesCount % 2){
+		dst_exp->v0.x[expectedTrianglesCount - 1] = dst_exp->v0.x[expectedTrianglesCount - 2];
+		dst_exp->v0.y[expectedTrianglesCount - 1] = dst_exp->v0.y[expectedTrianglesCount - 2];
+		dst_exp->v0.z[expectedTrianglesCount - 1] = dst_exp->v0.z[expectedTrianglesCount - 2];
+		dst_exp->v0.w[expectedTrianglesCount - 1] = dst_exp->v0.w[expectedTrianglesCount - 2];
+#ifdef TEXTURE_ENABLED
+		dst_exp->v0.s[expectedTrianglesCount - 1] = dst_exp->v0.s[expectedTrianglesCount - 2];
+		dst_exp->v0.t[expectedTrianglesCount - 1] = dst_exp->v0.t[expectedTrianglesCount - 2];
+#endif
+		dst_exp->v0.color[expectedTrianglesCount - 1].vec[0] = dst_exp->v0.color[expectedTrianglesCount - 2].vec[0];
+		dst_exp->v0.color[expectedTrianglesCount - 1].vec[1] = dst_exp->v0.color[expectedTrianglesCount - 2].vec[1];
+		dst_exp->v0.color[expectedTrianglesCount - 1].vec[2] = dst_exp->v0.color[expectedTrianglesCount - 2].vec[2];
+		dst_exp->v0.color[expectedTrianglesCount - 1].vec[3] = dst_exp->v0.color[expectedTrianglesCount - 2].vec[3];
+
+		dst_exp->v1.x[expectedTrianglesCount - 1] = dst_exp->v1.x[expectedTrianglesCount - 2];
+		dst_exp->v1.y[expectedTrianglesCount - 1] = dst_exp->v1.y[expectedTrianglesCount - 2];
+		dst_exp->v1.z[expectedTrianglesCount - 1] = dst_exp->v1.z[expectedTrianglesCount - 2];
+		dst_exp->v1.w[expectedTrianglesCount - 1] = dst_exp->v1.w[expectedTrianglesCount - 2];
+#ifdef TEXTURE_ENABLED
+		dst_exp->v1.s[expectedTrianglesCount - 1] = dst_exp->v1.s[expectedTrianglesCount - 2];
+		dst_exp->v1.t[expectedTrianglesCount - 1] = dst_exp->v1.t[expectedTrianglesCount - 2];
+#endif
+		dst_exp->v1.color[expectedTrianglesCount - 1].vec[0] = dst_exp->v1.color[expectedTrianglesCount - 2].vec[0];
+		dst_exp->v1.color[expectedTrianglesCount - 1].vec[1] = dst_exp->v1.color[expectedTrianglesCount - 2].vec[1];
+		dst_exp->v1.color[expectedTrianglesCount - 1].vec[2] = dst_exp->v1.color[expectedTrianglesCount - 2].vec[2];
+		dst_exp->v1.color[expectedTrianglesCount - 1].vec[3] = dst_exp->v1.color[expectedTrianglesCount - 2].vec[3];
+
+		dst_exp->v2.x[expectedTrianglesCount - 1] = dst_exp->v2.x[expectedTrianglesCount - 2];
+		dst_exp->v2.y[expectedTrianglesCount - 1] = dst_exp->v2.y[expectedTrianglesCount - 2];
+		dst_exp->v2.z[expectedTrianglesCount - 1] = dst_exp->v2.z[expectedTrianglesCount - 2];
+		dst_exp->v2.w[expectedTrianglesCount - 1] = dst_exp->v2.w[expectedTrianglesCount - 2];
+#ifdef TEXTURE_ENABLED
+		dst_exp->v2.s[expectedTrianglesCount - 1] = dst_exp->v2.s[expectedTrianglesCount - 2];
+		dst_exp->v2.t[expectedTrianglesCount - 1] = dst_exp->v2.t[expectedTrianglesCount - 2];
+#endif
+		dst_exp->v2.color[expectedTrianglesCount - 1].vec[0] = dst_exp->v2.color[expectedTrianglesCount - 2].vec[0];
+		dst_exp->v2.color[expectedTrianglesCount - 1].vec[1] = dst_exp->v2.color[expectedTrianglesCount - 2].vec[1];
+		dst_exp->v2.color[expectedTrianglesCount - 1].vec[2] = dst_exp->v2.color[expectedTrianglesCount - 2].vec[2];
+		dst_exp->v2.color[expectedTrianglesCount - 1].vec[3] = dst_exp->v2.color[expectedTrianglesCount - 2].vec[3];
+	} else {
+		// Do not correct 
+	}
+}
+
 int repackToPrimitives_t_nOutputTriangles(int n)
 {
 	int trianglesCount = n;							// number of output triangles
@@ -209,18 +318,7 @@ int repackToPrimitives_t_nOutputTriangles(int n)
 	dst.v2.color = color2;
 
 	// Initialize input arrays: coords, colors and textures (if texturing is enabled)
-    for (int i = 0; i < vertCount; i++){
-        for (int j = 0; j < 4; j++){
-            srcVertex[i].vec[j] = (float)(4 * i + j);
-            srcColor[i].vec[j] = (float)(4 * i + j);
-		}
-	}
-#ifdef TEXTURE_ENABLED
-    for (int i = 0; i < vertCount; i++){
-		srcTex[i].v0 = (float)(2 * i);
-		srcTex[i].v1 = (float)(2 * i + 1);
-	}
-#endif
+	initializeInput(srcVertex, srcColor, srcTex, vertCount);
 	
 	// Initialize expected output
 	float		*x0_exp = expected_output;
@@ -259,88 +357,44 @@ int repackToPrimitives_t_nOutputTriangles(int n)
     v4nm32f	*color2_exp = (v4nm32f *)(w2_exp + outputTrianglesCount);
 #endif
 
-    for (int i = 0; i < trianglesCount; i++){
-		x0_exp[i] = srcVertex[3 * i].vec[0];
-		y0_exp[i] = srcVertex[3 * i].vec[1];
-		z0_exp[i] = srcVertex[3 * i].vec[2];
-		w0_exp[i] = srcVertex[3 * i].vec[3];
+	TrianglePointers dst_exp;
+	dst_exp.v0.x = x0_exp;
+	dst_exp.v0.y = y0_exp;
+	dst_exp.v0.z = z0_exp;
+	dst_exp.v0.w = w0_exp;
 #ifdef TEXTURE_ENABLED
-		s0_exp[i] = srcTex[3 * i].v0;
-		t0_exp[i] = srcTex[3 * i].v1;
+	dst_exp.v0.s = s0_exp;
+	dst_exp.v0.t = t0_exp;
 #endif
-		color0_exp[i].vec[0] = srcColor[3 * i].vec[0];
-		color0_exp[i].vec[1] = srcColor[3 * i].vec[1];
-		color0_exp[i].vec[2] = srcColor[3 * i].vec[2];
-		color0_exp[i].vec[3] = srcColor[3 * i].vec[3];
-		
-		x1_exp[i] = srcVertex[3 * i + 1].vec[0];
-		y1_exp[i] = srcVertex[3 * i + 1].vec[1];
-		z1_exp[i] = srcVertex[3 * i + 1].vec[2];
-		w1_exp[i] = srcVertex[3 * i + 1].vec[3];
-#ifdef TEXTURE_ENABLED
-		s1_exp[i] = srcTex[3 * i + 1].v0;
-		t1_exp[i] = srcTex[3 * i + 1].v1;
-#endif
-		color1_exp[i].vec[0] = srcColor[3 * i + 1].vec[0];
-		color1_exp[i].vec[1] = srcColor[3 * i + 1].vec[1];
-		color1_exp[i].vec[2] = srcColor[3 * i + 1].vec[2];
-		color1_exp[i].vec[3] = srcColor[3 * i + 1].vec[3];
+	dst_exp.v0.color = color0_exp;
 
-		x2_exp[i] = srcVertex[3 * i + 2].vec[0];
-		y2_exp[i] = srcVertex[3 * i + 2].vec[1];
-		z2_exp[i] = srcVertex[3 * i + 2].vec[2];
-		w2_exp[i] = srcVertex[3 * i + 2].vec[3];
+	dst_exp.v1.x = x1_exp;
+	dst_exp.v1.y = y1_exp;
+	dst_exp.v1.z = z1_exp;
+	dst_exp.v1.w = w1_exp;
 #ifdef TEXTURE_ENABLED
-		s2_exp[i] = srcTex[3 * i + 2].v0;
-		t2_exp[i] = srcTex[3 * i + 2].v1;
+	dst_exp.v1.s = s1_exp;
+	dst_exp.v1.t = t1_exp;
 #endif
-		color2_exp[i].vec[0] = srcColor[3 * i + 2].vec[0];
-		color2_exp[i].vec[1] = srcColor[3 * i + 2].vec[1];
-		color2_exp[i].vec[2] = srcColor[3 * i + 2].vec[2];
-		color2_exp[i].vec[3] = srcColor[3 * i + 2].vec[3];
-	}
-	if (trianglesCount % 2){
-		x0_exp[expectedTrianglesCount - 1] = x0_exp[expectedTrianglesCount - 2];
-		y0_exp[expectedTrianglesCount - 1] = y0_exp[expectedTrianglesCount - 2];
-		z0_exp[expectedTrianglesCount - 1] = z0_exp[expectedTrianglesCount - 2];
-		w0_exp[expectedTrianglesCount - 1] = w0_exp[expectedTrianglesCount - 2];
-#ifdef TEXTURE_ENABLED
-		s0_exp[expectedTrianglesCount - 1] = s0_exp[expectedTrianglesCount - 2];
-		t0_exp[expectedTrianglesCount - 1] = t0_exp[expectedTrianglesCount - 2];
-#endif
-		color0_exp[expectedTrianglesCount - 1].vec[0] = color0_exp[expectedTrianglesCount - 2].vec[0];
-		color0_exp[expectedTrianglesCount - 1].vec[1] = color0_exp[expectedTrianglesCount - 2].vec[1];
-		color0_exp[expectedTrianglesCount - 1].vec[2] = color0_exp[expectedTrianglesCount - 2].vec[2];
-		color0_exp[expectedTrianglesCount - 1].vec[3] = color0_exp[expectedTrianglesCount - 2].vec[3];
+	dst_exp.v1.color = color1_exp;
 
-		x1_exp[expectedTrianglesCount - 1] = x1_exp[expectedTrianglesCount - 2];
-		y1_exp[expectedTrianglesCount - 1] = y1_exp[expectedTrianglesCount - 2];
-		z1_exp[expectedTrianglesCount - 1] = z1_exp[expectedTrianglesCount - 2];
-		w1_exp[expectedTrianglesCount - 1] = w1_exp[expectedTrianglesCount - 2];
+	dst_exp.v2.x = x2_exp;
+	dst_exp.v2.y = y2_exp;
+	dst_exp.v2.z = z2_exp;
+	dst_exp.v2.w = w2_exp;
 #ifdef TEXTURE_ENABLED
-		s1_exp[expectedTrianglesCount - 1] = s1_exp[expectedTrianglesCount - 2];
-		t1_exp[expectedTrianglesCount - 1] = t1_exp[expectedTrianglesCount - 2];
+	dst_exp.v2.s = s2_exp;
+	dst_exp.v2.t = t2_exp;
 #endif
-		color1_exp[expectedTrianglesCount - 1].vec[0] = color1_exp[expectedTrianglesCount - 2].vec[0];
-		color1_exp[expectedTrianglesCount - 1].vec[1] = color1_exp[expectedTrianglesCount - 2].vec[1];
-		color1_exp[expectedTrianglesCount - 1].vec[2] = color1_exp[expectedTrianglesCount - 2].vec[2];
-		color1_exp[expectedTrianglesCount - 1].vec[3] = color1_exp[expectedTrianglesCount - 2].vec[3];
+	dst_exp.v2.color = color2_exp;
 
-		x2_exp[expectedTrianglesCount - 1] = x2_exp[expectedTrianglesCount - 2];
-		y2_exp[expectedTrianglesCount - 1] = y2_exp[expectedTrianglesCount - 2];
-		z2_exp[expectedTrianglesCount - 1] = z2_exp[expectedTrianglesCount - 2];
-		w2_exp[expectedTrianglesCount - 1] = w2_exp[expectedTrianglesCount - 2];
-#ifdef TEXTURE_ENABLED
-		s2_exp[expectedTrianglesCount - 1] = s2_exp[expectedTrianglesCount - 2];
-		t2_exp[expectedTrianglesCount - 1] = t2_exp[expectedTrianglesCount - 2];
-#endif
-		color2_exp[expectedTrianglesCount - 1].vec[0] = color2_exp[expectedTrianglesCount - 2].vec[0];
-		color2_exp[expectedTrianglesCount - 1].vec[1] = color2_exp[expectedTrianglesCount - 2].vec[1];
-		color2_exp[expectedTrianglesCount - 1].vec[2] = color2_exp[expectedTrianglesCount - 2].vec[2];
-		color2_exp[expectedTrianglesCount - 1].vec[3] = color2_exp[expectedTrianglesCount - 2].vec[3];
-	} else {
-		// Do not correct 
-	}
+	initializeExpectedOutput(&dst_exp, 
+			srcVertex, 
+			srcColor, 
+			srcTex, 
+			trianglesCount, 
+			expectedTrianglesCount,
+			outputTrianglesCount); 
 
 	// Act
     int res;
