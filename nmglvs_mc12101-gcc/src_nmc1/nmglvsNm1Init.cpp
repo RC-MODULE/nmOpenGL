@@ -5,12 +5,13 @@
 #include "demo3d_nm1.h"
 #include "stdio.h"
 #include "ringbuffer.h"
-#include "nmprofiler.h"
 #include "cache.h"
+#include "link.h"
 
 #include "nmgl.h"
 
 SECTION(".data_imu1")	int pool0[SIZE_BUFFER_NM1];
+SECTION(".data_imu1")	Pattern patternsPack[POLYGONS_SIZE];
 SECTION(".data_imu2")	int pool1[SIZE_BUFFER_NM1];
 SECTION(".data_imu3")	int pool2[SIZE_BUFFER_NM1];
 
@@ -19,10 +20,9 @@ SECTION(".data_imu2")	int segZBuff[WIDTH_SEG * HEIGHT_SEG];
 
 SECTION(".data_imu0") Vector2 ptrnInnPoints[POLYGONS_SIZE];
 SECTION(".data_imu0") Size ptrnSizes[POLYGONS_SIZE];
-SECTION(".data_shmem1") nm32s valuesZ[POLYGONS_SIZE];
-SECTION(".data_shmem1") nm32s valuesC[POLYGONS_SIZE];
+SECTION(".data_shmem1") nm32s imageOffsets[POLYGONS_SIZE];
 
-#ifdef TEXTURE_ENABLED
+//TEXTURING_PART
 SECTION(".data_imu0") float x0[POLYGONS_SIZE];
 SECTION(".data_imu0") float y0[POLYGONS_SIZE];
 SECTION(".data_imu0") float x1[POLYGONS_SIZE];
@@ -40,13 +40,11 @@ SECTION(".data_imu0") float texT2[POLYGONS_SIZE];
 SECTION(".data_imu0") float w0[POLYGONS_SIZE];
 SECTION(".data_imu0") float w1[POLYGONS_SIZE];
 SECTION(".data_imu0") float w2[POLYGONS_SIZE];
-#endif //TEXTURE_ENABLED
+//TEXTURING_PART
 
 SECTION(".data_shmem1") nm32s* ppSrcPackPtrns[3 * POLYGONS_SIZE];
 SECTION(".data_shmem1") nm32s* ppDstPackPtrns[3 * POLYGONS_SIZE];
 SECTION(".data_shmem1") nm32s nSizePtrn32[3 * POLYGONS_SIZE];
-SECTION(".data_shmem1") nm32s* zBuffPoints[POLYGONS_SIZE];
-SECTION(".data_shmem1") nm32s* imagePoints[POLYGONS_SIZE];
 
 
 SECTION(".data_shmem1") nm32s colorClearBuff[WIDTH_SEG * HEIGHT_SEG];
@@ -54,6 +52,12 @@ SECTION(".data_shmem1") nm32s depthClearBuff[WIDTH_SEG * HEIGHT_SEG];
 
 
 int exitNM1 = 0;
+
+SECTION(".data_imu0") HalRingBufferData<CommandNm1, PRIORITY_SIZE> linkSynchro;
+SECTION(".data_imu0") HalRingBufferConnector<CommandNm1, PRIORITY_SIZE> linkConnector(&linkSynchro);
+
+#define LINK_PORT 2
+SECTION(".data_imu0") NMGL_SynchroSlaveRingBuffer nmglSynchro;				///< Структура для общения процессоров друг с другом
 
 template<class T> T* myMallocT(int size) {
 	T* result = (T*)halMalloc32(size * sizeof32(T));
@@ -71,12 +75,14 @@ template<class T> T* myMallocT() {
 SECTION(".data_imu0A") NMGL_Context_NM1 nmglContext;
 SECTION(".data_imu0") NMGL_Context_NM1 *NMGL_Context_NM1::context;
 
+
 SECTION(".text_nmglvs") int nmglvsNm1Init()
 {
+	halSleep(500);
 
-#ifdef TEXTURE_ENABLED
-	halLedOn(1);
-#endif //TEXTURE_ENABLED
+//TEXTURING_PART
+	//halLedOn(1);
+//TEXTURING_PART
 	halSetProcessorNo(1);
 	//---------- start nm program ------------
 	NMGL_Context_NM1 *cntxt;
@@ -116,7 +122,7 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 	halHostSync(0x600DB00F);	// send ok to host
 
 	NMGLSynchroData* synchroData = (NMGLSynchroData*)halSyncAddr((int*)cntxt->patterns, 0);
-	cntxt->synchro.init(synchroData);
+	nmglSynchro.init(synchroData);
 #ifdef TEST_NMGL_TEX_FUNC
     halSyncAddr((void*)cntxt, 0);
 #endif //TEST_NMGL_TEX_FUNC
@@ -124,7 +130,6 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 	halHostSync(0x600DB00F);	// send ok to host
 	
 #ifdef __GNUC__
-	halDmaInit();
 	halInstrCacheEnable();
 #endif // __GNUC__
 	msdInit();
@@ -140,33 +145,44 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 	cntxt->buffer0 = pool0;
 	cntxt->buffer1 = pool1;
 	cntxt->buffer2 = pool2;
+	cntxt->primitivePack_2s = patternsPack;
+
+	for (int j = 0; j < POLYGONS_SIZE; j++) {
+		cntxt->ppPtrns1_2s[j] = (Pattern*)cntxt->buffer1 + j;
+		cntxt->ppPtrns2_2s[j] = (Pattern*)cntxt->buffer2 + j;
+		cntxt->ppPtrnsCombined_2s[j] = cntxt->primitivePack_2s + j;
+	}
 
 	for (int j = 0; j < SMALL_SIZE; j++) {
-		int off = j * sizeof32(Pattern);
-		cntxt->ppPtrns1_2s[j] = (Pattern*)nmppsAddr_32s((nm32s*)pool0, off);
-		cntxt->ppPtrns2_2s[j] = (Pattern*)nmppsAddr_32s((nm32s*)pool1, off);
-		cntxt->ppPtrnsCombined_2s[j] = cntxt->polyImgTmp + j;
 		cntxt->minusOne[j] = -1;
 	}
 	//sync3
 	halHostSyncAddr(imagesData);
+	nmppsCopy_32s(cntxt->patterns->table_dydx, cntxt->fillInnerTable, sizeof32(cntxt->patterns->table_dydx));	
 
 	cntxt->ptrnInnPoints = ptrnInnPoints;
 	cntxt->ptrnSizes = ptrnSizes;
-	cntxt->valuesZ = valuesZ;
-	cntxt->valuesC = valuesC;
+	cntxt->imageOffsets = imageOffsets;
+	
 
 	cntxt->ppSrcPackPtrns = ppSrcPackPtrns;
 	cntxt->ppDstPackPtrns = ppDstPackPtrns;
 	cntxt->nSizePtrn32 = nSizePtrn32;
 
-	cntxt->zBuffPoints = zBuffPoints;
-	cntxt->imagePoints = imagePoints;
+	//cntxt->valuesZ = valuesZ;
+	//cntxt->valuesC = valuesC;
+	//cntxt->zBuffPoints = zBuffPoints;
+	//cntxt->imagePoints = imagePoints;
+	int end = 0;
+	cntxt->valuesZ = cntxt->buffer2 + end;
+	cntxt->valuesC = cntxt->buffer2 + POLYGONS_SIZE;
+	cntxt->zBuffPoints = (nm32s**)(cntxt->buffer2 + 2 * POLYGONS_SIZE);
+	cntxt->imagePoints = (nm32s**)(cntxt->buffer2 + 4 * POLYGONS_SIZE);
 
 	cntxt->t0 = clock();
 	cntxt->pointSize = 1;
 
-#ifdef TEXTURE_ENABLED
+//TEXTURING_PART
 	cntxt->x0 = x0;
 	cntxt->y0 = y0;
 	cntxt->x1 = x1;
@@ -184,8 +200,7 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 	cntxt->w0 = w0;
 	cntxt->w1 = w1;
 	cntxt->w2 = w2;
-#endif //TEXTURE_ENABLED
-
+//TEXTURING_PART
 	return 0;
 } 
 

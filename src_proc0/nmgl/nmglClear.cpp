@@ -7,5 +7,8 @@
 SECTION(".text_nmgl")
 void nmglClear(NMGLbitfield mask) {
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
-	cntxt->synchro.writeInstr(1, NMC1_CLEAR, mask);
+	CommandNm1 command;
+	command.instr = NMC1_CLEAR;
+	command.params[0] = CommandArgument(mask);
+	cntxt->synchro.pushInstr(&command);
 }

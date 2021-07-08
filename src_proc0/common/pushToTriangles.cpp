@@ -21,7 +21,7 @@ void pushToTriangles(const TrianglePointers &srcTriangles, Triangles& dstTriangl
 	nmblas_scopy(countVertex, srcTriangles.v2.x, 1, dstTriangles.x2, 1);
 	nmblas_scopy(countVertex, srcTriangles.v2.y, 1, dstTriangles.y2, 1);
 
-#ifdef TEXTURE_ENABLED
+	// TEXTURING_PART
 	nmblas_scopy(countVertex, srcTriangles.v0.w, 1, dstTriangles.w0, 1);
 	nmblas_scopy(countVertex, srcTriangles.v1.w, 1, dstTriangles.w1, 1);
 	nmblas_scopy(countVertex, srcTriangles.v2.w, 1, dstTriangles.w2, 1);
@@ -32,7 +32,7 @@ void pushToTriangles(const TrianglePointers &srcTriangles, Triangles& dstTriangl
 	nmblas_scopy(countVertex, srcTriangles.v1.t, 1, dstTriangles.t1, 1);
 	nmblas_scopy(countVertex, srcTriangles.v2.s, 1, dstTriangles.s2, 1);
 	nmblas_scopy(countVertex, srcTriangles.v2.t, 1, dstTriangles.t2, 1);
-#endif
+	// TEXTURING_PART
 
 	meanToInt3(srcTriangles.v0.z, srcTriangles.v1.z, srcTriangles.v2.z, dstTriangles.z, countVertex);
 	dstTriangles.size = countVertex;

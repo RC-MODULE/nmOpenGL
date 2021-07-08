@@ -2,7 +2,6 @@
 #include "nmtype.h"
 #include "stdio.h"
 #include "demo3d_common.h"
-#include "demo3d_nm1.h"
 #include "pattern.h"
 #include "stacktrace.h"
 

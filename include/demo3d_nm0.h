@@ -6,6 +6,7 @@
 #include "nmgl.h"
 #include "nmgltex_nm0.h"
 #include "imagebuffer.h"
+#include "nmsynchro.h"
 
 #define BIG_NMGL_SIZE (128 * NMGL_SIZE)
 
@@ -87,10 +88,10 @@ struct CombinePointers {
 	float *y;
 	float *z;
 	float *w;
-#ifdef TEXTURE_ENABLED
+	// TEXTURING PART
 	float *s;
 	float *t;
-#endif //TEXTURE_ENABLED
+	// TEXTURING PART
 	v4nm32f* color;
 	int dummy;
 };
@@ -122,7 +123,7 @@ struct Lines{
 	float* x1;
 	float* y1;
 	int* z;
-#ifdef TEXTURE_ENABLED 
+	// TEXTURING PART
 	//order is important
 	float* s0;
 	float* t0;
@@ -130,7 +131,7 @@ struct Lines{
 	float* t1;
 	float* w0;
 	float* w1;
-#endif //TEXTURE_ENABLED 
+	// TEXTURING PART
 	v4nm32s* colors;
 	int size;
 	int maxSize;
@@ -153,7 +154,7 @@ struct Triangles{
 	float* x2;
 	float* y2;
 	int* z;
-#ifdef TEXTURE_ENABLED 
+	// TEXTURING PART
 	//order is important
 	float* s0;
 	float* t0;
@@ -165,7 +166,7 @@ struct Triangles{
 	float* w1;
 	float* w2;
 	int dummy;
-#endif //TEXTURE_ENABLED 
+	// TEXTURING PART
 	v4nm32s* colors;
 	int size;
 	int maxSize;
@@ -181,9 +182,9 @@ public:
 	v4nm32f* vertex;
 	v4nm32f* normal;
 	v4nm32f* color;
-#ifdef TEXTURE_ENABLED
+	// TEXTURING PART
 	v2nm32f* texcoord;//XXX: Only one texture unit is supported.
-#endif //TEXTURE_ENABLED
+	// TEXTURING PART
 	int vertexCounter;
 
 	NMGLenum mode;
@@ -229,7 +230,7 @@ private:
 public:	
 	inline static void create(NMGLSynchroData* synchroData) {
 		context = (NMGL_Context_NM0*)halMalloc32(sizeof32(NMGL_Context_NM0));
-		context->init(synchroData);
+		context->init();
 	}
 	inline static NMGL_Context_NM0 *getContext() {
 		return context;
@@ -239,7 +240,7 @@ public:
 	}
 
 
-	NMGLSynchro synchro;
+	NMGL_SynchroMasterRingBuffer synchro;
 	BitMask segmentMasks[36];
 	BitDividedMask dividedMasks[2];	
 	PolygonsConnector* triangleConnectors;
@@ -307,8 +308,7 @@ public:
 
 	NMGL_Context_NM0_Texture texState; 	///< textures data
 	
-	void init(NMGLSynchroData* syncroData){
-		synchro.init(syncroData);
+	void init(){
 
 		currentMatrixStack = &modelviewMatrixStack;
 		isUseTwoSidedMode = NMGL_FALSE;
@@ -1306,7 +1306,7 @@ extern "C"{
 	 */
 	void sortByY2(float* srcXY0, float* srcXY1, int size);
 
-#ifdef TEXTURE_ENABLED
+	// TEXTURING PART
 	/**
 	 *  \brief Функция поэлементной сортировки данных X,Y,S,T,W вершин 0,1,2
 	 *  по возрастанию Y. Для i-го входного набора вершин 0,1,2 упорядочивает 
@@ -1333,7 +1333,7 @@ extern "C"{
 		float* srcS2, float* srcT2,
 		float* srcW0, float* srcW1, float* srcW2,
 		int size);
-#endif //TEXTURE_ENABLED
+	// TEXTURING PART
 
 	/**
 	 *  \defgroup split_v4nm32f split_v4nm32f
@@ -1480,6 +1480,17 @@ extern "C"{
 		const v2nm32f *srcTex,
 		TrianglePointers *dstVertex,
 		int vertexAmount);
+	// Functions for TEXTURE_ENABLED macro enabled/disabled
+	int repackToPrimitives_t_full(const v4nm32f *srcVertex,
+		const v4nm32f *srcColor,
+		const v2nm32f *srcTex,
+		TrianglePointers *dstVertex,
+		int vertexAmount);
+	int repackToPrimitives_t_without_textures(const v4nm32f *srcVertex,
+		const v4nm32f *srcColor,
+		const v2nm32f *srcTex,
+		TrianglePointers *dstVertex,
+		int vertexAmount);
 	int repackToPrimitives_ts(const v4nm32f *srcVertex,
 		const v4nm32f *srcColor,
 		const v2nm32f *srcTex,
@@ -1574,7 +1585,7 @@ void rasterizeL(const Lines* lines, const BitMask* masks);
 void rasterizeP(const Points* points, const BitMask* masks);
   //! \}
 
-void transferPolygons(DataForNmpu1 *data, PolygonsConnector *connector, int mode);
+void transferPolygons(PolygonsConnector *connector, int mode);
 
 /*!
  *  \ingroup service_api
@@ -1616,7 +1627,7 @@ void updatePolygonsP(DataForNmpu1* data, Points* points, int count, int segX, in
 void light(v4nm32f* vertex, v4nm32f* srcNormal_dstColor, int size);
 //! \}
 
-void startCalculateColor(v4nm32f* srcVertex, v4nm32f* srcNormal, int vertexCount);
+void startCalculateColor(v4nm32f* srcVertex, v4nm32f* srcNormal, v4nm32f* srcColor, int vertexCount);
 void getCalculatedColor(v4nm32f* dstColor, int vertexCount);
 
 

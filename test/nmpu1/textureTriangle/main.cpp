@@ -483,7 +483,6 @@ int main ()
 			//mMulCVxN_2s_RGB8888(curPattern, curWindow, (v4nm8s*)valueC, pDstTriangle, 1);
             
 			//texture triangle
-			//define TEXTURE_ENABLED in textureTriangle.cpp to call textureTriangle
 			clock_t start_time = 0;
 			start_time = clock();
 			textureTriangle(curPattern, &triangles, curPROI, curPtrnInnPoint, curPtrnSize, pSrcTriangle, pDstTriangle, 1);

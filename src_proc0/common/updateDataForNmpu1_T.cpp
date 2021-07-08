@@ -13,17 +13,7 @@
 #include "math.h"
 
 
-#ifndef TEXTURE_ENABLED
-#define sort() 	nmppsMerge_32f(triangles->x0, triangles->y0, temp0, count);	 \
-	nmppsMerge_32f(triangles->x1, triangles->y1, temp1, count);				 \
-	nmppsMerge_32f(triangles->x2, triangles->y2, temp2, count);				 \
-	sortByY3(temp0, temp1, temp2, count);									 \
-	split_v2nm32f((v2nm32f*)temp0, 1, triangles->x0, triangles->y0, count);	 \
-	split_v2nm32f((v2nm32f*)temp1, 1, triangles->x1, triangles->y1, count);	 \
-	split_v2nm32f((v2nm32f*)temp2, 1, triangles->x2, triangles->y2, count)
-
-#else //TEXTURE_ENABLED
-
+//TEXTURING_PART
 #define sort() 	nmppsMerge_32f(triangles->x0, triangles->y0, temp0, count);	 \
 	nmppsMerge_32f(triangles->x1, triangles->y1, temp1, count);				 \
 	nmppsMerge_32f(triangles->x2, triangles->y2, temp2, count);				 \
@@ -40,8 +30,7 @@
 	split_v2nm32f((v2nm32f*)temp0, 1, triangles->x0, triangles->y0, count);	 \
 	split_v2nm32f((v2nm32f*)temp1, 1, triangles->x1, triangles->y1, count);	 \
 	split_v2nm32f((v2nm32f*)temp2, 1, triangles->x2, triangles->y2, count)
-#endif //TEXTURE_ENABLED
-
+//TEXTURING_PART
 
 SECTION(".text_demo3d")
 //void updateDataForNmpu1_T(DataForNmpu1* data, Triangles* triangles, int count, int segX, int segY){
@@ -77,7 +66,7 @@ void updatePolygonsT(DataForNmpu1* data, Triangles* triangles, int count, int se
 	nmblas_scopy (count, (float*)triangles->z, 1, (float*)data->z + data->count, 1);
 	nmblas_scopy(4 * count, (float*)triangles->colors, 1, (float*)data->color + 4 * data->count, 1);
 
-#ifdef TEXTURE_ENABLED
+//TEXTURING_PART
 	if (cntxt->texState.textureEnabled) {
 		nmblas_scopy(count, (float*)triangles->s0, 1, (float*)data->s0 + data->count, 1);
 		nmblas_scopy(count, (float*)triangles->t0, 1, (float*)data->t0 + data->count, 1);
@@ -89,10 +78,10 @@ void updatePolygonsT(DataForNmpu1* data, Triangles* triangles, int count, int se
 		nmblas_scopy(count, (float*)triangles->w1, 1, (float*)data->w1 + data->count, 1);
 		nmblas_scopy(count, (float*)triangles->w2, 1, (float*)data->w2 + data->count, 1);
 	}
-#endif //TEXTURE_ENABLED
+//TEXTURING_PART
 
 #ifdef DEBUG
-	static unsigned int counter = 0;
+	/*static unsigned int counter = 0;
 	for (int i = 0; i < count; i++) {
 		if(	ABS((data->x1[i + data->count] - data->x0[i + data->count])) > 32 ||
 			ABS((data->x2[i + data->count] - data->x0[i + data->count])) > 32 ||
@@ -115,15 +104,15 @@ void updatePolygonsT(DataForNmpu1* data, Triangles* triangles, int count, int se
 			data->y1[i + data->count] > cntxt->windowInfo.segmentHeight + 32 ||
 			data->y2[i + data->count] > cntxt->windowInfo.segmentHeight + 32) {
 			printf("updatePolygonsT error. counter=%d, i=%d\n", counter, i);
-			//data->x0[i] = 0;
-			//data->x1[i] = 0;
-			//data->x2[i] = 0;
-			//data->y0[i] = 0;
-			//data->y1[i] = 0;
-			//data->y2[i] = 0;
+			data->x0[i] = 0;
+			data->x1[i] = 0;
+			data->x2[i] = 0;
+			data->y0[i] = 0;
+			data->y1[i] = 0;
+			data->y2[i] = 0;
 		}
 	}
-	counter++;
+	counter++;*/
 #endif // DEBUG
 	
 	data->count += count;

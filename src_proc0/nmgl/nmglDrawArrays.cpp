@@ -19,9 +19,9 @@ SECTION(".data_imu6")	v2nm32f texResult[3 * NMGL_SIZE];
 SECTION(".data_imu6")	ArrayManager<float> vertexAM;
 SECTION(".data_imu6")	ArrayManager<float> normalAM;
 SECTION(".data_imu6")	ArrayManager<v4nm32f> colorAM;
-#ifdef TEXTURE_ENABLED
+//TEXTURING_PART
 SECTION(".data_imu6")	ArrayManager<float> texcoordAM;
-#endif //TEXTURE_ENABLED
+//TEXTURING_PART
 
 SECTION(".data_imu6")	BitDividedMask clipMask[10];
 
@@ -90,7 +90,7 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 	cntxt->normalArray.offset = first;
 	cntxt->colorArray.offset = first;
 
-#ifdef TEXTURE_ENABLED
+//TEXTURING_PART
 	unsigned int clientActiveTexUnitIndex;
 	float* srcDDR_texcoords;
 	if (cntxt->texState.textureEnabled) {
@@ -98,7 +98,7 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 		srcDDR_texcoords = (float*)cntxt->texState.texcoordArray[clientActiveTexUnitIndex].pointer + cntxt->texState.texcoordArray[clientActiveTexUnitIndex].size * first;
 		cntxt->texState.texcoordArray[clientActiveTexUnitIndex].offset = first;
 	}
-#endif //TEXTURE_ENABLED
+//TEXTURING_PART
 
 	int maxInnerCount;
 	switch (mode) {
@@ -106,8 +106,6 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 		maxInnerCount = 3 * NMGL_SIZE;
 		break;
 	case NMGL_TRIANGLE_FAN:
-		maxInnerCount = NMGL_SIZE + 2;
-		break;
 	case NMGL_TRIANGLE_STRIP:
 		maxInnerCount = NMGL_SIZE + 2;
 		break;
@@ -118,8 +116,6 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 		maxInnerCount = NMGL_SIZE + 1;
 		break;
 	case NMGL_LINE_LOOP:
-		maxInnerCount = NMGL_SIZE;
-		break;
 	case NMGL_POINTS:
 		maxInnerCount = NMGL_SIZE;
 		break;
@@ -131,22 +127,22 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 		vertexAM.set(srcDDR_vertex, cntxt->vertexArray.size * count, cntxt->vertexArray.size * maxInnerCount, copyVec<float>);
 		normalAM.set(srcDDR_normal, cntxt->normalArray.size * count, cntxt->normalArray.size * maxInnerCount, copyVec<float>);
 		colorAM.set(srcDDR_color, count, maxInnerCount, copyVec<v4nm32f>);
-#ifdef TEXTURE_ENABLED
+//TEXTURING_PART
 		if (cntxt->texState.textureEnabled) {
 			texcoordAM.set(srcDDR_texcoords, cntxt->texState.texcoordArray[clientActiveTexUnitIndex].size * count, 
 				           cntxt->texState.texcoordArray[clientActiveTexUnitIndex].size * maxInnerCount, copyVec<float>);
 		}
-#endif //TEXTURE_ENABLED
+//TEXTURING_PART
 	}else{
 		vertexAM.set(srcDDR_vertex, cntxt->vertexArray.size * count, cntxt->vertexArray.size * maxInnerCount, copyRisc<float>);
 		normalAM.set(srcDDR_normal, cntxt->normalArray.size * count, cntxt->normalArray.size * maxInnerCount, copyRisc<float>);
 		colorAM.set(srcDDR_color, count, maxInnerCount, copyRisc<v4nm32f>);
-#ifdef TEXTURE_ENABLED
+//TEXTURING_PART
 		if (cntxt->texState.textureEnabled) {
 			texcoordAM.set(srcDDR_texcoords, cntxt->texState.texcoordArray[clientActiveTexUnitIndex].size * count, 
 				           cntxt->texState.texcoordArray[clientActiveTexUnitIndex].size * maxInnerCount, copyRisc<float>);
 		}
-#endif //TEXTURE_ENABLED
+//TEXTURING_PART
 	}
 
 	if (cntxt->isLighting) {
@@ -157,10 +153,10 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			(float*)&cntxt->materialEmissive, 
 			(float*)(cntxt->ambientMul + MAX_LIGHTS), 4);
 	}
-	//reverseMatrix3x3in4x4(cntxt->modelviewMatrixStack.top(), &cntxt->normalMatrix);
-	while (!vertexAM.isEmpty()) {
-		//int localSize = MIN(count - pointVertex, maxInnerCount);
-		int localSize = vertexAM.pop(cntxt->buffer0) / cntxt->vertexArray.size;
+
+	for (int pointer = 0; pointer < count; pointer += maxInnerCount) {
+		int localSize = MIN(count - pointer, maxInnerCount);
+		vertexAM.pop(cntxt->buffer0);
 		switch (cntxt->vertexArray.size)
 		{
 		case 2:
@@ -178,7 +174,7 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 		//умножение на dидовую матрицу (Modelview matrix)
 		mul_mat4nm32f_v4nm32f(cntxt->modelviewMatrixStack.top(), (v4nm32f*)cntxt->buffer1, vertexResult, localSize);
 		//texcoords
-#ifdef TEXTURE_ENABLED
+//TEXTURING_PART
 		if (cntxt->texState.textureEnabled) {
 			//texture coordinates
 			if (cntxt->texState.texcoordArray[clientActiveTexUnitIndex].enabled) {
@@ -194,7 +190,7 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 				nmblas_scopy(2 * localSize, cntxt->buffer1, 1, (float*)texResult, 1);
 			}
 		}
-#endif //TEXTURE_ENABLED
+//TEXTURING_PART
 		//normal
 		if (cntxt->normalArray.enabled) {
 			if (cntxt->normalArray.size == 3) {
@@ -277,14 +273,14 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			trianPointers.v1.color = (colorOrNormal + 1 * NMGL_SIZE);
 			trianPointers.v2.color = (colorOrNormal + 2 * NMGL_SIZE);
 
-#ifdef TEXTURE_ENABLED
+//TEXTURING_PART
 			trianPointers.v0.s = (float*)texResult + 0 * NMGL_SIZE;
 			trianPointers.v0.t = (float*)texResult + 1 * NMGL_SIZE;
 			trianPointers.v1.s = (float*)texResult + 2 * NMGL_SIZE;
 			trianPointers.v1.t = (float*)texResult + 3 * NMGL_SIZE;
 			trianPointers.v2.s = (float*)texResult + 4 * NMGL_SIZE;
 			trianPointers.v2.t = (float*)texResult + 5 * NMGL_SIZE;
-#endif //TEXTURE_ENABLED
+//TEXTURING_PART
 			//volatile int a = localSize;
 
 			int primCount = 0;
@@ -333,14 +329,14 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			tmp.v1.color = (v4nm32f*)(cntxt->buffer3 + 4 * NMGL_SIZE);
 			tmp.v2.color = (v4nm32f*)(cntxt->buffer3 + 8 * NMGL_SIZE);
 
-#ifdef TEXTURE_ENABLED
+//TEXTURING_PART
 			tmp.v0.s = cntxt->buffer5 + 6 * NMGL_SIZE;
 			tmp.v0.t = cntxt->buffer5 + 7 * NMGL_SIZE;
 			tmp.v1.s = cntxt->buffer5 + 8 * NMGL_SIZE;
 			tmp.v1.t = cntxt->buffer5 + 9 * NMGL_SIZE;
 			tmp.v2.s = cntxt->buffer5 + 10 * NMGL_SIZE;
 			tmp.v2.t = cntxt->buffer5 + 11 * NMGL_SIZE;
-#endif //TEXTURE_ENABLED
+//TEXTURING_PART
 
 
 			int srcThreated = 0;
@@ -422,12 +418,12 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			linePointers.v0.color = (v4nm32f*)(cntxt->buffer2 + 0 * NMGL_SIZE);
 			linePointers.v1.color = (v4nm32f*)(cntxt->buffer2 + 4 * NMGL_SIZE);
 
-#ifdef TEXTURE_ENABLED
+//TEXTURING_PART
 			linePointers.v0.s = cntxt->buffer5 + 0 * NMGL_SIZE;
 			linePointers.v0.t = cntxt->buffer5 + 1 * NMGL_SIZE;
 			linePointers.v1.s = cntxt->buffer5 + 2 * NMGL_SIZE;
 			linePointers.v1.t = cntxt->buffer5 + 3 * NMGL_SIZE;
-#endif //TEXTURE_ENABLED
+//TEXTURING_PART
 			switch (mode) {
 			case NMGL_LINES:
 				primCount = repackToPrimitives_l(vertexResult, colorOrNormal, texResult, &linePointers, localSize);

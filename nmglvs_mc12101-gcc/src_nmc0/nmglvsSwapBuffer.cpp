@@ -16,6 +16,8 @@ void nmglvsSwapBuffer(){
 	cntxt->synchro.counter++;
 	cntxt->synchro.time = t1-t0;
 	t0 = clock();
-	cntxt->synchro.writeInstr(1, NMC1_SWAP_BUFFER);
+	CommandNm1 command;
+	command.instr = NMC1_SWAP_BUFFER;
+	cntxt->synchro.pushInstr(&command);
 	
 }

@@ -19,7 +19,7 @@ SECTION(".text_demo3d") void triangleOffset(Triangles &src, Triangles &dst, int 
 	dst.y2 = src.y2 + offset;
 	dst.z = src.z + offset;
 	dst.colors = src.colors + offset;
-#ifdef TEXTURE_ENABLED
+	// TEXTURING_PART
 	//TODO: May be remove check cntxt->texState.textureEnabled value
 	//if it is slowing down pipeline more than extra sum.
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
@@ -34,7 +34,7 @@ SECTION(".text_demo3d") void triangleOffset(Triangles &src, Triangles &dst, int 
 		dst.w1 = src.w1 + offset;
 		dst.w2 = src.w2 + offset;
 	}
-#endif //TEXTURE_ENABLED
+	// TEXTURING_PART
 }
 
 SECTION(".text_demo3d")
@@ -55,7 +55,7 @@ void rasterizeT(const Triangles* triangles, const BitMask* masks){
 	localTrian.z = (int*)cntxt->buffer3 + 4 * NMGL_SIZE;
 	int* indices = (int*)cntxt->buffer4;
 
-#ifdef TEXTURE_ENABLED
+	// TEXTURING_PART
 	if (cntxt->texState.textureEnabled) {
 		localTrian.s0 = cntxt->buffer0 + 10 * NMGL_SIZE;
 		localTrian.t0 = cntxt->buffer0 + 11 * NMGL_SIZE;
@@ -67,7 +67,7 @@ void rasterizeT(const Triangles* triangles, const BitMask* masks){
 		localTrian.w1 = cntxt->buffer3 + 10 * NMGL_SIZE;
 		localTrian.w2 = cntxt->buffer3 + 11 * NMGL_SIZE;
 	}
-#endif //TEXTURE_ENABLED
+	// TEXTURING_PART
 
 
 	for (int segY = 0, iSeg = 0; segY < cntxt->windowInfo.nRows; segY++) {
@@ -77,25 +77,24 @@ void rasterizeT(const Triangles* triangles, const BitMask* masks){
 				if (resultSize) {
 					PolygonsConnector *connector = cntxt->triangleConnectors + iSeg;
 					bool drawingCheck = connector->ptrHead()->count + resultSize >= POLYGONS_SIZE;
+					CommandNm1 command;
 					if (drawingCheck) {
-						cntxt->synchro.writeInstr(1, NMC1_COPY_SEG_FROM_IMAGE,
-							cntxt->windowInfo.x0[segX],
-							cntxt->windowInfo.y0[segY],
-							cntxt->windowInfo.x1[segX] - cntxt->windowInfo.x0[segX],
-							cntxt->windowInfo.y1[segY] - cntxt->windowInfo.y0[segY],
-							iSeg);
+						command.instr = NMC1_COPY_SEG_FROM_IMAGE;
+						command.params[0] = CommandArgument(cntxt->windowInfo.x0[segX]);
+						command.params[1] = CommandArgument(cntxt->windowInfo.y0[segY]);
+						command.params[2] = CommandArgument(cntxt->windowInfo.x1[segX] - cntxt->windowInfo.x0[segX]);
+						command.params[3] = CommandArgument(cntxt->windowInfo.y1[segY] - cntxt->windowInfo.y0[segY]);
+						command.params[4] = CommandArgument(iSeg);
+						cntxt->synchro.pushInstr(&command);
 					}
 
-#ifdef TEXTURE_ENABLED
 					if (cntxt->texState.textureEnabled) {
+						// TEXTURING_PART
 						copyArraysByIndices((void**)triangles, indices, (void**)&localTrian, 16, resultSize);
 					}
 					else {
 						copyArraysByIndices((void**)triangles, indices, (void**)&localTrian, 7, resultSize);
 					}
-#else //TEXTURE_ENABLED
-					copyArraysByIndices((void**)triangles, indices, (void**)&localTrian, 7, resultSize);
-#endif //TEXTURE_ENABLED
 					copyColorByIndices_BGRA_RGBA(triangles->colors, indices, (v4nm32s*)localTrian.colors, resultSize);
 					localTrian.size = resultSize;
 
@@ -108,16 +107,12 @@ void rasterizeT(const Triangles* triangles, const BitMask* masks){
 						offset += localSize;
 						updatePolygonsT(data, &localTrian2, localSize, segX, segY);
 						if (data->count == POLYGONS_SIZE) {
-							transferPolygons(data, connector, NMC1_DRAW_TRIANGLES);
+							transferPolygons(connector, NMC1_DRAW_TRIANGLES);
 						}
 					}
 					if (drawingCheck) {
-						cntxt->synchro.writeInstr(1,
-							NMC1_COPY_SEG_TO_IMAGE,
-							cntxt->windowInfo.x0[segX],
-							cntxt->windowInfo.y0[segY],
-							cntxt->windowInfo.x1[segX] - cntxt->windowInfo.x0[segX],
-							cntxt->windowInfo.y1[segY] - cntxt->windowInfo.y0[segY]);
+						command.instr = NMC1_COPY_SEG_TO_IMAGE;
+						cntxt->synchro.pushInstr(&command);
 					}
 
 				}

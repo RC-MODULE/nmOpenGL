@@ -6,5 +6,7 @@
 
 void nmglvsExit_mc12101() {
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
-	cntxt->synchro.writeInstr(1, NMC1_EXIT, 0, 0, 0, 0, 0, 0);
+	CommandNm1 command;
+	command.instr = NMC1_EXIT;
+	cntxt->synchro.pushInstr(&command);
 }

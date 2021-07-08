@@ -1,4 +1,5 @@
 #include "demo3d_common.h"
+#include "nmpp.h"
 
 extern "C" {
 int maskSelectionLight_RGBA_BGRA(v4nm32s* srcLight, nm1* mask, v4nm32s* dstLight, int size){

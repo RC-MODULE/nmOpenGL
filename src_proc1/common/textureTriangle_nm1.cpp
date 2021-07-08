@@ -9,8 +9,7 @@
 
 #define TEXTURE_TRIANGLE_SECTION ".text_demo3dExt"
 
-#define TEXTURE_ENABLED
-#ifdef TEXTURE_ENABLED
+//TEXTURING_PART
 //#define USE_BARYCENTRIC
 #define PERSPECTIVE_CORRECT
 
@@ -331,7 +330,7 @@ color getPixelNearest(Vec2f st, TexImage2D texture)
 	return pixelValue;//TODO return by pointer
 
 }
-#endif //TEXTURE_ENABLED
+//TEXTURING_PART
 
 SECTION(TEXTURE_TRIANGLE_SECTION)
 void textureTriangle(Pattern* patterns, 
@@ -343,7 +342,7 @@ void textureTriangle(Pattern* patterns,
                  nm32s* pDstTriangle, 
                  int count)
 {
-#ifdef TEXTURE_ENABLED
+//TEXTURING_PART
 
 #ifdef DEBUG
     // printf ("Start textureTriangle\n"); 
@@ -1096,16 +1095,16 @@ void textureTriangle(Pattern* patterns,
     // printf ("End textureTriangle\n");     
 #endif //DEBUG
 
-#endif //TEXTURE_ENABLED
+//TEXTURING_PART
     return;
 }
 
-#ifdef TEXTURE_ENABLED
+//TEXTURING_PART
 SECTION(TEXTURE_TRIANGLE_SECTION)
 void edgeFunction(float x0, float y0, float x1, float y1, float x2, float y2, float* res)
 {
     *res = (x2 - x0) * (y1 - y0) - (y2 - y0) * (x1 - x0);
 }
-#endif //TEXTURE_ENABLED
+//TEXTURING_PART
 
 } //end of namespace tex_nm1 

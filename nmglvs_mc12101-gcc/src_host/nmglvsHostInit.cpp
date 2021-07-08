@@ -12,7 +12,7 @@
 #include "math.h"
 #include "nmpp.h"
 #include "demo3d_host.h"
-#include "demo3d_nm1.h"
+#include "pattern.h"
 #include "ringbuffert.h"
 #include "imagebuffer.h"
 #include <thread>

@@ -16,7 +16,7 @@ void pushToLines(const LinePointers &srcLines, Lines &dstLines, int countVertex)
 	nmblas_scopy(countVertex, srcLines.v1.x, 1, dstLines.x1, 1);
 	nmblas_scopy(countVertex, srcLines.v1.y, 1, dstLines.y1, 1);
 
-#ifdef TEXTURE_ENABLED
+	//TEXTURING_PART
 	nmblas_scopy(countVertex, srcLines.v0.w, 1, dstLines.w0, 1);
 	nmblas_scopy(countVertex, srcLines.v1.w, 1, dstLines.w1, 1);
 
@@ -24,7 +24,7 @@ void pushToLines(const LinePointers &srcLines, Lines &dstLines, int countVertex)
 	nmblas_scopy(countVertex, srcLines.v0.t, 1, dstLines.t0, 1);
 	nmblas_scopy(countVertex, srcLines.v1.s, 1, dstLines.s1, 1);
 	nmblas_scopy(countVertex, srcLines.v1.t, 1, dstLines.t1, 1);
-#endif
+	//TEXTURING_PART
 
 	meanToInt2(srcLines.v0.z, srcLines.v1.z, dstLines.z, countVertex);
 	dstLines.size = countVertex;

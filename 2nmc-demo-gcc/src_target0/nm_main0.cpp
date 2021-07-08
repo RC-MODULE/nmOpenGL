@@ -12,9 +12,10 @@
 SECTION(".text_shared0") int main()
 {
 	halSleep(500);
+	halSetProcessorNo(0);
 
 #if defined(__GNUC__) && defined(DEBUG)
-	nmprofiler_init();
+	//nmprofiler_init();
 	//nmprofiler_disable();
 #endif // __GNUC__
 
@@ -139,12 +140,9 @@ SECTION(".text_shared0") int main()
 		nmglTranslatef(150, 150, 0);
 		PROFILER_SIZE(amountPolygons2);
 		nmglDrawArrays(NMGL_TRIANGLES, 0, 3 * amountPolygons2);
+		angle += 1.72;
 #ifdef __OPEN_GL__
-		//angle += 0.03;
-		angle += 1.72;
 		halSleep(100);
-#else
-		angle += 1.72;
 #endif // __OPEN_GL__
 
 		nmglDisableClientState(NMGL_VERTEX_ARRAY);
@@ -152,14 +150,10 @@ SECTION(".text_shared0") int main()
 		counter++;
 		nmglvsSwapBuffer();
 	}
-	//halFree(vertices_DDR);
-	//halFree(vertices_DDR2);
-	//halFree(normal_DDR);
-	//halFree(normal_DDR2);
-
-#if defined(__GNUC__)
-	//nmprofiler_disable();
-#endif // __GNUC__
+	halFree(vertices_DDR);
+	halFree(vertices_DDR2);
+	halFree(normal_DDR);
+	halFree(normal_DDR2);
 
 	nmglvsExit_mc12101();
 	return 0x600D600D;

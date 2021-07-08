@@ -32,7 +32,7 @@ SECTION(".data_imu3")	float nmglx2[NMGL_SIZE];
 SECTION(".data_imu3")	float nmgly2[NMGL_SIZE];
 SECTION(".data_imu4")	int nmglz_int[NMGL_SIZE];
 SECTION(".data_imu6")	v4nm32s nmgllightsValues[NMGL_SIZE];
-#ifdef TEXTURE_ENABLED
+//TEXTURING_PART
 SECTION(".data_imu1")	float nmgls0[NMGL_SIZE];
 SECTION(".data_imu2")	float nmglt0[NMGL_SIZE];
 SECTION(".data_imu3")	float nmgls1[NMGL_SIZE];
@@ -42,7 +42,7 @@ SECTION(".data_imu6")	float nmglt2[NMGL_SIZE];
 SECTION(".data_imu7")	float nmglw0[NMGL_SIZE];
 SECTION(".data_imu7")	float nmglw1[NMGL_SIZE];
 SECTION(".data_imu7")	float nmglw2[NMGL_SIZE];
-#endif //TEXTURE_ENABLED
+//TEXTURING_PART
 
 SECTION(".data_imu6") int dividedMasksMemory[4][3 * NMGL_SIZE / 32];
 
@@ -60,12 +60,11 @@ extern  NMGLubyte* mipmap; //texture memory
 int counter = 0;
 
 
-#define PRINTF(type,name) printf("%s, %p, sizeof32=%d\n",#type, name, sizeof(*name))
 
 template<class T> inline T* myMallocT() {
 	
 	T* result = (T*)halMalloc32(sizeof32(T));
-	//PRINTF(T, result);
+	//printf("%s, %p, sizeof32=%d\n", typeid(T).name(), result, sizeof(*result));
 	if (result == 0) throw counter;
 	counter++;
 	return result;
@@ -73,7 +72,7 @@ template<class T> inline T* myMallocT() {
 
 template<class T> inline T* myMallocT(int count) {
 	T* result = (T*)halMalloc32(count * sizeof32(T));
-	//PRINTF(T, result);
+	//printf("%s, %p, sizeof32=%d\n", typeid(T).name(), result, sizeof(*result));
 	if (result == 0) throw counter;
 	counter++;
 	return result;
@@ -83,16 +82,9 @@ SECTION(".data_imu0") NMGL_Context_NM0 *NMGL_Context_NM0::context;
 
 SECTION(".text_nmglvs") int nmglvsNm0Init()
 {
-#if defined(__GNUC__) && defined(DEBUG) && defined(STACK_TRACE_ENABLED)
-	nmprofiler_init();
-#endif // __GNUC__
-#ifdef TEXTURE_ENABLED
-	halLedOn(0);
-#endif //TEXTURE_ENABLED
-
+	halSleep(500);
 
 	halSetProcessorNo(0);
-
 
 	NMGLSynchroData* synchroData;
 	NMGL_Context_NM0 *cntxt;
@@ -102,16 +94,20 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 		if (fromHost != 0xC0DE0086) {					// get  handshake from host
 			return 1;
 		}
-		setHeap(8);
+		setHeap(7);
 		synchroData = myMallocT<NMGLSynchroData>();
 		synchroData->init();
 
 		setHeap(7);
 		NMGL_Context_NM0::create(synchroData);	
 		cntxt = NMGL_Context_NM0::getContext();
-		cntxt->init(synchroData);
+		cntxt->synchro.init(synchroData);
+		
+		//printf("sizeof32=%d\n", sizeof32(cntxt->synchro));
+		//printf("sizeof32=%d\n", sizeof32(CommandNm1));
+		cntxt->init();		
 
-		//setHeap(1);
+		setHeap(8);
 		cntxt->triangleConnectors = myMallocT<PolygonsConnector>(36);
 		cntxt->lineConnectors = myMallocT<PolygonsConnector>(36);
 		cntxt->pointConnectors = myMallocT<PolygonsConnector>(36);
@@ -125,22 +121,25 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 			trianData[seg].init();
 			trianData[seg].ptr(0)->count = 0;
 			cntxt->triangleConnectors[seg].init(trianData + seg);
+			cntxt->triangleConnectors[seg].ringbufferDataPointer = trianData + seg;
 
 			lineData[seg].init();
 			lineData[seg].ptr(0)->count = 0;
 			cntxt->lineConnectors[seg].init(lineData + seg);
+			cntxt->lineConnectors[seg].ringbufferDataPointer = lineData + seg;
 
 			pointsData[seg].init();
 			pointsData[seg].ptr(0)->count = 0;
 			cntxt->pointConnectors[seg].init(pointsData + seg);
+			cntxt->pointConnectors[seg].ringbufferDataPointer = pointsData + seg;
 		}
 
 		cntxt->beginEndInfo.vertex = myMallocT<v4nm32f>(BIG_NMGL_SIZE);
 		cntxt->beginEndInfo.normal = myMallocT<v4nm32f>(BIG_NMGL_SIZE);
 		cntxt->beginEndInfo.color = myMallocT<v4nm32f>(BIG_NMGL_SIZE);
-#ifdef TEXTURE_ENABLED
+		//TEXTURING_PART
 		cntxt->beginEndInfo.texcoord = myMallocT<v2nm32f>(BIG_NMGL_SIZE); //XXX: Only one texture unit is supported.
-#endif //TEXTURE_ENABLED
+		//TEXTURING_PART
 		cntxt->beginEndInfo.inBeginEnd = false;
 		cntxt->beginEndInfo.maxSize = BIG_NMGL_SIZE;
 
@@ -150,16 +149,14 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 		cntxt->buffer3 = (float*)nmglBuffer3;
 		cntxt->buffer4 = (float*)nmglBuffer4;
 		cntxt->buffer5 = (float*)nmglBuffer5;
-#ifdef STACK_TRACE_ENABLED		
-		stackTraceConnector.init(&nmprofiler_trace);
-#endif //STACK_TRACE_ENABLED
+
 		//Allocate memory for textures.
 		//Must be in EMI. 
 		//EMI has enough space and does not require address mapping at mc12101
 		setHeap(12);
-#ifdef TEXTURE_ENABLED
+		//TEXTURING_PART
 		mipmap = myMallocT<NMGLubyte>(MIPMAP_MEM_SIZE); 
-#endif //TEXTURE_ENABLED
+		//TEXTURING_PART
 	}
 	catch (int& e) {
 		halHostSync(0xDEADB00F);
@@ -186,7 +183,7 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 	cntxt->trianInner.x2 = nmglx2;
 	cntxt->trianInner.y2 = nmgly2;
 	cntxt->trianInner.z = nmglz_int;
-#ifdef TEXTURE_ENABLED
+	//TEXTURING_PART
 	cntxt->trianInner.s0 = nmgls0;
 	cntxt->trianInner.t0 = nmglt0;
 	cntxt->trianInner.s1 = nmgls1;
@@ -196,7 +193,7 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 	cntxt->trianInner.w0 = nmglw0;
 	cntxt->trianInner.w1 = nmglw1;
 	cntxt->trianInner.w2 = nmglw2;
-#endif //TEXTURE_ENABLED
+	//TEXTURING_PART
 	cntxt->trianInner.colors = nmgllightsValues;
 	cntxt->trianInner.maxSize = NMGL_SIZE;
 	cntxt->trianInner.size = 0;
@@ -220,13 +217,7 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 
 	cntxt->dividedMasks[0].init((nm1*)dividedMasksMemory[0], (nm1*)dividedMasksMemory[1]);
 	cntxt->dividedMasks[1].init((nm1*)dividedMasksMemory[2], (nm1*)dividedMasksMemory[3]);
-
-
-	nmglViewport(0, 0, WIDTH_IMAGE, HEIGHT_IMAGE);
-	int countSegs = cntxt->windowInfo.nColumns * cntxt->windowInfo.nRows;
-	for (int i = 0; i < countSegs; i++) {
-		cntxt->segmentMasks[i].init((nm1*)masksBits[i]);
-	}
+	
 #ifdef __GNUC__
 	halInstrCacheEnable();
 	//halDmaInitC();
@@ -238,7 +229,11 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 	halHostSync((int)0x600d600d);
 	nmglClearColor(0, 0, 0, 1.0f);
 	nmglClearDepthf(1);
-
+	nmglViewport(0, 0, WIDTH_IMAGE, HEIGHT_IMAGE);
+	int countSegs = cntxt->windowInfo.nColumns * cntxt->windowInfo.nRows;
+	for (int i = 0; i < countSegs; i++) {
+		cntxt->segmentMasks[i].init((nm1*)masksBits[i]);
+	}
 	return 0;
 } 
 

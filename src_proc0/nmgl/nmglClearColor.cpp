@@ -8,10 +8,13 @@
 SECTION(".text_nmgl")
 void nmglClearColor(NMGLclampf red, NMGLclampf green, NMGLclampf blue, NMGLclampf alpha) {
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
-	cntxt->synchro.writeInstr(1, NMC1_SET_COLOR, 
-		(int)(red * RED_COEFF), 
-		(int)(green * GREEN_COEFF),
-		(int)(blue * BLUE_COEFF),
-		(int)(alpha * ALPHA_COEFF));
+
+	CommandNm1 command;
+	command.instr = NMC1_SET_COLOR;
+	command.params[0] = CommandArgument((int)(red * RED_COEFF));
+	command.params[1] = CommandArgument((int)(green * GREEN_COEFF));
+	command.params[2] = CommandArgument((int)(blue * BLUE_COEFF));
+	command.params[3] = CommandArgument((int)(alpha * ALPHA_COEFF));
+	cntxt->synchro.pushInstr(&command);
 }
 

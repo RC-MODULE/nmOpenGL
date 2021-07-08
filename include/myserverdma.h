@@ -1,6 +1,8 @@
 #ifndef __MY_SERVER_DMA_H__
 #define __MY_SERVER_DMA_H__ 
 #include "time.h"
+#include "dma.h"
+#include "ringbuffert.h"
 
 #define MSD_DMA 1
 #define MSD_DMA_2D 2
