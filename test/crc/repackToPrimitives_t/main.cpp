@@ -220,6 +220,45 @@ void initializeExpectedOutput(TrianglePointers *dst_exp,
 	}
 }
 
+void setDst(TrianglePointers *dst, nm32f *buf, int outputTrianglesCount)
+{
+	dst->v0.x = buf;
+	dst->v0.y = dst->v0.x + outputTrianglesCount;
+	dst->v0.z = dst->v0.y + outputTrianglesCount;
+	dst->v0.w = dst->v0.z + outputTrianglesCount;
+#ifdef TEXTURE_ENABLED
+	dst->v0.s = dst->v0.w + outputTrianglesCount;
+	dst->v0.t = dst->v0.s + outputTrianglesCount;
+    dst->v0.color = (v4nm32f *)(dst->v0.t + outputTrianglesCount);
+#else
+    dst->v0.color = (v4nm32f *)(dst->v0.w + outputTrianglesCount);
+#endif
+
+	dst->v1.x = buf + ATTR_PER_VERTEX * outputTrianglesCount;
+	dst->v1.y = dst->v1.x + outputTrianglesCount;
+	dst->v1.z = dst->v1.y + outputTrianglesCount;
+	dst->v1.w = dst->v1.z + outputTrianglesCount;
+#ifdef TEXTURE_ENABLED
+	dst->v1.s = dst->v1.w + outputTrianglesCount;
+	dst->v1.t = dst->v1.s + outputTrianglesCount;
+    dst->v1.color = (v4nm32f *)(dst->v1.t + outputTrianglesCount);
+#else
+    dst->v1.color = (v4nm32f *)(dst->v1.w + outputTrianglesCount);
+#endif
+	
+	dst->v2.x = buf + ATTR_PER_VERTEX * 2 * outputTrianglesCount;
+	dst->v2.y = dst->v2.x + outputTrianglesCount;
+	dst->v2.z = dst->v2.y + outputTrianglesCount;
+	dst->v2.w = dst->v2.z + outputTrianglesCount;
+#ifdef TEXTURE_ENABLED
+	dst->v2.s = dst->v2.w + outputTrianglesCount;
+	dst->v2.t = dst->v2.s + outputTrianglesCount;
+    dst->v2.color = (v4nm32f *)(dst->v1.t + outputTrianglesCount);
+#else
+    dst->v2.color = (v4nm32f *)(dst->v2.w + outputTrianglesCount);
+#endif
+}
+
 int repackToPrimitives_t_nOutputTriangles(int n)
 {
 	int trianglesCount = n;							// number of output triangles
@@ -242,6 +281,9 @@ int repackToPrimitives_t_nOutputTriangles(int n)
 	nm32f real_output[outputCoordCount];
 	nm32f expected_output[outputCoordCount];
 	
+	// Initialize input arrays: coords, colors and textures (if texturing is enabled)
+	initializeInput(srcVertex, srcColor, srcTex, vertCount);
+	
 	// Initialize these arrays explicitly because variable-length arrays
 	// can not be initialized
 	for (int i = 0; i < outputCoordCount; ++i){
@@ -250,143 +292,12 @@ int repackToPrimitives_t_nOutputTriangles(int n)
 	}
 	
 	//	Set real output pointers, i.e. dst
-	float		*x0 = real_output;
-	float		*y0 = x0 + outputTrianglesCount;
-	float		*z0 = y0 + outputTrianglesCount;
-	float		*w0 = z0 + outputTrianglesCount;
-#ifdef TEXTURE_ENABLED
-	float		*s0 = w0 + outputTrianglesCount;
-	float		*t0 = s0 + outputTrianglesCount;
-    v4nm32f	*color0 = (v4nm32f *)(t0 + outputTrianglesCount);
-#else
-    v4nm32f	*color0 = (v4nm32f *)(w0 + outputTrianglesCount);
-#endif
-
-	float		*x1 = real_output + ATTR_PER_VERTEX * outputTrianglesCount;
-	float		*y1 = x1 + outputTrianglesCount;
-	float		*z1 = y1 + outputTrianglesCount;
-	float		*w1 = z1 + outputTrianglesCount;
-#ifdef TEXTURE_ENABLED
-	float		*s1 = w1 + outputTrianglesCount;
-	float		*t1 = s1 + outputTrianglesCount;
-    v4nm32f *color1 = (v4nm32f *)(t1 + outputTrianglesCount);
-#else
-    v4nm32f *color1 = (v4nm32f *)(w1 + outputTrianglesCount);
-#endif
-	
-	float		*x2 = real_output + ATTR_PER_VERTEX * 2 * outputTrianglesCount;
-	float		*y2 = x2 + outputTrianglesCount;
-	float		*z2 = y2 + outputTrianglesCount;
-	float		*w2 = z2 + outputTrianglesCount;
-#ifdef TEXTURE_ENABLED
-	float		*s2 = w2 + outputTrianglesCount;
-	float		*t2 = s2 + outputTrianglesCount;
-    v4nm32f	*color2 = (v4nm32f *)(t2 + outputTrianglesCount);
-#else
-    v4nm32f	*color2 = (v4nm32f *)(w2 + outputTrianglesCount);
-#endif
-
 	TrianglePointers dst;
-	dst.v0.x = x0;
-	dst.v0.y = y0;
-	dst.v0.z = z0;
-	dst.v0.w = w0;
-#ifdef TEXTURE_ENABLED
-	dst.v0.s = s0;
-	dst.v0.t = t0;
-#endif
-	dst.v0.color = color0;
+	setDst(&dst, real_output, outputTrianglesCount);
 
-	dst.v1.x = x1;
-	dst.v1.y = y1;
-	dst.v1.z = z1;
-	dst.v1.w = w1;
-#ifdef TEXTURE_ENABLED
-	dst.v1.s = s1;
-	dst.v1.t = t1;
-#endif
-	dst.v1.color = color1;
-
-	dst.v2.x = x2;
-	dst.v2.y = y2;
-	dst.v2.z = z2;
-	dst.v2.w = w2;
-#ifdef TEXTURE_ENABLED
-	dst.v2.s = s2;
-	dst.v2.t = t2;
-#endif
-	dst.v2.color = color2;
-
-	// Initialize input arrays: coords, colors and textures (if texturing is enabled)
-	initializeInput(srcVertex, srcColor, srcTex, vertCount);
-	
 	// Initialize expected output
-	float		*x0_exp = expected_output;
-	float		*y0_exp = x0_exp + outputTrianglesCount;
-	float		*z0_exp = y0_exp + outputTrianglesCount;
-	float		*w0_exp = z0_exp + outputTrianglesCount;
-#ifdef TEXTURE_ENABLED
-	float		*s0_exp = w0_exp + outputTrianglesCount;
-	float		*t0_exp = s0_exp + outputTrianglesCount;
-    v4nm32f	*color0_exp = (v4nm32f *)(t0_exp + outputTrianglesCount);
-#else
-    v4nm32f	*color0_exp = (v4nm32f *)(w0_exp + outputTrianglesCount);
-#endif
-
-	float		*x1_exp = expected_output + ATTR_PER_VERTEX * outputTrianglesCount;
-	float		*y1_exp = x1_exp + outputTrianglesCount;
-	float		*z1_exp = y1_exp + outputTrianglesCount;
-	float		*w1_exp = z1_exp + outputTrianglesCount;
-#ifdef TEXTURE_ENABLED
-	float		*s1_exp = w1_exp + outputTrianglesCount;
-	float		*t1_exp = s1_exp + outputTrianglesCount;
-    v4nm32f *color1_exp = (v4nm32f *)(t1_exp + outputTrianglesCount);
-#else
-    v4nm32f *color1_exp = (v4nm32f *)(w1_exp + outputTrianglesCount);
-#endif
-	
-	float		*x2_exp = expected_output + ATTR_PER_VERTEX * 2 * outputTrianglesCount;
-	float		*y2_exp = x2_exp + outputTrianglesCount;
-	float		*z2_exp = y2_exp + outputTrianglesCount;
-	float		*w2_exp = z2_exp + outputTrianglesCount;
-#ifdef TEXTURE_ENABLED
-	float		*s2_exp = w2_exp + outputTrianglesCount;
-	float		*t2_exp = s2_exp + outputTrianglesCount;
-    v4nm32f	*color2_exp = (v4nm32f *)(t2_exp + outputTrianglesCount);
-#else
-    v4nm32f	*color2_exp = (v4nm32f *)(w2_exp + outputTrianglesCount);
-#endif
-
 	TrianglePointers dst_exp;
-	dst_exp.v0.x = x0_exp;
-	dst_exp.v0.y = y0_exp;
-	dst_exp.v0.z = z0_exp;
-	dst_exp.v0.w = w0_exp;
-#ifdef TEXTURE_ENABLED
-	dst_exp.v0.s = s0_exp;
-	dst_exp.v0.t = t0_exp;
-#endif
-	dst_exp.v0.color = color0_exp;
-
-	dst_exp.v1.x = x1_exp;
-	dst_exp.v1.y = y1_exp;
-	dst_exp.v1.z = z1_exp;
-	dst_exp.v1.w = w1_exp;
-#ifdef TEXTURE_ENABLED
-	dst_exp.v1.s = s1_exp;
-	dst_exp.v1.t = t1_exp;
-#endif
-	dst_exp.v1.color = color1_exp;
-
-	dst_exp.v2.x = x2_exp;
-	dst_exp.v2.y = y2_exp;
-	dst_exp.v2.z = z2_exp;
-	dst_exp.v2.w = w2_exp;
-#ifdef TEXTURE_ENABLED
-	dst_exp.v2.s = s2_exp;
-	dst_exp.v2.t = t2_exp;
-#endif
-	dst_exp.v2.color = color2_exp;
+	setDst(&dst_exp, expected_output, outputTrianglesCount);
 
 	initializeExpectedOutput(&dst_exp, 
 			srcVertex, 
@@ -402,8 +313,29 @@ int repackToPrimitives_t_nOutputTriangles(int n)
 
 	// Assert
     TEST_ARRAYS_EQUAL(real_output, expected_output, outputCoordCount);
-    //TEST_ARRAYS_EQUAL(x0, x0_exp, outputTrianglesCount);
-
+    TEST_ARRAYS_EQUAL(dst.v0.x, dst_exp.v0.x, outputTrianglesCount);
+    TEST_ARRAYS_EQUAL(dst.v0.y, dst_exp.v0.y, outputTrianglesCount);
+    TEST_ARRAYS_EQUAL(dst.v0.z, dst_exp.v0.z, outputTrianglesCount);
+    TEST_ARRAYS_EQUAL(dst.v0.w, dst_exp.v0.w, outputTrianglesCount);
+    TEST_VEC_ARRAYS_EQUAL(dst.v0.color, dst_exp.v0.color, outputTrianglesCount);
+    TEST_ARRAYS_EQUAL(dst.v1.x, dst_exp.v1.x, outputTrianglesCount);
+    TEST_ARRAYS_EQUAL(dst.v1.y, dst_exp.v1.y, outputTrianglesCount);
+    TEST_ARRAYS_EQUAL(dst.v1.z, dst_exp.v1.z, outputTrianglesCount);
+    TEST_ARRAYS_EQUAL(dst.v1.w, dst_exp.v1.w, outputTrianglesCount);
+    TEST_VEC_ARRAYS_EQUAL(dst.v1.color, dst_exp.v1.color, outputTrianglesCount);
+    TEST_ARRAYS_EQUAL(dst.v2.x, dst_exp.v2.x, outputTrianglesCount);
+    TEST_ARRAYS_EQUAL(dst.v2.y, dst_exp.v2.y, outputTrianglesCount);
+    TEST_ARRAYS_EQUAL(dst.v2.z, dst_exp.v2.z, outputTrianglesCount);
+    TEST_ARRAYS_EQUAL(dst.v2.w, dst_exp.v2.w, outputTrianglesCount);
+    TEST_VEC_ARRAYS_EQUAL(dst.v2.color, dst_exp.v2.color, outputTrianglesCount);
+#ifdef TEXTURE_ENABLED
+    TEST_ARRAYS_EQUAL(dst.v0.s, dst_exp.v0.s, outputTrianglesCount);
+    TEST_ARRAYS_EQUAL(dst.v0.t, dst_exp.v0.t, outputTrianglesCount);
+    TEST_ARRAYS_EQUAL(dst.v1.s, dst_exp.v1.s, outputTrianglesCount);
+    TEST_ARRAYS_EQUAL(dst.v1.t, dst_exp.v1.t, outputTrianglesCount);
+    TEST_ARRAYS_EQUAL(dst.v2.s, dst_exp.v2.s, outputTrianglesCount);
+    TEST_ARRAYS_EQUAL(dst.v2.t, dst_exp.v2.t, outputTrianglesCount);
+#endif
     return 0;
 }
 
