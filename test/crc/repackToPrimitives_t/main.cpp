@@ -15,7 +15,6 @@
 void Print(nm32f *ptr, size_t size);
 void PrintV4nm32f(v4nm32f *ptr, size_t size);
 void ZeroV4nm32f(v4nm32f *ptr, size_t size);
-int main(int argc, char **argv);
 void initializeInput(v4nm32f *srcVertex, v4nm32f *srcColor, v2nm32f *srcTex, int vertCount);
 void setDst(TrianglePointers *dst, nm32f *buf, int outputTrianglesCount);
 int repackToPrimitives_t_nOutputTriangles_AllDataAreCorrect(int n);
@@ -939,23 +938,29 @@ int repackToPrimitives_t_0_200_OutputTriangles_v2TextureCoordsAreCorrect()
 clock_t vertexPrimitiveRepack_modeIsGL_TRIANGLES_192Vertices()
 {
 	// Arrange
-	constexpr int trianglesCount = 64;				// number of output triangles
-	constexpr int vertCount = trianglesCount * 3;	// number of input vertexes
-	constexpr int outputCoordCount = 4 * 3 * trianglesCount; // number of output vertexes
+	int trianglesCount = 64;							// number of output triangles
+    int vertCount = trianglesCount * 3;				// number of input vertices
+	int expectedTrianglesCount = trianglesCount + trianglesCount % 2;
+	int outputTrianglesCount = expectedTrianglesCount;
+	// 10 floats - x, y, z, w, s, t, r, g, b, a
+	//  8 floats - x, y, z, w,       r, g, b, a
+	int outputCoordCount = ATTR_PER_VERTEX * 3 * outputTrianglesCount;	// number of output coords
 
-	v4nm32f     srcVertex[vertCount] = {0};
-	v4nm32f     srcColor[vertCount] = {0};
-	nm32f       dstVertex[outputCoordCount] = {0};
-	v4nm32f     dstColor[3 * trianglesCount] = {0};
-
-	int mode = NMGL_TRIANGLES;
+    v4nm32f     srcVertex[vertCount];
+    v4nm32f     srcColor[vertCount];
+    v2nm32f     srcTex[vertCount];
+	nm32f real_output[outputCoordCount];
+	
+	//	Set real output pointers, i.e. dst
+	TrianglePointers dst;
+	setDst(&dst, real_output, outputTrianglesCount);
 
 	clock_t t1, t2, dt;
-
+	
 	// Act
 	int res;
 	t1 = clock();
-	res = vertexPrimitiveRepack(srcVertex, srcColor,dstVertex, dstColor, mode, vertCount);
+	res = repackToPrimitives_t(srcVertex, srcColor, srcTex, &dst, vertCount);
 	t2 = clock();
 	dt = t2 - t1;
 	(void) res;
@@ -966,23 +971,29 @@ clock_t vertexPrimitiveRepack_modeIsGL_TRIANGLES_192Vertices()
 clock_t vertexPrimitiveRepack_modeIsGL_TRIANGLES_48Vertices()
 {
 	// Arrange
-	constexpr int trianglesCount = 16;				// number of output triangles
-	constexpr int vertCount = trianglesCount * 3;	// number of input vertexes
-	constexpr int outputCoordCount = 4 * 3 * trianglesCount;	// number of output vertexes
+	int trianglesCount = 16;							// number of output triangles
+    int vertCount = trianglesCount * 3;				// number of input vertices
+	int expectedTrianglesCount = trianglesCount + trianglesCount % 2;
+	int outputTrianglesCount = expectedTrianglesCount;
+	// 10 floats - x, y, z, w, s, t, r, g, b, a
+	//  8 floats - x, y, z, w,       r, g, b, a
+	int outputCoordCount = ATTR_PER_VERTEX * 3 * outputTrianglesCount;	// number of output coords
 
-	v4nm32f     srcVertex[vertCount] = {0};
-	v4nm32f     srcColor[vertCount] = {0};
-	nm32f       dstVertex[outputCoordCount] = {0};
-	v4nm32f     dstColor[3 * trianglesCount] = {0};
-
-	int mode = NMGL_TRIANGLES;
+    v4nm32f     srcVertex[vertCount];
+    v4nm32f     srcColor[vertCount];
+    v2nm32f     srcTex[vertCount];
+	nm32f real_output[outputCoordCount];
+	
+	//	Set real output pointers, i.e. dst
+	TrianglePointers dst;
+	setDst(&dst, real_output, outputTrianglesCount);
 
 	clock_t t1, t2, dt;
-
+	
 	// Act
 	int res;
 	t1 = clock();
-	res = vertexPrimitiveRepack(srcVertex, srcColor,dstVertex, dstColor, mode, vertCount);
+	res = repackToPrimitives_t(srcVertex, srcColor, srcTex, &dst, vertCount);
 	t2 = clock();
 	dt = t2 - t1;
 	(void) res;
