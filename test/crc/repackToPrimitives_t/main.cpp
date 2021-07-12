@@ -15,6 +15,7 @@
 void Print(nm32f *ptr, size_t size);
 void PrintV4nm32f(v4nm32f *ptr, size_t size);
 void ZeroV4nm32f(v4nm32f *ptr, size_t size);
+int main(int argc, char **argv);
 void initializeInput(v4nm32f *srcVertex, v4nm32f *srcColor, v2nm32f *srcTex, int vertCount);
 void setDst(TrianglePointers *dst, nm32f *buf, int outputTrianglesCount);
 int repackToPrimitives_t_nOutputTriangles_AllDataAreCorrect(int n);
@@ -28,7 +29,16 @@ int repackToPrimitives_t_nOutputTriangles_v0TextureCoordsAreCorrect(int n);
 int repackToPrimitives_t_nOutputTriangles_v1TextureCoordsAreCorrect(int n);
 int repackToPrimitives_t_nOutputTriangles_v2TextureCoordsAreCorrect(int n);
 int repackToPrimitives_t_0_200_OutputTriangles_AllDataAreCorrect();
-// Performance tests
+int repackToPrimitives_t_0_200_OutputTriangles_v0CoordsAreCorrect();
+int repackToPrimitives_t_0_200_OutputTriangles_v1CoordsAreCorrect();
+int repackToPrimitives_t_0_200_OutputTriangles_v2CoordsAreCorrect();
+int repackToPrimitives_t_0_200_OutputTriangles_v0ColorsAreCorrect();
+int repackToPrimitives_t_0_200_OutputTriangles_v1ColorsAreCorrect();
+int repackToPrimitives_t_0_200_OutputTriangles_v2ColorsAreCorrect();
+int repackToPrimitives_t_0_200_OutputTriangles_v0TextureCoordsAreCorrect();
+int repackToPrimitives_t_0_200_OutputTriangles_v1TextureCoordsAreCorrect();
+int repackToPrimitives_t_0_200_OutputTriangles_v2TextureCoordsAreCorrect();
+//Performance tests
 clock_t vertexPrimitiveRepack_modeIsGL_TRIANGLES_192Vertices();
 clock_t vertexPrimitiveRepack_modeIsGL_TRIANGLES_48Vertices();
 
@@ -72,19 +82,28 @@ void ZeroV4nm32f(v4nm32f *ptr, size_t size)
 int main(int argc, char **argv)
 {
     //puts("VertexPrimitiveRepack tests: ");
-
-	//puts("");
-    //puts("Performance tests: ");
-	//clock_t dt[2];
-	//dt[0] = vertexPrimitiveRepack_modeIsGL_TRIANGLES_192Vertices();
-	//dt[1] = vertexPrimitiveRepack_modeIsGL_TRIANGLES_48Vertices();
-	//for (int i = 0; i < 2; ++i){
-	//	printf("dt[%i] = %i\n\r", i + 1, (int)dt[i]);
-	//}
-
-    //puts("OK");
 	RUN_TEST(repackToPrimitives_t_0_200_OutputTriangles_AllDataAreCorrect);
-	//RUN_ARG_TEST(repackToPrimitives_t_nOutputTriangles, 65);	// >= 65 doesn't work, may be because of memory
+	RUN_TEST(repackToPrimitives_t_0_200_OutputTriangles_v0CoordsAreCorrect);
+	RUN_TEST(repackToPrimitives_t_0_200_OutputTriangles_v1CoordsAreCorrect);
+	RUN_TEST(repackToPrimitives_t_0_200_OutputTriangles_v2CoordsAreCorrect);
+	RUN_TEST(repackToPrimitives_t_0_200_OutputTriangles_v0ColorsAreCorrect);
+	RUN_TEST(repackToPrimitives_t_0_200_OutputTriangles_v1ColorsAreCorrect);
+	RUN_TEST(repackToPrimitives_t_0_200_OutputTriangles_v2ColorsAreCorrect);
+	RUN_TEST(repackToPrimitives_t_0_200_OutputTriangles_v0TextureCoordsAreCorrect);
+	RUN_TEST(repackToPrimitives_t_0_200_OutputTriangles_v1TextureCoordsAreCorrect);
+	RUN_TEST(repackToPrimitives_t_0_200_OutputTriangles_v2TextureCoordsAreCorrect);
+	//RUN_ARG_TEST(repackToPrimitives_t_nOutputTriangles, 65);
+
+	puts("");
+    puts("Performance tests: ");
+	clock_t dt[2];
+	dt[0] = vertexPrimitiveRepack_modeIsGL_TRIANGLES_192Vertices();
+	dt[1] = vertexPrimitiveRepack_modeIsGL_TRIANGLES_48Vertices();
+	for (int i = 0; i < 2; ++i){
+		printf("dt[%i] = %i\n\r", i + 1, (int)dt[i]);
+	}
+
+    puts("OK");
 	return 0;
 }
 
@@ -832,6 +851,87 @@ int repackToPrimitives_t_0_200_OutputTriangles_AllDataAreCorrect()
 	int res = 0;
 	for (int i = 0; i < 200; ++i){
     	res += repackToPrimitives_t_nOutputTriangles_AllDataAreCorrect(i);
+	}
+	return res;
+}
+
+int repackToPrimitives_t_0_200_OutputTriangles_v0CoordsAreCorrect()
+{
+	int res = 0;
+	for (int i = 0; i < 200; ++i){
+    	res += repackToPrimitives_t_nOutputTriangles_v0CoordsAreCorrect(i);
+	}
+	return res;
+}
+
+int repackToPrimitives_t_0_200_OutputTriangles_v1CoordsAreCorrect()
+{
+	int res = 0;
+	for (int i = 0; i < 200; ++i){
+    	res += repackToPrimitives_t_nOutputTriangles_v1CoordsAreCorrect(i);
+	}
+	return res;
+}
+
+int repackToPrimitives_t_0_200_OutputTriangles_v2CoordsAreCorrect()
+{
+	int res = 0;
+	for (int i = 0; i < 200; ++i){
+    	res += repackToPrimitives_t_nOutputTriangles_v2CoordsAreCorrect(i);
+	}
+	return res;
+}
+
+int repackToPrimitives_t_0_200_OutputTriangles_v0ColorsAreCorrect()
+{
+	int res = 0;
+	for (int i = 0; i < 200; ++i){
+    	res += repackToPrimitives_t_nOutputTriangles_v0ColorsAreCorrect(i);
+	}
+	return res;
+}
+
+int repackToPrimitives_t_0_200_OutputTriangles_v1ColorsAreCorrect()
+{
+	int res = 0;
+	for (int i = 0; i < 200; ++i){
+    	res += repackToPrimitives_t_nOutputTriangles_v1ColorsAreCorrect(i);
+	}
+	return res;
+}
+
+int repackToPrimitives_t_0_200_OutputTriangles_v2ColorsAreCorrect()
+{
+	int res = 0;
+	for (int i = 0; i < 200; ++i){
+    	res += repackToPrimitives_t_nOutputTriangles_v2ColorsAreCorrect(i);
+	}
+	return res;
+}
+
+int repackToPrimitives_t_0_200_OutputTriangles_v0TextureCoordsAreCorrect()
+{
+	int res = 0;
+	for (int i = 0; i < 200; ++i){
+    	res += repackToPrimitives_t_nOutputTriangles_v0TextureCoordsAreCorrect(i);
+	}
+	return res;
+}
+
+int repackToPrimitives_t_0_200_OutputTriangles_v1TextureCoordsAreCorrect()
+{
+	int res = 0;
+	for (int i = 0; i < 200; ++i){
+    	res += repackToPrimitives_t_nOutputTriangles_v1TextureCoordsAreCorrect(i);
+	}
+	return res;
+}
+
+int repackToPrimitives_t_0_200_OutputTriangles_v2TextureCoordsAreCorrect()
+{
+	int res = 0;
+	for (int i = 0; i < 200; ++i){
+    	res += repackToPrimitives_t_nOutputTriangles_v2TextureCoordsAreCorrect(i);
 	}
 	return res;
 }
