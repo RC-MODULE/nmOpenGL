@@ -1,10 +1,14 @@
 #ifndef __NMSYNCHRO_H_INCLUDED__
 #define __NMSYNCHRO_H_INCLUDED__
 
+#include "hal_target.h"
 #include <time.h>
 #include "nmdef.h"
 #include "ringbuffert.h"
 #include "stdio.h"
+#include "link.h"
+#include "led.h"
+#include "hal.h"
 
 #define NMC1_CLEAR 					0xF0010000
 #define NMC1_DRAW_TRIANGLES 		0xF0020000
@@ -40,20 +44,62 @@
 
 #define SYNCHRO_EXIT 1
 
+enum StoredTypes {
+	TYPE_NULL,
+	TYPE_POINTER,
+	TYPE_INT,
+	TYPE_UNSIGNED_INT,
+	TYPE_FLOAT,
+	TYPE_BOOL
+};
+struct CommandArgument {
+	union {
+		void* p;
+		int i;
+		unsigned int ui;	
+		float f;
+		bool b; 
+	};
+	StoredTypes storedType = TYPE_NULL;
+
+	CommandArgument() {
+		storedType = TYPE_NULL;
+	}
+	CommandArgument(void* value) {
+		p = value;
+		storedType = TYPE_POINTER;
+	}
+	CommandArgument(unsigned int value) {
+		ui = value;
+		storedType = TYPE_UNSIGNED_INT;
+	}
+	CommandArgument(int value) {
+		i = value;
+		storedType = TYPE_INT;
+	}
+	CommandArgument(float value) {
+		f = value;
+		storedType = TYPE_FLOAT;
+	}
+	CommandArgument(bool value) {
+		b = value;
+		storedType = TYPE_BOOL;
+	}
+};
+
 struct CommandNm1{
-	int instr_nmc1;
-	int params[7];
+	int instr;
+	CommandArgument params[7];
 };
 
 #define PRIORITY_SIZE 256
-//#define PRIORITY_SIZE 1
+//#define PRIORITY_SIZE 2
+
 
 typedef HalRingBufferData<CommandNm1, PRIORITY_SIZE> NMGLSynchroData;
 
-/*!
- *  \brief Класс для межпроцессорной синхронизации
- */
-class NMGLSynchro {
+
+struct NMGL_SynchroMasterRingBuffer {
 private:
 	HalRingBufferConnector<CommandNm1, PRIORITY_SIZE> connector;
 	int dummy;
@@ -66,37 +112,44 @@ public:
 		counter = 0;
 	}
 
-	void writeInstr(int priority, 
-		int instr, 
-		int param0 = 0, 
-		int param1 = 0, 
-		int param2 = 0, 
-		int param3 = 0, 
-		int param4 = 0, 
-		int param5 = 0) {
+	inline void pushInstr(CommandNm1 *command){
 		while (connector.isFull());
-		CommandNm1* command = connector.ptrHead();
-		command->instr_nmc1 = instr;
-		command->params[0] = param0;
-		command->params[1] = param1;
-		command->params[2] = param2;
-		command->params[3] = param3;
-		command->params[4] = param4;
-		command->params[5] = param5;
+		CommandNm1* commandRB = connector.ptrHead();
+		commandRB->instr = command->instr;
+		for (int i = 0; i < 7; i++) {
+			commandRB->params[i] = command->params[i];
+		}
 		(*connector.pHead)++;
-		//halLed((connector.getHead() & 0xF) | (connector.getTail() << 4));
 	}
 
 	inline bool isEmpty() {
 		return connector.isEmpty();
 	}
+};
+
+class NMGL_SynchroSlaveRingBuffer {
+private:
+public:
+	HalRingBufferConnector<CommandNm1, PRIORITY_SIZE> connector;
+	int dummy;
+public:
+	int time;
+	int counter;
+
+	void init(NMGLSynchroData* synchroData) {
+		connector.init(synchroData);
+		counter = 0;
+	}
 
 	inline void popInstr(CommandNm1 *command) {
 		connector.pop(command, 1);
-		//halLed((connector.getHead() & 0xF) | (connector.getTail() << 4));
+		for (int i = 0; i < 7; i++) {
+			if (command->params[i].storedType == TYPE_POINTER) {
+				command->params[i].p = halMapAddrFrom(command->params[i].p, 0);
+			}
+		}
 	}
 };
-
 
 
 #endif

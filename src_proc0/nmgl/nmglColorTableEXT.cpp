@@ -28,7 +28,15 @@ void nmglColorTableEXT (NMGLenum target, NMGLenum internalformat, NMGLsizei widt
 	if(!isPowerOf2(width)) {cntxt->error=NMGL_INVALID_VALUE;return;}
 	ActiveTexObjectP->palette.width=width;
 	ActiveTexObjectP->palette.colors=(NMGLubyte*)(mem_palette+ActiveTexObjectP->name*NMGL_MAX_PALETTE_WIDTH*RGBA_TEXEL_SIZE_UBYTE);
-	cntxt->synchro.writeInstr(1, NMC1_SET_COLOR_PALETTE, (unsigned int)ActiveTexObjectP->palette.colors,(unsigned int)ActiveTexObjectP->palette.width,ActiveTexObjectP->name);
+
+	CommandNm1 command;
+	command.instr = NMC1_SET_COLOR_PALETTE;
+	command.params[0] = CommandArgument(ActiveTexObjectP->palette.colors);
+	command.params[1] = CommandArgument(ActiveTexObjectP->palette.width);
+	command.params[2] = CommandArgument(ActiveTexObjectP->name);
+	cntxt->synchro.pushInstr(&command);
+	//cntxt->synchro.writeInstr(1, NMC1_SET_COLOR_PALETTE, (unsigned int)ActiveTexObjectP->palette.colors,(unsigned int)ActiveTexObjectP->palette.width,ActiveTexObjectP->name);
+
 	for(i=0;i<width*RGBA_TEXEL_SIZE_UBYTE;i++)
 	{
 		*((NMGLubyte*)((NMGLubyte*)ActiveTexObjectP->palette.colors+i))=*((NMGLubyte*)data+i);

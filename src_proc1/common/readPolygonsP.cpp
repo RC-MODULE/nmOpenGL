@@ -14,7 +14,7 @@ SECTION(".text_demo3d") int getAddrPtrnsP(DataForNmpu1* data) {
 	int offset1 = 0;
 	DataForNmpu1* dataTmp = (DataForNmpu1*)cntxt->buffer0;
 	offset0 += sizeof32(DataForNmpu1);
-	msdAdd(data, dataTmp, sizeof32(DataForNmpu1), 0);
+	nmppsCopy_32s((nm32s*)data, (nm32s*)dataTmp, sizeof32(DataForNmpu1));
 
 
 	int* minX = cntxt->buffer0 + offset0;
@@ -39,8 +39,6 @@ SECTION(".text_demo3d") int getAddrPtrnsP(DataForNmpu1* data) {
 	offset1 += 2 * POLYGONS_SIZE;
 	int* imageOffset = cntxt->buffer0 + offset0;
 	offset0 += POLYGONS_SIZE;
-	msdWaitDma(0);
-
 	
 #ifdef DEBUG
 	if (offset0 > SIZE_BUFFER_NM1 || offset1 > SIZE_BUFFER_NM1) {
@@ -57,9 +55,7 @@ SECTION(".text_demo3d") int getAddrPtrnsP(DataForNmpu1* data) {
 
 	nmppsSet_32s((nm32s*)cntxt->ppSrcPackPtrns, (int)&cntxt->patterns->pointPtrns[pointSize - 1], size);
 	nmppsSet_32s((nm32s*)cntxt->nSizePtrn32, pointSize * WIDTH_PTRN / 16, size);
-	int height = size / SMALL_SIZE;
-	height = (size % SMALL_SIZE) ? height + 1 : height;
-	nmppmCopy_32s((nm32s*)cntxt->ppPtrnsCombined_2s, 0, (nm32s*)cntxt->ppDstPackPtrns, SMALL_SIZE, height, SMALL_SIZE);
+	nmppsCopy_32s((nm32s*)cntxt->ppPtrnsCombined_2s, (int*)cntxt->ppDstPackPtrns, size);
 	int imageWidth = cntxt->smallColorBuff.getWidth();
 	int imageHeight = cntxt->smallColorBuff.getHeight();
 	nmppsClipCC_32s(minX, 0, imageWidth, temp0, size);
@@ -91,6 +87,9 @@ SECTION(".text_demo3d") int getAddrPtrnsP(DataForNmpu1* data) {
 	nmppsConvert_32s8s(dataTmp->color, (nm8s*)cntxt->valuesC, 4 * size);
 	nmppsCopy_32s(dataTmp->z, cntxt->valuesZ, size);
 
+	copyPacket_32s(cntxt->ppSrcPackPtrns,
+		cntxt->ppDstPackPtrns,
+		cntxt->nSizePtrn32, size);
 	//этот кусок кода является си-реализацией этой функции и является более наглядным	
 	/*for (int i = 0; i < size; i++) {
 		int pointSize = cntxt->pointSize;
@@ -99,7 +98,7 @@ SECTION(".text_demo3d") int getAddrPtrnsP(DataForNmpu1* data) {
 		int minY = data->y0[i] - pointSize / 2;
 		int maxY = data->y0[i] + pointSize / 2;
 		cntxt->ppSrcPackPtrns[i] = cntxt->patterns->pointPtrns[pointSize - 1];
-		cntxt->ppDstPackPtrns[i] = (nm32s*)cntxt->ppPtrnsCombined_2s[i % SMALL_SIZE];
+		cntxt->ppDstPackPtrns[i] = (nm32s*)cntxt->ppPtrnsCombined_2s[i];
 		cntxt->nSizePtrn32[i] = pointSize * WIDTH_PTRN / 16;
 		cntxt->ptrnInnPoints[i].x = (minX < 0) ? -minX : 0;
 		cntxt->ptrnInnPoints[i].y = (minY < 0) ? -minY : 0;

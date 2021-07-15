@@ -7,6 +7,8 @@
 #include "imagebuffer.h"
 #include "myserverdma.h"
 #include "nmgltex_nm1.h"
+#include "nmsynchro.h"
+
 
 void selectPatterns(nm32s* dydxTable, nm32s* dX, nm32s* dY, nm32s* x0, nm32s* pPtrnPaintSide, nm32s** pSrcPack, int nSize, int* pTmp);
 
@@ -35,9 +37,10 @@ public:
 		//halFree(context);
 	}
 
-	Pattern polyImgTmp[SMALL_SIZE];		
+	Pattern* primitivePack_2s;
 	
 	PatternsArray* patterns;			///< Указатель на массив всевозможных двухбитных паттернов
+	int fillInnerTable[SIZE_TABLE];
 
 	nm32s** ppSrcPackPtrns;				///< Массив указателей нужных в данный момент двухбитных паттернов. Должен быть размера 3 * POLYGONS_SIZE
 	nm32s** ppDstPackPtrns;				///< Массив указателей назначения копируемых двухбитных паттернов
@@ -47,11 +50,8 @@ public:
 	int* buffer1;						///< Указатель на временный буфер 1. Размер должен быть не меньше SIZE_BUFFER_NM1
 	int* buffer2;						///< Указатель на временный буфер 2. Размер должен быть не меньше SIZE_BUFFER_NM1
 	int pointSize;						///< Диаметр точек в режиме отрисовки GL_POINTS. Не должен быть больше 32
-	clock_t t0, t1;	
-
-	NMGLSynchro synchro;				///< Структура для общения процессоров друг с другом
 	ImageConnector* imageConnector;				///< Коннектор к кольцевому буферу изображений
-	int dummy;
+	clock_t t0, t1;	
 
 	DepthBuffer depthBuffer;			///< Структура для работы с целым буфером глубины
 	IMAGE_BUFFER_CLASS colorBuffer;		///< Структура для работы с целым цветным буфером
@@ -64,15 +64,17 @@ public:
 	nm32s** zBuffPoints;				///
 	nm32s** imagePoints;
 
-	Pattern* ppPtrns1_2s[SMALL_SIZE];	///< Массив указателей на один пак локальных паттернов
-	Pattern* ppPtrns2_2s[SMALL_SIZE];	///< Массив указателей на второй пак локальных паттернов
-	Pattern* ppPtrnsCombined_2s[SMALL_SIZE]; ///< Массив указателей на комбинированный пак первых и вторых локальных паттернов
+	Pattern* ppPtrns1_2s[POLYGONS_SIZE];	///< Массив указателей на один пак локальных паттернов
+	Pattern* ppPtrns2_2s[POLYGONS_SIZE];	///< Массив указателей на второй пак локальных паттернов
+	Pattern* ppPtrnsCombined_2s[POLYGONS_SIZE]; ///< Массив указателей на комбинированный пак первых и вторых локальных паттернов
 	nm32s minusOne[SMALL_SIZE];				///< массив со значения -1
 
 	Vector2* ptrnInnPoints;
 	Size* ptrnSizes;
+	nm32s* imageOffsets;
 	nm32s* valuesZ;
 	nm32s* valuesC;
+	int dummy;
 
 #ifdef TEXTURE_ENABLED
 	float* x0;
@@ -380,8 +382,10 @@ extern "C" {
 void drawTriangles(PolygonsConnector *connector);
 void drawLines(PolygonsConnector *connector);
 void drawPoints(PolygonsConnector *connector);
+
  //! \}
 
+typedef int(PtrnsHandler)(DataForNmpu1* data);
 /*!
  *  \ingroup service_api
  *  \brief Brief description
@@ -397,5 +401,18 @@ int getAddrPtrnsT(DataForNmpu1* data);
 int getAddrPtrnsL(DataForNmpu1* data);
 int getAddrPtrnsP(DataForNmpu1* data);
  //! \}
+
+/*!
+ *  \brief Функция отрисовки примитивов на изображении
+ *  \author Zhilenkov Ivan
+ *  
+ *  \param context [in] Контекст NM1
+ *  \param countPrimitives [in] Число примитивов, которые надо отрисовать
+ *  \return Return description
+ *  \details Функий берет двухбитные паттерны из адреса, который находится в контексте, расширяет его до RGB8888, при необходимости вычисляет тест глубины и копирует примитивы в изображения.
+ *  Функция использует buffer0 и buffer1, а так же segImage и segZBuff
+ *  
+ */
+void drawPrimitives(NMGL_Context_NM1 *context, int countPrimitives);
 
 #endif

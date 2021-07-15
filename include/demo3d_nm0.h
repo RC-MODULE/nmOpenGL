@@ -6,6 +6,7 @@
 #include "nmgl.h"
 #include "nmgltex_nm0.h"
 #include "imagebuffer.h"
+#include "nmsynchro.h"
 
 #define BIG_NMGL_SIZE (128 * NMGL_SIZE)
 
@@ -229,7 +230,7 @@ private:
 public:	
 	inline static void create(NMGLSynchroData* synchroData) {
 		context = (NMGL_Context_NM0*)halMalloc32(sizeof32(NMGL_Context_NM0));
-		context->init(synchroData);
+		context->init();
 	}
 	inline static NMGL_Context_NM0 *getContext() {
 		return context;
@@ -239,7 +240,7 @@ public:
 	}
 
 
-	NMGLSynchro synchro;
+	NMGL_SynchroMasterRingBuffer synchro;
 	BitMask segmentMasks[36];
 	BitDividedMask dividedMasks[2];	
 	PolygonsConnector* triangleConnectors;
@@ -307,8 +308,7 @@ public:
 
 	NMGL_Context_NM0_Texture texState; 	///< textures data
 	
-	void init(NMGLSynchroData* syncroData){
-		synchro.init(syncroData);
+	void init(){
 
 		currentMatrixStack = &modelviewMatrixStack;
 		isUseTwoSidedMode = NMGL_FALSE;
@@ -1585,7 +1585,7 @@ void rasterizeL(const Lines* lines, const BitMask* masks);
 void rasterizeP(const Points* points, const BitMask* masks);
   //! \}
 
-void transferPolygons(DataForNmpu1 *data, PolygonsConnector *connector, int mode);
+void transferPolygons(PolygonsConnector *connector, int mode);
 
 /*!
  *  \ingroup service_api
@@ -1627,7 +1627,7 @@ void updatePolygonsP(DataForNmpu1* data, Points* points, int count, int segX, in
 void light(v4nm32f* vertex, v4nm32f* srcNormal_dstColor, int size);
 //! \}
 
-void startCalculateColor(v4nm32f* srcVertex, v4nm32f* srcNormal, int vertexCount);
+void startCalculateColor(v4nm32f* srcVertex, v4nm32f* srcNormal, v4nm32f* srcColor, int vertexCount);
 void getCalculatedColor(v4nm32f* dstColor, int vertexCount);
 
 

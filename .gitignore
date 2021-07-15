@@ -27,5 +27,9 @@ ldscript
 *.dump
 *.a
 *.lib
-
 *.dll
+
+*.dasm
+test/
+rod*.cpp
+rod*.h

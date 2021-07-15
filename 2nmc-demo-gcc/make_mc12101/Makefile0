@@ -102,14 +102,10 @@ OBJECTS     = $(addprefix $(TMP_DIR)/, $(OBJECTS_C) $(OBJECTS_CPP)  $(OBJECTS_AS
 .PHONY:all  clean skip
 
 .DEFAULT_GOAL=default
-default: $(PROFILE) $(TARGET)
+default: $(TARGET)
 
 #$(TMP_DIR) $(OUT_DIR)  $(TARGET)
 
-all: $(TARGET)
-
-dump:
-	nmc-objdump -D $(PROJECT).abs > $(PROJECT).dasm
 	
 $(TMP_DIR):
 	-mkdir "$(@)"

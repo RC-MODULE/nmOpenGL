@@ -19,6 +19,11 @@ void nmglActiveTexture (NMGLenum texture)
 	
 	unsigned int activeTexUnitIndex = texture - NMGL_TEXTURE0;
 	cntxt->texState.activeTexUnitIndex = activeTexUnitIndex;
-	cntxt->synchro.writeInstr(1, NMC1_SET_ACTIVE_TEXTURE, (unsigned int)activeTexUnitIndex);
+
+	CommandNm1 command;
+	command.instr = NMC1_SET_ACTIVE_TEXTURE;
+	command.params[0] = CommandArgument(activeTexUnitIndex);
+	cntxt->synchro.pushInstr(&command);
+	//cntxt->synchro.writeInstr(1, NMC1_SET_ACTIVE_TEXTURE, (unsigned int)activeTexUnitIndex);
 	
 }

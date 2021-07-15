@@ -7,7 +7,6 @@
 #define __DEMO3D_COMMON_H_INCLUDED__
 #include "nmtype.h"
 #include "nmgltype.h"
-#include "nmsynchro.h"
 #include "ringbuffert.h"
 #include "pattern.h"
 
@@ -80,6 +79,33 @@ struct Rectangle {
 	int height;
 };
 
+/*struct TrianglePackage{
+	int x0[POLYGONS_SIZE];
+	int y0[POLYGONS_SIZE];
+	int x1[POLYGONS_SIZE];
+	int y1[POLYGONS_SIZE];
+	int x2[POLYGONS_SIZE];
+	int y2[POLYGONS_SIZE];
+	int crossProducts[POLYGONS_SIZE];
+};
+
+struct LinePackage{
+	int x0[POLYGONS_SIZE];
+	int y0[POLYGONS_SIZE];
+	int x1[POLYGONS_SIZE];
+	int y1[POLYGONS_SIZE];
+	int crossProducts[POLYGONS_SIZE];
+};
+
+struct PointPackage {
+	int x0[POLYGONS_SIZE];
+	int y0[POLYGONS_SIZE];
+	int x1[POLYGONS_SIZE];
+	int y1[POLYGONS_SIZE];
+	int crossProducts[POLYGONS_SIZE];
+};*/
+
+
 /**
 *  \brief Структура для передачи полигонов от nmpu0 к nmpu1.
 *  Предполагается, что точки (x0, y0), (x1, y1) и (x2, y2) расположены в порядке возрастания y,
@@ -116,9 +142,15 @@ struct DataForNmpu1 {
 	DataForNmpu1() : count(0) {};
 };
 
+template <class T, int SIZE> class MyRingBufferConnector : public HalRingBufferConnector<T, SIZE> {
+	int dummy;
+public:
+	HalRingBufferData<T, SIZE>* ringbufferDataPointer;
+
+};
 
 typedef HalRingBufferData<DataForNmpu1, COUNT_POLYGONS_BUFFER> PolygonsArray;
-typedef HalRingBufferConnector<DataForNmpu1, COUNT_POLYGONS_BUFFER> PolygonsConnector;
+typedef MyRingBufferConnector<DataForNmpu1, COUNT_POLYGONS_BUFFER> PolygonsConnector;
 
 //typedef int matrix[16];
 typedef struct s_mat4nm32f{

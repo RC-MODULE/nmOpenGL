@@ -83,12 +83,30 @@ void initLvls(NMGLuint name,NMGL_Context_NM0 *cntxt)
 	#endif
 
 	cntxt->texState.texObjects[name].texImages2D[0].pixels=(void*)(mipmap + (name*MIPMAP_OBJ_SIZE));
-/*sync*/cntxt->synchro.writeInstr(1, NMC1_SET_MIPMAP_LVL_POINTER,(int)(name),0,(int)((void*)(mipmap + (name*MIPMAP_OBJ_SIZE))));
+
+
+	CommandNm1 command;
+	command.instr = NMC1_SET_MIPMAP_LVL_POINTER;
+	command.params[0] = CommandArgument(name);
+	command.params[1] = CommandArgument(0);
+	command.params[2] = CommandArgument(mipmap + (name * MIPMAP_OBJ_SIZE));
+	cntxt->synchro.pushInstr(&command);
+///*sync*/cntxt->synchro.writeInstr(1, NMC1_SET_MIPMAP_LVL_POINTER,(int)(name),0,(int)((void*)(mipmap + (name*MIPMAP_OBJ_SIZE))));
 
 	for(i=1;i<=NMGL_MAX_MIPMAP_LVL;i++)
 	{
 		cntxt->texState.texObjects[name].texImages2D[i].pixels=(void*)((NMGLubyte *)cntxt->texState.texObjects[name].texImages2D[i-1].pixels+cursize);
-/*sync*/cntxt->synchro.writeInstr(1, NMC1_SET_MIPMAP_LVL_POINTER,(int)(name),i,(int)((NMGLubyte *)cntxt->texState.texObjects[name].texImages2D[i].pixels));
+
+
+
+		command.instr = NMC1_SET_MIPMAP_LVL_POINTER;
+		command.params[0] = CommandArgument(name);
+		command.params[1] = CommandArgument(i);
+		command.params[2] = CommandArgument((NMGLubyte *)cntxt->texState.texObjects[name].texImages2D[i].pixels);
+		cntxt->synchro.pushInstr(&command);
+///*sync*/cntxt->synchro.writeInstr(1, NMC1_SET_MIPMAP_LVL_POINTER,(int)(name),i,(int)((NMGLubyte *)cntxt->texState.texObjects[name].texImages2D[i].pixels));
+
+
 
 		cursize>>=2;
 	}
@@ -212,8 +230,16 @@ void nmglTexImage2D(NMGLenum target, NMGLint level, NMGLint internalformat, NMGL
 				if(iter == 0)
 				{
 					ActiveTexObjectP->texImages2D[iter].width=width;
-					ActiveTexObjectP->texImages2D[iter].height=height;					
-/*sync*/cntxt->synchro.writeInstr(1, NMC1_SET_WHF,(int)(ActiveTexObjectP->name),width,height,internalformat);
+					ActiveTexObjectP->texImages2D[iter].height=height;		
+
+					CommandNm1 command;
+					command.instr = NMC1_SET_WHF;
+					command.params[0] = CommandArgument(ActiveTexObjectP->name);
+					command.params[1] = CommandArgument(width);
+					command.params[2] = CommandArgument(height);
+					command.params[3] = CommandArgument(internalformat);
+					cntxt->synchro.pushInstr(&command);
+///*sync*/cntxt->synchro.writeInstr(1, NMC1_SET_WHF,(int)(ActiveTexObjectP->name),width,height,internalformat);
 
 				}
 				else{
