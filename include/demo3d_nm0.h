@@ -1480,6 +1480,17 @@ extern "C"{
 		const v2nm32f *srcTex,
 		TrianglePointers *dstVertex,
 		int vertexAmount);
+	// Functions for TEXTURE_ENABLED macro enabled/disabled
+	int repackToPrimitives_t_full(const v4nm32f *srcVertex,
+		const v4nm32f *srcColor,
+		const v2nm32f *srcTex,
+		TrianglePointers *dstVertex,
+		int vertexAmount);
+	int repackToPrimitives_t_without_textures(const v4nm32f *srcVertex,
+		const v4nm32f *srcColor,
+		const v2nm32f *srcTex,
+		TrianglePointers *dstVertex,
+		int vertexAmount);
 	int repackToPrimitives_ts(const v4nm32f *srcVertex,
 		const v4nm32f *srcColor,
 		const v2nm32f *srcTex,
