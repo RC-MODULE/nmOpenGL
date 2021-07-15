@@ -7,9 +7,9 @@
 SECTION(".data_imu7") Array vertexArrayTmp;
 SECTION(".data_imu7") Array normalArrayTmp;
 SECTION(".data_imu7") Array colorArrayTmp;
-#ifdef TEXTURE_ENABLED
+//TEXTURING_PART
 SECTION(".data_imu7") Array texcoordArrayTmp; //XXX: Only one texture unit is supported. So one tmpArray.
-#endif //TEXTURE_ENABLED
+//TEXTURING_PART
 
 SECTION(".text_nmgl")
 void nmglEnd ()
@@ -25,11 +25,11 @@ void nmglEnd ()
 	nmblas_scopy(sizeof32(Array), (float*)&cntxt->vertexArray, 1, (float*)&vertexArrayTmp, 1);
 	nmblas_scopy(sizeof32(Array), (float*)&cntxt->normalArray, 1, (float*)&normalArrayTmp, 1);
 	nmblas_scopy(sizeof32(Array), (float*)&cntxt->colorArray, 1, (float*)&colorArrayTmp, 1);
-#ifdef TEXTURE_ENABLED
+//TEXTURING_PART
 	nmblas_scopy(sizeof32(Array), (float*)&cntxt->texState.texcoordArray[0], 1, (float*)&texcoordArrayTmp, 1); //XXX: Only one texture unit is supported.
 	NMGLenum clientActiveTexUnitTmp = cntxt->texState.clientActiveTexUnit;
 	unsigned int clientActiveTexUnitIndexTmp = cntxt->texState.clientActiveTexUnitIndex;
-#endif //TEXTURE_ENABLED
+//TEXTURING_PART
 
 	NMGLboolean arrayEnabled = cntxt->beginEndInfo.vertexCounter != 0;
 	
@@ -42,14 +42,14 @@ void nmglEnd ()
 	cntxt->colorArray.enabled = arrayEnabled;
 	nmglColorPointer(4, NMGL_FLOAT, 0, cntxt->beginEndInfo.color);
 	
-#ifdef TEXTURE_ENABLED
+//TEXTURING_PART
 	//XXX: Only one texture unit is supported.
 	cntxt->texState.clientActiveTexUnit = NMGL_TEXTURE0;
 	cntxt->texState.clientActiveTexUnitIndex = 0;
 	cntxt->texState.texcoordArray[0].enabled = cntxt->vertexArray.enabled = arrayEnabled;
 	nmglTexCoordPointer(2, NMGL_FLOAT, 0, cntxt->beginEndInfo.texcoord);
 	
-#endif //TEXTURE_ENABLED
+//TEXTURING_PART
 	
 	//printf("vertexCounter=%d\n", cntxt->beginEndInfo.vertexCounter);
 	nmglDrawArrays(cntxt->beginEndInfo.mode, 0, cntxt->beginEndInfo.vertexCounter);
@@ -57,11 +57,11 @@ void nmglEnd ()
 	nmblas_scopy(sizeof32(Array), (float*)&vertexArrayTmp, 1, (float*)&cntxt->vertexArray, 1);
 	nmblas_scopy(sizeof32(Array), (float*)&normalArrayTmp, 1, (float*)&cntxt->normalArray, 1);
 	nmblas_scopy(sizeof32(Array), (float*)&colorArrayTmp, 1, (float*)&cntxt->colorArray, 1);
-#ifdef TEXTURE_ENABLED
+//TEXTURING_PART
 	nmblas_scopy(sizeof32(Array), (float*)&texcoordArrayTmp, 1,(float*)&cntxt->texState.texcoordArray[0], 1); //XXX: Only one texture unit is supported.
 	cntxt->texState.clientActiveTexUnit = clientActiveTexUnitTmp;
 	cntxt->texState.clientActiveTexUnitIndex = clientActiveTexUnitIndexTmp;
-#endif //TEXTURE_ENABLED
+//TEXTURING_PART
 	//printf("end\n\n");
 	
 }

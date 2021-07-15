@@ -14,12 +14,12 @@ inline void copyVertex(CombinePointers &vertex, int iSrc, int iDst) {
 	vertex.z[iDst] = vertex.z[iSrc];
 	vertex.w[iDst] = vertex.w[iSrc];
 	vertex.color[iDst] = vertex.color[iSrc];
-#ifdef TEXTURE_ENABLED
+	//TEXTURING_PART
 	//if (cntxt->texState.textureEnabled) {
 		vertex.s[iDst] = vertex.s[iSrc];
 		vertex.t[iDst] = vertex.t[iSrc];
 	//}
-#endif //TEXTURE_ENABLED
+	//TEXTURING_PART
 }
 
 inline void copyTriangleInPlace(TrianglePointers &triangles, int iSrc, int iDst) {

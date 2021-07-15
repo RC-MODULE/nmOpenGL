@@ -4,7 +4,7 @@
 #include "service.h"
 #include "nmgl.h"
 
-#ifdef TEXTURE_ENABLED
+//TEXTURING_PART
 int texCoordsRepack_triangle(const v2nm32f *srcTexCoords, nm32f *dstTexCoords, int vertCount);
 int texCoordsRepack_triangle_strip(const v2nm32f *srcTexCoords,  nm32f *dstTexCoords, int vertCount);
 int texCoordsRepack_triangle_fan(const v2nm32f *srcTexCoords,  nm32f *dstTexCoords, int vertCount);
@@ -144,4 +144,4 @@ int texCoordsRepack_triangle_fan(const v2nm32f *srcTexCoords,  nm32f *dstTexCoor
     return trCount;
 }
 
-#endif //TEXTURE_ENABLED
+//TEXTURING_PART

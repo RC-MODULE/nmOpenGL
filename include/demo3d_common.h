@@ -23,7 +23,6 @@
 #endif
 
 //#define TRIANGULATION_ENABLED
-#define TEXTURE_ENABLED
 //#define PROFILER0
 //#define PROFILER1
 
@@ -124,7 +123,7 @@ struct DataForNmpu1 {
 	int z[POLYGONS_SIZE];
 	int color[4 * POLYGONS_SIZE];
 
-#ifdef TEXTURE_ENABLED
+	// TEXTURING_PART
 	float s0[POLYGONS_SIZE];
 	float t0[POLYGONS_SIZE];
 	float s1[POLYGONS_SIZE];
@@ -134,7 +133,7 @@ struct DataForNmpu1 {
 	float w0[POLYGONS_SIZE];
 	float w1[POLYGONS_SIZE];
 	float w2[POLYGONS_SIZE];
-#endif //TEXTURE_ENABLED
+	// TEXTURING_PART
 
 	int count;
 	int dummy[15];

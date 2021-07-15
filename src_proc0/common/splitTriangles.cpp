@@ -45,11 +45,8 @@ static int bufSpace(Buffer *buf)
 // |-|-|-|-|-|x|x|
 // |-|-|-|-|-|x|x|
 // |-|-|-|-|-|x|x|
-#ifndef TEXTURE_ENABLED
-static int pushBack(Buffer *buf, Vertices *vert, Colors *colors)
-#else //TEXTURE_ENABLED
+// TEXTURING_PART without texcoords and wclips
 static int pushBack(Buffer *buf, Vertices *vert, Colors *colors, Texcoords *texcoords, Wclips *wclips)
-#endif //TEXTURE_ENABLED
 {
 	if (bufIsFull(buf)){
 		return -1;
@@ -72,7 +69,7 @@ static int pushBack(Buffer *buf, Vertices *vert, Colors *colors, Texcoords *texc
 		trPtr->v2.z[buf->back] = vert->v[8];
 		trPtr->v2.color[buf->back] = colors->c[2];
 
-#ifdef TEXTURE_ENABLED
+		//TEXTURING_PART
 		trPtr->v0.w[buf->back] = wclips->w[0];
 		trPtr->v1.w[buf->back] = wclips->w[1];
 		trPtr->v2.w[buf->back] = wclips->w[2];
@@ -82,7 +79,7 @@ static int pushBack(Buffer *buf, Vertices *vert, Colors *colors, Texcoords *texc
 		trPtr->v1.t[buf->back] = texcoords->st[3];
 		trPtr->v2.s[buf->back] = texcoords->st[4];
 		trPtr->v2.t[buf->back] = texcoords->st[5];
-#endif //TEXTURE_ENABLED
+		//TEXTURING_PART
 		return 0;
 	}
 }
@@ -93,11 +90,8 @@ static int pushBack(Buffer *buf, Vertices *vert, Colors *colors, Texcoords *texc
 // |-|-|-|-|x|x|x|
 // |-|-|-|-|x|x|x|
 // |-|-|-|-|x|x|x|
-#ifndef TEXTURE_ENABLED
-static int popBack(Buffer *buf, Vertices *vert, Colors *colors)
-#else //TEXTURE_ENABLED
+// TEXTURING_PART without texcoords and wclips
 static int popBack(Buffer *buf, Vertices *vert, Colors *colors, Texcoords *texcoords, Wclips *wclips)
-#endif //TEXTURE_ENABLED
 {
 	if (bufIsEmpty(buf)){
 		return -1;
@@ -119,7 +113,7 @@ static int popBack(Buffer *buf, Vertices *vert, Colors *colors, Texcoords *texco
 		vert->v[8] = trPtr->v2.z[buf->back]; 
 		colors->c[2] = trPtr->v2.color[buf->back];
 		
-#ifdef TEXTURE_ENABLED
+		//TEXTURING_PART
 		wclips->w[0] = trPtr->v0.w[buf->back];
 		wclips->w[1] = trPtr->v1.w[buf->back];
 		wclips->w[2] = trPtr->v2.w[buf->back];
@@ -129,7 +123,7 @@ static int popBack(Buffer *buf, Vertices *vert, Colors *colors, Texcoords *texco
 		texcoords->st[3] = trPtr->v1.t[buf->back];
 		texcoords->st[4] = trPtr->v2.s[buf->back];
 		texcoords->st[5] = trPtr->v2.t[buf->back];
-#endif //TEXTURE_ENABLED
+		//TEXTURING_PART
 		buf->back += 1;
 		return 0;
 	}
@@ -141,11 +135,8 @@ static int popBack(Buffer *buf, Vertices *vert, Colors *colors, Texcoords *texco
 // |x|x|x|x|-|-|-|
 // |x|x|x|x|-|-|-|
 // |x|x|x|x|-|-|-|
-#ifndef TEXTURE_ENABLED
-static int pushFront(Buffer *buf, Vertices *vert, Colors *colors)
-#else //TEXTURE_ENABLED
+// TEXTURING_PART without texcoords and wclips
 static int pushFront(Buffer *buf, Vertices *vert, Colors *colors, Texcoords *texcoords, Wclips *wclips)
-#endif //TEXTURE_ENABLED
 {
 	if (bufIsFull(buf)){
 		return -1;
@@ -167,7 +158,7 @@ static int pushFront(Buffer *buf, Vertices *vert, Colors *colors, Texcoords *tex
 		trPtr->v2.y[buf->front] = vert->v[7];
 		trPtr->v2.z[buf->front] = vert->v[8];
 		trPtr->v2.color[buf->front] = colors->c[2];
-#ifdef TEXTURE_ENABLED
+		//TEXTURING_PART
 		trPtr->v0.w[buf->front] = wclips->w[0];
 		trPtr->v1.w[buf->front] = wclips->w[1];
 		trPtr->v2.w[buf->front] = wclips->w[2];
@@ -177,7 +168,7 @@ static int pushFront(Buffer *buf, Vertices *vert, Colors *colors, Texcoords *tex
 		trPtr->v1.t[buf->front] = texcoords->st[3];
 		trPtr->v2.s[buf->front] = texcoords->st[4];
 		trPtr->v2.t[buf->front] = texcoords->st[5];
-#endif //TEXTURE_ENABLED
+		//TEXTURING_PART
 		return 0;
 	}
 }
@@ -215,7 +206,7 @@ int splitTriangles(TrianglePointers *srcVertex,
 		a.color = srcVertex->v0.color[i];
 		b.color = srcVertex->v1.color[i];
 		c.color = srcVertex->v2.color[i];
-#ifdef TEXTURE_ENABLED
+		//TEXTURING_PART
 		a.w = srcVertex->v0.w[i];
 		b.w = srcVertex->v1.w[i];
 		c.w = srcVertex->v2.w[i];
@@ -225,7 +216,7 @@ int splitTriangles(TrianglePointers *srcVertex,
 		b.t = srcVertex->v1.t[i];
 		c.s = srcVertex->v2.s[i];
 		c.t = srcVertex->v2.t[i];
-#endif //TEXTURE_ENABLED
+		//TEXTURING_PART
 		Triangle tr{a, b, c};
 
 		// Try to triangulate the triangle
@@ -277,9 +268,7 @@ int splitOneTriangle(	const Triangle& tr,
 						tr.points[1].color, 
 						tr.points[2].color
 					  };	
-#ifndef TEXTURE_ENABLED
-	pushBack(buf, &trVertices, &trColors);
-#else //TEXTURE_ENABLED
+	// TEXTURING_PART
 	Texcoords trTexcoords = {
 		                      tr.points[0].s,
 		                      tr.points[0].t,
@@ -296,7 +285,7 @@ int splitOneTriangle(	const Triangle& tr,
                       };
 
 	pushBack(buf, &trVertices, &trColors, &trTexcoords, &trWclips);
-#endif //TEXTURE_ENABLED
+	// TEXTURING_PART
 
 	int overflow = 0; // Indicate that there is no more space in output buffer
 
@@ -304,13 +293,11 @@ int splitOneTriangle(	const Triangle& tr,
 		// Get the triangle out of the stack
 		Vertices curTrVertices;
 		Colors curTrColors;
-#ifndef TEXTURE_ENABLED
-		popBack(buf, &curTrVertices, &curTrColors);
-#else //TEXTURE_ENABLED
+		//TEXTURING_PART
 		Texcoords curTrTexcoords;
 		Wclips curTrWclips;
 		popBack(buf, &curTrVertices, &curTrColors, &curTrTexcoords, &curTrWclips);
-#endif //TEXTURE_ENABLED
+		//TEXTURING_PART
 		// Create triangle from vertices and colors
 		// to pass it to the function
 		Point a;
@@ -329,7 +316,7 @@ int splitOneTriangle(	const Triangle& tr,
 		a.color = curTrColors.c[0]; 
 		b.color = curTrColors.c[1]; 
 		c.color = curTrColors.c[2]; 
-#ifdef TEXTURE_ENABLED
+		//TEXTURING_PART
 		a.w = curTrWclips.w[0];
 		b.w = curTrWclips.w[1];
 		c.w = curTrWclips.w[2];
@@ -339,7 +326,7 @@ int splitOneTriangle(	const Triangle& tr,
 		b.t = curTrTexcoords.st[3];
 		c.s = curTrTexcoords.st[4];
 		c.t = curTrTexcoords.st[5];
-#endif //TEXTURE_ENABLED
+		//TEXTURING_PART
 		Triangle tr{a, b, c};
 
 		// Process the triangle:
@@ -367,9 +354,7 @@ int splitOneTriangle(	const Triangle& tr,
 											trOut1.points[1].color,
 											trOut1.points[2].color
 										};
-#ifndef TEXTURE_ENABLED				
-				pushBack(buf, &trOut1Vertices, &trOut1Colors);
-#else //TEXTURE_ENABLED				
+				// TEXTURING_PART
 				Texcoords trOut1Texcoords = {
 											trOut1.points[0].s,
 											trOut1.points[0].t,
@@ -386,7 +371,7 @@ int splitOneTriangle(	const Triangle& tr,
 										};
 
 				pushBack(buf, &trOut1Vertices, &trOut1Colors, &trOut1Texcoords, &trOut1Wclips);
-#endif //TEXTURE_ENABLED				
+				// TEXTURING_PART
 				Vertices trOut2Vertices = {
 											trOut2.points[0].x,
 											trOut2.points[0].y,
@@ -403,9 +388,7 @@ int splitOneTriangle(	const Triangle& tr,
 											trOut2.points[1].color,
 											trOut2.points[2].color
 										};
-#ifndef TEXTURE_ENABLED				
-				pushBack(buf, &trOut2Vertices, &trOut2Colors);
-#else //TEXTURE_ENABLED				
+				//TEXTURING_PART
 				Texcoords trOut2Texcoords = {
 											trOut2.points[0].s,
 											trOut2.points[0].t,
@@ -421,7 +404,7 @@ int splitOneTriangle(	const Triangle& tr,
 											trOut2.points[2].w
 									  };
 				pushBack(buf, &trOut2Vertices, &trOut2Colors, &trOut2Texcoords, &trOut2Wclips);
-#endif //TEXTURE_ENABLED	
+				//TEXTURING_PART
 			} else {
 				// This triangle splitted is too big
 				// There is no space in output buffer
@@ -448,9 +431,7 @@ int splitOneTriangle(	const Triangle& tr,
 										tr.points[1].color,
 										tr.points[2].color
 									};
-#ifndef TEXTURE_ENABLED
-			pushFront(buf, &trVertices, &trColors);
-#else //TEXTURE_ENABLED
+			//TEXTURING_PART
 			Texcoords trTexcoords = {
 				                      tr.points[0].s,
 				                      tr.points[0].t,
@@ -467,7 +448,7 @@ int splitOneTriangle(	const Triangle& tr,
 			                  };
 
 			pushFront(buf, &trVertices, &trColors, &trTexcoords, &trWclips);
-#endif //TEXTURE_ENABLED
+			//TEXTURING_PART
 
 		}		
 	}
@@ -505,8 +486,8 @@ int checkAndSplitFirstLargeEdge(const Triangle& tr,
 		d.x = (a.x + b.x) / 2;
 		d.y = (a.y + b.y) / 2;
 		d.z = (a.z + b.z) / 2;
-		
-#if defined(TEXTURE_ENABLED) && defined (PERSPECTIVE_CORRECT_TRIANGULATION)
+// TEXTURING_PART	
+#if defined (PERSPECTIVE_CORRECT_TRIANGULATION)
 		//XXX: Warning. Potential division by zero
 		float oneOverWa = 1.0 / a.w;
 		float oneOverWb = 1.0 / b.w;
@@ -516,14 +497,14 @@ int checkAndSplitFirstLargeEdge(const Triangle& tr,
 		d.color.vec[1] = (a.color.vec[1] * oneOverWa + b.color.vec[1] * oneOverWb) * oneOverW;
 		d.color.vec[2] = (a.color.vec[2] * oneOverWa + b.color.vec[2] * oneOverWb) * oneOverW;
 		d.color.vec[3] = (a.color.vec[3] * oneOverWa + b.color.vec[3] * oneOverWb) * oneOverW;
-#else //TEXTURE_ENABLED && PERSPECTIVE_CORRECT_TRIANGULATION
+#else //PERSPECTIVE_CORRECT_TRIANGULATION
 		d.color.vec[0] = (a.color.vec[0] + b.color.vec[0]) * 0.5;
 		d.color.vec[1] = (a.color.vec[1] + b.color.vec[1]) * 0.5;
 		d.color.vec[2] = (a.color.vec[2] + b.color.vec[2]) * 0.5;
 		d.color.vec[3] = (a.color.vec[3] + b.color.vec[3]) * 0.5;
-#endif //TEXTURE_ENABLED && PERSPECTIVE_CORRECT_TRIANGULATION
+#endif //PERSPECTIVE_CORRECT_TRIANGULATION
 
-#ifdef TEXTURE_ENABLED
+// TEXTURING_PART
 #ifdef PERSPECTIVE_CORRECT_TRIANGULATION
 		d.w = (a.w * oneOverWa + b.w * oneOverWb) * oneOverW;
 #else //PERSPECTIVE_CORRECT_TRIANGULATION
@@ -537,7 +518,7 @@ int checkAndSplitFirstLargeEdge(const Triangle& tr,
 		d.s = (a.s + b.s) * 0.5;
 		d.t = (a.t + b.t) * 0.5;
 #endif //PERSPECTIVE_CORRECT_TRIANGULATION
-#endif //TEXTURE_ENABLED
+// TEXTURING_PART
 
 		trOut1 = Triangle{a, d, c};
 		trOut2 = Triangle{b, d, c};
@@ -550,7 +531,7 @@ int checkAndSplitFirstLargeEdge(const Triangle& tr,
 		d.y = (b.y + c.y) / 2;
 		d.z = (b.z + c.z) / 2;
 
-#if defined(TEXTURE_ENABLED) && defined (PERSPECTIVE_CORRECT_TRIANGULATION)
+#if defined (PERSPECTIVE_CORRECT_TRIANGULATION)
 		//XXX: Warning. Potential division by zero
 		float oneOverWb = 1.0 / b.w;
 		float oneOverWc = 1.0 / c.w;
@@ -560,14 +541,14 @@ int checkAndSplitFirstLargeEdge(const Triangle& tr,
 		d.color.vec[1] = (b.color.vec[1] * oneOverWb + c.color.vec[1] * oneOverWc) * oneOverW;
 		d.color.vec[2] = (b.color.vec[2] * oneOverWb + c.color.vec[2] * oneOverWc) * oneOverW;
 		d.color.vec[3] = (b.color.vec[3] * oneOverWb + c.color.vec[3] * oneOverWc) * oneOverW;
-#else //TEXTURE_ENABLED && PERSPECTIVE_CORRECT_TRIANGULATION
+#else //PERSPECTIVE_CORRECT_TRIANGULATION
 		d.color.vec[0] = (b.color.vec[0] + c.color.vec[0]) * 0.5;
 		d.color.vec[1] = (b.color.vec[1] + c.color.vec[1]) * 0.5;
 		d.color.vec[2] = (b.color.vec[2] + c.color.vec[2]) * 0.5;
 		d.color.vec[3] = (b.color.vec[3] + c.color.vec[3]) * 0.5;
-#endif //TEXTURE_ENABLED && PERSPECTIVE_CORRECT_TRIANGULATION
+#endif //PERSPECTIVE_CORRECT_TRIANGULATION
 
-#ifdef TEXTURE_ENABLED
+//TEXTURING_PART
 #ifdef PERSPECTIVE_CORRECT_TRIANGULATION
 		d.w = (b.w * oneOverWb + c.w * oneOverWc) * oneOverW;
 #else //PERSPECTIVE_CORRECT_TRIANGULATION
@@ -581,7 +562,7 @@ int checkAndSplitFirstLargeEdge(const Triangle& tr,
 		d.s = (b.s + c.s) * 0.5;
 		d.t = (b.t + c.t) * 0.5;
 #endif //PERSPECTIVE_CORRECT_TRIANGULATION
-#endif //TEXTURE_ENABLED
+//TEXTURING_PART
 
 		trOut1 = Triangle{b, d, a};
 		trOut2 = Triangle{c, d, a};
@@ -594,7 +575,8 @@ int checkAndSplitFirstLargeEdge(const Triangle& tr,
 		d.y = (a.y + c.y) / 2;
 		d.z = (a.z + c.z) / 2;
 		
-#if defined(TEXTURE_ENABLED) && defined (PERSPECTIVE_CORRECT_TRIANGULATION)
+//TEXTURING_PART
+#if defined (PERSPECTIVE_CORRECT_TRIANGULATION)
 		//XXX: Warning. Potential division by zero
 		float oneOverWa = 1.0 / a.w;
 		float oneOverWc = 1.0 / c.w;
@@ -604,14 +586,14 @@ int checkAndSplitFirstLargeEdge(const Triangle& tr,
 		d.color.vec[1] = (a.color.vec[1] * oneOverWa + c.color.vec[1] * oneOverWc) * oneOverW;
 		d.color.vec[2] = (a.color.vec[2] * oneOverWa + c.color.vec[2] * oneOverWc) * oneOverW;
 		d.color.vec[3] = (a.color.vec[3] * oneOverWa + c.color.vec[3] * oneOverWc) * oneOverW;
-#else //TEXTURE_ENABLED && PERSPECTIVE_CORRECT_TRIANGULATION
+#else //PERSPECTIVE_CORRECT_TRIANGULATION
 		d.color.vec[0] = (a.color.vec[0] + c.color.vec[0]) * 0.5;
 		d.color.vec[1] = (a.color.vec[1] + c.color.vec[1]) * 0.5;
 		d.color.vec[2] = (a.color.vec[2] + c.color.vec[2]) * 0.5;
 		d.color.vec[3] = (a.color.vec[3] + c.color.vec[3]) * 0.5;
-#endif //TEXTURE_ENABLED && PERSPECTIVE_CORRECT_TRIANGULATION
+#endif //PERSPECTIVE_CORRECT_TRIANGULATION
 		
-#ifdef TEXTURE_ENABLED
+//TEXTURING_PART
 #ifdef PERSPECTIVE_CORRECT_TRIANGULATION
 		d.w = (a.w * oneOverWa + c.w * oneOverWc) * oneOverW;
 #else //PERSPECTIVE_CORRECT_TRIANGULATION
@@ -625,7 +607,7 @@ int checkAndSplitFirstLargeEdge(const Triangle& tr,
 		d.s = (a.s + c.s) * 0.5;
 		d.t = (a.t + c.t) * 0.5;
 #endif //PERSPECTIVE_CORRECT_TRIANGULATION
-#endif //TEXTURE_ENABLED
+//TEXTURING_PART
 
 		trOut1 = Triangle{a, d, b};
 		trOut2 = Triangle{c, d, b};
@@ -670,7 +652,8 @@ int checkAndSplitLargestEdge(	const Triangle& tr,
 		d.y = (a.y + b.y) / 2;
 		d.z = (a.z + b.z) / 2;
 
-#if defined(TEXTURE_ENABLED) && defined (PERSPECTIVE_CORRECT_TRIANGULATION)
+//TEXTURING_PART
+#if defined (PERSPECTIVE_CORRECT_TRIANGULATION)
 		//XXX: Warning. Potential division by zero
 		float oneOverWa = 1.0 / a.w;
 		float oneOverWb = 1.0 / b.w;
@@ -680,14 +663,14 @@ int checkAndSplitLargestEdge(	const Triangle& tr,
 		d.color.vec[1] = (a.color.vec[1] * oneOverWa + b.color.vec[1] * oneOverWb) * oneOverW;
 		d.color.vec[2] = (a.color.vec[2] * oneOverWa + b.color.vec[2] * oneOverWb) * oneOverW;
 		d.color.vec[3] = (a.color.vec[3] * oneOverWa + b.color.vec[3] * oneOverWb) * oneOverW;
-#else //TEXTURE_ENABLED && PERSPECTIVE_CORRECT_TRIANGULATION
+#else //PERSPECTIVE_CORRECT_TRIANGULATION
 		d.color.vec[0] = (a.color.vec[0] + b.color.vec[0]) * 0.5;
 		d.color.vec[1] = (a.color.vec[1] + b.color.vec[1]) * 0.5;
 		d.color.vec[2] = (a.color.vec[2] + b.color.vec[2]) * 0.5;
 		d.color.vec[3] = (a.color.vec[3] + b.color.vec[3]) * 0.5;
-#endif //TEXTURE_ENABLED && PERSPECTIVE_CORRECT_TRIANGULATION
+#endif //PERSPECTIVE_CORRECT_TRIANGULATION
 
-#ifdef TEXTURE_ENABLED
+//TEXTURING_PART
 #ifdef PERSPECTIVE_CORRECT_TRIANGULATION
 		d.w = (a.w * oneOverWa + b.w * oneOverWb) * oneOverW;
 #else //PERSPECTIVE_CORRECT_TRIANGULATION
@@ -701,7 +684,7 @@ int checkAndSplitLargestEdge(	const Triangle& tr,
 		d.s = (a.s + b.s) * 0.5;
 		d.t = (a.t + b.t) * 0.5;
 #endif //PERSPECTIVE_CORRECT_TRIANGULATION
-#endif //TEXTURE_ENABLED
+//TEXTURING_PART
 			
 		trOut1 = Triangle{ c, a, d };
 		trOut2 = Triangle{ c, d, b };
