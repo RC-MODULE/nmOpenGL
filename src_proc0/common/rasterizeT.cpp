@@ -19,7 +19,7 @@ SECTION(".text_demo3d") void triangleOffset(Triangles &src, Triangles &dst, int 
 	dst.y2 = src.y2 + offset;
 	dst.z = src.z + offset;
 	dst.colors = src.colors + offset;
-#ifdef TEXTURE_ENABLED
+	// TEXTURING_PART
 	//TODO: May be remove check cntxt->texState.textureEnabled value
 	//if it is slowing down pipeline more than extra sum.
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
@@ -34,7 +34,7 @@ SECTION(".text_demo3d") void triangleOffset(Triangles &src, Triangles &dst, int 
 		dst.w1 = src.w1 + offset;
 		dst.w2 = src.w2 + offset;
 	}
-#endif //TEXTURE_ENABLED
+	// TEXTURING_PART
 }
 
 SECTION(".text_demo3d")
@@ -55,7 +55,7 @@ void rasterizeT(const Triangles* triangles, const BitMask* masks){
 	localTrian.z = (int*)cntxt->buffer3 + 4 * NMGL_SIZE;
 	int* indices = (int*)cntxt->buffer4;
 
-#ifdef TEXTURE_ENABLED
+	// TEXTURING_PART
 	if (cntxt->texState.textureEnabled) {
 		localTrian.s0 = cntxt->buffer0 + 10 * NMGL_SIZE;
 		localTrian.t0 = cntxt->buffer0 + 11 * NMGL_SIZE;
@@ -67,7 +67,7 @@ void rasterizeT(const Triangles* triangles, const BitMask* masks){
 		localTrian.w1 = cntxt->buffer3 + 10 * NMGL_SIZE;
 		localTrian.w2 = cntxt->buffer3 + 11 * NMGL_SIZE;
 	}
-#endif //TEXTURE_ENABLED
+	// TEXTURING_PART
 
 
 	for (int segY = 0, iSeg = 0; segY < cntxt->windowInfo.nRows; segY++) {
@@ -88,16 +88,13 @@ void rasterizeT(const Triangles* triangles, const BitMask* masks){
 						cntxt->synchro.pushInstr(&command);
 					}
 
-#ifdef TEXTURE_ENABLED
 					if (cntxt->texState.textureEnabled) {
+						// TEXTURING_PART
 						copyArraysByIndices((void**)triangles, indices, (void**)&localTrian, 16, resultSize);
 					}
 					else {
 						copyArraysByIndices((void**)triangles, indices, (void**)&localTrian, 7, resultSize);
 					}
-#else //TEXTURE_ENABLED
-					copyArraysByIndices((void**)triangles, indices, (void**)&localTrian, 7, resultSize);
-#endif //TEXTURE_ENABLED
 					copyColorByIndices_BGRA_RGBA(triangles->colors, indices, (v4nm32s*)localTrian.colors, resultSize);
 					localTrian.size = resultSize;
 

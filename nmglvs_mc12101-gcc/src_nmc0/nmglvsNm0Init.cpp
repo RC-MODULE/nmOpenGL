@@ -32,7 +32,7 @@ SECTION(".data_imu3")	float nmglx2[NMGL_SIZE];
 SECTION(".data_imu3")	float nmgly2[NMGL_SIZE];
 SECTION(".data_imu4")	int nmglz_int[NMGL_SIZE];
 SECTION(".data_imu6")	v4nm32s nmgllightsValues[NMGL_SIZE];
-#ifdef TEXTURE_ENABLED
+//TEXTURING_PART
 SECTION(".data_imu1")	float nmgls0[NMGL_SIZE];
 SECTION(".data_imu2")	float nmglt0[NMGL_SIZE];
 SECTION(".data_imu3")	float nmgls1[NMGL_SIZE];
@@ -42,7 +42,7 @@ SECTION(".data_imu6")	float nmglt2[NMGL_SIZE];
 SECTION(".data_imu7")	float nmglw0[NMGL_SIZE];
 SECTION(".data_imu7")	float nmglw1[NMGL_SIZE];
 SECTION(".data_imu7")	float nmglw2[NMGL_SIZE];
-#endif //TEXTURE_ENABLED
+//TEXTURING_PART
 
 SECTION(".data_imu6") int dividedMasksMemory[4][3 * NMGL_SIZE / 32];
 
@@ -137,9 +137,9 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 		cntxt->beginEndInfo.vertex = myMallocT<v4nm32f>(BIG_NMGL_SIZE);
 		cntxt->beginEndInfo.normal = myMallocT<v4nm32f>(BIG_NMGL_SIZE);
 		cntxt->beginEndInfo.color = myMallocT<v4nm32f>(BIG_NMGL_SIZE);
-#ifdef TEXTURE_ENABLED
+		//TEXTURING_PART
 		cntxt->beginEndInfo.texcoord = myMallocT<v2nm32f>(BIG_NMGL_SIZE); //XXX: Only one texture unit is supported.
-#endif //TEXTURE_ENABLED
+		//TEXTURING_PART
 		cntxt->beginEndInfo.inBeginEnd = false;
 		cntxt->beginEndInfo.maxSize = BIG_NMGL_SIZE;
 
@@ -154,9 +154,9 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 		//Must be in EMI. 
 		//EMI has enough space and does not require address mapping at mc12101
 		setHeap(12);
-#ifdef TEXTURE_ENABLED
+		//TEXTURING_PART
 		mipmap = myMallocT<NMGLubyte>(MIPMAP_MEM_SIZE); 
-#endif //TEXTURE_ENABLED
+		//TEXTURING_PART
 	}
 	catch (int& e) {
 		halHostSync(0xDEADB00F);
@@ -183,7 +183,7 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 	cntxt->trianInner.x2 = nmglx2;
 	cntxt->trianInner.y2 = nmgly2;
 	cntxt->trianInner.z = nmglz_int;
-#ifdef TEXTURE_ENABLED
+	//TEXTURING_PART
 	cntxt->trianInner.s0 = nmgls0;
 	cntxt->trianInner.t0 = nmglt0;
 	cntxt->trianInner.s1 = nmgls1;
@@ -193,7 +193,7 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 	cntxt->trianInner.w0 = nmglw0;
 	cntxt->trianInner.w1 = nmglw1;
 	cntxt->trianInner.w2 = nmglw2;
-#endif //TEXTURE_ENABLED
+	//TEXTURING_PART
 	cntxt->trianInner.colors = nmgllightsValues;
 	cntxt->trianInner.maxSize = NMGL_SIZE;
 	cntxt->trianInner.size = 0;

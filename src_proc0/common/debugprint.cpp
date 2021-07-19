@@ -10,11 +10,11 @@ void printDataForNmpu1(DataForNmpu1* data, int elementsAmount) {
 		printf("v0={%d,%d}, ", data->x0[i], data->y0[i]);
 		printf("v1={%d,%d}, ", data->x1[i], data->y1[i]);
 		printf("v2={%d,%d}\n", data->x2[i], data->y2[i]);
-#ifdef TEXTURE_ENABLED
+		// TEXTURING_PART
 		printf("tex s0,t0={%d,%d}, ", data->s0[i], data->t0[i]);
 		printf("tex s1,t1={%d,%d}, ", data->s1[i], data->t1[i]);
 		printf("tex s2,t2={%d,%d}\n", data->s2[i], data->t2[i]);
-#endif //TEXTURE_ENABLED
+		// TEXTURING_PART
 	}
 
 }
@@ -27,11 +27,11 @@ void printTriangles(Triangles* data, int elementsAmount) {
 		printf("v0={%f,%f,%d}, ", data->x0[i], data->y0[i], data->z[i]);
 		printf("v1={%f,%f,%d}, ", data->x1[i], data->y1[i], data->z[i]);
 		printf("v2={%f,%f,%d}\n", data->x2[i], data->y2[i], data->z[i]);
-#ifdef TEXTURE_ENABLED
+		// TEXTURING_PART
 		printf("tex s0,t0={%f,%f}, ", data->s0[i], data->t0[i]);
 		printf("tex s1,t1={%f,%f}, ", data->s1[i], data->t1[i]);
 		printf("tex s2,t2={%f,%f}\n", data->s2[i], data->t2[i]);
-#endif //TEXTURE_ENABLED
+		// TEXTURING_PART
 	}
 
 }
@@ -44,11 +44,11 @@ void printTrianglePointers(TrianglePointers* data, int elementsAmount) {
 		printf("v0={%4.2f,%4.2f,%4.2f}, ", data->v0.x[i], data->v0.y[i], data->v0.z[i]);
 		printf("v1={%4.2f,%4.2f,%4.2f}, ", data->v1.x[i], data->v1.y[i], data->v1.z[i]);
 		printf("v2={%4.2f,%4.2f,%4.2f}\n", data->v2.x[i], data->v2.y[i], data->v2.z[i]);
-#ifdef TEXTURE_ENABLED
+		// TEXTURING_PART
 		printf("tex s0,t0={%4.2f,%4.2f}, ", data->v0.s[i], data->v0.t[i]);
 		printf("tex s1,t1={%4.2f,%4.2f}, ", data->v1.s[i], data->v1.t[i]);
 		printf("tex s2,t2={%4.2f,%4.2f}\n", data->v2.s[i], data->v2.t[i]);
-#endif //TEXTURE_ENABLED
+		// TEXTURING_PART
 	}
 
 }

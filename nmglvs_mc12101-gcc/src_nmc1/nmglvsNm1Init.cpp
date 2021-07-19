@@ -22,7 +22,7 @@ SECTION(".data_imu0") Vector2 ptrnInnPoints[POLYGONS_SIZE];
 SECTION(".data_imu0") Size ptrnSizes[POLYGONS_SIZE];
 SECTION(".data_shmem1") nm32s imageOffsets[POLYGONS_SIZE];
 
-#ifdef TEXTURE_ENABLED
+//TEXTURING_PART
 SECTION(".data_imu0") float x0[POLYGONS_SIZE];
 SECTION(".data_imu0") float y0[POLYGONS_SIZE];
 SECTION(".data_imu0") float x1[POLYGONS_SIZE];
@@ -40,7 +40,7 @@ SECTION(".data_imu0") float texT2[POLYGONS_SIZE];
 SECTION(".data_imu0") float w0[POLYGONS_SIZE];
 SECTION(".data_imu0") float w1[POLYGONS_SIZE];
 SECTION(".data_imu0") float w2[POLYGONS_SIZE];
-#endif //TEXTURE_ENABLED
+//TEXTURING_PART
 
 SECTION(".data_shmem1") nm32s* ppSrcPackPtrns[3 * POLYGONS_SIZE];
 SECTION(".data_shmem1") nm32s* ppDstPackPtrns[3 * POLYGONS_SIZE];
@@ -80,9 +80,9 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 {
 	halSleep(500);
 
-#ifdef TEXTURE_ENABLED
+//TEXTURING_PART
 	//halLedOn(1);
-#endif //TEXTURE_ENABLED
+//TEXTURING_PART
 	halSetProcessorNo(1);
 	//---------- start nm program ------------
 	NMGL_Context_NM1 *cntxt;
@@ -182,7 +182,7 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 	cntxt->t0 = clock();
 	cntxt->pointSize = 1;
 
-#ifdef TEXTURE_ENABLED
+//TEXTURING_PART
 	cntxt->x0 = x0;
 	cntxt->y0 = y0;
 	cntxt->x1 = x1;
@@ -200,7 +200,7 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 	cntxt->w0 = w0;
 	cntxt->w1 = w1;
 	cntxt->w2 = w2;
-#endif //TEXTURE_ENABLED
+//TEXTURING_PART
 	return 0;
 } 
 

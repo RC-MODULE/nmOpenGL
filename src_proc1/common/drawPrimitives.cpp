@@ -4,10 +4,10 @@
 
 int totalSum(nm32s* pVec, int size);
 
-#ifdef TEXTURE_ENABLED
+//TEXTURING_PART
 using namespace tex_nm1; 
 SECTION(".data_imu0") TrianglesInfo triangles;
-#endif //TEXTURE_ENABLED
+//TEXTURING_PART
 
 SECTION(".text_demo3d") void drawPrimitives(NMGL_Context_NM1 *context, int countPrimitives){
 	nm32s* mulZ = (nm32s*)context->buffer0;
@@ -64,7 +64,7 @@ SECTION(".text_demo3d") void drawPrimitives(NMGL_Context_NM1 *context, int count
 			localSize);
 		//mulBuffer теперь хранит цвет
 
-#ifdef TEXTURE_ENABLED
+//TEXTURING_PART
         if (context->texState.textureEnabled) {
 			triangles.x0 = context->x0 + point;
 			triangles.y0 = context->y0 + point;
@@ -94,7 +94,7 @@ SECTION(".text_demo3d") void drawPrimitives(NMGL_Context_NM1 *context, int count
                     mulC,
                     localSize);
         }
-#endif //TEXTURE_ENABLED
+//TEXTURING_PART
 
 		//функция накладывает маску на буфер с цветами 
 		//и копирует треугольник в изображение

@@ -8,9 +8,8 @@
 #include <float.h> //TODO: only FLT_EPSILON is used from float.h
 
 #define TEXTURE_TRIANGLE_SECTION ".text"
-#define TEXTURE_ENABLED
 
-#ifdef TEXTURE_ENABLED
+//TEXTURING_PART
 #define PERSPECTIVE_CORRECT
 
 namespace tex_nm0 {
@@ -394,12 +393,12 @@ color getPixelNearest(Vec2f st, TexImage2D texture)
 	return pixelValue;//TODO return by pointer
 
 }
-#endif //TEXTURE_ENABLED
+//TEXTURING_PART
 
 SECTION(TEXTURE_TRIANGLE_SECTION)
 void textureTriangle(TrianglesInfo* triangles, nm32s* pDstTriangle, int count)
 {
-#ifdef TEXTURE_ENABLED
+//TEXTURING_PART
 
 
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
@@ -1312,15 +1311,15 @@ void textureTriangle(TrianglesInfo* triangles, nm32s* pDstTriangle, int count)
     // printf ("End textureTriangle\n");     
 #endif //DEBUG
 
-#endif //TEXTURE_ENABLED
+//TEXTURING_PART
     return;
 }
 
-#ifdef TEXTURE_ENABLED
+//TEXTURING_PART
 SECTION(TEXTURE_TRIANGLE_SECTION)
 void edgeFunction(float x0, float y0, float x1, float y1, float x2, float y2, float* res)
 {
     *res = (x2 - x0) * (y1 - y0) - (y2 - y0) * (x1 - x0);
 }
-#endif //TEXTURE_ENABLED
+//TEXTURING_PART
 } //end of namespace tex_nm0

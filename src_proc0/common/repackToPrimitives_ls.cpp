@@ -20,12 +20,12 @@ int repackToPrimitives_ls(const v4nm32f *srcVertex,	const v4nm32f *srcColor, con
         dstPointers->v1.w[i]  = srcVertex[i + 1].vec[3];
 		dstPointers->v1.color[i] = srcColor[i + 1];
 
-#ifdef TEXTURE_ENABLED
+		//TEXTURING_PART
 		dstPointers->v0.s[i] = srcTex[i + 0].v0;
 		dstPointers->v0.t[i] = srcTex[i + 0].v1;
 		dstPointers->v1.s[i] = srcTex[i + 1].v0;
 		dstPointers->v1.t[i] = srcTex[i + 1].v1;
-#endif //TEXTURE_ENABLED
+		//TEXTURING_PART
 	}
 	
 	if(result % 2){
@@ -41,12 +41,12 @@ int repackToPrimitives_ls(const v4nm32f *srcVertex,	const v4nm32f *srcColor, con
 		dstPointers->v1.w[result] = dstPointers->v1.w[result - 1];
 		dstPointers->v1.color[result] = dstPointers->v1.color[result - 1];
 
-#ifdef TEXTURE_ENABLED
+		//TEXTURING_PART
 		dstPointers->v0.s[result] = dstPointers->v0.s[result - 1];
 		dstPointers->v0.t[result] = dstPointers->v0.t[result - 1];
 		dstPointers->v1.s[result] = dstPointers->v1.s[result - 1];
 		dstPointers->v1.t[result] = dstPointers->v1.t[result - 1];
-#endif //TEXTURE_ENABLED
+		//TEXTURING_PART
 		
 		result++;
 	}	

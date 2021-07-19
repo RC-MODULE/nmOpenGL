@@ -76,7 +76,7 @@ public:
 	nm32s* valuesC;
 	int dummy;
 
-#ifdef TEXTURE_ENABLED
+	// TEXTURING PART
 	float* x0;
 	float* y0;
 	float* x1;
@@ -94,7 +94,7 @@ public:
 	float* w0;
 	float* w1;
 	float* w2;
-#endif //TEXTURE_ENABLED
+	// TEXTURING PART
 	
 	NMGL_Context_NM1_Texture texState;
 
