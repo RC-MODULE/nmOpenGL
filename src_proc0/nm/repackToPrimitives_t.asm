@@ -4,7 +4,7 @@
 // 		TrianglePointers *dstVertex,
 // 		int vertexAmount);
 
-global _repackToPrimitives_t_full: label;// объявление глобальной метки
+global _repackToPrimitives_t: label;// объявление глобальной метки
 //import from rtmacro.mlb;
 extern IDiv32: label;
 
@@ -125,7 +125,7 @@ macro extractPair(coordAddr1, coordAddr2, delta)
 end extractPair; 
 
 begin ".text_demo3d"			// начало секции кода
-<_repackToPrimitives_t_full>	// определение глобальной метки
+<_repackToPrimitives_t>	// определение глобальной метки
     ar5 = ar7 - 2;
     
     push ar0,gr0;
