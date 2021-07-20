@@ -30,11 +30,11 @@ void nmglVertex2f(NMGLfloat x, NMGLfloat y)
 	cntxt->beginEndInfo.normal[i].vec[2] = cntxt->currentNormal.vec[2];
 	cntxt->beginEndInfo.normal[i].vec[3] = cntxt->currentNormal.vec[3];
 
-#ifdef TEXTURE_ENABLED
+	//TEXTURING_PART
 	//XXX: Only one texture unit is supported.
 	cntxt->beginEndInfo.texcoord[i].v0 = cntxt->texState.curTexCoords[0].s;
 	cntxt->beginEndInfo.texcoord[i].v1 = cntxt->texState.curTexCoords[0].t;
-#endif //TEXTURE_ENABLED
+	//TEXTURING_PART
 	
 	cntxt->beginEndInfo.vertexCounter++;
 }
@@ -60,11 +60,11 @@ void nmglVertex3f(NMGLfloat x, NMGLfloat y, NMGLfloat z)
 	cntxt->beginEndInfo.normal[i].vec[2] = cntxt->currentNormal.vec[2];
 	cntxt->beginEndInfo.normal[i].vec[3] = cntxt->currentNormal.vec[3];
 	
-#ifdef TEXTURE_ENABLED
+	//TEXTURING_PART
 	//XXX: Only one texture unit is supported.
 	cntxt->beginEndInfo.texcoord[i].v0 = cntxt->texState.curTexCoords[0].s;
 	cntxt->beginEndInfo.texcoord[i].v1 = cntxt->texState.curTexCoords[0].t;
-#endif //TEXTURE_ENABLED
+	//TEXTURING_PART
 
 	cntxt->beginEndInfo.vertexCounter++;
 }
@@ -90,11 +90,11 @@ void nmglVertex2fv(const NMGLfloat *v)
 	cntxt->beginEndInfo.normal[i].vec[2] = cntxt->currentNormal.vec[2];
 	cntxt->beginEndInfo.normal[i].vec[3] = cntxt->currentNormal.vec[3];
 	
-#ifdef TEXTURE_ENABLED
+	//TEXTURING_PART
 	//XXX: Only one texture unit is supported.
 	cntxt->beginEndInfo.texcoord[i].v0 = cntxt->texState.curTexCoords[0].s;
 	cntxt->beginEndInfo.texcoord[i].v1 = cntxt->texState.curTexCoords[0].t;
-#endif //TEXTURE_ENABLED
+	//TEXTURING_PART
 
 	cntxt->beginEndInfo.vertexCounter++;
 }
@@ -120,11 +120,11 @@ void nmglVertex3fv(const NMGLfloat *v)
 	cntxt->beginEndInfo.normal[i].vec[2] = cntxt->currentNormal.vec[2];
 	cntxt->beginEndInfo.normal[i].vec[3] = cntxt->currentNormal.vec[3];
 	
-#ifdef TEXTURE_ENABLED
+	//TEXTURING_PART
 	//XXX: Only one texture unit is supported.
 	cntxt->beginEndInfo.texcoord[i].v0 = cntxt->texState.curTexCoords[0].s;
 	cntxt->beginEndInfo.texcoord[i].v1 = cntxt->texState.curTexCoords[0].t;
-#endif //TEXTURE_ENABLED
+	//TEXTURING_PART
 
 	cntxt->beginEndInfo.vertexCounter++;
 }

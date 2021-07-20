@@ -88,10 +88,10 @@ struct CombinePointers {
 	float *y;
 	float *z;
 	float *w;
-#ifdef TEXTURE_ENABLED
+	// TEXTURING PART
 	float *s;
 	float *t;
-#endif //TEXTURE_ENABLED
+	// TEXTURING PART
 	v4nm32f* color;
 	int dummy;
 };
@@ -123,7 +123,7 @@ struct Lines{
 	float* x1;
 	float* y1;
 	int* z;
-#ifdef TEXTURE_ENABLED 
+	// TEXTURING PART
 	//order is important
 	float* s0;
 	float* t0;
@@ -131,7 +131,7 @@ struct Lines{
 	float* t1;
 	float* w0;
 	float* w1;
-#endif //TEXTURE_ENABLED 
+	// TEXTURING PART
 	v4nm32s* colors;
 	int size;
 	int maxSize;
@@ -154,7 +154,7 @@ struct Triangles{
 	float* x2;
 	float* y2;
 	int* z;
-#ifdef TEXTURE_ENABLED 
+	// TEXTURING PART
 	//order is important
 	float* s0;
 	float* t0;
@@ -166,7 +166,7 @@ struct Triangles{
 	float* w1;
 	float* w2;
 	int dummy;
-#endif //TEXTURE_ENABLED 
+	// TEXTURING PART
 	v4nm32s* colors;
 	int size;
 	int maxSize;
@@ -182,9 +182,9 @@ public:
 	v4nm32f* vertex;
 	v4nm32f* normal;
 	v4nm32f* color;
-#ifdef TEXTURE_ENABLED
+	// TEXTURING PART
 	v2nm32f* texcoord;//XXX: Only one texture unit is supported.
-#endif //TEXTURE_ENABLED
+	// TEXTURING PART
 	int vertexCounter;
 
 	NMGLenum mode;
@@ -1306,7 +1306,7 @@ extern "C"{
 	 */
 	void sortByY2(float* srcXY0, float* srcXY1, int size);
 
-#ifdef TEXTURE_ENABLED
+	// TEXTURING PART
 	/**
 	 *  \brief Функция поэлементной сортировки данных X,Y,S,T,W вершин 0,1,2
 	 *  по возрастанию Y. Для i-го входного набора вершин 0,1,2 упорядочивает 
@@ -1333,7 +1333,7 @@ extern "C"{
 		float* srcS2, float* srcT2,
 		float* srcW0, float* srcW1, float* srcW2,
 		int size);
-#endif //TEXTURE_ENABLED
+	// TEXTURING PART
 
 	/**
 	 *  \defgroup split_v4nm32f split_v4nm32f

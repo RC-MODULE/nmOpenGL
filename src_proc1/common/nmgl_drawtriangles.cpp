@@ -28,7 +28,7 @@ SECTION(".text_demo3d") void NMGL_DrawTriangles(NMGL_Context_NM1 *context, Comma
 	nmppsCopy_32s(poly->color, context->buffer0, 4 * poly->count);
 	nmppsConvert_32s8s(context->buffer0, (nm8s*)context->valuesC, 4 * poly->count);
 	nmppsCopy_32s(poly->z, context->valuesZ, poly->count);
-#ifdef TEXTURE_ENABLED
+//TEXTURING_PART
 	if (context->texState.textureEnabled) {
 		for (int i = 0; i < poly->count; i++) {
 			context->x0[i] = (float)poly->x0[i] + context->texState.segX0;
@@ -50,7 +50,7 @@ SECTION(".text_demo3d") void NMGL_DrawTriangles(NMGL_Context_NM1 *context, Comma
 			context->w2[i] = poly->w2[i];
 		}
 	}
-#endif //TEXTURE_ENABLED
+//TEXTURING_PART
 	msdWaitDma(1);
 
 	poly->count = 0;
