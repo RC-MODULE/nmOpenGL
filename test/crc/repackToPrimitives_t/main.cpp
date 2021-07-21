@@ -265,11 +265,19 @@ int repackToPrimitives_t_nOutputTriangles_AllDataAreCorrect(int n)
 	//  8 floats - x, y, z, w,       r, g, b, a
 	int outputCoordCount = ATTR_PER_VERTEX * 3 * outputTrianglesCount;	// number of output coords
 
+#ifdef __NM__
     v4nm32f     srcVertex[vertCount];
     v4nm32f     srcColor[vertCount];
     v2nm32f     srcTex[vertCount];
 	nm32f real_output[outputCoordCount];
 	nm32f expected_output[outputCoordCount];
+#else
+    v4nm32f     *srcVertex 			= (v4nm32f *) malloc(sizeof(v4nm32f) * vertCount);
+    v4nm32f     *srcColor			= (v4nm32f *) malloc(sizeof(v4nm32f) * vertCount);
+    v2nm32f     *srcTex				= (v2nm32f *) malloc(sizeof(v2nm32f) * vertCount);
+	nm32f 		*real_output		= (nm32f *) malloc(sizeof(nm32f) * outputCoordCount);
+	nm32f 		*expected_output	= (nm32f *) malloc(sizeof(nm32f) * outputCoordCount);
+#endif	// __NM__
 	
 	// Initialize input arrays: coords, colors and textures (if texturing is enabled)
 	initializeInput(srcVertex, srcColor, srcTex, vertCount);
@@ -322,11 +330,19 @@ int repackToPrimitives_t_nOutputTriangles_v0CoordsAreCorrect(int n)
 	//  8 floats - x, y, z, w,       r, g, b, a
 	int outputCoordCount = ATTR_PER_VERTEX * 3 * outputTrianglesCount;	// number of output coords
 
+#ifdef __NM__
     v4nm32f     srcVertex[vertCount];
     v4nm32f     srcColor[vertCount];
     v2nm32f     srcTex[vertCount];
 	nm32f real_output[outputCoordCount];
 	nm32f expected_output[outputCoordCount];
+#else
+    v4nm32f     *srcVertex 			= (v4nm32f *) malloc(sizeof(v4nm32f) * vertCount);
+    v4nm32f     *srcColor			= (v4nm32f *) malloc(sizeof(v4nm32f) * vertCount);
+    v2nm32f     *srcTex				= (v2nm32f *) malloc(sizeof(v2nm32f) * vertCount);
+	nm32f 		*real_output		= (nm32f *) malloc(sizeof(nm32f) * outputCoordCount);
+	nm32f 		*expected_output	= (nm32f *) malloc(sizeof(nm32f) * outputCoordCount);
+#endif	// __NM__
 	
 	// Initialize input arrays: coords, colors and textures (if texturing is enabled)
 	initializeInput(srcVertex, srcColor, srcTex, vertCount);
@@ -381,11 +397,19 @@ int repackToPrimitives_t_nOutputTriangles_v0ColorsAreCorrect(int n)
 	//  8 floats - x, y, z, w,       r, g, b, a
 	int outputCoordCount = ATTR_PER_VERTEX * 3 * outputTrianglesCount;	// number of output coords
 
+#ifdef __NM__
     v4nm32f     srcVertex[vertCount];
     v4nm32f     srcColor[vertCount];
     v2nm32f     srcTex[vertCount];
 	nm32f real_output[outputCoordCount];
 	nm32f expected_output[outputCoordCount];
+#else
+    v4nm32f     *srcVertex 			= (v4nm32f *) malloc(sizeof(v4nm32f) * vertCount);
+    v4nm32f     *srcColor			= (v4nm32f *) malloc(sizeof(v4nm32f) * vertCount);
+    v2nm32f     *srcTex				= (v2nm32f *) malloc(sizeof(v2nm32f) * vertCount);
+	nm32f 		*real_output		= (nm32f *) malloc(sizeof(nm32f) * outputCoordCount);
+	nm32f 		*expected_output	= (nm32f *) malloc(sizeof(nm32f) * outputCoordCount);
+#endif	// __NM__
 	
 	// Initialize input arrays: coords, colors and textures (if texturing is enabled)
 	initializeInput(srcVertex, srcColor, srcTex, vertCount);
@@ -437,11 +461,19 @@ int repackToPrimitives_t_nOutputTriangles_v1CoordsAreCorrect(int n)
 	//  8 floats - x, y, z, w,       r, g, b, a
 	int outputCoordCount = ATTR_PER_VERTEX * 3 * outputTrianglesCount;	// number of output coords
 
+#ifdef __NM__
     v4nm32f     srcVertex[vertCount];
     v4nm32f     srcColor[vertCount];
     v2nm32f     srcTex[vertCount];
 	nm32f real_output[outputCoordCount];
 	nm32f expected_output[outputCoordCount];
+#else
+    v4nm32f     *srcVertex 			= (v4nm32f *) malloc(sizeof(v4nm32f) * vertCount);
+    v4nm32f     *srcColor			= (v4nm32f *) malloc(sizeof(v4nm32f) * vertCount);
+    v2nm32f     *srcTex				= (v2nm32f *) malloc(sizeof(v2nm32f) * vertCount);
+	nm32f 		*real_output		= (nm32f *) malloc(sizeof(nm32f) * outputCoordCount);
+	nm32f 		*expected_output	= (nm32f *) malloc(sizeof(nm32f) * outputCoordCount);
+#endif	// __NM__
 	
 	// Initialize input arrays: coords, colors and textures (if texturing is enabled)
 	initializeInput(srcVertex, srcColor, srcTex, vertCount);
@@ -496,11 +528,19 @@ int repackToPrimitives_t_nOutputTriangles_v1ColorsAreCorrect(int n)
 	//  8 floats - x, y, z, w,       r, g, b, a
 	int outputCoordCount = ATTR_PER_VERTEX * 3 * outputTrianglesCount;	// number of output coords
 
+#ifdef __NM__
     v4nm32f     srcVertex[vertCount];
     v4nm32f     srcColor[vertCount];
     v2nm32f     srcTex[vertCount];
 	nm32f real_output[outputCoordCount];
 	nm32f expected_output[outputCoordCount];
+#else
+    v4nm32f     *srcVertex 			= (v4nm32f *) malloc(sizeof(v4nm32f) * vertCount);
+    v4nm32f     *srcColor			= (v4nm32f *) malloc(sizeof(v4nm32f) * vertCount);
+    v2nm32f     *srcTex				= (v2nm32f *) malloc(sizeof(v2nm32f) * vertCount);
+	nm32f 		*real_output		= (nm32f *) malloc(sizeof(nm32f) * outputCoordCount);
+	nm32f 		*expected_output	= (nm32f *) malloc(sizeof(nm32f) * outputCoordCount);
+#endif	// __NM__
 	
 	// Initialize input arrays: coords, colors and textures (if texturing is enabled)
 	initializeInput(srcVertex, srcColor, srcTex, vertCount);
@@ -553,11 +593,19 @@ int repackToPrimitives_t_nOutputTriangles_v2CoordsAreCorrect(int n)
 	//  8 floats - x, y, z, w,       r, g, b, a
 	int outputCoordCount = ATTR_PER_VERTEX * 3 * outputTrianglesCount;	// number of output coords
 
+#ifdef __NM__
     v4nm32f     srcVertex[vertCount];
     v4nm32f     srcColor[vertCount];
     v2nm32f     srcTex[vertCount];
 	nm32f real_output[outputCoordCount];
 	nm32f expected_output[outputCoordCount];
+#else
+    v4nm32f     *srcVertex 			= (v4nm32f *) malloc(sizeof(v4nm32f) * vertCount);
+    v4nm32f     *srcColor			= (v4nm32f *) malloc(sizeof(v4nm32f) * vertCount);
+    v2nm32f     *srcTex				= (v2nm32f *) malloc(sizeof(v2nm32f) * vertCount);
+	nm32f 		*real_output		= (nm32f *) malloc(sizeof(nm32f) * outputCoordCount);
+	nm32f 		*expected_output	= (nm32f *) malloc(sizeof(nm32f) * outputCoordCount);
+#endif	// __NM__
 	
 	// Initialize input arrays: coords, colors and textures (if texturing is enabled)
 	initializeInput(srcVertex, srcColor, srcTex, vertCount);
@@ -613,11 +661,19 @@ int repackToPrimitives_t_nOutputTriangles_v2ColorsAreCorrect(int n)
 	//  8 floats - x, y, z, w,       r, g, b, a
 	int outputCoordCount = ATTR_PER_VERTEX * 3 * outputTrianglesCount;	// number of output coords
 
+#ifdef __NM__
     v4nm32f     srcVertex[vertCount];
     v4nm32f     srcColor[vertCount];
     v2nm32f     srcTex[vertCount];
 	nm32f real_output[outputCoordCount];
 	nm32f expected_output[outputCoordCount];
+#else
+    v4nm32f     *srcVertex 			= (v4nm32f *) malloc(sizeof(v4nm32f) * vertCount);
+    v4nm32f     *srcColor			= (v4nm32f *) malloc(sizeof(v4nm32f) * vertCount);
+    v2nm32f     *srcTex				= (v2nm32f *) malloc(sizeof(v2nm32f) * vertCount);
+	nm32f 		*real_output		= (nm32f *) malloc(sizeof(nm32f) * outputCoordCount);
+	nm32f 		*expected_output	= (nm32f *) malloc(sizeof(nm32f) * outputCoordCount);
+#endif	// __NM__
 	
 	// Initialize input arrays: coords, colors and textures (if texturing is enabled)
 	initializeInput(srcVertex, srcColor, srcTex, vertCount);
@@ -670,11 +726,19 @@ int repackToPrimitives_t_nOutputTriangles_v0TextureCoordsAreCorrect(int n)
 	//  8 floats - x, y, z, w,       r, g, b, a
 	int outputCoordCount = ATTR_PER_VERTEX * 3 * outputTrianglesCount;	// number of output coords
 
+#ifdef __NM__
     v4nm32f     srcVertex[vertCount];
     v4nm32f     srcColor[vertCount];
     v2nm32f     srcTex[vertCount];
 	nm32f real_output[outputCoordCount];
 	nm32f expected_output[outputCoordCount];
+#else
+    v4nm32f     *srcVertex 			= (v4nm32f *) malloc(sizeof(v4nm32f) * vertCount);
+    v4nm32f     *srcColor			= (v4nm32f *) malloc(sizeof(v4nm32f) * vertCount);
+    v2nm32f     *srcTex				= (v2nm32f *) malloc(sizeof(v2nm32f) * vertCount);
+	nm32f 		*real_output		= (nm32f *) malloc(sizeof(nm32f) * outputCoordCount);
+	nm32f 		*expected_output	= (nm32f *) malloc(sizeof(nm32f) * outputCoordCount);
+#endif	// __NM__
 	
 	// Initialize input arrays: coords, colors and textures (if texturing is enabled)
 	initializeInput(srcVertex, srcColor, srcTex, vertCount);
@@ -730,11 +794,19 @@ int repackToPrimitives_t_nOutputTriangles_v1TextureCoordsAreCorrect(int n)
 	//  8 floats - x, y, z, w,       r, g, b, a
 	int outputCoordCount = ATTR_PER_VERTEX * 3 * outputTrianglesCount;	// number of output coords
 
+#ifdef __NM__
     v4nm32f     srcVertex[vertCount];
     v4nm32f     srcColor[vertCount];
     v2nm32f     srcTex[vertCount];
 	nm32f real_output[outputCoordCount];
 	nm32f expected_output[outputCoordCount];
+#else
+    v4nm32f     *srcVertex 			= (v4nm32f *) malloc(sizeof(v4nm32f) * vertCount);
+    v4nm32f     *srcColor			= (v4nm32f *) malloc(sizeof(v4nm32f) * vertCount);
+    v2nm32f     *srcTex				= (v2nm32f *) malloc(sizeof(v2nm32f) * vertCount);
+	nm32f 		*real_output		= (nm32f *) malloc(sizeof(nm32f) * outputCoordCount);
+	nm32f 		*expected_output	= (nm32f *) malloc(sizeof(nm32f) * outputCoordCount);
+#endif	// __NM__
 	
 	// Initialize input arrays: coords, colors and textures (if texturing is enabled)
 	initializeInput(srcVertex, srcColor, srcTex, vertCount);
@@ -790,11 +862,19 @@ int repackToPrimitives_t_nOutputTriangles_v2TextureCoordsAreCorrect(int n)
 	//  8 floats - x, y, z, w,       r, g, b, a
 	int outputCoordCount = ATTR_PER_VERTEX * 3 * outputTrianglesCount;	// number of output coords
 
+#ifdef __NM__
     v4nm32f     srcVertex[vertCount];
     v4nm32f     srcColor[vertCount];
     v2nm32f     srcTex[vertCount];
 	nm32f real_output[outputCoordCount];
 	nm32f expected_output[outputCoordCount];
+#else
+    v4nm32f     *srcVertex 			= (v4nm32f *) malloc(sizeof(v4nm32f) * vertCount);
+    v4nm32f     *srcColor			= (v4nm32f *) malloc(sizeof(v4nm32f) * vertCount);
+    v2nm32f     *srcTex				= (v2nm32f *) malloc(sizeof(v2nm32f) * vertCount);
+	nm32f 		*real_output		= (nm32f *) malloc(sizeof(nm32f) * outputCoordCount);
+	nm32f 		*expected_output	= (nm32f *) malloc(sizeof(nm32f) * outputCoordCount);
+#endif	// __NM__
 	
 	// Initialize input arrays: coords, colors and textures (if texturing is enabled)
 	initializeInput(srcVertex, srcColor, srcTex, vertCount);
@@ -935,10 +1015,17 @@ clock_t vertexPrimitiveRepack_modeIsGL_TRIANGLES_192Vertices()
 	//  8 floats - x, y, z, w,       r, g, b, a
 	int outputCoordCount = ATTR_PER_VERTEX * 3 * outputTrianglesCount;	// number of output coords
 
+#ifdef __NM__
     v4nm32f     srcVertex[vertCount];
     v4nm32f     srcColor[vertCount];
     v2nm32f     srcTex[vertCount];
 	nm32f real_output[outputCoordCount];
+#else
+    v4nm32f     *srcVertex 			= (v4nm32f *) malloc(sizeof(v4nm32f) * vertCount);
+    v4nm32f     *srcColor			= (v4nm32f *) malloc(sizeof(v4nm32f) * vertCount);
+    v2nm32f     *srcTex				= (v2nm32f *) malloc(sizeof(v2nm32f) * vertCount);
+	nm32f 		*real_output		= (nm32f *) malloc(sizeof(nm32f) * outputCoordCount);
+#endif	// __NM__
 	
 	//	Set real output pointers, i.e. dst
 	TrianglePointers dst;
@@ -968,10 +1055,17 @@ clock_t vertexPrimitiveRepack_modeIsGL_TRIANGLES_48Vertices()
 	//  8 floats - x, y, z, w,       r, g, b, a
 	int outputCoordCount = ATTR_PER_VERTEX * 3 * outputTrianglesCount;	// number of output coords
 
+#ifdef __NM__
     v4nm32f     srcVertex[vertCount];
     v4nm32f     srcColor[vertCount];
     v2nm32f     srcTex[vertCount];
 	nm32f real_output[outputCoordCount];
+#else
+    v4nm32f     *srcVertex 			= (v4nm32f *) malloc(sizeof(v4nm32f) * vertCount);
+    v4nm32f     *srcColor			= (v4nm32f *) malloc(sizeof(v4nm32f) * vertCount);
+    v2nm32f     *srcTex				= (v2nm32f *) malloc(sizeof(v2nm32f) * vertCount);
+	nm32f 		*real_output		= (nm32f *) malloc(sizeof(nm32f) * outputCoordCount);
+#endif	// __NM__
 	
 	//	Set real output pointers, i.e. dst
 	TrianglePointers dst;
