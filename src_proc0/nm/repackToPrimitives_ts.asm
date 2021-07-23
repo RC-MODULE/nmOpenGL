@@ -145,8 +145,9 @@ begin ".text_demo3d"			// начало секции кода
 
 	gr0 = 0;
 	[retVal] = gr0;
-	gr6;
-	if =0 goto Exit;
+	gr0 = 2;
+	gr6 - gr0;
+	if <= goto Exit;
 
 	// Выгрузка координат x точек A всех треугольников для mode=GL_TRIANGLE_STRIP
 	// Get number of triangles 
@@ -211,6 +212,7 @@ begin ".text_demo3d"			// начало секции кода
 	
 	ar3 = [dstVertex];
 	// Get the colors of A points
+	gr1 >>= 1;	// Copy A and B color in two iterations, gr1/2 colors in each
 	ar3 += 6;	// Address of A_color pointer
 	gr3 = [ar3];
 	copyCol(ar1, gr3, 8, 8, gr1);
@@ -227,10 +229,12 @@ begin ".text_demo3d"			// начало секции кода
 	gr3 += gr5; 
 	copyCol(ar1 + 4, gr3, 8, 8, gr1);
 	// Get the colors of C points
+	gr1 <<= 1;
 	ar3 += 8;	// Address of C_color pointer
 	gr3 = [ar3];
 	copyCol(ar1 + 8, gr3, 4, 4, gr1);
 	
+<CheckParity>
 	// Check the parity
 	// !!! In case of odd output triangles extend the output with the last triangle
 	// Check if number of triangles is odd
