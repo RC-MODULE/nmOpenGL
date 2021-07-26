@@ -38,8 +38,8 @@ int repackToPrimitives_tf_0_200_OutputTriangles_v0TextureCoordsAreCorrect();
 int repackToPrimitives_tf_0_200_OutputTriangles_v1TextureCoordsAreCorrect();
 int repackToPrimitives_tf_0_200_OutputTriangles_v2TextureCoordsAreCorrect();
 //Performance tests
-clock_t repackToPrimitive_ts_192Vertices();
-clock_t repackToPrimitive_ts_48Vertices();
+clock_t repackToPrimitives_tf_192Vertices();
+clock_t repackToPrimitives_tf_48Vertices();
 
 // TEMP test
 //int repackToPrimitives_tf(const v4nm32f *srcVertex,
@@ -96,8 +96,8 @@ int main(int argc, char **argv)
 	puts("");
     puts("Performance tests: ");
 	clock_t dt[2];
-	dt[0] = repackToPrimitive_ts_192Vertices();
-	dt[1] = repackToPrimitive_ts_48Vertices();
+	dt[0] = repackToPrimitives_tf_192Vertices();
+	dt[1] = repackToPrimitives_tf_48Vertices();
 	for (int i = 0; i < 2; ++i){
 		printf("dt[%i] = %i\n\r", i + 1, (int)dt[i]);
 	}
@@ -1005,7 +1005,7 @@ int repackToPrimitives_tf_0_200_OutputTriangles_v2TextureCoordsAreCorrect()
 	return res;
 }
 
-clock_t repackToPrimitive_ts_192Vertices()
+clock_t repackToPrimitives_tf_192Vertices()
 {
 	// Arrange
 	int trianglesCount = 64;							// number of output triangles
@@ -1045,7 +1045,7 @@ clock_t repackToPrimitive_ts_192Vertices()
 	return dt;
 }
 
-clock_t repackToPrimitive_ts_48Vertices()
+clock_t repackToPrimitives_tf_48Vertices()
 {
 	// Arrange
 	int trianglesCount = 16;							// number of output triangles
