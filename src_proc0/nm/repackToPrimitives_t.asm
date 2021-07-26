@@ -145,8 +145,9 @@ begin ".text_demo3d"			// начало секции кода
 
 	gr0 = 0;
 	[retVal] = gr0;
-	gr6;
-	if =0 goto Exit;
+	gr0 = 3;
+	gr6 - gr0;
+	if < goto Exit;
 
 	// Выгрузка координат x точек A всех треугольников для mode=GL_TRIANGLES
 	// Get number of triangles 
