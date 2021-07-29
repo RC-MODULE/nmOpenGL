@@ -110,8 +110,8 @@ macro extractPair(coordAddr1, coordAddr2, delta)
 <Extract>
 	gr3 = gr2;	// gr2 - subtract from total number of triangles
 				// at the end of the loop
-	gr3--;		 
 	gr3 >>= 1;	// Divide by 2 to get the number of pairs
+	gr3--;		 
 	vlen = gr3;
 	// Extract pair of coordinates (xy or zw) to vreg0 and vreg1
 	ar5 = gr5;
@@ -169,8 +169,9 @@ begin ".text_demo3d"			// начало секции кода
 
 	gr0 = 0;
 	[retVal] = gr0;
-	gr6;
-	if =0 goto Exit;
+	gr0 = 3;	// If there are less than 3 input vertices go to Exit
+	gr6 - gr0;
+	if < goto Exit;
 
 	gr0 = 4;	//NMGL_TRIANGLES 4 (nmgldef.h)
 	gr4 - gr0;	
