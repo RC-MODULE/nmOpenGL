@@ -29,6 +29,7 @@ struct MyDmaTask {
 
 class NM_MemCopyManagerDma : public NM_MemCopyManager<MyDmaTask, MSD_SIZE, MSD_NUM_CHANNELS, NM_MemCopyManagerDma> {
 public:
+#ifdef __GNUC__
 	void startFunc(MyDmaTask* dmaCopy) {
 		if (dmaCopy->type == MSD_DMA) {
 			halDmaStartA(dmaCopy->src, dmaCopy->dst, dmaCopy->size);
@@ -39,6 +40,27 @@ public:
 				dmaCopy->srcStride, dmaCopy->dstStride);
 		}
 	}
+#else
+	void startFunc(MyDmaTask* dmaCopy) {
+		if (dmaCopy->type == MSD_DMA) {
+			halCopyRISC(dmaCopy->src, dmaCopy->dst, dmaCopy->size);
+		}
+		else {
+			int* src = (int*)dmaCopy->src;
+			int* dst = (int*)dmaCopy->dst;
+			for (int i = 0; i < dmaCopy->size; i += dmaCopy->width) {
+				halCopyRISC(src, dst, dmaCopy->width);
+				src += dmaCopy->srcStride;
+				dst += dmaCopy->dstStride;
+			}
+		}
+		if (currentChannel->ptrTail()->callback != 0) {
+			currentChannel->ptrTail()->callback();
+		}
+		currentChannel->incTail();
+		isWorking = false;
+	}
+#endif
 };
 
 void msdInit();

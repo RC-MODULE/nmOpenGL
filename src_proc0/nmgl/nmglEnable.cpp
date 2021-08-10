@@ -3,6 +3,7 @@
 #include "nmblas.h"
 #include "nmpp.h"
 #include "ringbuffer.h"
+#include "nmglservice_nm0.h"
 
 
 #pragma code_section ".text_nmgl"
@@ -10,7 +11,7 @@
 SECTION(".text_nmgl")
 void nmglEnable(NMGLenum cap) {
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
-	CommandNm1 command;
+	NM_Command command;
 	switch (cap) {
 
 	case NMGL_ALPHA_TEST:
@@ -36,7 +37,7 @@ void nmglEnable(NMGLenum cap) {
 	case NMGL_DEPTH_TEST:
 		command.instr = NMC1_DEPTH;
 		command.params[0] = CommandArgument(NMGL_TRUE);
-		cntxt->synchro.pushInstr(&command);
+		NMGL_SetValue(command);
 		break;
 	
 	case NMGL_DITHER:
@@ -102,8 +103,7 @@ void nmglEnable(NMGLenum cap) {
 
 		command.instr = NMC1_TEXTURE2D;
 		command.params[0] = CommandArgument(NMGL_TRUE);
-		cntxt->synchro.pushInstr(&command);
-		//cntxt->synchro.writeInstr(1, NMC1_TEXTURE2D, NMGL_TRUE);
+		NMGL_SetValue(command);
 		break;
 		break;
 	

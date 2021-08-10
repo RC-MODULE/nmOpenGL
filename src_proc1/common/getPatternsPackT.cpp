@@ -91,7 +91,7 @@ SECTION(".text_demo3d") void getPatternsPackT(
 	for(int i = 0; i < size; i++){
 		//dstPackTmp02[i] = (int*)cntxt->ppPtrns1_2s[i];
 		//dstPackTmp01[i] = (int*)cntxt->ppPtrns2_2s[i];
-		dstPackTmp12[i] = dstPackTmp01[i] + sizePackTmp01[i]
+		dstPackTmp12[i] = dstPackTmp01[i] + sizePackTmp01[i];
 	}
 #endif
 

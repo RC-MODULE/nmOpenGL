@@ -16,7 +16,7 @@ SECTION(".text_nmglvs") int nmglvsNm1Step()
 {	
 	//halLed(0xFF);
 	NMGL_Context_NM1 *cntxt = NMGL_Context_NM1::getContext();
-	CommandNm1 *command = NMGL_ReadCommandNm1();	
+	NM_Command *command = NMGL_ReadNM_Command();	
 	//halLed(command->instr >> 16);
 	switch (command->instr) {
 
@@ -55,6 +55,7 @@ SECTION(".text_nmglvs") int nmglvsNm1Step()
 		break;
 	case NMC1_SWAP_BUFFER: 
 		NMGL_SwapBuffer(cntxt, command);
+		break;
 	case NMC1_FINISH:
 		NMGL_Finish(cntxt, command);
 		break;

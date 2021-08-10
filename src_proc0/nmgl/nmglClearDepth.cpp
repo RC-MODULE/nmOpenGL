@@ -1,5 +1,6 @@
 #include "demo3d_nm0.h"
 #include "nmgl.h"
+#include "nmglservice_nm0.h"
 
 
 #pragma code_section ".text_nmgl"
@@ -12,8 +13,8 @@ void nmglClearDepthf(NMGLclampf depth) {
 	if (depth_int > ZBUFF_MAX) {
 		depth_int = ZBUFF_MAX;
 	}
-	CommandNm1 command;
+	NM_Command command;
 	command.instr = NMC1_SET_DEPTH;
 	command.params[0] = CommandArgument(depth_int);
-	cntxt->synchro.pushInstr(&command);
+	NMGL_SetValue(command);
 }

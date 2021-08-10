@@ -63,9 +63,6 @@ public:
 	nm32s** zBuffPoints;				///
 	nm32s** imagePoints;
 
-	Pattern* ppPtrns1_2s[POLYGONS_SIZE];	///< Массив указателей на один пак локальных паттернов
-	Pattern* ppPtrns2_2s[POLYGONS_SIZE];	///< Массив указателей на второй пак локальных паттернов
-	Pattern* ppPtrnsCombined_2s[POLYGONS_SIZE]; ///< Массив указателей на комбинированный пак первых и вторых локальных паттернов
 	nm32s minusOne[SMALL_SIZE];				///< массив со значения -1
 	
 	int* valuesZ;

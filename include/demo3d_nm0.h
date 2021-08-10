@@ -9,7 +9,7 @@
 #include "nmsynchro.h"
 #include "lighting.h"
 
-#define BIG_NMGL_SIZE (128 * NMGL_SIZE)
+#define BIG_NMGL_SIZE (64 * NMGL_SIZE)
 
 /*!
  *  \brief Класс, хранящий побитовую маску.
@@ -140,9 +140,12 @@ struct Lines{
 };
 
 struct Points {
-	float* x0;
-	float* y0;
+	float* x;
+	float* y;
 	int* z;
+	float* s;
+	float* t;
+	float* w;
 	v4nm32s* colors;
 	int size;
 	int maxSize;
@@ -354,6 +357,7 @@ public:
 		nmglDisableClientState(NMGL_COLOR_ARRAY);
 		nmglDisableClientState(NMGL_NORMAL_ARRAY);
 		
+		pointRadius = 0.5f;
 		texState.init();
 		
 	}
@@ -1494,7 +1498,7 @@ void rasterizeL(const Lines* lines, const BitMask* masks);
 void rasterizeP(const Points* points, const BitMask* masks);
   //! \}
 
-void transferPolygons(PolygonsConnector *connector, int mode);
+void transferPolygons(PolygonsConnector *connector, int mode, int segNo);
 
 /*!
  *  \ingroup service_api

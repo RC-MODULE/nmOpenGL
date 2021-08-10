@@ -11,7 +11,7 @@ SECTION(".data_imu4")	v4nm32f colorValues[3 * NMGL_SIZE];
 SECTION(".data_imu4")   int colorValuesSize;
 
 SECTION(".text_demo3d")
-void startCalculateColor(v4nm32f* srcVertex, v4nm32f* srcNormal, v4nm32f* srcColor, int vertexCount) {
+void NMGL_StartCalculateColor(v4nm32f* srcVertex, v4nm32f* srcNormal, v4nm32f* srcColor, int vertexCount) {
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
 	LightingInfo* info = &NMGL_Context_NM0::getContext()->lightingInfo;
 	colorValuesSize = vertexCount;
@@ -42,6 +42,6 @@ void startCalculateColor(v4nm32f* srcVertex, v4nm32f* srcNormal, v4nm32f* srcCol
 }
 
 SECTION(".text_demo3d")
-void getCalculatedColor(v4nm32f* dstVertex) {
+void NMGL_GetCalculatedColor(v4nm32f* dstVertex) {
 	nmblas_scopy(colorValuesSize * 4, (float*)colorValues, 1, (float*)dstVertex, 1);
 }

@@ -3,7 +3,7 @@
 
 
 
-SECTION(".text_demo3d") void NMGL_Finish(NMGL_Context_NM1 *context, CommandNm1 *command) {
+SECTION(".text_demo3d") void NMGL_Finish(NMGL_Context_NM1 *context, NM_Command *command) {
 	msdWaitDma();
 }
 

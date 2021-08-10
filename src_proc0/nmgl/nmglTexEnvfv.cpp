@@ -40,7 +40,7 @@ void nmglTexEnvfv (NMGLenum target, NMGLenum pname, const NMGLfloat *params)
 		temp.f = cntxt->texState.texUnits[cntxt->texState.activeTexUnitIndex].texEnvColor[i];
 		texEnvColorInt[i] = temp.i;
  	}
-	CommandNm1 command;
+	NM_Command command;
 	command.instr = NMC1_SET_TEX_ENV_COLOR;
 	command.params[0] = CommandArgument(texEnvColorInt[0]);
 	command.params[1] = CommandArgument(texEnvColorInt[1]);

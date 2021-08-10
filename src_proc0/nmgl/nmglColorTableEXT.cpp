@@ -29,7 +29,7 @@ void nmglColorTableEXT (NMGLenum target, NMGLenum internalformat, NMGLsizei widt
 	ActiveTexObjectP->palette.width=width;
 	ActiveTexObjectP->palette.colors=(NMGLubyte*)(mem_palette+ActiveTexObjectP->name*NMGL_MAX_PALETTE_WIDTH*RGBA_TEXEL_SIZE_UBYTE);
 
-	CommandNm1 command;
+	NM_Command command;
 	command.instr = NMC1_SET_COLOR_PALETTE;
 	command.params[0] = CommandArgument(ActiveTexObjectP->palette.colors);
 	command.params[1] = CommandArgument(ActiveTexObjectP->palette.width);

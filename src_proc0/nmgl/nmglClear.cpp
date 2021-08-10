@@ -1,5 +1,6 @@
 #include "demo3d_nm0.h"
 #include "nmgl.h"
+#include "nmglservice_nm0.h"
 
 
 #pragma code_section ".text_nmgl"
@@ -7,7 +8,7 @@
 SECTION(".text_nmgl")
 void nmglClear(NMGLbitfield mask) {
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
-	CommandNm1 command;
+	NM_Command command;
 	command.instr = NMC1_CLEAR;
 	command.params[0] = CommandArgument(mask);
 	if (cntxt->scissorTest.isEnabled) {
@@ -23,5 +24,5 @@ void nmglClear(NMGLbitfield mask) {
 		command.params[4] = CommandArgument(cntxt->windowInfo.imageSize.height);
 	}
 	
-	cntxt->synchro.pushInstr(&command);
+	NMGL_SetValue(command);
 }
