@@ -6,6 +6,7 @@
 #include "nmblas.h"
 #include "demo3d_nm0.h"
 #include "nmgl.h"
+#include "nmglservice_nm0.h"
 
 #include "stdio.h"
 
@@ -76,17 +77,10 @@ void rasterizeT(const Triangles* triangles, const BitMask* masks){
 		if (masks[iSeg].hasNotZeroBits != 0) {
 			int resultSize = readMask(masks[iSeg].bits, indices, count);
 			if (resultSize) {
-				PolygonsConnector *connector = cntxt->triangleConnectors + iSeg;
-				bool drawingCheck = connector->ptrHead()->count + resultSize >= POLYGONS_SIZE;
-				CommandNm1 command;
+				DataForNmpu1* data = NMGL_PolygonsCurrent(NMGL_TRIANGLES, iSeg);
+				bool drawingCheck = data->count + resultSize >= POLYGONS_SIZE;
 				if (drawingCheck) {
-					command.instr = NMC1_COPY_SEG_FROM_IMAGE;
-					command.params[0] = CommandArgument(rectangles[iSeg].x);
-					command.params[1] = CommandArgument(rectangles[iSeg].y);
-					command.params[2] = CommandArgument(rectangles[iSeg].width);
-					command.params[3] = CommandArgument(rectangles[iSeg].height);
-					command.params[4] = CommandArgument(iSeg);
-					cntxt->synchro.pushInstr(&command);
+					NMGL_PopSegment(rectangles[iSeg], iSeg);
 				}
 
 				if (cntxt->texState.textureEnabled) {
@@ -102,18 +96,18 @@ void rasterizeT(const Triangles* triangles, const BitMask* masks){
 				int offset = 0;
 				Triangles localTrian2;
 				while (offset < resultSize) {
-					DataForNmpu1* data = connector->ptrHead();
 					int localSize = MIN(resultSize - offset, POLYGONS_SIZE - data->count);
 					triangleOffset(localTrian, localTrian2, offset);
 					offset += localSize;
 					updatePolygonsT(data, &localTrian2, localSize, lowerLeft[iSeg]);
 					if (data->count == POLYGONS_SIZE) {
-						transferPolygons(connector, NMC1_DRAW_TRIANGLES);
+						NMGL_PolygonsMoveNext(NMGL_TRIANGLES, iSeg);
+						data = NMGL_PolygonsCurrent(NMGL_TRIANGLES, iSeg);
+						data->count = 0;
 					}
 				}
 				if (drawingCheck) {
-					command.instr = NMC1_COPY_SEG_TO_IMAGE;
-					cntxt->synchro.pushInstr(&command);
+					NMGL_PushSegment(rectangles[iSeg], iSeg);
 				}
 
 			}

@@ -1,5 +1,6 @@
 #include "demo3d_nm0.h"
 #include "nmgl.h"
+#include "nmglservice_nm0.h"
 
 
 #pragma code_section ".text_nmgl"
@@ -20,10 +21,9 @@ void nmglActiveTexture (NMGLenum texture)
 	unsigned int activeTexUnitIndex = texture - NMGL_TEXTURE0;
 	cntxt->texState.activeTexUnitIndex = activeTexUnitIndex;
 
-	CommandNm1 command;
+	NM_Command command;
 	command.instr = NMC1_SET_ACTIVE_TEXTURE;
 	command.params[0] = CommandArgument(activeTexUnitIndex);
-	cntxt->synchro.pushInstr(&command);
-	//cntxt->synchro.writeInstr(1, NMC1_SET_ACTIVE_TEXTURE, (unsigned int)activeTexUnitIndex);
-	
+	//cntxt->synchro.pushInstr(&command);	
+	NMGL_SetValue(command);
 }

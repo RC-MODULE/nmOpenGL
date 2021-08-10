@@ -2,7 +2,7 @@
 
 
 
-SECTION(".text_demo3d") void NMGL_SetColor(NMGL_Context_NM1 *context, CommandNm1 *command) {
+SECTION(".text_demo3d") void NMGL_SetColor(NMGL_Context_NM1 *context, NM_Command *command) {
 	unsigned int red = command->params[0].ui;
 	unsigned int green = command->params[1].ui;
 	unsigned int blue = command->params[2].ui;
@@ -21,7 +21,7 @@ SECTION(".text_demo3d") void NMGL_SetColor(NMGL_Context_NM1 *context, CommandNm1
 	return;
 }
 
-SECTION(".text_demo3d") void NMGL_SetDepth(NMGL_Context_NM1 *context, CommandNm1 *command) {
+SECTION(".text_demo3d") void NMGL_SetDepth(NMGL_Context_NM1 *context, NM_Command *command) {
 	context->depthBuffer.mClearValue = command->params[0].ui;
 	context->smallDepthBuff.mClearValue = context->depthBuffer.mClearValue;
 	long long unsigned mClearValue = command->params[0].ui;
@@ -33,7 +33,7 @@ SECTION(".text_demo3d") void NMGL_SetDepth(NMGL_Context_NM1 *context, CommandNm1
 	return;
 }
 
-SECTION(".text_demo3d") void NMGL_PointSize(NMGL_Context_NM1 *context, CommandNm1 *command) {
+SECTION(".text_demo3d") void NMGL_PointSize(NMGL_Context_NM1 *context, NM_Command *command) {
 	context->pointSize = command->params[0].i;
 	return;
 }

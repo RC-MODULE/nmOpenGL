@@ -11,7 +11,7 @@ void nmglvsSwapBuffer(){
 	nmglFlush();
 	//nmglFinish();
 
-	CommandNm1 command;
+	NM_Command command;
 	command.instr = NMC1_SWAP_BUFFER;
 	cntxt->synchro.pushInstr(&command);
 	

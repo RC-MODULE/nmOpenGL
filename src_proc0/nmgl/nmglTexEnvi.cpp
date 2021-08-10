@@ -29,7 +29,7 @@ void nmglTexEnvi (NMGLenum target, NMGLenum pname, NMGLint param)
 				 	 	 	return;
 	}
 
-	CommandNm1 command;
+	NM_Command command;
 	command.instr = NMC1_SET_TEX_ENV_MODE;
 	command.params[0] = CommandArgument(param);
 	cntxt->synchro.pushInstr(&command);

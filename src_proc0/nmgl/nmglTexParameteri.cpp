@@ -69,7 +69,7 @@ void nmglTexParameteri(NMGLenum target, NMGLenum pname, NMGLint param)
 		return;
 	}
 
-	CommandNm1 command;
+	NM_Command command;
 	command.instr = NMC1_SET_TEX_PARAMI;
 	command.params[0] = CommandArgument(pname);
 	command.params[1] = CommandArgument(param);

@@ -7,26 +7,30 @@
 #include "cache.h"
 
 
-SECTION(".text_demo3d") void NMGL_DrawLines(NMGL_Context_NM1 *context, CommandNm1 *command) {
-	PolygonsConnector *connector = (PolygonsConnector*)command->params[0].p;
+SECTION(".text_demo3d") void NMGL_DrawLines(NMGL_Context_NM1 *context, NM_Command *command) {
+	PolygonsArray* polygons = (PolygonsArray*)command->params[0].p;
+	PolygonsConnector connector; 
+	connector.init(polygons);
+	connector.incTail();
+	return;
 
-	DataForNmpu1* poly = connector->ptrTail();
+	DataForNmpu1* poly = connector.ptrTail();
 
-	getAddrPtrnsL(connector->ptrTail());
-	COMMON_DRAW_TYPE* mulZ = (COMMON_DRAW_TYPE*)context->buffer0;
-	COMMON_DRAW_TYPE* mulC = (COMMON_DRAW_TYPE*)context->buffer0;
-	COMMON_DRAW_TYPE* zMaskBuffer = (COMMON_DRAW_TYPE*)context->buffer1;
-	int count = poly->count;
-
-	msdWaitDma(0);
-
-	int point = 0;
-
-	msdWaitDma(1);
+	//getAddrPtrnsL(poly);
+	//COMMON_DRAW_TYPE* mulZ = (COMMON_DRAW_TYPE*)context->buffer0;
+	//COMMON_DRAW_TYPE* mulC = (COMMON_DRAW_TYPE*)context->buffer0;
+	//COMMON_DRAW_TYPE* zMaskBuffer = (COMMON_DRAW_TYPE*)context->buffer1;
+	//int count = poly->count;
+	//
+	//msdWaitDma(0);
+	//
+	//int point = 0;
+	//
+	//msdWaitDma(1);
 
 	poly->count = 0;
-	connector->incTail();
+	connector.incTail();
 
-	drawPrimitives(context, count);
+	//drawPrimitives(context, count);
 	return;
 }

@@ -8,11 +8,12 @@
 
 int totalSum(nm32s* pVec, int size);
 
-SECTION(".text_demo3d") void NMGL_DrawTriangles(NMGL_Context_NM1 *context, CommandNm1 *command) {
+SECTION(".text_demo3d") void NMGL_DrawTriangles(NMGL_Context_NM1 *context, NM_Command *command) {
 
 	PolygonsArray *data = (PolygonsArray*)command->params[0].p;
 	PolygonsConnector connector;
 	connector.init(data);
+
 
 	DataForNmpu1* poly = connector.ptrTail();
 	DataForNmpu1* dataTmp = (DataForNmpu1*)context->buffers[0].alloc(sizeof32(DataForNmpu1));
@@ -20,9 +21,8 @@ SECTION(".text_demo3d") void NMGL_DrawTriangles(NMGL_Context_NM1 *context, Comma
 	dataTmp->count = poly->count;
 	getAddrPtrnsT(dataTmp);
 	context->buffers[0].free(sizeof32(DataForNmpu1));
-	
-
-	int countTriangles = poly->count;
+	//connector.incTail();
+	//return;
 
 	baseAddrOffs_32s((nm32s*)context->smallColorBuff.mData, context->imageOffsets, context->imagePoints, poly->count);
 	baseAddrOffs_32s((nm32s*)context->smallDepthBuff.mData, context->imageOffsets, context->zBuffPoints, poly->count);
@@ -55,6 +55,7 @@ SECTION(".text_demo3d") void NMGL_DrawTriangles(NMGL_Context_NM1 *context, Comma
 //TEXTURING_PART
 	msdWaitDma(1);
 
+	int countTriangles = poly->count;
 	poly->count = 0;
 	connector.incTail();
 

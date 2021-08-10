@@ -47,8 +47,8 @@ SECTION(".data_imu0") float w2[POLYGONS_SIZE];
 
 int exitNM1 = 0;
 
-SECTION(".data_imu0") HalRingBufferData<CommandNm1, PRIORITY_SIZE> linkSynchro;
-SECTION(".data_imu0") HalRingBufferConnector<CommandNm1, PRIORITY_SIZE> linkConnector(&linkSynchro);
+SECTION(".data_imu0") HalRingBufferData<NM_Command, PRIORITY_SIZE> linkSynchro;
+SECTION(".data_imu0") HalRingBufferConnector<NM_Command, PRIORITY_SIZE> linkConnector(&linkSynchro);
 
 #define LINK_PORT 2
 SECTION(".data_imu0") NMGL_SynchroSlaveRingBuffer nmglSynchro;				///< Структура для общения процессоров друг с другом
@@ -95,6 +95,7 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 		
 		setHeap(13);
 		hostCreatePatterns(cntxt->patterns);
+		halSleep(10);
 
 		imagesData = (ImageData*)halSyncAddr(0, 0);
 		cntxt->imageConnector.init(imagesData);
@@ -144,9 +145,6 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 	cntxt->patternPack.ppPattern = ppPatternsPack;
 
 	for (int j = 0; j < POLYGONS_SIZE; j++) {
-		cntxt->ppPtrns1_2s[j] = (Pattern*)cntxt->buffer1 + j;
-		cntxt->ppPtrns2_2s[j] = (Pattern*)cntxt->buffer2 + j;
-		cntxt->ppPtrnsCombined_2s[j] = cntxt->patternPack.patterns + j;
 		cntxt->patternPack.ppPattern[j] = cntxt->patternPack.patterns + j;
 	}
 

@@ -59,7 +59,7 @@ extern  NMGLubyte* mipmap; //texture memory
 
 int counter = 0;
 
-
+#define PRINT_ADDR(a) printf(#a"=%p\n", a)
 
 template<class T> inline T* myMallocT() {
 	
@@ -104,25 +104,29 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 		setHeap(7);
 
 		synchroData = myMallocT<NMGLSynchroData>();
+		//synchroData = new NMGLSynchroData();
+		//PRINT_ADDR(synchroData);
 		synchroData->init();
 		halSyncAddr(synchroData, 1);
 
 		setHeap(7);
 		NMGL_Context_NM0::create();
 		cntxt = NMGL_Context_NM0::getContext();
-		cntxt->synchro.init(synchroData);		
-
-		setHeap(8);
-		cntxt->triangleConnectors = myMallocT<PolygonsConnector>(36);
-		cntxt->lineConnectors = myMallocT<PolygonsConnector>(36);
-		cntxt->pointConnectors = myMallocT<PolygonsConnector>(36);
+		cntxt->synchro.init(synchroData);
 
 		setHeap(10);
-		
-
-		PolygonsArray* trianData =   myMallocT<PolygonsArray>(36);
+		PolygonsArray* trianData = myMallocT<PolygonsArray>(36);
 		PolygonsArray* lineData = myMallocT<PolygonsArray>(36);
 		PolygonsArray* pointsData = myMallocT<PolygonsArray>(36);
+
+		setHeap(8);
+		//cntxt->triangleConnectors = myMallocT<PolygonsConnector>(36);
+		//cntxt->lineConnectors = myMallocT<PolygonsConnector>(36);
+		//cntxt->pointConnectors = myMallocT<PolygonsConnector>(36);
+		cntxt->triangleConnectors = new PolygonsConnector[36];
+		cntxt->lineConnectors = new PolygonsConnector[36];
+		cntxt->pointConnectors = new PolygonsConnector[36];
+		
 		for (int seg = 0; seg < 36; seg++) {
 			trianData[seg].init();
 			trianData[seg].ptr(0)->count = 0;
@@ -190,8 +194,6 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 		return e;
 	}
 
-	cntxt->pointRadius = 1;
-
 	cntxt->trianInner.x0 = nmglx0;
 	cntxt->trianInner.y0 = nmgly0;
 	cntxt->trianInner.x1 = nmglx1;
@@ -220,13 +222,22 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 	cntxt->lineInner.x1 = nmglx1;
 	cntxt->lineInner.y1 = nmgly1;
 	cntxt->lineInner.z = nmglz_int;
+	cntxt->lineInner.s0 = nmgls0;
+	cntxt->lineInner.t0 = nmglt0;
+	cntxt->lineInner.s1 = nmgls1;
+	cntxt->lineInner.t1 = nmglt1;
+	cntxt->lineInner.w0 = nmglw0;
+	cntxt->lineInner.w1 = nmglw1;
 	cntxt->lineInner.colors = nmgllightsValues;
 	cntxt->lineInner.maxSize = NMGL_SIZE;
 	cntxt->lineInner.size = 0;
 
-	cntxt->pointInner.x0 = nmglx0;
-	cntxt->pointInner.y0 = nmgly0;
+	cntxt->pointInner.x = nmglx0;
+	cntxt->pointInner.y = nmgly0;
 	cntxt->pointInner.z = nmglz_int;
+	cntxt->pointInner.s = nmgls0;
+	cntxt->pointInner.t = nmglt0;
+	cntxt->pointInner.w = nmglw0;
 	cntxt->pointInner.colors = nmgllightsValues;
 	cntxt->pointInner.maxSize = NMGL_SIZE;
 	cntxt->pointInner.size = 0;

@@ -1,9 +1,8 @@
 #include "demo3d_nm1.h"
 #include "myserverdma.h"
 
-extern volatile unsigned int bufferClearCounters[2];
 
-SECTION(".text_demo3d") void NMGL_CopySegmentFromImage(NMGL_Context_NM1 *context, CommandNm1 *command){
+SECTION(".text_demo3d") void NMGL_CopySegmentFromImage(NMGL_Context_NM1 *context, NM_Command *command){
 	int x0 = command->params[0].i;
 	int y0 = command->params[1].i;
 	int width = command->params[2].i;
@@ -34,7 +33,7 @@ SECTION(".text_demo3d") void NMGL_CopySegmentFromImage(NMGL_Context_NM1 *context
 	context->segmentSize.height = height;
 }
 
-SECTION(".text_demo3d") void NMGL_CopySegmentToImage(NMGL_Context_NM1 *context, CommandNm1 *command){
+SECTION(".text_demo3d") void NMGL_CopySegmentToImage(NMGL_Context_NM1 *context, NM_Command *command){
 	int x0 = command->params[0].i;
 	int y0 = command->params[1].i;
 	int width = command->params[2].i;

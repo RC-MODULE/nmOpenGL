@@ -11,7 +11,7 @@ SECTION(".dama_demo3d") volatile unsigned int bufferClearStep[2];
 
 SECTION(".text_demo3d") int colorBufferClearPartCallback() {
 	bufferClearCounters[0] += bufferClearStep[0];
-	return bufferClearCounters[1];
+	return bufferClearCounters[0];
 }
 
 SECTION(".text_demo3d") int depthBufferClearPartCallback() {
@@ -20,7 +20,7 @@ SECTION(".text_demo3d") int depthBufferClearPartCallback() {
 }
 
 
-SECTION(".text_demo3d") void NMGL_Clear(NMGL_Context_NM1 *context, CommandNm1 *command){
+SECTION(".text_demo3d") void NMGL_Clear(NMGL_Context_NM1 *context, NM_Command *command){
 	
 	int widthImage = context->colorBuffer.getWidth();
 	int heightImage = context->colorBuffer.getHeight();

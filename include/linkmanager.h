@@ -19,6 +19,7 @@ struct LinkTask {
 template<int PORT, int DIRECTION>
 class NM_MemCopyManagerLink : public NM_MemCopyManager<LinkTask, MSD_SIZE, MSD_NUM_CHANNELS, NM_MemCopyManagerLink<PORT, DIRECTION>> {
 public:
+#ifdef __GNUC__
 	void startFunc(LinkTask* task) {
 		if (task->type == MSD_DMA) {
 			halLinkStart(task->data, task->size32, PORT, DIRECTION);
@@ -27,4 +28,9 @@ public:
 			halLinkStart2D(task->data, task->size32, task->width, task->stride, PORT, DIRECTION);
 		}
 	}
+#else
+	void startFunc(LinkTask* task) {
+		
+	}
+#endif
 };

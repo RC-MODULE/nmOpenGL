@@ -18,8 +18,8 @@ void updatePolygonsP(DataForNmpu1* data, Points* points, int count, v2nm32f lowe
 	float* temp2 = cntxt->buffer2 + 4 * NMGL_SIZE;
 	float* temp3 = cntxt->buffer3 + 6 * NMGL_SIZE;
 
-	nmppsSubC_32f(points->x0, temp0, lowerLeft.v0, count);
-	nmppsSubC_32f(points->y0, temp1, lowerLeft.v1, count);
+	nmppsSubC_32f(points->x, temp0, lowerLeft.v0, count);
+	nmppsSubC_32f(points->y, temp1, lowerLeft.v1, count);
 	nmppsConvert_32f32s_rounding(temp0, data->x0 + data->count, 0, count);
 	nmppsConvert_32f32s_rounding(temp1, data->y0 + data->count, 0, count);
 

@@ -58,5 +58,8 @@ void updatePolygonsL(DataForNmpu1* data, Lines* lines, int count, v2nm32f lowerL
 	
 	
 	data->count += count;
+	if (data->count > POLYGONS_SIZE) {
+		data->count = data->count;
+	}
 	
 }

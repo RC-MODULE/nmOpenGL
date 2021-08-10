@@ -88,7 +88,7 @@ struct CommandArgument {
 	}
 };
 
-struct CommandNm1{
+struct NM_Command{
 	int instr;
 	CommandArgument params[7];
 };
@@ -97,12 +97,12 @@ struct CommandNm1{
 //#define PRIORITY_SIZE 2
 
 
-typedef HalRingBufferData<CommandNm1, PRIORITY_SIZE> NMGLSynchroData;
+typedef HalRingBufferData<NM_Command, PRIORITY_SIZE> NMGLSynchroData;
 
 
 struct NMGL_SynchroMasterRingBuffer {
 private:
-	HalRingBufferConnector<CommandNm1, PRIORITY_SIZE> connector;
+	HalRingBufferConnector<NM_Command, PRIORITY_SIZE> connector;
 	int dummy;
 public:
 
@@ -110,9 +110,9 @@ public:
 		connector.init(synchroData);
 	}
 
-	inline void pushInstr(CommandNm1 *command){
+	inline void pushInstr(NM_Command *command){
 		while (connector.isFull());
-		CommandNm1* commandRB = connector.ptrHead();
+		NM_Command* commandRB = connector.ptrHead();
 		commandRB->instr = command->instr;
 		for (int i = 0; i < 7; i++) {
 			commandRB->params[i] = command->params[i];
@@ -128,7 +128,7 @@ public:
 class NMGL_SynchroSlaveRingBuffer {
 private:
 public:
-	HalRingBufferConnector<CommandNm1, PRIORITY_SIZE> connector;
+	HalRingBufferConnector<NM_Command, PRIORITY_SIZE> connector;
 	int dummy;
 public:
 
@@ -136,7 +136,7 @@ public:
 		connector.init(synchroData);
 	}
 
-	inline void popInstr(CommandNm1 *command) {
+	inline void popInstr(NM_Command *command) {
 		connector.pop(command, 1);
 		for (int i = 0; i < 7; i++) {
 			if (command->params[i].storedType == TYPE_POINTER) {

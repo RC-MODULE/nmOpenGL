@@ -2,7 +2,7 @@
 
 
 
-SECTION(".text_demo3d") void NMGL_SwapBuffer(NMGL_Context_NM1 *context, CommandNm1 *command) {
+SECTION(".text_demo3d") void NMGL_SwapBuffer(NMGL_Context_NM1 *context, NM_Command *command) {
 	msdWaitDma();
 
 	context->imageConnector.incHead();
@@ -12,7 +12,7 @@ SECTION(".text_demo3d") void NMGL_SwapBuffer(NMGL_Context_NM1 *context, CommandN
 	}
 }
 
-SECTION(".text_demo3d") void NMGL_Exit(NMGL_Context_NM1 *context, CommandNm1 *command){
+SECTION(".text_demo3d") void NMGL_Exit(NMGL_Context_NM1 *context, NM_Command *command){
 	
 }
 
