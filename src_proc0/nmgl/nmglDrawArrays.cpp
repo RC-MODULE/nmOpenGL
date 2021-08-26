@@ -146,8 +146,8 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 	}
 
 	if (cntxt->isLighting) {
-		mulC_v4nm32f(cntxt->lightAmbient, &cntxt->materialAmbient, cntxt->ambientMul, MAX_LIGHTS + 1);
-		mulC_v4nm32f(cntxt->lightDiffuse, &cntxt->materialDiffuse, cntxt->diffuseMul, MAX_LIGHTS);
+		mulC_v4nm32f(cntxt->lightAmbient, cntxt->pMaterialAmbient, cntxt->ambientMul, MAX_LIGHTS + 1);
+		mulC_v4nm32f(cntxt->lightDiffuse, cntxt->pMaterialDiffuse, cntxt->diffuseMul, MAX_LIGHTS);
 		mulC_v4nm32f(cntxt->lightSpecular, &cntxt->materialSpecular, cntxt->specularMul, MAX_LIGHTS);
 		nmppsAdd_32f((float*)(cntxt->ambientMul + MAX_LIGHTS), 
 			(float*)&cntxt->materialEmissive, 

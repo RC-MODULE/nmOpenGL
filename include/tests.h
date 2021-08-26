@@ -41,12 +41,33 @@ if (!(x)) \
 	for (__i = 0; __i < size; ++__i){ \
 		if (!equalf(array1[__i], array2[__i])) { \
 			printf ("\nFAIL Function: %s\n     File:%s\n     Line:%d\n     Cond:%s\n",__FUNCTION__, __FILE__, __LINE__, "all elements of arrays are equal"); \
+			printf ("\n%i: %f != %f\n\r", __i, array1[__i], array2[__i]);\
 			printf ("     Details: " __VA_ARGS__);\
 			printf ("\n\n");\
 			return -1; \
 		} else { \
 			/* Do nothing, continue to the next element */ \
 		} \
+	} \
+}
+
+#define TEST_ARRAYS_NOT_EQUAL(array1, array2, size, ...) \
+{ \
+	int __i; \
+	int __res = -1; \
+	for (__i = 0; __i < size; ++__i){ \
+		if (!equalf(array1[__i], array2[__i])) { \
+			__res = 0;\
+			break;\
+		}\
+	}\
+	if (-1 == __res) { \
+		printf ("\nFAIL Function: %s\n     File:%s\n     Line:%d\n     Cond:%s\n",__FUNCTION__, __FILE__, __LINE__, "Arrays are not equal"); \
+		printf ("     Details: " __VA_ARGS__);\
+		printf ("\n\n");\
+		return -1; \
+	} else { \
+		/* Do nothing, continue to the next element */ \
 	} \
 }
 
