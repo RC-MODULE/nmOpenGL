@@ -26,7 +26,9 @@ void nmglEnable(NMGLenum cap) {
 		break;
 
 	case NMGL_COLOR_MATERIAL:
-		//code
+		cntxt->isColorMaterial = NMGL_TRUE;
+		cntxt->pMaterialAmbient = &cntxt->currentColor;
+		cntxt->pMaterialDiffuse = &cntxt->currentColor;
 		break;		
 		
 	case NMGL_CULL_FACE:
