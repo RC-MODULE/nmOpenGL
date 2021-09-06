@@ -17,11 +17,13 @@ void nmglGetFloatv(NMGLenum pname, NMGLfloat * params) {
 			params[i] = cntxt->modelviewMatrixStack.top()->matr[i];
 		}
 		//nmblas_scopy(16, (float*)cntxt->modelviewMatrixStack.top(),1, params,1);
+		break;
 	case NMGL_PROJECTION_MATRIX:
 		for (int i = 0; i < 16; i++) {
 			params[i] = cntxt->projectionMatrixStack.top()->matr[i];
 		}
 		//nmblas_scopy(16, (float*)cntxt->projectionMatrixStack.top(), 1, params, 1);
+		break;
 	default:
 		cntxt->error = NMGL_INVALID_ENUM;
 	}
