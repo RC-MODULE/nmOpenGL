@@ -8,7 +8,7 @@ SECTION(".text_nmgl")
 void nmglLightf(NMGLenum color, NMGLenum pname, NMGLfloat param) {
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
 	color -= NMGL_LIGHT0;
-	if (color > MAX_LIGHTS) {
+	if (color >= MAX_LIGHTS) {
 		cntxt->error = NMGL_INVALID_ENUM;
 		return;
 	}
