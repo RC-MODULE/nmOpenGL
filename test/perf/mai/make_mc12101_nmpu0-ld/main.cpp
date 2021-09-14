@@ -5,6 +5,7 @@
 #include "stdlib.h"
 #include "demo3d_nm0.h"
 #include "service.h"
+#include "filter.h"
 
 __attribute__((section(".mem_bank0"))) long long im0[1];
 __attribute__((section(".mem_bank1"))) long long im1[1];
