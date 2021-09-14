@@ -13,6 +13,7 @@ int cnvMaskToOffsets_size0_resultCorrect();
 int cnvMaskToOffsets_size1_resultCorrect();
 int cnvMaskToOffsets_size32_resultCorrect();
 int cnvMaskToOffsets_size33_resultCorrect();
+int cnvMaskToOffsets_size33_dstVecExtraElementsNotChanged();
 
 extern "C" int cnvMaskToOffsets(nm1* mask, int* offsets, int size);
 nm32s arrayToInt (unsigned int* array, int count);
@@ -26,6 +27,7 @@ int main()
   RUN_TEST(cnvMaskToOffsets_size1_resultCorrect);
   RUN_TEST(cnvMaskToOffsets_size32_resultCorrect);
   RUN_TEST(cnvMaskToOffsets_size33_resultCorrect);
+  RUN_TEST(cnvMaskToOffsets_size33_dstVecExtraElementsNotChanged);
 
 	return 0;
 }
@@ -106,7 +108,7 @@ int cnvMaskToOffsets_allZeroes_returns0(){
 #endif //DEBUG
 
   TEST_ASSERT(result == refResult);
-  TEST_ARRAYS_EQUALI(dstVec, refDstVec, TEST_MASK_SIZE);//Also check that dstVec is not changed
+  TEST_ARRAYS_EQUALI(dstVec, refDstVec, size);//Also check that dstVec is not changed
 
   return 0;
 }
@@ -261,6 +263,76 @@ int cnvMaskToOffsets_size33_resultCorrect(){
   int refDstVec[maxResult] = {30,1,1};
 
   int result = cnvMaskToOffsets((nm1*)(&testMask), dstVec, size);
+
+#ifdef DEBUG
+  for (int i = 0; i < 2; i++){
+    printf("testMask[%d] = %0x\n", i, testMask[i]);
+  }
+  printf("size= %d\n", size);
+  printf("result = %d\n", result);
+  printf("dstVec: ");
+  for (int i = 0; i < maxResult; i++){
+    printf("%3d ", dstVec[i]);
+  }
+  printf("\r\n");
+
+  printf("refVec: ");
+  for (int i = 0; i < maxResult; i++){
+    printf("%3d ", refDstVec[i]);
+  }
+  printf("\r\n");
+#endif //DEBUG
+
+  TEST_ASSERT(result == refResult);
+  TEST_ARRAYS_EQUALI(dstVec, refDstVec, maxResult);
+
+  return 0;
+}
+
+int cnvMaskToOffsets_size33_dstVecExtraElementsNotChanged(){
+
+  constexpr int maxResult = 64;
+  int dstVec[maxResult] = {0}; 
+  unsigned int testMask[2] = {0xc0000000, 0xffffffff};
+  int size = 33;
+  int refResult = 3; 
+  int refDstVec[maxResult] = {30,1,1};
+
+  dstVec[3] = refDstVec[3] = 777;
+  dstVec[4] = refDstVec[4] = 888;
+
+  int result = cnvMaskToOffsets((nm1*)(&testMask), dstVec, size);
+
+#ifdef DEBUG
+  for (int i = 0; i < 2; i++){
+    printf("testMask[%d] = %0x\n", i, testMask[i]);
+  }
+  printf("size= %d\n", size);
+  printf("result = %d\n", result);
+  printf("dstVec: ");
+  for (int i = 0; i < maxResult; i++){
+    printf("%3d ", dstVec[i]);
+  }
+  printf("\r\n");
+
+  printf("refVec: ");
+  for (int i = 0; i < maxResult; i++){
+    printf("%3d ", refDstVec[i]);
+  }
+  printf("\r\n");
+#endif //DEBUG
+
+  TEST_ASSERT(result == refResult);
+  TEST_ARRAYS_EQUALI(dstVec, refDstVec, maxResult);
+
+  //swap extra elements and test one more time
+
+  unsigned int tmp = 0;
+  tmp = refDstVec[3];
+  dstVec[3] = refDstVec[3] = refDstVec[6];
+  dstVec[4] = refDstVec[4] = tmp;
+
+  result = cnvMaskToOffsets((nm1*)(&testMask), dstVec, size);
 
 #ifdef DEBUG
   for (int i = 0; i < 2; i++){

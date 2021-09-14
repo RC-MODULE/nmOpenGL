@@ -16,6 +16,7 @@
 int selectElementsByIndices_selectFloats();
 int selectElementsByIndices_selectInts();
 int selectElementsByIndices_selectObjects();
+int selectElementsByIndices_dstExtraElementsNotChanged();
 
 class testClass {
 public:
@@ -47,6 +48,7 @@ int main()
   RUN_TEST(selectElementsByIndices_selectFloats);
   RUN_TEST(selectElementsByIndices_selectInts);
   RUN_TEST(selectElementsByIndices_selectObjects);
+  RUN_TEST(selectElementsByIndices_dstExtraElementsNotChanged);
 
 	return 0;
 }
@@ -174,4 +176,55 @@ int selectElementsByIndices_selectObjects() {
   TEST_ARRAYS_EQUALI(dst, dstRef, size);
 
   return 0;
+}
+
+int selectElementsByIndices_dstExtraElementsNotChanged() {
+  constexpr unsigned int srcSize = 9;
+  constexpr unsigned int dstSize = 5;
+  int src[srcSize]={0, 1, 2, 3, 4, 5, 6, 7, 8};
+  int indices[4]={2,3,2,1};
+  int dst[dstSize]={1, 2, 3, 0xC0DE0777, 0xC0DE0922};
+  int dstRef[dstSize]={2, 3, 2, 0xC0DE0777, 0xC0DE0922};
+  int size = 3;
+
+  selectElementsByIndices(src, indices, dst, sizeof32(int), size);
+
+#ifdef DEBUG
+  for(int i=0; i < dstSize; i++){
+    printf("dst[%d]=%d\n", i, dst[i]);
+  }
+  printf(".\n");
+
+  for(int i=0; i < dstSize; i++){
+    printf("dstRef[%d]=%d\n", i, dstRef[i]);
+  }
+  printf(".\n");
+#endif //DEBUG
+
+  TEST_ARRAYS_EQUALI(dst, dstRef, dstSize);
+
+  //swap extra elements and test one more time
+  unsigned int tmp = 0;
+  tmp = dstRef[3]; 
+  dst[3] = dstRef[3] = dstRef[4];
+  dst[4] = dstRef[4] = tmp;
+
+  selectElementsByIndices(src, indices, dst, sizeof32(int), size);
+
+#ifdef DEBUG
+  for(int i=0; i < dstSize; i++){
+    printf("dst[%d]=%d\n", i, dst[i]);
+  }
+  printf(".\n");
+
+  for(int i=0; i < dstSize; i++){
+    printf("dstRef[%d]=%d\n", i, dstRef[i]);
+  }
+  printf(".\n");
+#endif //DEBUG
+
+  TEST_ARRAYS_EQUALI(dst, dstRef, dstSize);
+
+  return 0;
+
 }

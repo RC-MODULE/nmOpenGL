@@ -57,8 +57,8 @@ int deselectElementsByIndices_deselectFloats() {
   float src[FLOAT_ARRAY_SRC_SIZE] = {1.5,3.5,2.5};
   int indices[3]={1,3,2};
   int size = 3;
-  float dst[FLOAT_ARRAY_DST_SIZE]={0.5, 0.0, 0.0, 0.0, 4.5, 5.5, 6.5, 7.5, 8.5};
-  float dstRef[FLOAT_ARRAY_DST_SIZE]={0.5, 1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5, 8.5};
+  float dst[FLOAT_ARRAY_DST_SIZE]   ={800.5, 0.0, 0.0, 0.0, 274.5, 721.5, 289.5, 777.5, 118.5};
+  float dstRef[FLOAT_ARRAY_DST_SIZE]={800.5, 1.5, 2.5, 3.5, 274.5, 721.5, 289.5, 777.5, 118.5};
 
   deselectElementsByIndices(src, indices, dst, sizeof32(int), size);
 
@@ -84,8 +84,8 @@ int deselectElementsByIndices_deselectInts() {
   int src[INT_ARRAY_SRC_SIZE]={777, 888, 777};
   int indices[INT_ARRAY_SRC_SIZE + 1]={2,3,2,1};
   int size = 3;
-  int dst[INT_ARRAY_DST_SIZE]={0, 1, 999, 999, 4, 5, 6, 7, 8};
-  int dstRef[INT_ARRAY_DST_SIZE]={0, 1, 777, 888, 4, 5, 6, 7, 8};
+  int dst[INT_ARRAY_DST_SIZE]   ={0xC0DE0001, 0xC0DE0002, 999, 999, 736, 884, 997, 457, 900};
+  int dstRef[INT_ARRAY_DST_SIZE]={0xC0DE0001, 0xC0DE0002, 777, 888, 736, 884, 997, 457, 900};
 
   deselectElementsByIndices(src, indices, dst, sizeof32(int), size);
 
@@ -148,6 +148,7 @@ int deselectElementsByIndices_deselectObjects() {
 
   TEST_ARRAYS_EQUALI(dst, dstRef, OBJECT_ARRAY_DST_SIZE);
 
+  //test one more time
   src[0] = testClass(63,'f',63.5,6300);
   indices[0] = OBJECT_ARRAY_DST_SIZE-1; //copy to last element of dst
   size = 1;

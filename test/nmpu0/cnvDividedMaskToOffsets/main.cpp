@@ -14,6 +14,7 @@ int cnvDividedMaskToOffsets_size0_resultCorrect();
 int cnvDividedMaskToOffsets_size2_resultCorrect();
 int cnvDividedMaskToOffsets_size64_resultCorrect();
 int cnvDividedMaskToOffsets_size66_resultCorrect();
+int cnvDividedMaskToOffsets_size66_dstVecExtraElementsNotChanged();
 
 extern "C" int cnvDividedMaskToOffsets(nm1* maskEven, nm1* maskOdd, int* offsets, int size);
 nm32s arrayToInt (unsigned int* array, int count);
@@ -29,6 +30,7 @@ int main()
   RUN_TEST(cnvDividedMaskToOffsets_size2_resultCorrect);
   RUN_TEST(cnvDividedMaskToOffsets_size64_resultCorrect);
   RUN_TEST(cnvDividedMaskToOffsets_size66_resultCorrect);
+  RUN_TEST(cnvDividedMaskToOffsets_size66_dstVecExtraElementsNotChanged);
 
 	return 0;
 }
@@ -119,7 +121,7 @@ int cnvDividedMaskToOffsets_allZeroes_returns0(){
 #endif //DEBUG
 
   TEST_ASSERT(result == refResult);
-  TEST_ARRAYS_EQUALI(dstVec, refDstVec, TEST_MASK_SIZE*2);//Also check that dstVec is not changed
+  TEST_ARRAYS_EQUALI(dstVec, refDstVec, size);//Also check that dstVec is not changed
 
   return 0;
 }
@@ -327,6 +329,83 @@ int cnvDividedMaskToOffsets_size66_resultCorrect(){
   int refDstVec[maxResult] = {62, 1, 1, 1};
 
   int result = cnvDividedMaskToOffsets((nm1*)(&testMaskEven), (nm1*)(&testMaskOdd), dstVec, size);
+
+#ifdef DEBUG
+  for (int i = 0; i < 2; i++){
+    printf("testMaskEven[%d] = %0x\n", i, testMaskEven[i]);
+  }
+  for (int i = 0; i < 2; i++){
+    printf("testMaskOdd[%d] = %0x\n", i, testMaskOdd[i]);
+  }
+  printf("size= %d\n", size);
+  printf("result = %d\n", result);
+  printf("dstVec: ");
+  for (int i = 0; i < maxResult; i++){
+    printf("%3d ", dstVec[i]);
+  }
+  printf("\r\n");
+
+  printf("refVec: ");
+  for (int i = 0; i < maxResult; i++){
+    printf("%3d ", refDstVec[i]);
+  }
+  printf("\r\n");
+#endif //DEBUG
+
+  TEST_ASSERT(result == refResult);
+  TEST_ARRAYS_EQUALI(dstVec, refDstVec, maxResult);//count > refResult, test that dstVec is changed only in expected values
+
+  return 0;
+}
+
+int cnvDividedMaskToOffsets_size66_dstVecExtraElementsNotChanged(){
+
+  constexpr int maxResult = 128;
+  unsigned int testMaskEven[] = {0x80000000, 0xffffffff}; 
+  unsigned int testMaskOdd[] =  {0x80000000, 0xffffffff}; 
+  int dstVec[maxResult] = {0};
+  int size = 66;
+  int refResult = 4; 
+  int refDstVec[maxResult] = {62, 1, 1, 1};
+
+  dstVec[4] = refDstVec[4] = 777;
+  dstVec[5] = refDstVec[5] = 888;
+
+  int result = cnvDividedMaskToOffsets((nm1*)(&testMaskEven), (nm1*)(&testMaskOdd), dstVec, size);
+
+#ifdef DEBUG
+  for (int i = 0; i < 2; i++){
+    printf("testMaskEven[%d] = %0x\n", i, testMaskEven[i]);
+  }
+  for (int i = 0; i < 2; i++){
+    printf("testMaskOdd[%d] = %0x\n", i, testMaskOdd[i]);
+  }
+  printf("size= %d\n", size);
+  printf("result = %d\n", result);
+  printf("dstVec: ");
+  for (int i = 0; i < maxResult; i++){
+    printf("%3d ", dstVec[i]);
+  }
+  printf("\r\n");
+
+  printf("refVec: ");
+  for (int i = 0; i < maxResult; i++){
+    printf("%3d ", refDstVec[i]);
+  }
+  printf("\r\n");
+#endif //DEBUG
+
+  TEST_ASSERT(result == refResult);
+  TEST_ARRAYS_EQUALI(dstVec, refDstVec, maxResult);//count > refResult, test that dstVec is changed only in expected values
+
+  //swap extra elements and test one more time
+
+  unsigned int tmp = 0;
+  tmp = refDstVec[4];
+  dstVec[4] = refDstVec[4] = refDstVec[6];
+  dstVec[5] = refDstVec[5] = tmp;
+
+  result = cnvDividedMaskToOffsets((nm1*)(&testMaskEven), (nm1*)(&testMaskOdd), dstVec, size);
 
 #ifdef DEBUG
   for (int i = 0; i < 2; i++){

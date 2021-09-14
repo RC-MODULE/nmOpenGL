@@ -16,6 +16,7 @@
 int selectElementsByOffsets_selectFloats();
 int selectElementsByOffsets_selectInts();
 int selectElementsByOffsets_selectObjects();
+int selectElementsByOffsets_dstExtraElementsNotChanged();
 
 class testClass {
 public:
@@ -47,6 +48,7 @@ int main()
   RUN_TEST(selectElementsByOffsets_selectFloats);
   RUN_TEST(selectElementsByOffsets_selectInts);
   RUN_TEST(selectElementsByOffsets_selectObjects);
+  RUN_TEST(selectElementsByOffsets_dstExtraElementsNotChanged);
 
 	return 0;
 }
@@ -177,4 +179,58 @@ int selectElementsByOffsets_selectObjects() {
   TEST_ARRAYS_EQUALI(dst, dstRef, size);
 
   return 0;
+}
+
+
+
+int selectElementsByOffsets_dstExtraElementsNotChanged() {
+
+  constexpr unsigned int srcSize = 9;
+  constexpr unsigned int dstSize = 5;
+  int src[srcSize]={0, 1, 2, 3, 4, 5, 6, 7, 8};
+  int offsets[4]={2,3,2,1};
+  int dst[dstSize]={1, 2, 3, 0xC0DE0777, 0xC0DE0922};
+  int dstRef[dstSize]={2, 5, 7, 0xC0DE0777, 0xC0DE0922};
+  int size = 3;
+
+  selectElementsByOffsets(src, offsets, dst, sizeof32(int), size);
+
+#ifdef DEBUG
+  for(int i=0; i < dstSize; i++){
+    printf("dst[%d]=%d\n", i, dst[i]);
+  }
+  printf(".\n");
+
+  for(int i=0; i < dstSize; i++){
+    printf("dstRef[%d]=%d\n", i, dstRef[i]);
+  }
+  printf(".\n");
+#endif //DEBUG
+
+  TEST_ARRAYS_EQUALI(dst, dstRef, dstSize);
+
+
+  //swap extra elements and test one more time
+  unsigned int tmp = 0;
+  tmp = dstRef[3]; 
+  dst[3] = dstRef[3] = dstRef[4];
+  dst[4] = dstRef[4] = tmp;
+
+  selectElementsByOffsets(src, offsets, dst, sizeof32(int), size);
+
+#ifdef DEBUG
+  for(int i=0; i < dstSize; i++){
+    printf("dst[%d]=%d\n", i, dst[i]);
+  }
+  printf(".\n");
+
+  for(int i=0; i < dstSize; i++){
+    printf("dstRef[%d]=%d\n", i, dstRef[i]);
+  }
+  printf(".\n");
+#endif //DEBUG
+
+  TEST_ARRAYS_EQUALI(dst, dstRef, dstSize);
+  return 0;
+
 }

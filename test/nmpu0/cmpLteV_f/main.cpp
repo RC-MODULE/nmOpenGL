@@ -16,6 +16,7 @@ int cmpLteV_f_size69_resultCorrect();
 int cmpLteV_f_evenLessEqual_maskCorrect();
 int cmpLteV_f_oddLessEqual_maskCorrect();
 int cmpLteV_f_comparisonTest_maskCorrect();
+int cmpLteV_f_size69_dstMaskExtraWordsNotChanged();
 
 extern "C" void cmpLteV_f(float* src1, float* src2, nm1* dstMaskEven, nm1* dstMaskOdd, int size);
 
@@ -31,6 +32,7 @@ int main()
 	  RUN_TEST(cmpLteV_f_evenLessEqual_maskCorrect);
 	  RUN_TEST(cmpLteV_f_oddLessEqual_maskCorrect);
 	  RUN_TEST(cmpLteV_f_comparisonTest_maskCorrect);
+	  RUN_TEST(cmpLteV_f_size69_dstMaskExtraWordsNotChanged);
 
 	return 0;
 }
@@ -337,6 +339,74 @@ int cmpLteV_f_comparisonTest_maskCorrect(){
   unsigned int refDstMaskEven[] = {0x0000d9b3};
   unsigned int refDstMaskOdd[] ={0x000cd9b};  
   int resMaskCount = 1;
+
+  cmpLteV_f(src1, src2, (nm1*)dstMaskEven, (nm1*)dstMaskOdd, size);
+
+#ifdef DEBUG
+  for (int i=0; i<resMaskCount; i++) {
+    printf("\r\n");
+    printf("refDstMaskEven = %0x\n", refDstMaskEven[i]);
+    printf("dstMaskEven = %0x\n", dstMaskEven[i]);
+    printf("refDstMaskOdd = %0x\n", refDstMaskOdd[i]);
+    printf("dstMaskOdd = %0x\n", dstMaskOdd[i]);
+  }
+#endif //DEBUG
+
+  TEST_ARRAYS_EQUALI(dstMaskEven, refDstMaskEven, resMaskCount);
+  TEST_ARRAYS_EQUALI(dstMaskOdd, refDstMaskOdd, resMaskCount);
+
+  return 0;
+}
+
+
+//Check that function does not change dstMasks more than it is needed
+int cmpLteV_f_size69_dstMaskExtraWordsNotChanged (){
+
+  constexpr int resMaskCount = 4;
+  constexpr int srcSize = resMaskCount*32*2;//32 - size of one mask, 2 - two masks: even and odd 
+  constexpr int size = 69;
+  float src1[srcSize] = {0};
+  float src2[srcSize] = {0};
+  unsigned int dstMaskEven[resMaskCount]    = {0xffffffff, 0xffffffff, 0xAAAAAAAA, 0x55555555};
+  unsigned int dstMaskOdd[resMaskCount]     = {0xffffffff, 0xffffffff, 0x55555555, 0xAAAAAAAA};  
+  unsigned int refDstMaskEven[resMaskCount] = {0xffffffff,        0x7, 0xAAAAAAAA, 0x55555555};
+  unsigned int refDstMaskOdd[resMaskCount]  = {0xffffffff,        0x3, 0x55555555, 0xAAAAAAAA};  
+
+  //Set all alements of src1 and src2 so that comparison result will be true
+  for (int i=0; i<srcSize; i++) {
+    src1[i] = 1.0;
+    src2[i] = 2.0;
+  }
+
+  cmpLteV_f(src1, src2, (nm1*)dstMaskEven, (nm1*)dstMaskOdd, size);
+
+#ifdef DEBUG
+  for (int i=0; i<resMaskCount; i++) {
+    printf("\r\n");
+    printf("refDstMaskEven = %0x\n", refDstMaskEven[i]);
+    printf("dstMaskEven = %0x\n", dstMaskEven[i]);
+    printf("refDstMaskOdd = %0x\n", refDstMaskOdd[i]);
+    printf("dstMaskOdd = %0x\n", dstMaskOdd[i]);
+  }
+#endif //DEBUG
+
+  TEST_ARRAYS_EQUALI(dstMaskEven, refDstMaskEven, resMaskCount);
+  TEST_ARRAYS_EQUALI(dstMaskOdd, refDstMaskOdd, resMaskCount);
+
+  //Swap dstMask elements 2 and 3 and test one more time
+  unsigned int tmp = 0;
+
+  tmp = dstMaskEven[2];
+  dstMaskEven[2] = dstMaskEven[3];
+  dstMaskEven[3] = tmp;
+  refDstMaskEven[2] = dstMaskEven[2];
+  refDstMaskEven[3] = dstMaskEven[3];
+
+  tmp = dstMaskOdd[2];
+  dstMaskOdd[2] = dstMaskOdd[3];
+  dstMaskOdd[3] = tmp;
+  refDstMaskOdd[2] = dstMaskOdd[2];
+  refDstMaskOdd[3] = dstMaskOdd[3];
 
   cmpLteV_f(src1, src2, (nm1*)dstMaskEven, (nm1*)dstMaskOdd, size);
 
