@@ -147,6 +147,7 @@ struct Points {
 	float* t;
 	float* w;
 	v4nm32s* colors;
+	int dummy;
 	int size;
 	int maxSize;
 };

@@ -27,11 +27,11 @@ void nmglDisable(NMGLenum cap) {
 		break;
 
 	case NMGL_COLOR_MATERIAL:
-		cntxt->isColorMaterial = NMGL_FALSE;
-		cntxt->materialAmbient = *cntxt->pMaterialAmbient;// i.e. currentColor
-		cntxt->materialDiffuse = *cntxt->pMaterialDiffuse;// i.e. currentColor
-		cntxt->pMaterialAmbient = &cntxt->materialAmbient;
-		cntxt->pMaterialDiffuse = &cntxt->materialDiffuse;
+		cntxt->lightingInfo.isColorMaterial = NMGL_FALSE;
+		cntxt->lightingInfo.materialAmbient = *cntxt->lightingInfo.pMaterialAmbient;// i.e. currentColor
+		cntxt->lightingInfo.materialDiffuse = *cntxt->lightingInfo.pMaterialDiffuse;// i.e. currentColor
+		cntxt->lightingInfo.pMaterialAmbient = &cntxt->lightingInfo.materialAmbient;
+		cntxt->lightingInfo.pMaterialDiffuse = &cntxt->lightingInfo.materialDiffuse;
 		break;		
 		
 	case NMGL_CULL_FACE:

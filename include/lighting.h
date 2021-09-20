@@ -12,6 +12,8 @@ struct LightingInfo {
 	v4nm32f materialDiffuse;			///< Рассеяный цвет материала
 	v4nm32f materialSpecular;			///< Зеркальный цвет материала
 	v4nm32f materialEmissive;			///< Эмиссионный цвет материала
+	v4nm32f *pMaterialAmbient;	///< Указатель на окружающий цвет материала (materialAmbient), используется в GetMaterialfv и в формуле расчёта цветапри включенном освещении
+	v4nm32f *pMaterialDiffuse;	///< Указатель на зеркальный цвет материала (materialDiffuse), используется в GetMaterialfv и в формуле расчёта цветапри включенном освещении
 
 	v4nm32f lightAmbient[MAX_LIGHTS + 1];   ///< Значения окружающей интенсивности источников света (элемент MAX_LIGHTS говорит об интенсивности сцены)
 	v4nm32f lightDiffuse[MAX_LIGHTS];       ///< Значения рассеяной интенсивности источников света
@@ -25,7 +27,9 @@ struct LightingInfo {
 	float lightQuadAtt[MAX_LIGHTS];			///< Квадратичный коэффициент затухания для источника света (не используется)
 	int isEnabledLight[MAX_LIGHTS];		///< Флаги активности источников света
 	int isLighting;						///< Флаг активности расчета освещения
+	int isColorMaterial;				///< Флаг активности режима COLOR_MATERIAL
 	float specularExp;					///< Показатель зеркальности
+	int dummy;
 
 	void update(){
 		mulC_v4nm32f(lightAmbient, &materialAmbient, ambientMul, MAX_LIGHTS + 1);
@@ -56,6 +60,8 @@ struct LightingInfo {
 		materialEmissive.vec[1] = 0.0f;
 		materialEmissive.vec[2] = 0.0f;
 		materialEmissive.vec[3] = 1.0f;
+		pMaterialAmbient = &materialAmbient;
+		pMaterialDiffuse = &materialDiffuse;
 
 		for (int i = 0; i < MAX_LIGHTS; i++) {
 			if (i == 0) {

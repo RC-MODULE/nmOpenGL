@@ -14,7 +14,7 @@ end ".data_demo3d";
 
 extern vec_vsum_data_0: label;
 
-begin ".text_dmo3d"
+begin ".text_demo3d"
 global _duplicate_16s: label;
 <_duplicate_16s>
 	ar5 = ar7 - 2;
@@ -48,4 +48,4 @@ global _duplicate_16s: label;
 	pop ar4, gr4;
 	pop ar0, gr0	with gr5 = gr7;
 	return;
-end ".text_dmo3d";
+end ".text_demo3d";

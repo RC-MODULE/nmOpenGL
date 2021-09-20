@@ -64,7 +64,7 @@ int counter = 0;
 template<class T> inline T* myMallocT() {
 	
 	T* result = (T*)halMalloc32(sizeof32(T));
-	//printf("%s, %p, sizeof32=%d\n", typeid(T).name(), result, sizeof(*result));
+	//printf("%s, %p, sizeof32=%d\n", typeid(T).name(), result, sizeof32(T));
 	if (result == 0) throw counter;
 	counter++;
 	return result;
@@ -72,7 +72,7 @@ template<class T> inline T* myMallocT() {
 
 template<class T> inline T* myMallocT(int count) {
 	T* result = (T*)halMalloc32(count * sizeof32(T));
-	//printf("%s, %p, sizeof32=%d\n", typeid(T).name(), result, sizeof(*result));
+	//printf("%s, %p, sizeof32=%d\n", typeid(T).name(), result, count * sizeof32(T));
 	if (result == 0) throw counter;
 	counter++;
 	return result;
@@ -112,7 +112,7 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 		setHeap(7);
 		NMGL_Context_NM0::create();
 		cntxt = NMGL_Context_NM0::getContext();
-		cntxt->synchro.init(synchroData);
+		cntxt->synchro.init(synchroData);		
 
 		setHeap(10);
 		PolygonsArray* trianData = myMallocT<PolygonsArray>(36);
@@ -120,12 +120,12 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 		PolygonsArray* pointsData = myMallocT<PolygonsArray>(36);
 
 		setHeap(8);
-		//cntxt->triangleConnectors = myMallocT<PolygonsConnector>(36);
-		//cntxt->lineConnectors = myMallocT<PolygonsConnector>(36);
-		//cntxt->pointConnectors = myMallocT<PolygonsConnector>(36);
-		cntxt->triangleConnectors = new PolygonsConnector[36];
-		cntxt->lineConnectors = new PolygonsConnector[36];
-		cntxt->pointConnectors = new PolygonsConnector[36];
+		cntxt->triangleConnectors = myMallocT<PolygonsConnector>(36);
+		cntxt->lineConnectors = myMallocT<PolygonsConnector>(36);
+		cntxt->pointConnectors = myMallocT<PolygonsConnector>(36);
+		//cntxt->triangleConnectors = new PolygonsConnector[36];
+		//cntxt->lineConnectors = new PolygonsConnector[36];
+		//cntxt->pointConnectors = new PolygonsConnector[36];
 		
 		for (int seg = 0; seg < 36; seg++) {
 			trianData[seg].init();
@@ -144,6 +144,7 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 			cntxt->pointConnectors[seg].ringbufferDataPointer = pointsData + seg;
 		}
 
+		setHeap(10);
 		cntxt->beginEndInfo.vertex = myMallocT<v4nm32f>(BIG_NMGL_SIZE);
 		cntxt->beginEndInfo.normal = myMallocT<v4nm32f>(BIG_NMGL_SIZE);
 		cntxt->beginEndInfo.color = myMallocT<v4nm32f>(BIG_NMGL_SIZE);
