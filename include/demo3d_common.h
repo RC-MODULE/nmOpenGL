@@ -24,7 +24,6 @@
 	#define nmprofiler_disable()
 #endif
 
-
 #define TRIANGULATION_ENABLED
 //#define PROFILER0
 //#define PROFILER1

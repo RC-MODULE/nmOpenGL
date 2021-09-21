@@ -42,7 +42,6 @@ SECTION(".data_imu0") float texT2[POLYGONS_SIZE];
 SECTION(".data_imu0") float w0[POLYGONS_SIZE];
 SECTION(".data_imu0") float w1[POLYGONS_SIZE];
 SECTION(".data_imu0") float w2[POLYGONS_SIZE];
-//TEXTURING_PART
 
 
 int exitNM1 = 0;

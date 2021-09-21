@@ -80,4 +80,5 @@ void nmglLightfv(NMGLenum color, NMGLenum pname, const NMGLfloat *params) {
 		cntxt->error = NMGL_INVALID_ENUM;
 		break;
 	}
+
 }

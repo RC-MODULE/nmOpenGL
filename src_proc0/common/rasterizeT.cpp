@@ -90,6 +90,7 @@ void rasterizeT(const Triangles* triangles, const BitMask* masks){
 				else {
 					copyArraysByIndices((void**)triangles, indices, (void**)&localTrian, 7, resultSize);
 				}
+
 				copyColorByIndices_BGRA_RGBA(triangles->colors, indices, (v4nm32s*)localTrian.colors, resultSize);
 				localTrian.size = resultSize;
 
