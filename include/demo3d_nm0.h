@@ -7,8 +7,9 @@
 #include "nmgltex_nm0.h"
 #include "imagebuffer.h"
 #include "nmsynchro.h"
+#include "lighting.h"
 
-#define BIG_NMGL_SIZE (128 * NMGL_SIZE)
+#define BIG_NMGL_SIZE (64 * NMGL_SIZE)
 
 /*!
  *  \brief Класс, хранящий побитовую маску.
@@ -44,6 +45,7 @@ public:
 		bits[index / 32] = word;
 	}
 };
+
 
 /*!
  *  \brief Класс, хранящий побитовую маску в раздельных массивах.
@@ -138,10 +140,14 @@ struct Lines{
 };
 
 struct Points {
-	float* x0;
-	float* y0;
+	float* x;
+	float* y;
 	int* z;
+	float* s;
+	float* t;
+	float* w;
 	v4nm32s* colors;
+	int dummy;
 	int size;
 	int maxSize;
 };
@@ -214,6 +220,8 @@ struct MatrixStack {
 	}
 };
 
+
+
 /*!
  *  \brief Контекст nmOpengl на ядре NMPU0
  *  \author Жиленков Иван
@@ -228,7 +236,7 @@ private:
 	NMGL_Context_NM0() {};		// недоступный конструктор
 	~NMGL_Context_NM0() {};		// и деструктор
 public:	
-	inline static void create(NMGLSynchroData* synchroData) {
+	inline static void create() {
 		context = (NMGL_Context_NM0*)halMalloc32(sizeof32(NMGL_Context_NM0));
 		context->init();
 	}
@@ -243,16 +251,16 @@ public:
 	NMGL_SynchroMasterRingBuffer synchro;
 	BitMask segmentMasks[36];
 	BitDividedMask dividedMasks[2];	
+	ImageSegments* currentSegments;
 	PolygonsConnector* triangleConnectors;
 	PolygonsConnector* lineConnectors;
 	PolygonsConnector* pointConnectors;
-	PatternsArray* patterns;
 	float* buffer0;
 	float* buffer1;
 	float* buffer2;
 	float* buffer3;
 	float* buffer4;
-	float* buffer5;
+	float* buffer5;	
 	
 	int isUseTwoSidedMode;
 	NMGLenum error;
@@ -280,38 +288,20 @@ public:
 	Array normalArray;					///< Класс для работы с нормалями в nmglDrawArrays
 	Array colorArray;					///< Класс для работы с цветом в nmglDrawArrays
 
-	v4nm32f ambientMul[MAX_LIGHTS + 1];    ///< Общие значения окружающей интенсивности материала и источников освещения (элемент MAX_LIGHTS говорит об общей интенсивности материала и сцены)
-	v4nm32f diffuseMul[MAX_LIGHTS];		   ///< Общие значения рассеяной интенсивности материала и источников освещения
-	v4nm32f specularMul[MAX_LIGHTS];	   ///< Общие значения зеркальной интенсивности материала и источников освещения
+	
 	WindowInfo windowInfo;				///< Информация о расположении и размерах сегментов в изображении. Модифицируется функцией nmglViewport
-
+	NMGL_ScissorTest scissorTest;
 	v4nm32f tmp;						
 
-	v4nm32f materialAmbient;			///< Окружающий цвет материала
-	v4nm32f materialDiffuse;			///< Рассеяный цвет материала
-	v4nm32f materialSpecular;			///< Зеркальный цвет материала
-	v4nm32f materialEmissive;			///< Эмиссионный цвет материала
-	v4nm32f *pMaterialAmbient;	///< Указатель на окружающий цвет материала (materialAmbient), используется в GetMaterialfv и в формуле расчёта цветапри включенном освещении
-	v4nm32f *pMaterialDiffuse;	///< Указатель на зеркальный цвет материала (materialDiffuse), используется в GetMaterialfv и в формуле расчёта цветапри включенном освещении
-
-	v4nm32f lightAmbient[MAX_LIGHTS + 1];   ///< Значения окружающей интенсивности источников света (элемент MAX_LIGHTS говорит об интенсивности сцены)
-	v4nm32f lightDiffuse[MAX_LIGHTS];       ///< Значения рассеяной интенсивности источников света
-	v4nm32f lightSpecular[MAX_LIGHTS];      ///< Значения зеркальной интенсивности источников света
-	v4nm32f lightPosition[MAX_LIGHTS];		///< Значения положения источников освещения
-	v4nm32f lightSpotDirection[MAX_LIGHTS];		///< Направление прожектора для источников света
-	float lightSpotExp[MAX_LIGHTS];			///< Показатель степени прожектора для источников света
-	float lightSpotCutoff[MAX_LIGHTS];		///< Угол отсечки прожектора для источников света
-	float lightConstAtt[MAX_LIGHTS];		///< Постоянный коэффициент затухания для источника света (не используется)
-	float lightLinAtt[MAX_LIGHTS];			///< Коэффициент линейного затухания  для источника света (не используется)
-	float lightQuadAtt[MAX_LIGHTS];			///< Квадратичный коэффициент затухания для источника света (не используется)
-	int isEnabledLight[MAX_LIGHTS];		///< Флаги активности источников света
-	int isLighting;						///< Флаг активности расчета освещения
-	int isColorMaterial;				///< Флаг активности режима COLOR_MATERIAL
-	float specularExp;					///< Показатель зеркальности
+	LightingInfo lightingInfo;
 
 	NMGL_Context_NM0_Texture texState; 	///< textures data
+
+
+	ImageConnector imageConnector;
 	
 	void init(){
+		currentSegments = &windowInfo.segments;
 
 		currentMatrixStack = &modelviewMatrixStack;
 		isUseTwoSidedMode = NMGL_FALSE;
@@ -319,8 +309,8 @@ public:
 		cullFaceType = NMGL_BACK;
 		frontFaceOrientation = NMGL_CCW;
 		normalizeEnabled = NMGL_FALSE;
-		specularExp = 0;
-		isLighting = NMGL_FALSE;
+		
+		lightingInfo.init();
 
 		currentColor.vec[0] = (float)1.0;
 		currentColor.vec[1] = (float)1.0;
@@ -342,77 +332,6 @@ public:
 		projectionMatrixStack.size = 2;
 		projectionMatrixStack.type = NMGL_PROJECTION_MATRIX;
 
-		materialAmbient.vec[0] = 0.2f;
-		materialAmbient.vec[1] = 0.2f;
-		materialAmbient.vec[2] = 0.2f;
-		materialAmbient.vec[3] = 1.0f;
-		materialDiffuse.vec[0] = 0.8f;
-		materialDiffuse.vec[1] = 0.8f;
-		materialDiffuse.vec[2] = 0.8f;
-		materialDiffuse.vec[3] = 1.0f;
-		materialSpecular.vec[0] = 0.0f;
-		materialSpecular.vec[1] = 0.0f;
-		materialSpecular.vec[2] = 0.0f;
-		materialSpecular.vec[3] = 1.0f;
-		materialEmissive.vec[0] = 0.0f;
-		materialEmissive.vec[1] = 0.0f;
-		materialEmissive.vec[2] = 0.0f;
-		materialEmissive.vec[3] = 1.0f;
-		pMaterialAmbient = &materialAmbient;
-		pMaterialDiffuse = &materialDiffuse;
-
-		for (int i = 0; i < MAX_LIGHTS; i++) {
-			if (i == 0) {
-				lightDiffuse[i].vec[0] = 1.0f;
-				lightDiffuse[i].vec[1] = 1.0f;
-				lightDiffuse[i].vec[2] = 1.0f;
-				lightDiffuse[i].vec[3] = 1.0f;
-
-				lightSpecular[i].vec[0] = 1.0f;
-				lightSpecular[i].vec[1] = 1.0f;
-				lightSpecular[i].vec[2] = 1.0f;
-				lightSpecular[i].vec[3] = 1.0f;
-			}
-			else {
-				lightDiffuse[i].vec[0] = 0.0f;
-				lightDiffuse[i].vec[1] = 0.0f;
-				lightDiffuse[i].vec[2] = 0.0f;
-				lightDiffuse[i].vec[3] = 1.0f;
-
-				lightSpecular[i].vec[0] = 0.0f;
-				lightSpecular[i].vec[1] = 0.0f;
-				lightSpecular[i].vec[2] = 0.0f;
-				lightSpecular[i].vec[3] = 1.0f;
-			}
-
-			lightAmbient[i].vec[0] = 0.0f;
-			lightAmbient[i].vec[1] = 0.0f;
-			lightAmbient[i].vec[2] = 0.0f;
-			lightAmbient[i].vec[3] = 1.0f;
-
-			lightPosition[i].vec[0] = 0.0f;
-			lightPosition[i].vec[1] = 0.0f;
-			lightPosition[i].vec[2] = 1.0f;
-			lightPosition[i].vec[3] = 0.0f;
-
-			lightSpotDirection[i].vec[0] = 0.0f;
-			lightSpotDirection[i].vec[1] = 0.0f;
-			lightSpotDirection[i].vec[2] = -1.0f;
-			lightSpotDirection[i].vec[3] = 0.0f;
-
-			lightSpotExp[i] = 0.0f;
-			lightSpotCutoff[i] = 180.0f;
-			lightConstAtt[i] = 1.0f;
-			lightLinAtt[i] = 0.0f;
-			lightQuadAtt[i] = 0.0f;
-			isEnabledLight[i] = false;
-		}
-
-		lightAmbient[MAX_LIGHTS].vec[0] = 0.2f;
-		lightAmbient[MAX_LIGHTS].vec[1] = 0.2f;
-		lightAmbient[MAX_LIGHTS].vec[2] = 0.2f;
-		lightAmbient[MAX_LIGHTS].vec[3] = 1.0f;
-
 		for (int i = 0; i < 4; i++) {
 			for (int j = 0; j < 4; j++) {
 				if (i == j) {
@@ -429,8 +348,6 @@ public:
 		}
 		normalMatrix.matr[15] = 0.0f;
 
-		windowInfo.segmentWidth = WIDTH_SEG;
-		windowInfo.segmentHeight = HEIGHT_SEG;
 		windowInfo.viewportMulZ = (1 - 0) * 0.5f * ZBUFF_MAX;
 		windowInfo.viewportAddZ = (1 + 0) * 0.5f * ZBUFF_MAX;
 
@@ -439,6 +356,7 @@ public:
 		nmglDisableClientState(NMGL_COLOR_ARRAY);
 		nmglDisableClientState(NMGL_NORMAL_ARRAY);
 		
+		pointRadius = 0.5f;
 		texState.init();
 		
 	}
@@ -1590,7 +1508,7 @@ void rasterizeL(const Lines* lines, const BitMask* masks);
 void rasterizeP(const Points* points, const BitMask* masks);
   //! \}
 
-void transferPolygons(PolygonsConnector *connector, int mode);
+void transferPolygons(PolygonsConnector *connector, int mode, int segNo);
 
 /*!
  *  \ingroup service_api
@@ -1611,9 +1529,9 @@ void transferPolygons(PolygonsConnector *connector, int mode);
  *  
  */
  //! \{
-void updatePolygonsT(DataForNmpu1* data, Triangles* triangles, int count, int segX, int segY);
-void updatePolygonsL(DataForNmpu1* data, Lines* lines, int count, int segX, int segY);
-void updatePolygonsP(DataForNmpu1* data, Points* points, int count, int segX, int segY);
+void updatePolygonsT(DataForNmpu1* data, Triangles* triangles, int count, v2nm32f lowerLeft);
+void updatePolygonsL(DataForNmpu1* data, Lines* lines, int count, v2nm32f lowerLeft);
+void updatePolygonsP(DataForNmpu1* data, Points* points, int count, v2nm32f lowerLeft);
 //! \}
 
 /*!

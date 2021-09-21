@@ -5,15 +5,17 @@
  */
 #ifndef __DEMO3D_COMMON_H_INCLUDED__
 #define __DEMO3D_COMMON_H_INCLUDED__
-#include "nmtype.h"
 #include "nmgltype.h"
 #include "ringbuffert.h"
 #include "pattern.h"
+#include "nmglmath.h"
 
 #ifdef __GNUC__
 	#define setHeap(n) nmc_malloc_set_heap(n) 
+	#define getHeap() nmc_malloc_get_heap() 
 #else
 	#define setHeap(n)
+	#define getHeap() 0 
 #endif
 
 #ifndef __GNUC__
@@ -22,7 +24,7 @@
 	#define nmprofiler_disable()
 #endif
 
-//#define TRIANGULATION_ENABLED
+#define TRIANGULATION_ENABLED
 //#define PROFILER0
 //#define PROFILER1
 
@@ -36,7 +38,7 @@
 typedef nm16s rgb565;
 typedef v4nm8s rgb8888;
 
-//Возможные значения ширины или высоты: 768,960,1024,1152
+//Возможные значения ширины или высоты: 480,640,768,960,1024,1152
 #define WIDTH_IMAGE 768
 #define HEIGHT_IMAGE 768
 
@@ -61,22 +63,6 @@ typedef v4nm8s rgb8888;
 //#define COUNT_IMAGE_BUFFER 2
 
 
-struct Vector2 {
-	int x;
-	int y;
-};
-
-struct Size {
-	int width;
-	int height;
-};
-
-struct Rectangle {
-	int x;
-	int y;
-	int width;
-	int height;
-};
 
 /*struct TrianglePackage{
 	int x0[POLYGONS_SIZE];
@@ -151,16 +137,6 @@ public:
 typedef HalRingBufferData<DataForNmpu1, COUNT_POLYGONS_BUFFER> PolygonsArray;
 typedef MyRingBufferConnector<DataForNmpu1, COUNT_POLYGONS_BUFFER> PolygonsConnector;
 
-//typedef int matrix[16];
-typedef struct s_mat4nm32f{
-	float matr[16];
-} mat4nm32f;
-
-typedef struct s_v3nm32f {
-	float v0;
-	float v1;
-	float v2;
-} v3nm32f;
 
 /*!
  *  \brief Класс с информации о массиве используемом в функции nmglDrawArrays
@@ -175,31 +151,35 @@ struct Array {
 	int offset;
 };
 
+struct ImageSegments{
+	Rectangle rectangles[40];
+	v2nm32f lowerLeft[40];
+	v2nm32f upperRight[40];
+	int count;
+	int dummy;
+};
+
+
 /*!
  *  \brief Класс с информацией о делении изображения на сегменты
  *  \author Жиленков Иван
  */
 struct WindowInfo {
-	int x0[20];
-	int y0[20];
-	int x1[20];
-	int y1[20];
-	float x0_f[20];
-	float y0_f[20];
-	float x1_f[20];
-	float y1_f[20];
-	v2nm32f lowerLeft[40];
-	v2nm32f upperRight[40];
-	int segmentWidth;
-	int segmentHeight;
+	ImageSegments segments;
 	float viewportMulX;
 	float viewportMulY;
 	float viewportMulZ;
 	float viewportAddX;
 	float viewportAddY;
 	float viewportAddZ;
-	int nColumns;
-	int nRows;
+	Size imageSize;
 };
 
+struct NMGL_ScissorTest {
+	ImageSegments segments;
+	Vector2 origin;
+	Size size;
+	int isEnabled;
+	int dummy;
+};
 #endif

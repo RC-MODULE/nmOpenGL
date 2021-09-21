@@ -17,26 +17,26 @@ void nmglGetMaterialfv (NMGLenum face, NMGLenum pname, NMGLfloat *params)
 	switch(pname){
 	case NMGL_AMBIENT:
 		for (int i = 0; i < 4; i++) {
-			params[i] = (*cntxt->pMaterialAmbient).vec[i];
+			params[i] = (*cntxt->lightingInfo.pMaterialAmbient).vec[i];
 		}
 		break;
 	case NMGL_DIFFUSE:
 		for (int i = 0; i < 4; i++) {
-			params[i] = (*cntxt->pMaterialDiffuse).vec[i];
+			params[i] = (*cntxt->lightingInfo.pMaterialDiffuse).vec[i];
 		}
 		break;
 	case NMGL_SPECULAR:
 		for (int i = 0; i < 4; i++) {
-			params[i] = cntxt->materialSpecular.vec[i];
+			params[i] = cntxt->lightingInfo.materialSpecular.vec[i];
 		}
 		break;
 	case NMGL_EMISSION:
 		for (int i = 0; i < 4; i++) {
-			params[i] = cntxt->materialEmissive.vec[i];
+			params[i] = cntxt->lightingInfo.materialEmissive.vec[i];
 		}
 		break;
 	case NMGL_SHININESS:
-		params[0] = cntxt->specularExp;
+		params[0] = cntxt->lightingInfo.specularExp;
 		break;
 	default:
 		cntxt->error = NMGL_INVALID_ENUM;

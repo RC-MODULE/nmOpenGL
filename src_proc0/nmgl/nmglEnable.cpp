@@ -3,6 +3,7 @@
 #include "nmblas.h"
 #include "nmpp.h"
 #include "ringbuffer.h"
+#include "nmglservice_nm0.h"
 
 
 #pragma code_section ".text_nmgl"
@@ -10,7 +11,7 @@
 SECTION(".text_nmgl")
 void nmglEnable(NMGLenum cap) {
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
-	CommandNm1 command;
+	NM_Command command;
 	switch (cap) {
 
 	case NMGL_ALPHA_TEST:
@@ -26,9 +27,9 @@ void nmglEnable(NMGLenum cap) {
 		break;
 
 	case NMGL_COLOR_MATERIAL:
-		cntxt->isColorMaterial = NMGL_TRUE;
-		cntxt->pMaterialAmbient = &cntxt->currentColor;
-		cntxt->pMaterialDiffuse = &cntxt->currentColor;
+		cntxt->lightingInfo.isColorMaterial = NMGL_TRUE;
+		cntxt->lightingInfo.pMaterialAmbient = &cntxt->currentColor;
+		cntxt->lightingInfo.pMaterialDiffuse = &cntxt->currentColor;
 		break;		
 		
 	case NMGL_CULL_FACE:
@@ -38,7 +39,7 @@ void nmglEnable(NMGLenum cap) {
 	case NMGL_DEPTH_TEST:
 		command.instr = NMC1_DEPTH;
 		command.params[0] = CommandArgument(NMGL_TRUE);
-		cntxt->synchro.pushInstr(&command);
+		NMGL_SetValue(command);
 		break;
 	
 	case NMGL_DITHER:
@@ -90,7 +91,8 @@ void nmglEnable(NMGLenum cap) {
 		break;
 	
 	case NMGL_SCISSOR_TEST:
-		//code
+		cntxt->scissorTest.isEnabled = NMGL_TRUE;
+		cntxt->currentSegments = &cntxt->scissorTest.segments;
 		break;
 		
 	case NMGL_STENCIL_TEST:
@@ -103,8 +105,7 @@ void nmglEnable(NMGLenum cap) {
 
 		command.instr = NMC1_TEXTURE2D;
 		command.params[0] = CommandArgument(NMGL_TRUE);
-		cntxt->synchro.pushInstr(&command);
-		//cntxt->synchro.writeInstr(1, NMC1_TEXTURE2D, NMGL_TRUE);
+		NMGL_SetValue(command);
 		break;
 		break;
 	
@@ -113,33 +114,18 @@ void nmglEnable(NMGLenum cap) {
 		break;
 
 	case NMGL_LIGHTING:
-		cntxt->isLighting = NMGL_TRUE;
+		cntxt->lightingInfo.isLighting = NMGL_TRUE;
 		break;
 
 	case NMGL_LIGHT0:
-		cntxt->isEnabledLight[0] = true;
-		break;
-
 	case NMGL_LIGHT1:
-		cntxt->isEnabledLight[1] = true;
-		break;
 	case NMGL_LIGHT2:
-		cntxt->isEnabledLight[2] = true;
-		break;
 	case NMGL_LIGHT3:
-		cntxt->isEnabledLight[3] = true;
-		break;
 	case NMGL_LIGHT4:
-		cntxt->isEnabledLight[4] = true;
-		break;
 	case NMGL_LIGHT5:
-		cntxt->isEnabledLight[5] = true;
-		break;
 	case NMGL_LIGHT6:
-		cntxt->isEnabledLight[6] = true;
-		break;
 	case NMGL_LIGHT7:
-		cntxt->isEnabledLight[7] = true;
+		cntxt->lightingInfo.isEnabledLight[cap - NMGL_LIGHT0] = true;
 		break;
 	}
 }

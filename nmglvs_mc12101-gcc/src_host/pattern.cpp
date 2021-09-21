@@ -9,16 +9,16 @@ using namespace std;
 
 #define abs(a) (((a) < 0) ? -(a) : (a))
 
-static void setPixel(unsigned char* dst, int x, int y, unsigned char color);
-//static void fillRow(unsigned char* dst, int x1, int x2, int y, unsigned char color);
-static void drawLine(unsigned char* dst, int x1, int y1, int x2, int y2, unsigned char color);
-static void fillSide(unsigned char* dst, int x1, int y1, int x2, int y2, unsigned char color, int leftSide);
-static void fillCircle(unsigned char* dst, int x0, int y0, int radius, unsigned char color);
+static void setPixel(unsigned int* dst, int x, int y, unsigned int color);
+//static void fillRow(unsigned int* dst, int x1, int x2, int y, unsigned int color);
+static void drawLine(unsigned int* dst, int x1, int y1, int x2, int y2, unsigned int color);
+static void fillSide(unsigned int* dst, int x1, int y1, int x2, int y2, unsigned int color, int leftSide);
+static void fillCircle(unsigned int* dst, int x0, int y0, int radius, unsigned int color);
 static void createLineTable(int* table);
 static void createFillTable(int* table);
 
 
-void fillPtrnsInit(unsigned char* dst, int* table_dydx, unsigned char color) {
+void fillPtrnsInit(unsigned int* dst, int* table_dydx, unsigned int color) {
 	int cntRight = 0;
 	int cntLeft = FILL_PATTERNS_AMOUNT / 2;
 	const int size = WIDTH_PTRN * HEIGHT_PTRN;
@@ -96,7 +96,7 @@ static void createFillTable(int* table) {
 	
 }
 
-void linePtrnsInit(unsigned char* dst, int* table, unsigned char color) {
+void linePtrnsInit(unsigned int* dst, int* table, unsigned int color) {
 	int cnt = 0;
 	const int size = WIDTH_PTRN * HEIGHT_PTRN;
 	for (int i = 0; i < LINE_PATTERNS_AMOUNT * size; i++) {
@@ -129,14 +129,14 @@ static void createLineTable(int* table) {
 	}
 }
 
-void pointPtrnsInit(unsigned char* dst, unsigned char color) {
+void pointPtrnsInit(unsigned int* dst, unsigned int color) {
 	int cnt = 0;
 	const int size = WIDTH_PTRN * HEIGHT_PTRN;
 	for (int i = 0; i < POINT_PATTERNS_AMOUNT * size; i++) {
 		dst[i] = 0;
 	}
 	for (int d = 1; d < POINT_PATTERNS_AMOUNT; d++, cnt++) {
-		unsigned char* tmpDst = dst + cnt * size;
+		unsigned int* tmpDst = dst + cnt * size;
 		for (int y = 0; y < d; y++) {
 			for (int x = 0; x < d; x++) {
 				tmpDst[y * WIDTH_PTRN + x] = color;
@@ -146,7 +146,7 @@ void pointPtrnsInit(unsigned char* dst, unsigned char color) {
 }
 
 
-static void setPixel(unsigned char* dst, int x, int y, unsigned char color) {
+static void setPixel(unsigned int* dst, int x, int y, unsigned int color) {
 	if(x < 0 || x >= WIDTH_PTRN ||
 		y < 0 || y >= HEIGHT_PTRN){
 		return;
@@ -154,7 +154,7 @@ static void setPixel(unsigned char* dst, int x, int y, unsigned char color) {
 	dst[y * WIDTH_PTRN + x] = color;
 }
 
-static void fillRow(unsigned char* dst, int x1, int x2, int y, unsigned char color) {
+static void fillRow(unsigned int* dst, int x1, int x2, int y, unsigned int color) {
 	if (y >= 0 && y < HEIGHT_PTRN) {
 		for (int x = x1; x < x2; x++) {
 			if (x >= 0 && x < WIDTH_PTRN) {
@@ -165,7 +165,7 @@ static void fillRow(unsigned char* dst, int x1, int x2, int y, unsigned char col
 }
 
 
-static void drawLine(unsigned char* dst, int x1, int y1, int x2, int y2, unsigned char color) {
+static void drawLine(unsigned int* dst, int x1, int y1, int x2, int y2, unsigned int color) {
 	int deltaX = abs(x2 - x1);
 	int deltaY = abs(y2 - y1);
 	int signX = x1 < x2 ? 1 : -1;
@@ -199,7 +199,7 @@ static void drawLine(unsigned char* dst, int x1, int y1, int x2, int y2, unsigne
 	}
 }
 
-static void fillSide(unsigned char* dst, int x1, int y1, int x2, int y2, unsigned char color, int topLeftSide) {
+static void fillSide(unsigned int* dst, int x1, int y1, int x2, int y2, unsigned int color, int topLeftSide) {
 	int deltaX = x2 - x1;
 	int deltaY = y2 - y1;
 	int dx = (deltaX > 0) ? 1 : -1;
@@ -288,7 +288,7 @@ static void fillSide(unsigned char* dst, int x1, int y1, int x2, int y2, unsigne
 	}*/
 }
 
-static void fillCircle(unsigned char* dst, int x0, int y0, int radius, unsigned char color) {
+static void fillCircle(unsigned int* dst, int x0, int y0, int radius, unsigned int color) {
 	int x = 0;
 	int y = radius;
 	int delta = 1 - 2 * radius;

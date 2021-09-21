@@ -11,8 +11,8 @@ void nmglLightModelfv(NMGLenum pname, const NMGLfloat *params) {
 		cntxt->error = NMGL_INVALID_ENUM;
 		return;
 	}
-	cntxt->lightAmbient[MAX_LIGHTS].vec[0] = params[0];
-	cntxt->lightAmbient[MAX_LIGHTS].vec[1] = params[1];
-	cntxt->lightAmbient[MAX_LIGHTS].vec[2] = params[2];
-	cntxt->lightAmbient[MAX_LIGHTS].vec[3] = params[3];
+	cntxt->lightingInfo.lightAmbient[MAX_LIGHTS].vec[0] = params[0];
+	cntxt->lightingInfo.lightAmbient[MAX_LIGHTS].vec[1] = params[1];
+	cntxt->lightingInfo.lightAmbient[MAX_LIGHTS].vec[2] = params[2];
+	cntxt->lightingInfo.lightAmbient[MAX_LIGHTS].vec[3] = params[3];
 }

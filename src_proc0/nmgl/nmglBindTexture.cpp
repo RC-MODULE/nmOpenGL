@@ -41,7 +41,7 @@ void nmglBindTexture (NMGLenum target, NMGLuint texture)
 	if(txp->target != target) {cntxt->error=NMGL_INVALID_OPERATION;return;}
 	ActiveTexObjectP=txp;
 	DEBUG_PRINT(("NM0:Bind texture:%d pointer=%x\n",texture,txp));	
-	CommandNm1 command;
+	NM_Command command;
 	command.instr = NMC1_BIND_ACTIVE_TEX_OBJECT;
 	command.params[0] = CommandArgument(target);
 	command.params[1] = CommandArgument(texture);

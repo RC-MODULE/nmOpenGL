@@ -7,11 +7,13 @@
 #include "ringbuffer.h"
 #include "cache.h"
 #include "link.h"
+#include "pattern.h"
 
 #include "nmgl.h"
 
 SECTION(".data_imu1")	int pool0[SIZE_BUFFER_NM1];
 SECTION(".data_imu1")	Pattern patternsPack[POLYGONS_SIZE];
+SECTION(".data_imu0")	Pattern* ppPatternsPack[POLYGONS_SIZE];
 SECTION(".data_imu2")	int pool1[SIZE_BUFFER_NM1];
 SECTION(".data_imu3")	int pool2[SIZE_BUFFER_NM1];
 
@@ -40,21 +42,12 @@ SECTION(".data_imu0") float texT2[POLYGONS_SIZE];
 SECTION(".data_imu0") float w0[POLYGONS_SIZE];
 SECTION(".data_imu0") float w1[POLYGONS_SIZE];
 SECTION(".data_imu0") float w2[POLYGONS_SIZE];
-//TEXTURING_PART
-
-SECTION(".data_shmem1") nm32s* ppSrcPackPtrns[3 * POLYGONS_SIZE];
-SECTION(".data_shmem1") nm32s* ppDstPackPtrns[3 * POLYGONS_SIZE];
-SECTION(".data_shmem1") nm32s nSizePtrn32[3 * POLYGONS_SIZE];
-
-
-SECTION(".data_shmem1") nm32s colorClearBuff[WIDTH_SEG * HEIGHT_SEG];
-SECTION(".data_shmem1") nm32s depthClearBuff[WIDTH_SEG * HEIGHT_SEG];
 
 
 int exitNM1 = 0;
 
-SECTION(".data_imu0") HalRingBufferData<CommandNm1, PRIORITY_SIZE> linkSynchro;
-SECTION(".data_imu0") HalRingBufferConnector<CommandNm1, PRIORITY_SIZE> linkConnector(&linkSynchro);
+SECTION(".data_imu0") HalRingBufferData<NM_Command, PRIORITY_SIZE> linkSynchro;
+SECTION(".data_imu0") HalRingBufferConnector<NM_Command, PRIORITY_SIZE> linkConnector(&linkSynchro);
 
 #define LINK_PORT 2
 SECTION(".data_imu0") NMGL_SynchroSlaveRingBuffer nmglSynchro;				///< Структура для общения процессоров друг с другом
@@ -80,18 +73,18 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 {
 	halSleep(500);
 
-//TEXTURING_PART
-	//halLedOn(1);
-//TEXTURING_PART
 	halSetProcessorNo(1);
 	//---------- start nm program ------------
 	NMGL_Context_NM1 *cntxt;
 	ImageData* imagesData;
 	try {
-		int fromHost = halHostSync(0xC0DE0001);		// send handshake to host
-		if (fromHost != 0xC0DE0086) {					// get  handshake from host
+		int fromNm0 = halSync(0xC0DE0001, 0);		// send handshake to host
+		if (fromNm0 != 0xC0DE0000) {					// get  handshake from host
 			throw -1;
 		}
+		NMGLSynchroData* synchroData = (NMGLSynchroData*)halSyncAddr(0, 0);
+		nmglSynchro.init(synchroData);
+
 		setHeap(0);
 		NMGL_Context_NM1::bind(&nmglContext);
 		cntxt = NMGL_Context_NM1::getContext();
@@ -100,34 +93,32 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 		cntxt->patterns = myMallocT<PatternsArray>();
 		
 		setHeap(13);
-		imagesData = myMallocT<ImageData>();
-		imagesData->init();
-		cntxt->imageConnector = myMallocT<ImageConnector>();
-		cntxt->imageConnector->init(imagesData);
+		hostCreatePatterns(cntxt->patterns);
+		halSleep(10);
 
+		imagesData = (ImageData*)halSyncAddr(0, 0);
+		cntxt->imageConnector.init(imagesData);
+
+		DepthImage* depthImage = (DepthImage*)halSyncAddr(0, 0);
 		setHeap(11);
-		DepthImage* depthImage = myMallocT<DepthImage>();
+		
 
-		cntxt->colorBuffer.init(cntxt->imageConnector->ptrHead(), WIDTH_IMAGE, HEIGHT_IMAGE);
+		cntxt->colorBuffer.init(cntxt->imageConnector.ptrHead(), WIDTH_IMAGE, HEIGHT_IMAGE);
 		cntxt->depthBuffer.init(depthImage, WIDTH_IMAGE, HEIGHT_IMAGE);
 		cntxt->texState.init();
 	}
-	catch (int &e){
+	catch (int &e) {
 		if (e == -2) {
-			halHostSync((int)0xDEADB00F);	// send error allocation memory to host
+			halSync((int)0xDEADB00F);	// send error allocation memory to host
 		}
 		return e;
 	}
-
-	halHostSync(0x600DB00F);	// send ok to host
-
-	NMGLSynchroData* synchroData = (NMGLSynchroData*)halSyncAddr((int*)cntxt->patterns, 0);
-	nmglSynchro.init(synchroData);
 #ifdef TEST_NMGL_TEX_FUNC
-    halSyncAddr((void*)cntxt, 0);
+	halSyncAddr((void*)cntxt, 0);
 #endif //TEST_NMGL_TEX_FUNC
+	halSync(0x600DB00F, 0);	// send ok to host
 
-	halHostSync(0x600DB00F);	// send ok to host
+	
 	
 #ifdef __GNUC__
 	halInstrCacheEnable();
@@ -136,45 +127,35 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 	cntxt->smallColorBuff.init(segImage, WIDTH_SEG, HEIGHT_SEG);
 	cntxt->smallDepthBuff.init(segZBuff, WIDTH_SEG, HEIGHT_SEG);
 
-	cntxt->smallClearColorBuff.init(colorClearBuff, WIDTH_SEG, HEIGHT_SEG);
-	cntxt->smallClearDepthBuff.init(depthClearBuff, WIDTH_SEG, HEIGHT_SEG);
-
-	//sync0
-	halHostSyncAddr(cntxt->patterns);
-
+	//cntxt->smallClearColorBuff.init(colorClearBuff, WIDTH_SEG, HEIGHT_SEG);
+	//cntxt->smallClearDepthBuff.init(depthClearBuff, WIDTH_SEG, HEIGHT_SEG);
+	
 	cntxt->buffer0 = pool0;
 	cntxt->buffer1 = pool1;
 	cntxt->buffer2 = pool2;
-	cntxt->primitivePack_2s = patternsPack;
+	cntxt->buffers[0].init(pool0, SIZE_BUFFER_NM1);
+	cntxt->buffers[1].init(pool1, SIZE_BUFFER_NM1);
+	cntxt->buffers[2].init(pool2, SIZE_BUFFER_NM1);
+
+	cntxt->patternPack.patterns = patternsPack;
+	cntxt->patternPack.origins = ptrnInnPoints;
+	cntxt->patternPack.sizes = ptrnSizes;
+	cntxt->patternPack.imagePositions = imageOffsets;
+	cntxt->patternPack.ppPattern = ppPatternsPack;
 
 	for (int j = 0; j < POLYGONS_SIZE; j++) {
-		cntxt->ppPtrns1_2s[j] = (Pattern*)cntxt->buffer1 + j;
-		cntxt->ppPtrns2_2s[j] = (Pattern*)cntxt->buffer2 + j;
-		cntxt->ppPtrnsCombined_2s[j] = cntxt->primitivePack_2s + j;
+		cntxt->patternPack.ppPattern[j] = cntxt->patternPack.patterns + j;
 	}
 
 	for (int j = 0; j < SMALL_SIZE; j++) {
 		cntxt->minusOne[j] = -1;
 	}
 	//sync3
-	halHostSyncAddr(imagesData);
-	nmppsCopy_32s(cntxt->patterns->table_dydx, cntxt->fillInnerTable, sizeof32(cntxt->patterns->table_dydx));	
+	nmppsCopy_32s(cntxt->patterns->fillTable, cntxt->fillInnerTable, sizeof32(cntxt->patterns->fillTable));
 
-	cntxt->ptrnInnPoints = ptrnInnPoints;
-	cntxt->ptrnSizes = ptrnSizes;
 	cntxt->imageOffsets = imageOffsets;
-	
 
-	cntxt->ppSrcPackPtrns = ppSrcPackPtrns;
-	cntxt->ppDstPackPtrns = ppDstPackPtrns;
-	cntxt->nSizePtrn32 = nSizePtrn32;
-
-	//cntxt->valuesZ = valuesZ;
-	//cntxt->valuesC = valuesC;
-	//cntxt->zBuffPoints = zBuffPoints;
-	//cntxt->imagePoints = imagePoints;
-	int end = 0;
-	cntxt->valuesZ = cntxt->buffer2 + end;
+	cntxt->valuesZ = cntxt->buffer2 + 0;
 	cntxt->valuesC = cntxt->buffer2 + POLYGONS_SIZE;
 	cntxt->zBuffPoints = (nm32s**)(cntxt->buffer2 + 2 * POLYGONS_SIZE);
 	cntxt->imagePoints = (nm32s**)(cntxt->buffer2 + 4 * POLYGONS_SIZE);
@@ -200,7 +181,8 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 	cntxt->w0 = w0;
 	cntxt->w1 = w1;
 	cntxt->w2 = w2;
-//TEXTURING_PART
+
+	halSync(0x600D600D, 0);
 	return 0;
 } 
 

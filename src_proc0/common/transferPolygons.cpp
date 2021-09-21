@@ -8,16 +8,11 @@
 
 
 SECTION(".text_demo3d")
-void transferPolygons(PolygonsConnector *connector, int mode) {
+void transferPolygons(PolygonsConnector *connector, int mode, int segNo) {
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
-	DataForNmpu1 *data = connector->ptrHead();
-	connector->incHead();
-	while (connector->isFull()) {
-		halSleep(2);
-	}
-	CommandNm1 command;
+	NM_Command command;
 	command.instr = mode;
 	command.params[0] = CommandArgument(connector->ringbufferDataPointer);
-	connector->ptrHead()->count = 0;
+	command.params[1] = CommandArgument(segNo);
 	cntxt->synchro.pushInstr(&command);
 }

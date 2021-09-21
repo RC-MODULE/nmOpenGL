@@ -27,6 +27,9 @@
 
 ///@{ 
 
+#ifdef __cplusplus
+extern "C"{
+#endif //__cplusplus
 
 /*!
  \brief Функция выбирает текстурный модуль для последующей модификации функциями текстурирования.
@@ -1614,5 +1617,7 @@ void nmglGetColorTableParameterivEXT (NMGLenum target, NMGLenum pname, NMGLint *
 \defgroup  service_api Сервисные функции
  */
 
-
+#ifdef __cplusplus
+}
+#endif //__cplusplus
 #endif

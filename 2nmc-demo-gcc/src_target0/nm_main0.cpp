@@ -11,9 +11,6 @@
 
 SECTION(".text_shared0") int main()
 {
-	halSleep(500);
-	halSetProcessorNo(0);
-
 #if defined(__GNUC__) && defined(DEBUG)
 	//nmprofiler_init();
 	//nmprofiler_disable();
@@ -56,9 +53,9 @@ SECTION(".text_shared0") int main()
 
 	setHeap(10);
 	float* vertices_DDR = (float*)halMalloc32(2000 * 12);
-	float* normal_DDR = (float*)halMalloc32(2000 * 9);
+	float* normal_DDR = (float*)halMalloc32(2000 * 12);
 	float* vertices_DDR2 = (float*)halMalloc32(2000 * 12);
-	float* normal_DDR2 = (float*)halMalloc32(2000 * 9);
+	float* normal_DDR2 = (float*)halMalloc32(2000 * 12);
 	int ok;
 	int amountPolygons = halHostSync(0);
 
@@ -84,7 +81,11 @@ SECTION(".text_shared0") int main()
 	nmglMatrixMode(NMGL_MODELVIEW);
 	nmglLoadIdentity();
 	nmglMatrixMode(NMGL_PROJECTION);
-	nmglOrthof(-384, 384, -384, 384, -384, 384);
+	nmglOrthof(-384, 384, -384, 384, -384, 384);	
+	//nmglViewport(128, 128, 384, 384);
+	//nmglViewport(0, 0, 256, 256);
+	//nmglEnable(NMGL_SCISSOR_TEST);
+	//nmglScissor(128, 128, 384, 384);
 	//nmglOrthof(-384, 384, -384, 384, -100, 100);
 	//nmglFrustumf(-384, 384, -384, 384, 0, 100);
 	nmglMatrixMode(NMGL_MODELVIEW);

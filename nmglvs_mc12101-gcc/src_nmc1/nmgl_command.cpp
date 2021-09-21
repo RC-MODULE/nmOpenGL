@@ -1,11 +1,11 @@
 #include "demo3d_nm1.h"
 #include "hal.h"
 
-SECTION(".data_imu0") CommandNm1 currentCommand;
+SECTION(".data_imu0") NM_Command currentCommand;
 
 extern NMGL_SynchroSlaveRingBuffer nmglSynchro;
 
-SECTION(".text_demo3d") CommandNm1* NMGL_ReadCommandNm1(){
+SECTION(".text_demo3d") NM_Command* NMGL_ReadNM_Command(){
 	halLedOn(4);
 	NMGL_Context_NM1 *cntxt = NMGL_Context_NM1::getContext();
 	nmglSynchro.popInstr(&currentCommand);

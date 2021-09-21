@@ -15,7 +15,6 @@ global _copyPacket_32s: label;
 global _copyPacket_32u: label;
 <_copyPacket_32s>
 <_copyPacket_32u>
-.branch;
 	ar5 = ar7-2;
 	push ar0,gr0	with gr7 = gr5;
 	push ar1,gr1;
@@ -28,11 +27,11 @@ global _copyPacket_32u: label;
 	gr0 = [--ar5];
 	gr6 = [--ar5];
 	gr5 = [gr0]		with gr0++;	
-	ar5 = startCopy with gr5 <<= 2;
+	ar5 = startCopy with gr5 <<= 2;	//>>1 and <<3
 <Next>
 	delayed goto ar5+gr5;
 		gr5 = [gr0]		with gr0++;	
-		ar0 = [ar1++]	with gr5 <<= 2;
+		ar0 = [ar1++]	with gr5 <<= 2; //>>1 and <<3
 		ar6 = [ar2++]	with gr6--;
 <startCopy>
 	if > delayed goto Next;
@@ -79,5 +78,4 @@ global _copyPacket_32u: label;
 	pop ar1,gr1;
 	pop ar0,gr0		with gr5 = gr7;
 	return;
-.wait;
 end ".text_demo3d";

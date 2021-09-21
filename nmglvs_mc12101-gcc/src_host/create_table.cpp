@@ -1,4 +1,3 @@
-#include "nmpp.h"
 #include "demo3d_nm1.h"
 #include <math.h>
 

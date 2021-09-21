@@ -22,6 +22,7 @@
 #define NMC1_DEPTH_FUNC 			0xF00A0000
 #define NMC1_COPY_SEG_FROM_IMAGE 	0xF00B0000
 #define NMC1_COPY_SEG_TO_IMAGE 		0xF00C0000
+#define NMC1_FINISH					0xF00D0000
 
 #define NMC1_SET_ACTIVE_TEXTURE 	0xF0800000
 #define NMC1_BIND_ACTIVE_TEX_OBJECT	0xF0810000
@@ -87,7 +88,7 @@ struct CommandArgument {
 	}
 };
 
-struct CommandNm1{
+struct NM_Command{
 	int instr;
 	CommandArgument params[7];
 };
@@ -96,25 +97,22 @@ struct CommandNm1{
 //#define PRIORITY_SIZE 2
 
 
-typedef HalRingBufferData<CommandNm1, PRIORITY_SIZE> NMGLSynchroData;
+typedef HalRingBufferData<NM_Command, PRIORITY_SIZE> NMGLSynchroData;
 
 
 struct NMGL_SynchroMasterRingBuffer {
 private:
-	HalRingBufferConnector<CommandNm1, PRIORITY_SIZE> connector;
+	HalRingBufferConnector<NM_Command, PRIORITY_SIZE> connector;
 	int dummy;
 public:
-	int time;
-	int counter;
 
 	void init(NMGLSynchroData* synchroData) {
 		connector.init(synchroData);
-		counter = 0;
 	}
 
-	inline void pushInstr(CommandNm1 *command){
+	inline void pushInstr(NM_Command *command){
 		while (connector.isFull());
-		CommandNm1* commandRB = connector.ptrHead();
+		NM_Command* commandRB = connector.ptrHead();
 		commandRB->instr = command->instr;
 		for (int i = 0; i < 7; i++) {
 			commandRB->params[i] = command->params[i];
@@ -130,18 +128,15 @@ public:
 class NMGL_SynchroSlaveRingBuffer {
 private:
 public:
-	HalRingBufferConnector<CommandNm1, PRIORITY_SIZE> connector;
+	HalRingBufferConnector<NM_Command, PRIORITY_SIZE> connector;
 	int dummy;
 public:
-	int time;
-	int counter;
 
 	void init(NMGLSynchroData* synchroData) {
 		connector.init(synchroData);
-		counter = 0;
 	}
 
-	inline void popInstr(CommandNm1 *command) {
+	inline void popInstr(NM_Command *command) {
 		connector.pop(command, 1);
 		for (int i = 0; i < 7; i++) {
 			if (command->params[i].storedType == TYPE_POINTER) {

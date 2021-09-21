@@ -20,9 +20,8 @@
 	split_v2nm32f((v2nm32f*)temp1, 1, lines->x1, lines->y1, count);	 \
 
 SECTION(".text_demo3d")
-void updatePolygonsL(DataForNmpu1* data, Lines* lines, int count, int segX, int segY){
-	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
-
+void updatePolygonsL(DataForNmpu1* data, Lines* lines, int count, v2nm32f lowerLeft){
+	NMGL_Context_NM0* cntxt = NMGL_Context_NM0::getContext();
 	float* temp0 = cntxt->buffer0 + 2 * NMGL_SIZE;
 	float* temp1 = cntxt->buffer1 + 2 * NMGL_SIZE;
 	float* temp2 = cntxt->buffer2 + 2 * NMGL_SIZE;
@@ -30,12 +29,12 @@ void updatePolygonsL(DataForNmpu1* data, Lines* lines, int count, int segX, int 
 
 	sort();
 
-	nmppsSubC_32f(lines->x0, temp0, cntxt->windowInfo.x0_f[segX], count);
-	nmppsSubC_32f(lines->y0, temp1, cntxt->windowInfo.y0_f[segY], count);
+	nmppsSubC_32f(lines->x0, temp0, lowerLeft.v0, count);
+	nmppsSubC_32f(lines->y0, temp1, lowerLeft.v1, count);
 	nmppsConvert_32f32s_rounding(temp0, data->x0 + data->count, 0, count);
 	nmppsConvert_32f32s_rounding(temp1, data->y0 + data->count, 0, count);
-	nmppsSubC_32f(lines->x1, temp0, cntxt->windowInfo.x0_f[segX], count);
-	nmppsSubC_32f(lines->y1, temp1, cntxt->windowInfo.y0_f[segY], count);
+	nmppsSubC_32f(lines->x1, temp0, lowerLeft.v0, count);
+	nmppsSubC_32f(lines->y1, temp1, lowerLeft.v1, count);
 	nmppsConvert_32f32s_rounding(temp0, data->x1 + data->count, 0, count);
 	nmppsConvert_32f32s_rounding(temp1, data->y1 + data->count, 0, count);
 
@@ -59,5 +58,8 @@ void updatePolygonsL(DataForNmpu1* data, Lines* lines, int count, int segX, int 
 	
 	
 	data->count += count;
+	if (data->count > POLYGONS_SIZE) {
+		data->count = data->count;
+	}
 	
 }

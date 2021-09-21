@@ -6,6 +6,7 @@
 #include "nmblas.h"
 #include "demo3d_nm0.h"
 #include "nmgl.h"
+#include "nmglservice_nm0.h"
 
 #include "stdio.h"
 #include "nmprofiler.h"
@@ -16,6 +17,12 @@ SECTION(".text_demo3d") void lineOffset(Lines &src, Lines &dst, int offset) {
 	dst.y0 = src.y0 + offset;
 	dst.x1 = src.x1 + offset;
 	dst.y1 = src.y1 + offset;
+	dst.s0 = src.s0 + offset;
+	dst.t0 = src.t0 + offset;
+	dst.s1 = src.s1 + offset;
+	dst.t1 = src.t1 + offset;
+	dst.w0 = src.w0 + offset;
+	dst.w1 = src.w1 + offset;
 	dst.z = src.z + offset;
 	dst.colors = src.colors + offset;
 }
@@ -23,6 +30,11 @@ SECTION(".text_demo3d") void lineOffset(Lines &src, Lines &dst, int offset) {
 SECTION(".text_demo3d")
 void rasterizeL(const Lines* lines, const BitMask* masks){
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
+
+	int nSegments = cntxt->currentSegments->count;
+	Rectangle* rectangles = cntxt->currentSegments->rectangles;
+	v2nm32f* lowerLeft = cntxt->currentSegments->lowerLeft;
+
 	Lines localLine;
 	Lines localLine2;
 
@@ -35,52 +47,35 @@ void rasterizeL(const Lines* lines, const BitMask* masks){
 	localLine.z = (int*)cntxt->buffer3 + 4 * NMGL_SIZE;
 	int* indices = (int*)cntxt->buffer4;
 
-	for (int segY = 0, iSeg = 0; segY < cntxt->windowInfo.nRows; segY++) {
-		for (int segX = 0; segX < cntxt->windowInfo.nColumns; segX++, iSeg++) {
-			if (masks[iSeg].hasNotZeroBits != 0) {
+	for (int iSeg = 0; iSeg < nSegments; iSeg++) {
+		if (masks[iSeg].hasNotZeroBits != 0) {
 
-				int resultSize = readMask(masks[iSeg].bits, indices, count);
-				if (resultSize) {
-					CommandNm1 command;
-					command.instr = NMC1_COPY_SEG_FROM_IMAGE;
-					command.params[0] = CommandArgument(cntxt->windowInfo.x0[segX]);
-					command.params[1] = CommandArgument(cntxt->windowInfo.y0[segY]);
-					command.params[2] = CommandArgument(cntxt->windowInfo.x1[segX] - cntxt->windowInfo.x0[segX]);
-					command.params[3] = CommandArgument(cntxt->windowInfo.y1[segY] - cntxt->windowInfo.y0[segY]);
-					command.params[4] = CommandArgument(iSeg );
+			int resultSize = readMask(masks[iSeg].bits, indices, count);
+			if (resultSize) {
+				DataForNmpu1* data = NMGL_PolygonsCurrent(NMGL_LINES, iSeg);
+				bool drawingCheck = data->count + resultSize >= POLYGONS_SIZE;
+				if (drawingCheck) {
+					NMGL_PopSegment(rectangles[iSeg], iSeg);
+				}
 
-					PolygonsConnector *connector = cntxt->lineConnectors + iSeg;
-					bool drawingCheck = connector->ptrHead()->count + resultSize >= POLYGONS_SIZE;
-					if (drawingCheck) {
-						cntxt->synchro.pushInstr(&command);
+				copyArraysByIndices((void**)lines, indices, (void**)&localLine, 5, resultSize);
+				copyColorByIndices_BGRA_RGBA(lines->colors, indices, (v4nm32s*)localLine.colors, resultSize);
+				localLine.size = resultSize;
+			
+				int offset = 0;
+				while (offset < resultSize) {
+					int localSize = MIN(resultSize - offset, POLYGONS_SIZE - data->count);
+					lineOffset(localLine, localLine2, offset);
+					offset += localSize;
+					updatePolygonsL(data, &localLine2, localSize, lowerLeft[iSeg]);
+					if (data->count == POLYGONS_SIZE) {
+						NMGL_PolygonsMoveNext(NMGL_LINES, iSeg);
+						data = NMGL_PolygonsCurrent(NMGL_LINES, iSeg);
+						data->count = 0;
 					}
-
-					copyArraysByIndices((void**)lines, indices, (void**)&localLine, 5, resultSize);
-
-#ifdef OUTPUT_IMAGE_RGB8888
-					copyColorByIndices_BGRA_RGBA(lines->colors, indices, (v4nm32s*)localLine.colors, resultSize);
-#endif // OUTPUT_IMAGE_RGB8888
-#ifdef OUTPUT_IMAGE_RGB565
-					copyColorByIndices(lines->colors, indices, (v4nm32s*)localLine.colors, resultSize);
-#endif // OUTPUT_IMAGE_RGB565
-
-					localLine.size = resultSize;
-					
-					int offset = 0;
-					while (offset < resultSize) {
-						DataForNmpu1* data = connector->ptrHead();
-						int localSize = MIN(resultSize - offset, POLYGONS_SIZE - data->count);
-						lineOffset(localLine, localLine2, offset);
-						offset += localSize;
-						updatePolygonsL(data, &localLine2, localSize, segX, segY);
-						if (data->count == POLYGONS_SIZE) {
-							transferPolygons(connector, NMC1_DRAW_LINES);
-						}
-					}	
-					if (drawingCheck) {
-						command.instr = NMC1_COPY_SEG_TO_IMAGE;
-						cntxt->synchro.pushInstr(&command);
-					}
+				}	
+				if (drawingCheck) {
+					NMGL_PushSegment(rectangles[iSeg], iSeg);
 				}
 			}
 		}

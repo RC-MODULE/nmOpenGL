@@ -2,23 +2,23 @@
 
 
 
-SECTION(".text_demo3d") void NMGL_SetActiveTexture(NMGL_Context_NM1 *cntxt, CommandNm1 *command) {
+SECTION(".text_demo3d") void NMGL_SetActiveTexture(NMGL_Context_NM1 *cntxt, NM_Command *command) {
 	cntxt->texState.activeTexUnitIndex = command->params[0].ui;
 }
 
-SECTION(".text_demo3d") void NMGL_SetMipmapLvlPointer(NMGL_Context_NM1 *cntxt, CommandNm1 *command){
+SECTION(".text_demo3d") void NMGL_SetMipmapLvlPointer(NMGL_Context_NM1 *cntxt, NM_Command *command){
 	//use DDR only as addresses are sent directly
 	cntxt->texState.texObjects[command->params[0].i].texImages2D[command->params[1].i].pixels=command->params[2].p;
 	DEBUG_PRINT2(("Step:for texture %d level %d got pointer %x\n",command->params[0],command->params[1],command->params[2]));
 }
 
-SECTION(".text_demo3d") void NMGL_BindActiveTexObject(NMGL_Context_NM1 *cntxt, CommandNm1 *command){
+SECTION(".text_demo3d") void NMGL_BindActiveTexObject(NMGL_Context_NM1 *cntxt, NM_Command *command){
 	NMGLenum target = command->params[0].ui;
 	NMGLuint texture = command->params[1].ui;
     ActiveTexObjectP=&cntxt->texState.texObjects[texture];
 }
 
-SECTION(".text_demo3d") void NMGL_SetWhf(NMGL_Context_NM1 *cntxt, CommandNm1 *command){
+SECTION(".text_demo3d") void NMGL_SetWhf(NMGL_Context_NM1 *cntxt, NM_Command *command){
 	#define TexObj cntxt->texState.texObjects
 	NMGLuint texture=command->params[0].ui;		
 	NMGLsizei width0=command->params[1].i;
@@ -48,12 +48,12 @@ SECTION(".text_demo3d") void NMGL_SetWhf(NMGL_Context_NM1 *cntxt, CommandNm1 *co
 	}
 }
 
-SECTION(".text_demo3d") void NMGL_SetColorPalette(NMGL_Context_NM1 *cntxt, CommandNm1 *command){
+SECTION(".text_demo3d") void NMGL_SetColorPalette(NMGL_Context_NM1 *cntxt, NM_Command *command){
 	cntxt->texState.texObjects[command->params[2].i].palette.colors=(NMGLubyte*)command->params[0].p;
 	cntxt->texState.texObjects[command->params[2].i].palette.width=command->params[1].i;				
 }
 
-SECTION(".text_demo3d") void NMGL_SetTexEnvColor(NMGL_Context_NM1 *cntxt, CommandNm1 *command){
+SECTION(".text_demo3d") void NMGL_SetTexEnvColor(NMGL_Context_NM1 *cntxt, NM_Command *command){
 	Intfloat temp;
 	for (int i = 0; i < 4; i++) {
 		temp.i = command->params[i].i;
@@ -61,11 +61,11 @@ SECTION(".text_demo3d") void NMGL_SetTexEnvColor(NMGL_Context_NM1 *cntxt, Comman
 	}
 }
 
-SECTION(".text_demo3d") void NMGL_SetTexEnvMode(NMGL_Context_NM1 *cntxt, CommandNm1 *command){
+SECTION(".text_demo3d") void NMGL_SetTexEnvMode(NMGL_Context_NM1 *cntxt, NM_Command *command){
 	cntxt->texState.texUnits[cntxt->texState.activeTexUnitIndex].texFunctionName = command->params[0].i;
 }
 
-SECTION(".text_demo3d") void NMGL_SetTexParami(NMGL_Context_NM1 *cntxt, CommandNm1 *command){
+SECTION(".text_demo3d") void NMGL_SetTexParami(NMGL_Context_NM1 *cntxt, NM_Command *command){
 	switch ((NMGLenum)command->params[0].i)
 	{
 		case NMGL_TEXTURE_WRAP_S: 
@@ -89,7 +89,7 @@ SECTION(".text_demo3d") void NMGL_SetTexParami(NMGL_Context_NM1 *cntxt, CommandN
 	}
 }
 
-SECTION(".text_demo3d") void NMGL_Texture2d(NMGL_Context_NM1 *cntxt, CommandNm1 *command){
+SECTION(".text_demo3d") void NMGL_Texture2d(NMGL_Context_NM1 *cntxt, NM_Command *command){
 	cntxt->texState.texUnits[cntxt->texState.activeTexUnitIndex].enabled = (NMGLboolean)command->params[0].i;
 	if ((NMGLboolean)command->params[0].i == NMGL_TRUE) {
 		cntxt->texState.textureEnabled = cntxt->texState.textureEnabled | ((unsigned int)1 << cntxt->texState.activeTexUnitIndex);

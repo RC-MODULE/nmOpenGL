@@ -84,51 +84,13 @@ int nmglvsHostInit()
 		return -1;
 	}
 
-	for (int i = 0; i < NUM_NM_CORES; i++) {
-		int handshake = halSync(0xC0DE0086, i);
-		if (handshake != (0xC0DE0000 | i)) {
-			printf("Handshake with mc12101-nmc%d error!\n", i);
-			return -1;
-		}
+	int handshake = halSync(0xC0DE0086, 0);
+	if (handshake != 0xC0DE0000) {
+		printf("Handshake with mc12101-nmc0 error!\n");
+		return -1;
 	}
-	for (int i = 0; i < NUM_NM_CORES; i++) {
-		int ok = halSync(0, i);
-		if (ok != 0x600DB00F) {
-			printf("Memory nmc%d allocation error!\n", i);
-			return -2;
-		}
-	}
-	for (int i = 0; i < NUM_NM_CORES; i++) {
-		int ok = halSync(0, i);
-		if (ok != 0x600DB00F) {
-			printf("Interprocessor allocation error!\n", i);
-			return -3;
-		}
-	}
-//----------------init-nmc1------------------------------
-	//nmc1, sync0
-	int patternsNM = halSyncAddr(0, 1);
-	//PatternsArray* patterns = (PatternsArray*)halMalloc32(sizeof32(PatternsArray));
-	PatternsArray* patterns = (PatternsArray*)nmppsMalloc_32s(sizeof32(PatternsArray));
-	hostCreatePatterns(patterns);
-	int ok = halWriteMemBlock(patterns, patternsNM, sizeof32(PatternsArray), 1);
-	nmppsFree(patterns);
-//----------------init-ringbuffer-------------
-	//nmc1, sync3
-	ImageData* nmImageRB = (ImageData*)halSyncAddr(0, 1);
 
-	hostImageRB.init(nmImageRB, writeMem, readMem);
-
-#ifdef STACK_TRACE_ENABLED
-	StackTraceData *stackTraceData = (StackTraceData*)halSyncAddr(0, 0);
-	stackTraceConnector.init(stackTraceData, writeMem, readMem);
-#endif
-	
-	//nmc0, sync4
-	ok = halSync(0, 0);
-	if (ok != 0x600D600D) {
-		printf("Error!!\n");
-		return 1;
-	}
+	ImageData* nmImageRB = (ImageData*)halSyncAddr(0, 0);
+	hostImageRB.init(nmImageRB, writeMem0, readMem0);
 	return 0;
 };

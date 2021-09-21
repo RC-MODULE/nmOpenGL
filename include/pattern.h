@@ -1,4 +1,5 @@
 #pragma once
+#include "nmglmath.h"
 
 #define MAX_SIDE_POLYGON				32
 #define HEIGHT_PTRN						MAX_SIDE_POLYGON
@@ -28,8 +29,17 @@ struct PatternsArray {
 	Pattern ptrns[FILL_PATTERNS_AMOUNT];
 	Pattern linePtrns[LINE_PATTERNS_AMOUNT];
 	Pattern pointPtrns[POINT_PATTERNS_AMOUNT];
-	int table_dydx[SIZE_TABLE];
+	int fillTable[SIZE_TABLE];
 	int lineTable[SIZE_TABLE];
+};
+
+struct PatternPack {
+    Pattern* patterns;
+	Pattern** ppPattern;	/// Указатель на список указателей на паттерны
+    Vector2* origins;   /// x, y
+    Size* sizes;     /// width, height
+	int* imagePositions;
+    int count;
 };
 
 /*!
@@ -42,7 +52,7 @@ struct PatternsArray {
  *  \details Details
  *  
  */
-void fillPtrnsInit(unsigned char* dst, int* table_dydx, unsigned char color);
+void fillPtrnsInit(unsigned int* dst, int* table_dydx, unsigned int color);
 
 /*!
  *  \brief Функция инициализации 8-битных паттернов линий
@@ -54,7 +64,7 @@ void fillPtrnsInit(unsigned char* dst, int* table_dydx, unsigned char color);
  *  \details Details
  *  
  */
-void linePtrnsInit(unsigned char* dst, int* table, unsigned char  color);
+void linePtrnsInit(unsigned int* dst, int* table, unsigned int  color);
 
 /*!
  *  \brief Функция инициализации 8-битных паттернов точек
@@ -66,7 +76,7 @@ void linePtrnsInit(unsigned char* dst, int* table, unsigned char  color);
  *  \details Details
  *  
  */
-void pointPtrnsInit(unsigned char* dst, unsigned char color);
+void pointPtrnsInit(unsigned int* dst, unsigned int color);
 
-void create_tabl_dydx(unsigned char* srcPatterns, int* dydx, int width, int height);
+void create_tabl_dydx(unsigned int* srcPatterns, int* dydx, int width, int height);
 void hostCreatePatterns(PatternsArray* patterns);

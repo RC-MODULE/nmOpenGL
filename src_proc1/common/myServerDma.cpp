@@ -2,12 +2,13 @@
 #include "demo3d_nm1.h"
 #include <nmpp.h>
 #include "myserverdma.h"
+#include "dma.h"
 
 int cbUpdate();
 
 //структура данных с информацией о копировани€х
-SECTION(".data_demo3d") MyDmaServer<MSD_SIZE, MSD_NUM_CHANNELS> dmaServer;
-SECTION(".data_demo3d") MyDmaClient<MSD_SIZE> dmaClient[MSD_NUM_CHANNELS];
+//SECTION(".data_demo3d") MyDmaServer<MSD_SIZE, MSD_NUM_CHANNELS> dmaServer;
+SECTION(".data_demo3d") NM_MemCopyManagerDma dmaServer;
 
 SECTION(".text_demo3d") int cbUpdate() {
 	halLedOn(5);
@@ -22,36 +23,40 @@ SECTION(".text_demo3d") int cbUpdate() {
 }
 
 SECTION(".text_demo3d") void msdInit() {
-	dmaServer.init(cbUpdate);
+	halDmaInit();
+	halDmaSetCallback(cbUpdate);
+	setHeap(11);
+	if (!dmaServer.init()) {
+		printf("error width msdInit\n");
+	}
 	for (int i = 0; i < MSD_NUM_CHANNELS; i++) {
-		dmaClient[i].bind(dmaServer.getChannelBuffer(i));
-		dmaClient[i].memcopyPush = (tmemcopy32)nmppsCopy_32s;
+		dmaServer.getChannel(i).memcopyPush = (tmemcopy32)nmppsCopy_32s;
 	}
 }
 
 SECTION(".text_demo3d") unsigned int msdAdd(const void* src, void* dst, int size, int priority) {
-	unsigned int id = dmaClient[priority].getHead();
-	while (dmaClient[priority].isFull()) {
+	unsigned int id = dmaServer.getChannel(priority).getHead();
+	while (dmaServer.getChannel(priority).isFull()) {
 		//halSleep(2);
 	}
-	MyDmaTask* current = dmaClient[priority].ptrHead();
+	MyDmaTask* current = dmaServer.getChannel(priority).ptrHead();
 	current->src = src;
 	current->dst = dst;
 	current->size = size;
 	current->type = MSD_DMA;
 	current->callback = 0;
 	//current->t0 = clock();
-	dmaClient[priority].incHead();
+	dmaServer.getChannel(priority).incHead();
 	dmaServer.startJob();
 	return id;
 }
 
 SECTION(".text_demo3d") unsigned int msdAdd2D(const void* src, void* dst, unsigned size, unsigned width, unsigned srcStride32, unsigned dstStride32, int priority) {
-	unsigned int id = dmaClient[priority].getHead();
-	while (dmaClient[priority].isFull()) {
+	unsigned int id = dmaServer.getChannel(priority).getHead();
+	while (dmaServer.getChannel(priority).isFull()) {
 		//halSleep(2);
 	}
-	MyDmaTask* current = dmaClient[priority].ptrHead();
+	MyDmaTask* current = dmaServer.getChannel(priority).ptrHead();
 	current->src = src;
 	current->dst = dst;
 	current->size = size;
@@ -61,24 +66,24 @@ SECTION(".text_demo3d") unsigned int msdAdd2D(const void* src, void* dst, unsign
 	current->dstStride = dstStride32;
 	current->callback = 0;
 	//current->t0 = clock();
-	dmaClient[priority].incHead();
+	dmaServer.getChannel(priority).incHead();
 	dmaServer.startJob();
 	return id;
 }
 
 SECTION(".text_demo3d") unsigned int msdAdd(MyDmaTask &task, int priority) {
-	unsigned int id = dmaClient[priority].getHead();
-	while (dmaClient[priority].isFull()) {
+	unsigned int id = dmaServer.getChannel(priority).getHead();
+	while (dmaServer.getChannel(priority).isFull()) {
 		//halSleep(2);
 	}
 //	task.t0 = clock();
-	dmaClient[priority].add(task);
+	dmaServer.getChannel(priority).push(&task, 1);
 	dmaServer.startJob();
 	return id;
 }
 
 SECTION(".text_demo3d") bool msdGetStatusCopy(int index, int priority) {
-	return dmaClient[priority].getTail() > index;
+	return dmaServer.getChannel(priority).getTail() > index;
 }
 
 SECTION(".text_demo3d") void msdWaitDma() {

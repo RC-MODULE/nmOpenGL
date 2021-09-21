@@ -13,10 +13,10 @@ void nmglGetFloatv(NMGLenum pname, NMGLfloat * params) {
 		params[0] = cntxt->currentMatrixStack->type;
 		break;
 	case NMGL_LIGHT_MODEL_AMBIENT:
-		params[0] = cntxt->lightAmbient[MAX_LIGHTS].vec[0];
-		params[1] = cntxt->lightAmbient[MAX_LIGHTS].vec[1];
-		params[2] = cntxt->lightAmbient[MAX_LIGHTS].vec[2];
-		params[3] = cntxt->lightAmbient[MAX_LIGHTS].vec[3];
+		params[0] = cntxt->lightingInfo.lightAmbient[MAX_LIGHTS].vec[0];
+		params[1] = cntxt->lightingInfo.lightAmbient[MAX_LIGHTS].vec[1];
+		params[2] = cntxt->lightingInfo.lightAmbient[MAX_LIGHTS].vec[2];
+		params[3] = cntxt->lightingInfo.lightAmbient[MAX_LIGHTS].vec[3];
 		break;
 	case NMGL_MODELVIEW_MATRIX:
 		for (int i = 0; i < 16; i++) {

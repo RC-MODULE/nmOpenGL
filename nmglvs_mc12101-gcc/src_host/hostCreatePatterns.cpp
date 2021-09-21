@@ -1,26 +1,32 @@
 #include "nmpp.h"
 #include "demo3d_nm1.h"
+#include "pattern.h"
 
-
-
-void fillPattern(nm8s* pDstSource, int width, int height);
 
 void hostCreatePatterns(PatternsArray* patterns){
-	nm8s* temp_8s = nmppsMalloc_8s(MAX(NPATTERNS, LINE_PATTERNS_AMOUNT)*WIDTH_PTRN*HEIGHT_PTRN);
-	nm4s* temp_4s = nmppsMalloc_4s(MAX(NPATTERNS, LINE_PATTERNS_AMOUNT)*WIDTH_PTRN*HEIGHT_PTRN);
+	int size = NPATTERNS * WIDTH_PTRN * HEIGHT_PTRN;
+	nm32u* temp0 = (nm32u*)nmppsMalloc_32u(size);
+	nm8s* temp1 = (nm8s*)nmppsMalloc_8s(size);
 
-	nmppsSet_8s((nm8s*)temp_8s,0, NPATTERNS*WIDTH_PTRN*HEIGHT_PTRN);
-	fillPtrnsInit((nm8u*)temp_8s, patterns->table_dydx, 1);
-	nmppsConvert_8s4s((nm8s*)temp_8s,(nm4s*)temp_4s,NPATTERNS*WIDTH_PTRN*HEIGHT_PTRN);
-	nmppsConvert_4s2s((nm4s*)temp_4s,(nm2s*)patterns->ptrns,NPATTERNS*WIDTH_PTRN*HEIGHT_PTRN);
+	nm32s* temp32s = (nm32s*)temp0;
+	nm8s* temp8s = temp1;
+	nm4s* temp4s = (nm4s*)temp0;
 
-	pointPtrnsInit((nm8u*)temp_8s, 1);
-	nmppsConvert_8s4s((nm8s*)temp_8s, (nm4s*)temp_4s, POINT_PATTERNS_AMOUNT*WIDTH_PTRN*HEIGHT_PTRN);
-	nmppsConvert_4s2s((nm4s*)temp_4s, (nm2s*)patterns->pointPtrns, POINT_PATTERNS_AMOUNT*WIDTH_PTRN*HEIGHT_PTRN);
+	fillPtrnsInit(temp0, patterns->fillTable, 1);
+	nmppsConvert_32s8s(temp32s, temp8s, NPATTERNS*WIDTH_PTRN*HEIGHT_PTRN);
+	nmppsConvert_8s4s(temp8s, temp4s, NPATTERNS*WIDTH_PTRN*HEIGHT_PTRN);
+	nmppsConvert_4s2s(temp4s, patterns->ptrns, NPATTERNS*WIDTH_PTRN*HEIGHT_PTRN);
 
-	linePtrnsInit((nm8u*)temp_8s, patterns->lineTable, 1);
-	nmppsConvert_8s4s((nm8s*)temp_8s, (nm4s*)temp_4s, LINE_PATTERNS_AMOUNT*WIDTH_PTRN*HEIGHT_PTRN);
-	nmppsConvert_4s2s((nm4s*)temp_4s, (nm2s*)patterns->linePtrns, LINE_PATTERNS_AMOUNT*WIDTH_PTRN*HEIGHT_PTRN);
-	nmppsFree(temp_4s);
-	nmppsFree(temp_8s);
+	pointPtrnsInit(temp0, 1);
+	nmppsConvert_32s8s(temp32s, temp8s, POINT_PATTERNS_AMOUNT*WIDTH_PTRN*HEIGHT_PTRN);
+	nmppsConvert_8s4s(temp8s, temp4s, POINT_PATTERNS_AMOUNT*WIDTH_PTRN*HEIGHT_PTRN);
+	nmppsConvert_4s2s(temp4s, patterns->pointPtrns, POINT_PATTERNS_AMOUNT*WIDTH_PTRN*HEIGHT_PTRN);
+
+	linePtrnsInit(temp0, patterns->lineTable, 1);
+	nmppsConvert_32s8s(temp32s, temp8s, LINE_PATTERNS_AMOUNT*WIDTH_PTRN*HEIGHT_PTRN);
+	nmppsConvert_8s4s(temp8s, temp4s, LINE_PATTERNS_AMOUNT*WIDTH_PTRN*HEIGHT_PTRN);
+	nmppsConvert_4s2s(temp4s, patterns->linePtrns, LINE_PATTERNS_AMOUNT*WIDTH_PTRN*HEIGHT_PTRN);
+
+	nmppsFree(temp0);
+	nmppsFree(temp1);
 }

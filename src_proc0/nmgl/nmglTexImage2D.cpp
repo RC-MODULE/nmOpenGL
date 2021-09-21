@@ -85,7 +85,7 @@ void initLvls(NMGLuint name,NMGL_Context_NM0 *cntxt)
 	cntxt->texState.texObjects[name].texImages2D[0].pixels=(void*)(mipmap + (name*MIPMAP_OBJ_SIZE));
 
 
-	CommandNm1 command;
+	NM_Command command;
 	command.instr = NMC1_SET_MIPMAP_LVL_POINTER;
 	command.params[0] = CommandArgument(name);
 	command.params[1] = CommandArgument(0);
@@ -232,7 +232,7 @@ void nmglTexImage2D(NMGLenum target, NMGLint level, NMGLint internalformat, NMGL
 					ActiveTexObjectP->texImages2D[iter].width=width;
 					ActiveTexObjectP->texImages2D[iter].height=height;		
 
-					CommandNm1 command;
+					NM_Command command;
 					command.instr = NMC1_SET_WHF;
 					command.params[0] = CommandArgument(ActiveTexObjectP->name);
 					command.params[1] = CommandArgument(width);

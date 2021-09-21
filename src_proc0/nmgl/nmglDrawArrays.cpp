@@ -13,6 +13,7 @@
 #include "nmprofiler.h"
 
 SECTION(".data_imu5")	v4nm32f vertexResult[3 * NMGL_SIZE];
+//SECTION(".data_imu6")	v4nm32f colorResult[3 * NMGL_SIZE];
 SECTION(".data_imu6")	v4nm32f colorOrNormal[3 * NMGL_SIZE];
 SECTION(".data_imu6")	v2nm32f texResult[3 * NMGL_SIZE];
 
@@ -30,11 +31,11 @@ SECTION("text_nmgl") void perpectiveDivView(CombinePointers &vertex, WindowInfo 
 	nmppsDiv_32f(vertex.y, vertex.w, tmpBuf + 1 * NMGL_SIZE, size);
 	nmppsDiv_32f(vertex.z, vertex.w, tmpBuf + 2 * NMGL_SIZE, size);
 
-
 	nmppsMulC_AddC_32f(tmpBuf + 0 * NMGL_SIZE, windowInfo.viewportMulX, windowInfo.viewportAddX, vertex.x, size);		//X	
 	nmppsMulC_AddC_32f(tmpBuf + 1 * NMGL_SIZE, windowInfo.viewportMulY, windowInfo.viewportAddY, vertex.y, size);		//Y	
 	nmppsMulC_AddC_32f(tmpBuf + 2 * NMGL_SIZE, windowInfo.viewportMulZ, windowInfo.viewportAddZ, vertex.z, size);		//Z
 }
+
 
 template < typename T >
 inline void copyVec(const void* src, void* dst, size_t size) {
@@ -72,9 +73,12 @@ SECTION("text_demo3d") void clipSelect(TrianglePointers *src, float* srcColor, i
 	}
 }
 
+void printMatrix(mat4nm32f* matrix);
+
 
 SECTION(".text_nmgl")
 void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
+
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
 	if (cntxt->vertexArray.enabled == NMGL_FALSE) {
 		return;
@@ -145,13 +149,8 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 //TEXTURING_PART
 	}
 
-	if (cntxt->isLighting) {
-		mulC_v4nm32f(cntxt->lightAmbient, cntxt->pMaterialAmbient, cntxt->ambientMul, MAX_LIGHTS + 1);
-		mulC_v4nm32f(cntxt->lightDiffuse, cntxt->pMaterialDiffuse, cntxt->diffuseMul, MAX_LIGHTS);
-		mulC_v4nm32f(cntxt->lightSpecular, &cntxt->materialSpecular, cntxt->specularMul, MAX_LIGHTS);
-		nmppsAdd_32f((float*)(cntxt->ambientMul + MAX_LIGHTS), 
-			(float*)&cntxt->materialEmissive, 
-			(float*)(cntxt->ambientMul + MAX_LIGHTS), 4);
+	if (cntxt->lightingInfo.isLighting) {
+		cntxt->lightingInfo.update();
 	}
 
 	for (int pointer = 0; pointer < count; pointer += maxInnerCount) {
@@ -213,7 +212,7 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 		//normal in colorOrNormal
 		//Освещение или наложение цветов
 		//nmprofiler_enable();
-		if (cntxt->isLighting) {
+		if (cntxt->lightingInfo.isLighting) {
 			PROFILER_SIZE(localSize);
 			light(vertexResult, colorOrNormal, localSize);
 		}
@@ -280,8 +279,6 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			trianPointers.v1.t = (float*)texResult + 3 * NMGL_SIZE;
 			trianPointers.v2.s = (float*)texResult + 4 * NMGL_SIZE;
 			trianPointers.v2.t = (float*)texResult + 5 * NMGL_SIZE;
-//TEXTURING_PART
-			//volatile int a = localSize;
 
 			int primCount = 0;
 			switch (mode) {
@@ -341,7 +338,7 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 
 			int srcThreated = 0;
 			while (srcThreated < primCount) {
-				static int counter = 0;
+				static int counter = 0; 
 				PROFILER_SIZE(primCount);
 				int currentCount = splitTriangles(&trianPointers, primCount, WIDTH_PTRN, HEIGHT_PTRN, NMGL_SIZE, &tmp, &srcThreated);
 				if (currentCount % 2) {
@@ -378,10 +375,11 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 				nmppsMerge_32f(cntxt->buffer1, cntxt->buffer3, (float*)maxXY, cntxt->trianInner.size);
 				setSegmentMask(minXY, maxXY, cntxt->segmentMasks, cntxt->trianInner.size);
 				rasterizeT(&cntxt->trianInner, cntxt->segmentMasks);
+
+				//counter++;
 			}
 #else
 			pushToTriangles(trianPointers, cntxt->trianInner, primCount);
-
 			findMinMax3(cntxt->trianInner.x0, cntxt->trianInner.x1, cntxt->trianInner.x2,
 				cntxt->buffer0, cntxt->buffer1,
 				cntxt->trianInner.size);
@@ -391,9 +389,10 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 
 			v2nm32f *minXY = (v2nm32f*)cntxt->buffer4;
 			v2nm32f *maxXY = (v2nm32f*)cntxt->buffer4 + 3 * NMGL_SIZE;
+
 			nmppsMerge_32f(cntxt->buffer0, cntxt->buffer2, (float*)minXY, cntxt->trianInner.size);
 			nmppsMerge_32f(cntxt->buffer1, cntxt->buffer3, (float*)maxXY, cntxt->trianInner.size);
-			PROFILER_SIZE(cntxt->lineInner.size);
+			
 			setSegmentMask(minXY, maxXY, cntxt->segmentMasks, cntxt->trianInner.size);
 			rasterizeT(&cntxt->trianInner, cntxt->segmentMasks);
 #endif //TRIANGULATION_ENABLED
@@ -467,25 +466,26 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 		case NMGL_POINTS: {
 			v2nm32f *minXY = (v2nm32f*)cntxt->buffer4;
 			v2nm32f *maxXY = (v2nm32f*)cntxt->buffer4 + 3 * NMGL_SIZE;
+			CombinePointers pointers;
+			pointers.x = cntxt->pointInner.x;
+			pointers.y = cntxt->pointInner.y;
+			pointers.z = cntxt->buffer0;
+			pointers.w = cntxt->buffer0 + NMGL_SIZE;
+			pointers.color = (v4nm32f*)(cntxt->buffer2);
+			pointers.s = cntxt->buffer5 + 0 * NMGL_SIZE;
+			pointers.t = cntxt->buffer5 + 1 * NMGL_SIZE;
 
-			split_v4nm32f(vertexResult, 1, cntxt->buffer0, cntxt->buffer1, cntxt->buffer2, cntxt->buffer3, localSize);
-
-			nmppsDiv_32f(cntxt->buffer0, cntxt->buffer3, cntxt->buffer1 + NMGL_SIZE, localSize);
-			nmppsDiv_32f(cntxt->buffer1, cntxt->buffer3, cntxt->buffer2 + NMGL_SIZE, localSize);
-			nmppsDiv_32f(cntxt->buffer2, cntxt->buffer3, cntxt->buffer0 + NMGL_SIZE, localSize);
-
-			nmppsMulC_AddC_32f(cntxt->buffer1 + NMGL_SIZE, cntxt->windowInfo.viewportMulX, cntxt->windowInfo.viewportAddX, cntxt->pointInner.x0, localSize);		//X
-			nmppsMulC_AddC_32f(cntxt->buffer2 + NMGL_SIZE, cntxt->windowInfo.viewportMulY, cntxt->windowInfo.viewportAddY, cntxt->pointInner.y0, localSize);		//Y
-			nmppsMulC_AddC_32f(cntxt->buffer0 + NMGL_SIZE, cntxt->windowInfo.viewportMulZ, cntxt->windowInfo.viewportAddZ, cntxt->buffer0, localSize);	//Z
+			split_v4nm32f(vertexResult, 1, pointers.x, pointers.y, pointers.z, pointers.w, localSize);
+			perpectiveDivView(pointers, cntxt->windowInfo, cntxt->buffer0, localSize);
 
 			nmppsConvert_32f32s_rounding(cntxt->buffer0, cntxt->pointInner.z, 0, localSize);
 			nmppsConvert_32f32s_rounding((float*)colorOrNormal, (int*)cntxt->pointInner.colors, 0, 4 * localSize);
 
-			nmppsSubC_32f(cntxt->pointInner.x0, cntxt->buffer0, cntxt->pointRadius, localSize);
-			nmppsSubC_32f(cntxt->pointInner.y0, cntxt->buffer1, cntxt->pointRadius, localSize);
+			nmppsSubC_32f(cntxt->pointInner.x, cntxt->buffer0, cntxt->pointRadius, localSize);
+			nmppsSubC_32f(cntxt->pointInner.y, cntxt->buffer1, cntxt->pointRadius, localSize);
 			nmppsMerge_32f(cntxt->buffer0, cntxt->buffer1, (float*)minXY, localSize);
-			nmppsAddC_32f(cntxt->pointInner.x0, cntxt->buffer0, cntxt->pointRadius, localSize);
-			nmppsAddC_32f(cntxt->pointInner.y0, cntxt->buffer1, cntxt->pointRadius, localSize);
+			nmppsAddC_32f(cntxt->pointInner.x, cntxt->buffer0, cntxt->pointRadius, localSize);
+			nmppsAddC_32f(cntxt->pointInner.y, cntxt->buffer1, cntxt->pointRadius, localSize);
 			nmppsMerge_32f(cntxt->buffer0, cntxt->buffer1, (float*)maxXY, localSize);
 
 			cntxt->pointInner.size = localSize;

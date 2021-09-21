@@ -9,10 +9,7 @@ void nmglTranslatef(NMGLfloat x, NMGLfloat y, NMGLfloat z){
 	mat4nm32f temp ={1,0,0,0,
 					 0,1,0,0,
 					 0,0,1,0,
-					 0,0,0,1};
-	temp.matr[12] = x;
-	temp.matr[13] = y;
-	temp.matr[14] = z;
+					 x,y,z,1};
 
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
 	mat4nm32f* current = cntxt->currentMatrixStack->top();
