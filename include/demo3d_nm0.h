@@ -1441,6 +1441,8 @@ extern "C"{
 		int vertexAmount);
 	 //! \}
 
+	void checkRectanglesOverlaps(v2nm32f* minXY, v2nm32f* maxXY, v2nm32f* upperRightLimit, v2nm32f* lowerLeftLimit, nm1* mask, int size);
+
 }
 
 void pushToTriangles(const TrianglePointers &srcTriangles, Triangles& dstTriangles, int countVertex);

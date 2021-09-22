@@ -29,19 +29,7 @@ void setSegmentMask(v2nm32f* minXY, v2nm32f* maxXY, BitMask* masks, int size){
 	v2nm32f* upperLimit = cntxt->currentSegments->upperRight;
 
 	for (int iSeg = 0; iSeg < nSegments; iSeg++) {
-
-		int* maskXLt = (int*)cntxt->buffer0;
-		int* maskYLt = (int*)cntxt->buffer1;
-		int* maskXGt = (int*)cntxt->buffer2;
-		int* maskYGt = (int*)cntxt->buffer3;
-
-		nmppsCmpLtC_v2nm32f(minXY, upperLimit + iSeg, (nm1*)maskXLt, (nm1*)maskYLt, 1, size);
-		nmppsCmpGtC_v2nm32f(maxXY, lowerLimit + iSeg, (nm1*)maskXGt, (nm1*)maskYGt, 1, size);
-		//and4v(maskXLt, maskYLt, maskXGt, maskYGt, masks[iSeg].bits, size);
-		for (int i = 0, cnt = 0; cnt < size; i++, cnt += 32) {
-			int result = (maskXLt[i] & maskYLt[i]) & (maskXGt[i] & maskYGt[i]);
-			masks[iSeg].bits[i] = result;
-		}
+		checkRectanglesOverlaps(minXY, maxXY, upperLimit + iSeg, lowerLimit + iSeg, masks[iSeg].bits, size);
 		int size32 = (size + 31) / 32;
 		int ind = firstNonZeroIndx_32s(masks[iSeg].bits, size32);
 		//если ind = -1, значит все нули и в hasNotZeroBits писать 1, иначе наоборот
