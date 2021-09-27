@@ -135,9 +135,10 @@ int main ()
 {
 	
 	NMGL_Context_NM0 *test_cntxt;
-	NMGLSynchroData synchroData;
-	synchroData.init();
-	NMGL_Context_NM0::create(&synchroData);	
+	//NMGLSynchroData synchroData;
+	//synchroData.init();
+	//NMGL_Context_NM0::create(&synchroData);	
+	NMGL_Context_NM0::create();	
 	test_cntxt = NMGL_Context_NM0::getContext();
 	
     //Массивы растеризованных и закрашенных треугольников
