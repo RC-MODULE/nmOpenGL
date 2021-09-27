@@ -27,7 +27,7 @@ inline void copyTriangleInPlace(TrianglePointers &triangles, int iSrc, int iDst)
 	copyVertex(triangles.v1, iSrc, iDst);
 	copyVertex(triangles.v2, iSrc, iDst);
 }
-
+extern "C" int cnvDividedMaskToIndices(nm1* maskEven, nm1* maskOdd, int* indices, int size);
 
 SECTION(".text_demo3d")
 int cullFaceSortTriangles(TrianglePointers &triangles, int count){
@@ -35,6 +35,7 @@ int cullFaceSortTriangles(TrianglePointers &triangles, int count){
 
 	float* walkDirection = cntxt->buffer2 + 6 * NMGL_SIZE;
 	float* temp0 = cntxt->buffer2;
+	int* temp0i = (int*)cntxt->buffer2;
 	float* temp1 = cntxt->buffer3;
 	int* evenMaskVec = cntxt->dividedMasks[0].even.bits;
 	int* oddMaskVec= cntxt->dividedMasks[0].odd.bits;
@@ -57,34 +58,15 @@ int cullFaceSortTriangles(TrianglePointers &triangles, int count){
 		nmppsCmpGtC_v2nm32f((v2nm32f*)walkDirection, (v2nm32f*)&cntxt->tmp, evenMaskVec, oddMaskVec, 1, count / 2);
 	}
 
+	count = cnvDividedMaskToIndices(evenMaskVec, oddMaskVec, (int*)temp0i, count);
 	int resultCounter = 0;
-	int size = count / 2;
-	int i = 0;
-	while (size > 0) {
-		int maskEven = evenMaskVec[i];
-		int maskOdd  = oddMaskVec[i];
-		int localSize = MIN(32, size);
-		if (maskEven | maskOdd) {
-			for (int j = 0; j < localSize; j++) {
-				if (maskEven % 2) {
-					copyTriangleInPlace(triangles, 2 * (i * 32 + j), resultCounter);
-					resultCounter++;
-				}
-				if (maskOdd % 2) {
-					copyTriangleInPlace(triangles, 2 * (i * 32 + j) + 1, resultCounter);
-					resultCounter++;
-				}
-				maskEven >>= 1;
-				maskOdd >>= 1;
-			}
-		}
-		size -= 32;
-		i++;
+	for (int i = 0; i < count; i++) {
+		copyTriangleInPlace(triangles, temp0i[i], resultCounter++);
 	}
-	
-	while (resultCounter % 2) {
+	if (resultCounter % 2) {
 		copyTriangleInPlace(triangles, resultCounter - 1, resultCounter);
 		resultCounter++;
 	}
+
 	return resultCounter;
 }
