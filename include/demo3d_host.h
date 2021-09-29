@@ -1,11 +1,6 @@
 #pragma once
 #include "nmtype.h"
 #include "stdio.h"
-#include "demo3d_common.h"
-#include "pattern.h"
-#include "stacktrace.h"
-
-#define NUM_NM_CORES 2
 
 #ifdef DEBUG
 #define PROGRAM "main0d.abs"

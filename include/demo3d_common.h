@@ -24,6 +24,7 @@
 	#define nmprofiler_disable()
 #endif
 
+
 #define TRIANGULATION_ENABLED
 //#define PROFILER0
 //#define PROFILER1
@@ -59,10 +60,6 @@ typedef v4nm8s rgb8888;
 #define WHITE 0xFFFFFFFF
 
 #define COUNT_POLYGONS_BUFFER 4
-#define COUNT_IMAGE_BUFFER 8
-//#define COUNT_IMAGE_BUFFER 2
-
-
 
 /*struct TrianglePackage{
 	int x0[POLYGONS_SIZE];

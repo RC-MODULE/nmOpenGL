@@ -2,7 +2,7 @@
 #include "demo3d_nm1.h"
 
 extern "C" DepthCore32* currentDepthTest32;
-extern "C" DepthCore16* currentDepthTest16;
+//extern "C" DepthCore16* currentDepthTest16;
 
 extern "C" DepthCore32 depthTestCore32_N_rw;
 extern "C" DepthCore32 depthTestCore32_Lt_rw;
@@ -25,11 +25,12 @@ extern "C" DepthCore16 depthTestCore16_A_r;*/
 extern int addC4DepthTest;
 //extern int addC4DepthTest_15s;
 
-void DepthBuffer::update() {
-	switch (maskEnabled)
+void depthUpdate() {
+	NMGL_Buffer *depthBuffer = &NMGL_Context_NM1::getContext()->smallFramebuffer.depthBuffer;
+	switch (depthBuffer->mask)
 	{
 	case NMGL_TRUE:
-		switch (mode)
+		switch (depthBuffer->mode)
 		{
 		case NMGL_NEVER:
 			currentDepthTest32 = depthTestCore32_N_rw;
@@ -66,7 +67,7 @@ void DepthBuffer::update() {
 		}
 		break;
 	case NMGL_FALSE:
-		switch (mode)
+		switch (depthBuffer->mode)
 		{
 		case NMGL_NEVER:
 			currentDepthTest32 = depthTestCore32_N_r;

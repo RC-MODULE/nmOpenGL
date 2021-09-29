@@ -7,14 +7,25 @@
 //------------------------------------------------------------------------
 
 #include "VShell.h"
-#include "demo3d_common.h"
 #include "demo3d_host.h"
 #include "service.h"
 #include "imagebuffer.h"
 #include "stacktrace.h"
+#include "hal_host.h"
 
+extern int framebufferAddr;
 
-extern ImageConnector hostImageRB;
+int nmglvsGetWidth() {
+	NMGL_Framebuffer framebuffer;
+	halReadMemBlock(&framebuffer, framebufferAddr, sizeof32(NMGL_Framebuffer));
+	return framebuffer.getWidth();
+}
+
+int nmglvsGetHeight() {
+	NMGL_Framebuffer framebuffer;
+	halReadMemBlock(&framebuffer, framebufferAddr, sizeof32(NMGL_Framebuffer));
+	return framebuffer.getHeight();
+}
 
 #ifdef STACK_TRACE_ENABLED
 extern StackTraceConnector stackTraceConnector;
@@ -46,31 +57,17 @@ void PrintTrace(StackTraceConnector *connector, int count, int spDepth0) {
 
 int nmglvsHostReadImage(int* dstImage)
 {
+	NMGL_Framebuffer framebuffer;
+	do  {
+		halSleep(2);
+		halReadMemBlock(&framebuffer, framebufferAddr, sizeof32(NMGL_Framebuffer));		
+	} while (framebuffer.head == framebuffer.tail);
 	S_VS_MouseStatus mouseStatus;
 	VS_GetMouseStatus(&mouseStatus);
-#if defined(PROFILER0) || defined(PROFILER1)
-	if (mouseStatus.nKey == VS_MOUSE_LBUTTON) {
-#else
 	if (mouseStatus.nKey != VS_MOUSE_LBUTTON) {
-#endif
-		clock_t t0, t1;
-		t0 = clock();
-		while (hostImageRB.isEmpty()) {
-			t1 = clock();
-			if (t1 - t0 > 10000) {
-				#ifdef STACK_TRACE_ENABLED
-				PrintTrace(&stackTraceConnector, 5, 5);
-				while (true);
-				#endif //STACK_TRACE_ENABLED
-			}
-		}
-		hostImageRB.pop((NMGL_IMAGE*)dstImage, 1);
+		halReadMemBlock(dstImage, (size_t)framebuffer.imageBufferFront.data, framebuffer.getSize());
 	}
-	else {
-		while (hostImageRB.isEmpty()) {
-			halSleep(2);
-		}
-		hostImageRB.incTail();
-	}
+	framebuffer.tail++;
+	halWriteMemBlock((void*)&framebuffer.tail, (size_t)framebufferAddr + ((int*)&framebuffer.tail - (int*)&framebuffer), 2);
 	return 0;
 };

@@ -8,7 +8,6 @@
 #include "nmprofiler.h"
 
 
-
 SECTION(".text_shared0") int main()
 {
 #if defined(__GNUC__) && defined(DEBUG)
@@ -16,7 +15,16 @@ SECTION(".text_shared0") int main()
 	//nmprofiler_disable();
 #endif // __GNUC__
 
-	nmglvsNm0Init();
+	int fromHost = halHostSync(0xC0DE0000);		// send handshake to host
+	if (fromHost != 0xC0DE0086) {					// get  handshake from host
+		return 1;
+	}
+
+	NMGL_Framebuffer* defaultFramebuffer = nmglvsNm0Init();
+	if (defaultFramebuffer == 0) {
+		return 0;
+	}
+	halHostSyncAddr(defaultFramebuffer);
 
 #ifdef __OPEN_GL__
 
@@ -89,6 +97,7 @@ SECTION(".text_shared0") int main()
 	//nmglOrthof(-384, 384, -384, 384, -100, 100);
 	//nmglFrustumf(-384, 384, -384, 384, 0, 100);
 	nmglMatrixMode(NMGL_MODELVIEW);
+	nmglPointSize(2);
 
 	nmglEnable(NMGL_LIGHTING);
 	nmglEnable(NMGL_LIGHT0);
@@ -140,7 +149,7 @@ SECTION(".text_shared0") int main()
 		nmglRotatef(angle, 0.707, 0.707, 0);
 		nmglTranslatef(150, 150, 0);
 		PROFILER_SIZE(amountPolygons2);
-		nmglDrawArrays(NMGL_TRIANGLES, 0, 3 * amountPolygons2);
+		nmglDrawArrays(NMGL_POINTS, 0, 3 * amountPolygons2);
 		angle += 1.72;
 #ifdef __OPEN_GL__
 		halSleep(100);

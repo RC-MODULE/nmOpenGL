@@ -1,7 +1,6 @@
 #ifndef __NMSYNCHRO_H_INCLUDED__
 #define __NMSYNCHRO_H_INCLUDED__
 
-#include "hal_target.h"
 #include <time.h>
 #include "nmdef.h"
 #include "ringbuffert.h"

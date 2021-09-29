@@ -2,12 +2,11 @@
 #include "hal.h"
 #include "hal_host.h"
 #include "stdio.h"
+#include "demo3d_common.h"
 #include "demo3d_host.h"
 #include "hostprofiler.h"
 #include "nmglvs_host.h"
 #include <fstream>
-
-int currentImage[WIDTH_IMAGE * HEIGHT_IMAGE];
 
 
 int main()
@@ -20,8 +19,10 @@ int main()
 	if (!VS_Init())
 		return 0;
 
-	VS_CreateImage("Source Image", 1, WIDTH_IMAGE, HEIGHT_IMAGE, VS_RGB32, 0);	// Create window for 8-bit source grayscale image
-	
+	int width = nmglvsGetWidth();
+	int height = nmglvsGetHeight();
+	VS_CreateImage("Source Image", 1, nmglvsGetWidth(), nmglvsGetHeight(), VS_RGB32, 0);	// Create window for 8-bit source grayscale image
+	int *currentImage = new int[width * height];
 	VS_OpRunForward();
 
 	float* vertices = new float[4000 * 12];
@@ -81,6 +82,7 @@ int main()
 		VS_Draw(VS_DRAW_ALL);
 	}
 	unsigned int result[2];
+	delete[] currentImage;
 	nmglvsExit(result);
 	return 0;
 };

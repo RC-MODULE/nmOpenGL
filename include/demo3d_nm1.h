@@ -38,12 +38,11 @@ public:
 	}
 	long long unsigned colorClearValueTwice[8];
 	long long unsigned depthClearValueTwice[8];
-	PatternPack patternPack;
+	PatternPack patternPack;	
 	
-	PatternsArray* patterns;			///< Указатель на массив всевозможных двухбитных паттернов
-	int dummy;
 	int fillInnerTable[SIZE_TABLE];
-	ImageConnector imageConnector;				///< Коннектор к кольцевому буферу изображений
+	PatternsArray* patterns;			///< Указатель на массив всевозможных двухбитных паттернов
+	
 	int* imageOffsets;
 
 	int* buffer0;						///< Указатель на временный буфер 0. Размер должен быть не меньше SIZE_BUFFER_NM1
@@ -54,10 +53,7 @@ public:
 	SimpleBuffer<int> buffers[BUFFERS_COUNT];
 	clock_t t0, t1;	
 
-	DepthBuffer depthBuffer;			///< Структура для работы с целым буфером глубины
-	ImageBufferRgb8888 colorBuffer;		///< Структура для работы с целым цветным буфером
-	ImageBufferRgb8888 smallColorBuff;	///< Структура для работы с куском буфера цвета, лежащим во внутренней памяти
-	ImageBufferRgb8888 smallDepthBuff;	///< Структура для работы с куском буфера глубины, лежащим во внутренней памяти	
+	NMGL_Framebuffer smallFramebuffer;
 	Size segmentSize;
 
 	nm32s** zBuffPoints;				///

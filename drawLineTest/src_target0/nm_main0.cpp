@@ -32,7 +32,12 @@ SECTION(".data_shared0") float lines[24 * 2] = {
 
 int main()
 {
-	nmglvsNm0Init();
+	int fromHost = halHostSync(0xC0DE0000);		// send handshake to host
+	if (fromHost != 0xC0DE0086) {					// get  handshake from host
+		return 1;
+	}
+	NMGL_Framebuffer *defaultFramebuffer = nmglvsNm0Init();
+	halHostSyncAddr(defaultFramebuffer);
 #ifndef __OPEN_GL__
 	setHeap(10);
 	float* vertices = (float*)halMalloc32(24 * 2000);

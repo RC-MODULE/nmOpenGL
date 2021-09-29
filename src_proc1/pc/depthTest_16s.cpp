@@ -1,7 +1,7 @@
 #include "nmpp.h"
 #include "demo3d_nm1.h"
 
-extern "C" {
+/*extern "C" {
 	
 
 	void depthTestCore16_N_rw(nm16s &buffZ, nm16s &trianSrcZ, nm16s &trianDstZ) {
@@ -77,4 +77,4 @@ extern "C" {
 	
 	
 	
-}
+}*/

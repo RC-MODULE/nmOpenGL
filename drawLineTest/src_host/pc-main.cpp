@@ -2,6 +2,7 @@
 #include "nmglvs_host.h"
 
 #include "demo3d_host.h"
+#include "demo3d_common.h"
 
 #include "hal.h"
 #include "hal_host.h"

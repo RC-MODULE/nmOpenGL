@@ -1,19 +1,8 @@
 #ifndef __NMGLVS_HOST_H__
 #define __NMGLVS_HOST_H__
 
-/*class HostTargetCommunication {
-private:
-	HostTargetCommunication(){}		//конструктор недоступен
-	~HostTargetCommunication() {}	//и дестркутор
-public:
-	static HostTargetCommunication &get() {
-		static HostTargetCommunication htc;
-		return htc;
-	}
-
-	int exit;
-};*/
-
+int nmglvsGetWidth();
+int nmglvsGetHeight();
 int nmglvsHostReadImage(int* dstImage);
 int nmglvsHostInit();
 int nmglvsExit(unsigned *result);

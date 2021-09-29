@@ -301,9 +301,6 @@ public:
 	LightingInfo lightingInfo;
 
 	NMGL_Context_NM0_Texture texState; 	///< textures data
-
-
-	ImageConnector imageConnector;
 	
 	void init(){
 		currentSegments = &windowInfo.segments;

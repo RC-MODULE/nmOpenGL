@@ -137,8 +137,8 @@ SECTION(".text_demo3d") int getAddrPtrnsP(DataForNmpu1* data) {
 		if (patternPack->sizes[i].width % 2) {
 			patternPack->sizes[i].width++;
 		}
-		cntxt->imagePoints[i] = (int*)cntxt->smallColorBuff.mData + patternPack->imagePositions[i];
-		cntxt->zBuffPoints[i] = (int*)cntxt->smallDepthBuff.mData + patternPack->imagePositions[i];
+		cntxt->imagePoints[i] = (int*)cntxt->smallFramebuffer.imageBuffer.data + patternPack->imagePositions[i];
+		cntxt->zBuffPoints[i] = (int*)cntxt->smallFramebuffer.depthBuffer.data + patternPack->imagePositions[i];
 	}
 	static int counter = 0;
 	if (counter == 45){

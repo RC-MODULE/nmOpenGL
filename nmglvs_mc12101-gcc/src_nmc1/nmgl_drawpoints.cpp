@@ -12,8 +12,8 @@ SECTION(".text_demo3d") void NMGL_DrawPoints(NMGL_Context_NM1 *context, NM_Comma
 	connector.init((PolygonsArray*)command->params[0].p);
 	DataForNmpu1* poly = connector.ptrTail();
 
-	connector.incTail();
-	return;
+	//connector.incTail();
+	//return;
 
 
 	DataForNmpu1* dataTmp = (DataForNmpu1*)context->buffers[0].alloc(sizeof32(DataForNmpu1));
@@ -22,9 +22,9 @@ SECTION(".text_demo3d") void NMGL_DrawPoints(NMGL_Context_NM1 *context, NM_Comma
 	getAddrPtrnsP(dataTmp);
 	context->buffers[0].free(sizeof32(DataForNmpu1));
 
-	COMMON_DRAW_TYPE* mulZ = (COMMON_DRAW_TYPE*)context->buffer0;
-	COMMON_DRAW_TYPE* mulC = (COMMON_DRAW_TYPE*)context->buffer0;
-	COMMON_DRAW_TYPE* zMaskBuffer = (COMMON_DRAW_TYPE*)context->buffer1;
+	nm32s* mulZ = (nm32s*)context->buffer0;
+	nm32s* mulC = (nm32s*)context->buffer0;
+	nm32s* zMaskBuffer = (nm32s*)context->buffer1;
 	int count = poly->count;
 
 	msdWaitDma(0);

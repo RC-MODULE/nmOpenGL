@@ -19,7 +19,7 @@ SECTION(".text_demo3d") void drawPrimitives(NMGL_Context_NM1 *context, int count
 		int localSize = MIN(countPrimitives - point, SMALL_SIZE);
 
 		//проверка активирования теста глубины
-		if (context->depthBuffer.enabled == NMGL_FALSE) {
+		if (context->smallFramebuffer.depthBuffer.enabled == NMGL_FALSE) {
 			//PROFILER_SIZE(fullSize);
 			mMulCVxN_2s32s(
 				patternPack->patterns + point,

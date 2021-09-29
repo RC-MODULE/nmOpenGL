@@ -57,8 +57,8 @@ SECTION(".text_demo3d") int getAddrPtrnsL(DataForNmpu1* data) {
 		else {
 			patternPack->origins[i].y = 0;
 		}		
-		maxX = MIN(cntxt->smallColorBuff.getWidth(), maxX);
-		int maxY = MIN(cntxt->smallColorBuff.getWidth(), data->y1[i]);		
+		maxX = MIN(cntxt->smallFramebuffer.getWidth(), maxX);
+		int maxY = MIN(cntxt->smallFramebuffer.getWidth(), data->y1[i]);
 		patternPack->sizes[i].width = maxX - minX;
 		patternPack->sizes[i].height = maxY - minY;
 		if (patternPack->sizes[i].width == 0)
@@ -66,7 +66,7 @@ SECTION(".text_demo3d") int getAddrPtrnsL(DataForNmpu1* data) {
 		if (patternPack->sizes[i].height == 0)
 			patternPack->sizes[i].height++;
 		
-		int imageOffset = minY * cntxt->smallColorBuff.getWidth() + minX;
+		int imageOffset = minY * cntxt->smallFramebuffer.getWidth() + minX;
 		if (imageOffset % 2) {
 			imageOffset--;
 			patternPack->origins[i].x--;
@@ -76,8 +76,8 @@ SECTION(".text_demo3d") int getAddrPtrnsL(DataForNmpu1* data) {
 			patternPack->sizes[i].width++;
 		}
 
-		cntxt->imagePoints[i] = nmppsAddr_32s((nm32s*)cntxt->smallColorBuff.mData, imageOffset);
-		cntxt->zBuffPoints[i] = nmppsAddr_32s((nm32s*)cntxt->smallDepthBuff.mData, imageOffset);
+		cntxt->imagePoints[i] = nmppsAddr_32s((nm32s*)cntxt->smallFramebuffer.imageBuffer.data, imageOffset);
+		cntxt->zBuffPoints[i] = nmppsAddr_32s((nm32s*)cntxt->smallFramebuffer.depthBuffer.data, imageOffset);
 
 		cntxt->valuesC[i]  = (data->color[4 * i + 0] & 0xFF);
 		cntxt->valuesC[i] |= (data->color[4 * i + 1] & 0xFF) << 8;

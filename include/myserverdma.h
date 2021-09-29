@@ -19,11 +19,11 @@ typedef int(*msdCallback)();
 struct MyDmaTask {
 	const void* src;
 	void* dst;
-	int size;
+	int size = 0;
 	int width;
 	int srcStride;
 	int dstStride;
-	int type;
+	int type = MSD_DMA;
 	msdCallback callback = 0;
 };
 
