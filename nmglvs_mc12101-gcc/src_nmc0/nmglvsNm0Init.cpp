@@ -44,7 +44,13 @@ SECTION(".data_imu7")	float nmglw1[NMGL_SIZE];
 SECTION(".data_imu7")	float nmglw2[NMGL_SIZE];
 //TEXTURING_PART
 
-SECTION(".data_imu6") int dividedMasksMemory[4][3 * NMGL_SIZE / 32];
+
+SECTION(".data_imu5")	v4nm32f vertexResult[3 * NMGL_SIZE];
+SECTION(".data_imu6")	v4nm32f colorOrNormal[3 * NMGL_SIZE];
+SECTION(".data_imu6")	v2nm32f texResult[3 * NMGL_SIZE];
+SECTION(".data_imu3")	v4nm32f vertexResult2[3 * NMGL_SIZE];
+SECTION(".data_imu2")	v4nm32f colorOrNormal2[3 * NMGL_SIZE];
+SECTION(".data_imu1")	v2nm32f texResult2[3 * NMGL_SIZE];
 
 SECTION(".data_imu6") int masksBits[36][3 * NMGL_SIZE / 32];
 
@@ -160,6 +166,12 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 		cntxt->buffer3 = (float*)nmglBuffer3;
 		cntxt->buffer4 = (float*)nmglBuffer4;
 		cntxt->buffer5 = (float*)nmglBuffer5;
+		cntxt->vertexResult = vertexResult;
+		cntxt->colorOrNormal = colorOrNormal;
+		cntxt->texResult = texResult;
+		cntxt->vertexResult2 = vertexResult2;
+		cntxt->colorOrNormal2 = colorOrNormal2;
+		cntxt->texResult2 = texResult2;
 
 		//Allocate memory for textures.
 		//Must be in EMI. 
@@ -202,7 +214,6 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 	cntxt->trianInner.x2 = nmglx2;
 	cntxt->trianInner.y2 = nmgly2;
 	cntxt->trianInner.z = nmglz_int;
-	//TEXTURING_PART
 	cntxt->trianInner.s0 = nmgls0;
 	cntxt->trianInner.t0 = nmglt0;
 	cntxt->trianInner.s1 = nmgls1;
@@ -212,7 +223,6 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 	cntxt->trianInner.w0 = nmglw0;
 	cntxt->trianInner.w1 = nmglw1;
 	cntxt->trianInner.w2 = nmglw2;
-	//TEXTURING_PART
 	cntxt->trianInner.colors = nmgllightsValues;
 	cntxt->trianInner.maxSize = NMGL_SIZE;
 	cntxt->trianInner.size = 0;
@@ -242,9 +252,6 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 	cntxt->pointInner.colors = nmgllightsValues;
 	cntxt->pointInner.maxSize = NMGL_SIZE;
 	cntxt->pointInner.size = 0;
-
-	cntxt->dividedMasks[0].init((nm1*)dividedMasksMemory[0], (nm1*)dividedMasksMemory[1]);
-	cntxt->dividedMasks[1].init((nm1*)dividedMasksMemory[2], (nm1*)dividedMasksMemory[3]);
 	
 #ifdef __GNUC__
 	halInstrCacheEnable();

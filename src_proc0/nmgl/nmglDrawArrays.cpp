@@ -12,10 +12,6 @@
 
 #include "nmprofiler.h"
 
-SECTION(".data_imu5")	v4nm32f vertexResult[3 * NMGL_SIZE];
-//SECTION(".data_imu6")	v4nm32f colorResult[3 * NMGL_SIZE];
-SECTION(".data_imu6")	v4nm32f colorOrNormal[3 * NMGL_SIZE];
-SECTION(".data_imu6")	v2nm32f texResult[3 * NMGL_SIZE];
 
 SECTION(".data_imu6")	ArrayManager<float> vertexAM;
 SECTION(".data_imu6")	ArrayManager<float> normalAM;
@@ -171,7 +167,7 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			break;
 		}
 		//умножение на dидовую матрицу (Modelview matrix)
-		mul_mat4nm32f_v4nm32f(cntxt->modelviewMatrixStack.top(), (v4nm32f*)cntxt->buffer1, vertexResult, localSize);
+		mul_mat4nm32f_v4nm32f(cntxt->modelviewMatrixStack.top(), (v4nm32f*)cntxt->buffer1, cntxt->vertexResult, localSize);
 		//texcoords
 //TEXTURING_PART
 		if (cntxt->texState.textureEnabled) {
@@ -186,7 +182,7 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 				default:
 					break;
 				}
-				nmblas_scopy(2 * localSize, cntxt->buffer1, 1, (float*)texResult, 1);
+				nmblas_scopy(2 * localSize, cntxt->buffer1, 1, (float*)cntxt->texResult, 1);
 			}
 		}
 //TEXTURING_PART
@@ -199,12 +195,12 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			else {
 				normalAM.pop(cntxt->buffer1);
 			}
-			mul_v4nm32f_mat4nm32f((v4nm32f*)cntxt->buffer1, &cntxt->normalMatrix, colorOrNormal, localSize);
+			mul_v4nm32f_mat4nm32f((v4nm32f*)cntxt->buffer1, &cntxt->normalMatrix, cntxt->colorOrNormal, localSize);
 			if (cntxt->normalizeEnabled) {
-				nmblas_scopy(4 * localSize, (float*)colorOrNormal, 1, cntxt->buffer2, 1);
-				dotV_v4nm32f(colorOrNormal, (v4nm32f*)cntxt->buffer2, (v2nm32f*)cntxt->buffer0, localSize);
+				nmblas_scopy(4 * localSize, (float*)cntxt->colorOrNormal, 1, cntxt->buffer2, 1);
+				dotV_v4nm32f(cntxt->colorOrNormal, (v4nm32f*)cntxt->buffer2, (v2nm32f*)cntxt->buffer0, localSize);
 				fastInvSqrt(cntxt->buffer0, cntxt->buffer1, 2 * localSize);
-				dotMulV_v4nm32f((v2nm32f*)cntxt->buffer1, (v4nm32f*)cntxt->buffer2, colorOrNormal, localSize);
+				dotMulV_v4nm32f((v2nm32f*)cntxt->buffer1, (v4nm32f*)cntxt->buffer2, cntxt->colorOrNormal, localSize);
 			}
 		}
 
@@ -214,34 +210,34 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 		//nmprofiler_enable();
 		if (cntxt->lightingInfo.isLighting) {
 			PROFILER_SIZE(localSize);
-			light(vertexResult, colorOrNormal, localSize);
+			light(cntxt->vertexResult, cntxt->colorOrNormal, localSize);
 		}
 		else {
 			cntxt->tmp.vec[0] = 1;
 			cntxt->tmp.vec[1] = 1;
 			cntxt->tmp.vec[2] = 1;
 			cntxt->tmp.vec[3] = 1;
-			set_v4nm32f(colorOrNormal, &cntxt->tmp, localSize);
+			set_v4nm32f(cntxt->colorOrNormal, &cntxt->tmp, localSize);
 		}
 		//nmprofiler_disable();
 		//color
 		if (cntxt->colorArray.enabled) {
-			colorAM.pop(colorOrNormal);
+			colorAM.pop(cntxt->colorOrNormal);
 			if (cntxt->colorArray.type == NMGL_UNSIGNED_BYTE) {
-				nmppsConvert_32s32f((int*)colorOrNormal, cntxt->buffer0, cntxt->colorArray.size * localSize);
-				nmppsMulC_32f(cntxt->buffer0, (float*)colorOrNormal, 1.0 / 255.0, cntxt->colorArray.size * localSize);
+				nmppsConvert_32s32f((int*)cntxt->colorOrNormal, cntxt->buffer0, cntxt->colorArray.size * localSize);
+				nmppsMulC_32f(cntxt->buffer0, (float*)cntxt->colorOrNormal, 1.0 / 255.0, cntxt->colorArray.size * localSize);
 			}
 		}
-		clamp_32f((float*)colorOrNormal, 0, 1, (float*)cntxt->buffer3, 4 * localSize);
+		clamp_32f((float*)cntxt->colorOrNormal, 0, 1, (float*)cntxt->buffer3, 4 * localSize);
 		cntxt->tmp.vec[0] = RED_COEFF;
 		cntxt->tmp.vec[1] = GREEN_COEFF;
 		cntxt->tmp.vec[2] = BLUE_COEFF;
 		cntxt->tmp.vec[3] = ALPHA_COEFF;
 
-		mulC_v4nm32f((v4nm32f*)cntxt->buffer3, &cntxt->tmp, colorOrNormal, localSize);
+		mulC_v4nm32f((v4nm32f*)cntxt->buffer3, &cntxt->tmp, cntxt->colorOrNormal, localSize);
 
 		//умножение на матрицу проекции (Projection matrix)
-		mul_mat4nm32f_v4nm32f(cntxt->projectionMatrixStack.top(), vertexResult, (v4nm32f*)vertexResult, localSize);
+		mul_mat4nm32f_v4nm32f(cntxt->projectionMatrixStack.top(), cntxt->vertexResult, (v4nm32f*)cntxt->vertexResult, localSize);
 
 		switch (mode)
 		{
@@ -250,46 +246,72 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 		case NMGL_TRIANGLE_STRIP:
 		{
 			TrianglePointers trianPointers;
-			nmblas_scopy(4 * localSize, (float*)vertexResult, 1, cntxt->buffer0, 1);
-			nmblas_scopy(4 * localSize, (float*)colorOrNormal, 1, cntxt->buffer1, 1);
-			nmblas_scopy(2 * localSize, (float*)texResult, 1, cntxt->buffer2, 1);
+			TrianglePointers trianPointers2;
 
-			//в tmp0 хранятся данные в порядке x0,y0,z0,w0,x1,y1,z1,w1,x2,y2,z2,w2 (остальные массивы неопределены)
-			//в tmp1 хранятся данные в порядке x0,y0,z0,x1,y1,z1,x2,y2,z2,w0,w1,w2 (в buffer2), s0,t0,s1,t1,s2,t2 (в buffer5)
-			trianPointers.v0.x = (float*)vertexResult + 0 * NMGL_SIZE;
-			trianPointers.v0.y = (float*)vertexResult + 1 * NMGL_SIZE;
-			trianPointers.v0.z = (float*)vertexResult + 2 * NMGL_SIZE;
-			trianPointers.v1.x = (float*)vertexResult + 3 * NMGL_SIZE;
-			trianPointers.v1.y = (float*)vertexResult + 4 * NMGL_SIZE;
-			trianPointers.v1.z = (float*)vertexResult + 5 * NMGL_SIZE;
-			trianPointers.v2.x = (float*)vertexResult + 6 * NMGL_SIZE;
-			trianPointers.v2.y = (float*)vertexResult + 7 * NMGL_SIZE;
-			trianPointers.v2.z = (float*)vertexResult + 8 * NMGL_SIZE;
-			trianPointers.v0.w = (float*)vertexResult + 9 * NMGL_SIZE;
-			trianPointers.v1.w = (float*)vertexResult + 10 * NMGL_SIZE;
-			trianPointers.v2.w = (float*)vertexResult + 11 * NMGL_SIZE;
-			trianPointers.v0.color = (colorOrNormal + 0 * NMGL_SIZE);
-			trianPointers.v1.color = (colorOrNormal + 1 * NMGL_SIZE);
-			trianPointers.v2.color = (colorOrNormal + 2 * NMGL_SIZE);
+			//triantrianPointers = vertexResult2, colorOrNormal2, texResult2
+			//triantrianPointers2 = vertexResult, colorOrNormal, texResult
+			{
+				
+				trianPointers.v0.x = (float*)cntxt->vertexResult2 + 0 * NMGL_SIZE;
+				trianPointers.v0.y = (float*)cntxt->vertexResult2 + 1 * NMGL_SIZE;
+				trianPointers.v0.z = (float*)cntxt->vertexResult2 + 2 * NMGL_SIZE;
+				trianPointers.v1.x = (float*)cntxt->vertexResult2 + 3 * NMGL_SIZE;
+				trianPointers.v1.y = (float*)cntxt->vertexResult2 + 4 * NMGL_SIZE;
+				trianPointers.v1.z = (float*)cntxt->vertexResult2 + 5 * NMGL_SIZE;
+				trianPointers.v2.x = (float*)cntxt->vertexResult2 + 6 * NMGL_SIZE;
+				trianPointers.v2.y = (float*)cntxt->vertexResult2 + 7 * NMGL_SIZE;
+				trianPointers.v2.z = (float*)cntxt->vertexResult2 + 8 * NMGL_SIZE;
+				trianPointers.v0.w = (float*)cntxt->vertexResult2 + 9 * NMGL_SIZE;
+				trianPointers.v1.w = (float*)cntxt->vertexResult2 + 10 * NMGL_SIZE;
+				trianPointers.v2.w = (float*)cntxt->vertexResult2 + 11 * NMGL_SIZE;
 
-//TEXTURING_PART
-			trianPointers.v0.s = (float*)texResult + 0 * NMGL_SIZE;
-			trianPointers.v0.t = (float*)texResult + 1 * NMGL_SIZE;
-			trianPointers.v1.s = (float*)texResult + 2 * NMGL_SIZE;
-			trianPointers.v1.t = (float*)texResult + 3 * NMGL_SIZE;
-			trianPointers.v2.s = (float*)texResult + 4 * NMGL_SIZE;
-			trianPointers.v2.t = (float*)texResult + 5 * NMGL_SIZE;
+				trianPointers.v0.color = (cntxt->colorOrNormal2 + 0 * NMGL_SIZE);
+				trianPointers.v1.color = (cntxt->colorOrNormal2 + 1 * NMGL_SIZE);
+				trianPointers.v2.color = (cntxt->colorOrNormal2 + 2 * NMGL_SIZE);
+
+				trianPointers.v0.s = (float*)cntxt->texResult2 + 0 * NMGL_SIZE;
+				trianPointers.v0.t = (float*)cntxt->texResult2 + 1 * NMGL_SIZE;
+				trianPointers.v1.s = (float*)cntxt->texResult2 + 2 * NMGL_SIZE;
+				trianPointers.v1.t = (float*)cntxt->texResult2 + 3 * NMGL_SIZE;
+				trianPointers.v2.s = (float*)cntxt->texResult2 + 4 * NMGL_SIZE;
+				trianPointers.v2.t = (float*)cntxt->texResult2 + 5 * NMGL_SIZE;
+			}
+			{
+				trianPointers2.v0.x = (float*)cntxt->vertexResult + 0 * NMGL_SIZE;
+				trianPointers2.v0.y = (float*)cntxt->vertexResult + 1 * NMGL_SIZE;
+				trianPointers2.v0.z = (float*)cntxt->vertexResult + 2 * NMGL_SIZE;
+				trianPointers2.v1.x = (float*)cntxt->vertexResult + 3 * NMGL_SIZE;
+				trianPointers2.v1.y = (float*)cntxt->vertexResult + 4 * NMGL_SIZE;
+				trianPointers2.v1.z = (float*)cntxt->vertexResult + 5 * NMGL_SIZE;
+				trianPointers2.v2.x = (float*)cntxt->vertexResult + 6 * NMGL_SIZE;
+				trianPointers2.v2.y = (float*)cntxt->vertexResult + 7 * NMGL_SIZE;
+				trianPointers2.v2.z = (float*)cntxt->vertexResult + 8 * NMGL_SIZE;
+				trianPointers2.v0.w = (float*)cntxt->vertexResult + 9 * NMGL_SIZE;
+				trianPointers2.v1.w = (float*)cntxt->vertexResult + 10 * NMGL_SIZE;
+				trianPointers2.v2.w = (float*)cntxt->vertexResult + 11 * NMGL_SIZE;
+
+				trianPointers2.v0.color = (cntxt->colorOrNormal + 0 * NMGL_SIZE);
+				trianPointers2.v1.color = (cntxt->colorOrNormal + 1 * NMGL_SIZE);
+				trianPointers2.v2.color = (cntxt->colorOrNormal + 2 * NMGL_SIZE);
+
+				trianPointers2.v0.s = (float*)cntxt->texResult + 0 * NMGL_SIZE;
+				trianPointers2.v0.t = (float*)cntxt->texResult + 1 * NMGL_SIZE;
+				trianPointers2.v1.s = (float*)cntxt->texResult + 2 * NMGL_SIZE;
+				trianPointers2.v1.t = (float*)cntxt->texResult + 3 * NMGL_SIZE;
+				trianPointers2.v2.s = (float*)cntxt->texResult + 4 * NMGL_SIZE;
+				trianPointers2.v2.t = (float*)cntxt->texResult + 5 * NMGL_SIZE;
+			}
 
 			int primCount = 0;
 			switch (mode) {
 			case NMGL_TRIANGLES:
-				primCount = repackToPrimitives_t((v4nm32f*)cntxt->buffer0, (v4nm32f*)cntxt->buffer1, (v2nm32f*)cntxt->buffer2, &trianPointers, localSize);
+				primCount = repackToPrimitives_t((v4nm32f*)cntxt->vertexResult, (v4nm32f*)cntxt->colorOrNormal, (v2nm32f*)cntxt->texResult, &trianPointers, localSize);
 				break;
 			case NMGL_TRIANGLE_FAN:
-				primCount = repackToPrimitives_tf((v4nm32f*)cntxt->buffer0, (v4nm32f*)cntxt->buffer1, (v2nm32f*)cntxt->buffer2, &trianPointers, localSize);
+				primCount = repackToPrimitives_tf((v4nm32f*)cntxt->vertexResult, (v4nm32f*)cntxt->colorOrNormal, (v2nm32f*)cntxt->texResult, &trianPointers, localSize);
 				break;
 			case NMGL_TRIANGLE_STRIP:
-				primCount = repackToPrimitives_ts((v4nm32f*)cntxt->buffer0, (v4nm32f*)cntxt->buffer1, (v2nm32f*)cntxt->buffer2, &trianPointers, localSize);
+				primCount = repackToPrimitives_ts((v4nm32f*)cntxt->vertexResult, (v4nm32f*)cntxt->colorOrNormal, (v2nm32f*)cntxt->texResult, &trianPointers, localSize);
 				break;
 			}
 			//------------clipping-------------------
@@ -307,60 +329,32 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			}
 
 #ifdef TRIANGULATION_ENABLED
-			TrianglePointers tmp;
-			//переинициализация tmp0
-			tmp.v0.x = cntxt->buffer2 +  0 * NMGL_SIZE;
-			tmp.v0.y = cntxt->buffer2 +  1 * NMGL_SIZE;
-			tmp.v0.z = cntxt->buffer2 +  2 * NMGL_SIZE;
-			tmp.v0.w = cntxt->buffer2 +  3 * NMGL_SIZE;
-			tmp.v1.x = cntxt->buffer2 +  4 * NMGL_SIZE;
-			tmp.v1.y = cntxt->buffer2 +  5 * NMGL_SIZE;
-			tmp.v1.z = cntxt->buffer2 +  6 * NMGL_SIZE;
-			tmp.v1.w = cntxt->buffer2 +  7 * NMGL_SIZE;
-			tmp.v2.x = cntxt->buffer2 +  8 * NMGL_SIZE;
-			tmp.v2.y = cntxt->buffer2 +  9 * NMGL_SIZE;
-			tmp.v2.z = cntxt->buffer2 + 10 * NMGL_SIZE;
-			tmp.v2.w = cntxt->buffer2 + 11 * NMGL_SIZE;
-
-			tmp.v0.color = (v4nm32f*)(cntxt->buffer3 + 0 * NMGL_SIZE);
-			tmp.v1.color = (v4nm32f*)(cntxt->buffer3 + 4 * NMGL_SIZE);
-			tmp.v2.color = (v4nm32f*)(cntxt->buffer3 + 8 * NMGL_SIZE);
-
-//TEXTURING_PART
-			tmp.v0.s = cntxt->buffer5 + 6 * NMGL_SIZE;
-			tmp.v0.t = cntxt->buffer5 + 7 * NMGL_SIZE;
-			tmp.v1.s = cntxt->buffer5 + 8 * NMGL_SIZE;
-			tmp.v1.t = cntxt->buffer5 + 9 * NMGL_SIZE;
-			tmp.v2.s = cntxt->buffer5 + 10 * NMGL_SIZE;
-			tmp.v2.t = cntxt->buffer5 + 11 * NMGL_SIZE;
-//TEXTURING_PART
-
 
 			int srcThreated = 0;
 			while (srcThreated < primCount) {
 				static int counter = 0; 
 				PROFILER_SIZE(primCount);
-				int currentCount = splitTriangles(&trianPointers, primCount, WIDTH_PTRN, HEIGHT_PTRN, NMGL_SIZE, &tmp, &srcThreated);
+				int currentCount = splitTriangles(&trianPointers, primCount, WIDTH_PTRN, HEIGHT_PTRN, NMGL_SIZE, &trianPointers2, &srcThreated);
 				if (currentCount % 2) {
-					tmp.v0.x[currentCount] = tmp.v0.x[currentCount - 1];
-					tmp.v0.y[currentCount] = tmp.v0.y[currentCount - 1];
-					tmp.v0.z[currentCount] = tmp.v0.z[currentCount - 1];
-					tmp.v0.w[currentCount] = tmp.v0.w[currentCount - 1];
-					tmp.v0.color[currentCount] = tmp.v0.color[currentCount - 1];
-					tmp.v1.x[currentCount] = tmp.v1.x[currentCount - 1];
-					tmp.v1.y[currentCount] = tmp.v1.y[currentCount - 1];
-					tmp.v1.z[currentCount] = tmp.v1.z[currentCount - 1];
-					tmp.v1.w[currentCount] = tmp.v1.w[currentCount - 1];
-					tmp.v1.color[currentCount] = tmp.v1.color[currentCount - 1];
-					tmp.v2.x[currentCount] = tmp.v2.x[currentCount - 1];
-					tmp.v2.y[currentCount] = tmp.v2.y[currentCount - 1];
-					tmp.v2.z[currentCount] = tmp.v2.z[currentCount - 1];
-					tmp.v2.w[currentCount] = tmp.v2.w[currentCount - 1];
-					tmp.v2.color[currentCount] = tmp.v2.color[currentCount - 1];
+					trianPointers2.v0.x[currentCount] = trianPointers2.v0.x[currentCount - 1];
+					trianPointers2.v0.y[currentCount] = trianPointers2.v0.y[currentCount - 1];
+					trianPointers2.v0.z[currentCount] = trianPointers2.v0.z[currentCount - 1];
+					trianPointers2.v0.w[currentCount] = trianPointers2.v0.w[currentCount - 1];
+					trianPointers2.v0.color[currentCount] = trianPointers2.v0.color[currentCount - 1];
+					trianPointers2.v1.x[currentCount] = trianPointers2.v1.x[currentCount - 1];
+					trianPointers2.v1.y[currentCount] = trianPointers2.v1.y[currentCount - 1];
+					trianPointers2.v1.z[currentCount] = trianPointers2.v1.z[currentCount - 1];
+					trianPointers2.v1.w[currentCount] = trianPointers2.v1.w[currentCount - 1];
+					trianPointers2.v1.color[currentCount] = trianPointers2.v1.color[currentCount - 1];
+					trianPointers2.v2.x[currentCount] = trianPointers2.v2.x[currentCount - 1];
+					trianPointers2.v2.y[currentCount] = trianPointers2.v2.y[currentCount - 1];
+					trianPointers2.v2.z[currentCount] = trianPointers2.v2.z[currentCount - 1];
+					trianPointers2.v2.w[currentCount] = trianPointers2.v2.w[currentCount - 1];
+					trianPointers2.v2.color[currentCount] = trianPointers2.v2.color[currentCount - 1];
 					currentCount++;
 				}
 
-				pushToTriangles(tmp, cntxt->trianInner, currentCount);
+				pushToTriangles(trianPointers2, cntxt->trianInner, currentCount);
 				
 				findMinMax3(cntxt->trianInner.x0, cntxt->trianInner.x1, cntxt->trianInner.x2,
 					cntxt->buffer0, cntxt->buffer1,
@@ -429,13 +423,13 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 //TEXTURING_PART
 			switch (mode) {
 			case NMGL_LINES:
-				primCount = repackToPrimitives_l(vertexResult, colorOrNormal, texResult, &linePointers, localSize);
+				primCount = repackToPrimitives_l(cntxt->vertexResult, cntxt->colorOrNormal, cntxt->texResult, &linePointers, localSize);
 				break;
 			case NMGL_LINE_LOOP:
-				primCount = repackToPrimitives_ll(vertexResult, colorOrNormal, texResult, &linePointers, localSize);
+				primCount = repackToPrimitives_ll(cntxt->vertexResult, cntxt->colorOrNormal, cntxt->texResult, &linePointers, localSize);
 				break;
 			case NMGL_LINE_STRIP:
-				primCount = repackToPrimitives_ls(vertexResult, colorOrNormal, texResult, &linePointers, localSize);
+				primCount = repackToPrimitives_ls(cntxt->vertexResult, cntxt->colorOrNormal, cntxt->texResult, &linePointers, localSize);
 				break;
 			}
 			
@@ -479,11 +473,11 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			pointers.s = cntxt->buffer5 + 0 * NMGL_SIZE;
 			pointers.t = cntxt->buffer5 + 1 * NMGL_SIZE;
 
-			split_v4nm32f(vertexResult, 1, pointers.x, pointers.y, pointers.z, pointers.w, localSize);
+			split_v4nm32f(cntxt->vertexResult, 1, pointers.x, pointers.y, pointers.z, pointers.w, localSize);
 			perpectiveDivView(pointers, cntxt->windowInfo, cntxt->buffer0, localSize);
 
 			nmppsConvert_32f32s_rounding(cntxt->buffer0, cntxt->pointInner.z, 0, localSize);
-			nmppsConvert_32f32s_rounding((float*)colorOrNormal, (int*)cntxt->pointInner.colors, 0, 4 * localSize);
+			nmppsConvert_32f32s_rounding((float*)cntxt->colorOrNormal, (int*)cntxt->pointInner.colors, 0, 4 * localSize);
 
 			nmppsSubC_32f(cntxt->pointInner.x, cntxt->buffer0, cntxt->pointRadius, localSize);
 			nmppsSubC_32f(cntxt->pointInner.y, cntxt->buffer1, cntxt->pointRadius, localSize);

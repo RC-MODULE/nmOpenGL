@@ -221,7 +221,6 @@ struct MatrixStack {
 };
 
 
-
 /*!
  *  \brief Контекст nmOpengl на ядре NMPU0
  *  \author Жиленков Иван
@@ -250,7 +249,13 @@ public:
 
 	NMGL_SynchroMasterRingBuffer synchro;
 	BitMask segmentMasks[36];
-	BitDividedMask dividedMasks[2];	
+	v4nm32f *vertexResult;
+	v4nm32f *colorOrNormal;
+	v2nm32f *texResult;
+	v4nm32f *vertexResult2;
+	v4nm32f *colorOrNormal2;
+	v2nm32f *texResult2;
+
 	ImageSegments* currentSegments;
 	PolygonsConnector* triangleConnectors;
 	PolygonsConnector* lineConnectors;

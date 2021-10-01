@@ -37,8 +37,8 @@ int cullFaceSortTriangles(TrianglePointers &triangles, int count){
 	float* temp0 = cntxt->buffer2;
 	int* temp0i = (int*)cntxt->buffer2;
 	float* temp1 = cntxt->buffer3;
-	int* evenMaskVec = cntxt->dividedMasks[0].even.bits;
-	int* oddMaskVec= cntxt->dividedMasks[0].odd.bits;
+	int* evenMaskVec = (int*)cntxt->buffer2 + NMGL_SIZE;
+	int* oddMaskVec= (int*)cntxt->buffer3 + NMGL_SIZE;
 
 	nmppsMul_Mul_Sub_32f(triangles.v0.x, triangles.v1.y, triangles.v1.x, triangles.v0.y, walkDirection, count);
 	nmppsMul_Mul_Sub_32f(triangles.v1.x, triangles.v2.y, triangles.v2.x, triangles.v1.y, temp1, count);
