@@ -26,7 +26,6 @@ namespace tex_nm1 {
         nm32s** pROI,
         Vector2* ptrnPoints,
         Size* ptrnSizes,
-        int* valueC, 
         nm32s* pDstTriangle, 
         int count)
     {
@@ -72,36 +71,21 @@ namespace tex_nm1 {
         float x2 = triangles->x2[cnt];
         float y2 = triangles->y2[cnt];
 
-        float a0 = ((valueC[cnt] >> 24) & 0x000000ff)/255.0;
-        float r0 = ((valueC[cnt] >> 16) & 0x000000ff)/255.0;
-        float g0 = ((valueC[cnt] >> 8) & 0x000000ff)/255.0;
-        float b0 = ((valueC[cnt]) & 0x000000ff)/255.0;
+        float scaleCoeff = 1.0/255.0;
+        float a0 = ((triangles->c0[cnt] >> 24) & 0x000000ff) * scaleCoeff;
+        float r0 = ((triangles->c0[cnt] >> 16) & 0x000000ff) * scaleCoeff;
+        float g0 = ((triangles->c0[cnt] >> 8) & 0x000000ff) * scaleCoeff;
+        float b0 = ((triangles->c0[cnt]) & 0x000000ff) * scaleCoeff;
 
-        float a1 = a0;
-        float r1 = r0;
-        float g1 = g0;
-        float b1 = b0;
+        float a1 = ((triangles->c1[cnt] >> 24) & 0x000000ff) * scaleCoeff;
+        float r1 = ((triangles->c1[cnt] >> 16) & 0x000000ff) * scaleCoeff;
+        float g1 = ((triangles->c1[cnt] >> 8) & 0x000000ff) * scaleCoeff;
+        float b1 = ((triangles->c1[cnt]) & 0x000000ff) * scaleCoeff;
 
-        float a2 = a0; 
-        float r2 = r0;
-        float g2 = g0;
-        float b2 = b0;
-
-        ////for test
-        //float a0 = 1.0;
-        //float r0 = 0.0;
-        //float g0 = 1.0;
-        //float b0 = 0.0;
-
-        //float a1 = 1.0;
-        //float r1 = 1.0;
-        //float g1 = 0.0;
-        //float b1 = 0.0;
-
-        //float a2 = 1.0;
-        //float r2 = 0.0;
-        //float g2 = 0.0;
-        //float b2 = 1.0;
+        float a2 = ((triangles->c2[cnt] >> 24) & 0x000000ff) * scaleCoeff;
+        float r2 = ((triangles->c2[cnt] >> 16) & 0x000000ff) * scaleCoeff;
+        float g2 = ((triangles->c2[cnt] >> 8) & 0x000000ff) * scaleCoeff;
+        float b2 = ((triangles->c2[cnt]) & 0x000000ff) * scaleCoeff;
 
         float z0 = triangles->z0[cnt];
         float z1 = triangles->z1[cnt];

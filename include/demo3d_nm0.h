@@ -1563,6 +1563,6 @@ void printBitMask(BitMask *bitmask, int nSeg, int elementAmount);
 void printTrianglePointers(TrianglePointers* data, int elementsAmount);
 
 namespace tex_nm0 {
-void triangleShadeSmooth(TrianglesInfo* triangles, int* valueC, nm32s* pDstTriangle, int count);
+void triangleShadeSmooth(TrianglesInfo* triangles, nm32s* pDstTriangle, int count);
 }
 #endif

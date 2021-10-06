@@ -291,20 +291,9 @@ int main ()
     cntxt->texState.init();
     
     //Массивы растеризованных и закрашенных треугольников
-    nm32s pSrcTriangle[WIDTH_PTRN * HEIGHT_PTRN * 1];
     nm32s pDstTriangle [WIDTH_PTRN * HEIGHT_PTRN * 1]; 
     nm32s pDstTriangle_32x32 [WIDTH_PTRN * HEIGHT_PTRN * 1]; 
     
-    //Массив значений цветов для треугольников, один цвет на треугольник
-    nm32s valueC [TRIANGLE_AMOUNT] = {0xff0000ff, 0xffffff00, 0xff00ffff, 0xff0000ff, 0xff00ff00}; //0xARGB
-	
-    //Массив значений цветов для треугольников, один цвет на треугольник
-    v4nm32s colors [1];
-	((nm32s*)colors)[0] = (nm32s)255;
-	((nm32s*)colors)[1] = (nm32s)255;
-	((nm32s*)colors)[2] = (nm32s)255;
-	((nm32s*)colors)[3] = (nm32s)255;
-	
   //Информация о размещении видимой части треугольников в сегменте
   Vector2 ptrnInnPoints [TRIANGLE_AMOUNT];
   Size ptrnSizes [TRIANGLE_AMOUNT];
@@ -356,6 +345,10 @@ int main ()
   float x2[TRIANGLE_AMOUNT] = {387.0f, 391.0f, 399.0f, 415.0f, 410.0f};
   float y2[TRIANGLE_AMOUNT] = {381.0f, 377.0f, 369.0f, 353.0f, 379.0f};
 
+  int c0[TRIANGLE_AMOUNT] = {0xffff0000, 0xffff0000, 0xffff0000, 0xffff0000, 0xffff0000};//Red
+  int c1[TRIANGLE_AMOUNT] = {0xff00ff00, 0xff00ff00, 0xff00ff00, 0xff00ff00, 0xff00ff00};//Green
+  int c2[TRIANGLE_AMOUNT] = {0xff0000ff, 0xff0000ff, 0xff0000ff, 0xff0000ff, 0xff0000ff};//Blue
+
   cntxt->texState.segX0 = 384;
   cntxt->texState.segY0 = 256;
   cntxt->texState.segWidth = 128;
@@ -391,23 +384,19 @@ int main ()
     triangles.z1 = &z[i];
     triangles.z2 = &z[i];
 
-    triangles.colors = colors;
+    triangles.c0 = &c0[i];
+    triangles.c1 = &c1[i];
+    triangles.c2 = &c2[i];
 
     Vector2* curPtrnInnPoint = &ptrnInnPoints[i];
     Size* curPtrnSize = &ptrnSizes[i];
     nm32s** curPROI = &PROI[i];
     Pattern* curPattern = &patterns[i];
-    nm32s* curValueC = &valueC[i];
-
-    //color triangle
-    //mMulCVxN_2s_RGB8888(curPattern, curWindow, (v4nm8s*)valueC, pSrcTriangle, 1);
-    mMulCVxN_2s_RGB8888(curPattern, curPtrnInnPoint, curPtrnSize, curValueC, pSrcTriangle, 1);
-    //mMulCVxN_2s_RGB8888(curPattern, curWindow, (v4nm8s*)valueC, pDstTriangle, 1);
 
     //shade triangle
     clock_t start_time = 0;
     start_time = clock();
-    triangleShadeSmooth(curPattern, &triangles, curPROI, curPtrnInnPoint, curPtrnSize, curValueC, pDstTriangle, 1);
+    triangleShadeSmooth(curPattern, &triangles, curPROI, curPtrnInnPoint, curPtrnSize, pDstTriangle, 1);
     clock_t end_time = 0;
     end_time = clock();
 

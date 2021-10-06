@@ -140,12 +140,6 @@ int main ()
 	nm32s pSrcTriangle[WIDTH_PTRN * HEIGHT_PTRN * 1];
 	nm32s pDstTriangle [WIDTH_PTRN * HEIGHT_PTRN * 1]; 
     
-    //Массив значений цветов для треугольников, один цвет на треугольник
-    v4nm32s colors [1];
-	((nm32s*)colors)[0] = (nm32s)255;
-	((nm32s*)colors)[1] = (nm32s)255;
-	((nm32s*)colors)[2] = (nm32s)255;
-	((nm32s*)colors)[3] = (nm32s)255;
 	
 	//Информация о размещении видимой части треугольников в сегменте
 	Size ptrnSizes[1];
@@ -169,7 +163,9 @@ int main ()
     float x2[TRIANGLE_AMOUNT] = {3.0f, 7.0f, 15.0f, 31.0f, 26.0f};
     float y2[TRIANGLE_AMOUNT] = {0.0f, 0.0f,  0.0f,  0.0f, 32.0f - 5.0f};
    
-    nm32s valueC [TRIANGLE_AMOUNT] = {0xff0000ff, 0xffffff00, 0xff00ffff, 0xff0000ff, 0xff00ff00}; //0xARGB
+    int c0[TRIANGLE_AMOUNT] = {0xffff0000, 0xffff0000, 0xffff0000, 0xffff0000, 0xffff0000};//Red
+    int c1[TRIANGLE_AMOUNT] = {0xff00ff00, 0xff00ff00, 0xff00ff00, 0xff00ff00, 0xff00ff00};//Green
+    int c2[TRIANGLE_AMOUNT] = {0xff0000ff, 0xff0000ff, 0xff0000ff, 0xff0000ff, 0xff0000ff};//Blue
 
     float z[TRIANGLE_AMOUNT] = {1.0f, 1.0f, 1.0f, 1.0f, 1.0f}; //minus (z in camera space)
     unsigned int pixelCount[TRIANGLE_AMOUNT] = {8, 32, 128, 512, 298}; //minus (z in camera space)
@@ -190,11 +186,13 @@ int main ()
       triangles.z1 = &z[i];
       triangles.z2 = &z[i];
 
-      triangles.colors = colors;
+      triangles.c0 = &c0[i];
+      triangles.c1 = &c1[i];
+      triangles.c2 = &c2[i];
 
       clock_t start_time = 0;
       start_time = clock();
-      triangleShadeSmooth(&triangles, valueC, pDstTriangle, 1);
+      triangleShadeSmooth(&triangles, pDstTriangle, 1);
       clock_t end_time = 0;
       end_time = clock();
 

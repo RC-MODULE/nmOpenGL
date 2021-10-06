@@ -486,7 +486,7 @@ void textureTriangle(TrianglesInfo* triangles, nm32s* pDstTriangle, int count)
         float z1 = triangles->z1[cnt];
         float z2 = triangles->z2[cnt];
 		
-        v4nm32s colors = triangles->colors[cnt];
+        v4nm32s colors = triangles->colors[cnt];//TODO: colors should be pointer to colored  fragments of incoming primitive. At now all pixels of triangle has one color, so Cf always has the same value.
         
 		winY0 = minf(y0, minf(y1, y2)); //TODO: here should be minx of triangle 
 		winX0 = minf(x0, minf(x1, x2)); //TODO: here should be miny of triangle
@@ -893,6 +893,8 @@ void textureTriangle(TrianglesInfo* triangles, nm32s* pDstTriangle, int count)
 			
 			Vec3f cf; //primary color components of the incoming fragment (primary color of PRIMITIVE pixel OR fragment color from previous texture unit)
 					  //Not framebuffer color.Framebuffer color can be used at another stage called Blending (glBlendFunc...)
+            //TODO: colors should be pointer to colored  fragments of incoming primitive. At now all pixels of triangle has one color, so Cf always has the same value.
+
 			float af; 
 			cf.x = (float)(colors.vec[0] & 0x00000000ffffffff)/255.0;//r;
 			cf.y = (float)((colors.vec[0] >> 32) & 0x00000000ffffffff)/255.0;//g;

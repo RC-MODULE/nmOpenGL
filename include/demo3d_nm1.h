@@ -417,7 +417,6 @@ void triangleShadeSmooth(Pattern* patterns,
     nm32s** pROI,
     Vector2* ptrnPoints,
     Size* ptrnSizes,
-    int* valueC, 
     nm32s* pDstTriangle, 
     int count);
 }
