@@ -891,10 +891,10 @@ void textureTriangle(TrianglesInfo* triangles, nm32s* pDstTriangle, int count)
 				vecas[x] = as;
 			}
 			
+      //TODO:R,G,B,A order is used in colors. May be it will be necessary to use B,G,R,A order 
 			Vec3f cf; //primary color components of the incoming fragment (primary color of PRIMITIVE pixel OR fragment color from previous texture unit)
 					  //Not framebuffer color.Framebuffer color can be used at another stage called Blending (glBlendFunc...)
             //TODO: colors should be pointer to colored  fragments of incoming primitive. At now all pixels of triangle has one color, so Cf always has the same value.
-
 			float af; 
 			cf.x = (float)(colors.vec[0] & 0x00000000ffffffff)/255.0;//r;
 			cf.y = (float)((colors.vec[0] >> 32) & 0x00000000ffffffff)/255.0;//g;

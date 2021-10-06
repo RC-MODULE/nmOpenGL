@@ -163,9 +163,37 @@ int main ()
     float x2[TRIANGLE_AMOUNT] = {3.0f, 7.0f, 15.0f, 31.0f, 26.0f};
     float y2[TRIANGLE_AMOUNT] = {0.0f, 0.0f,  0.0f,  0.0f, 32.0f - 5.0f};
    
-    int c0[TRIANGLE_AMOUNT] = {0xffff0000, 0xffff0000, 0xffff0000, 0xffff0000, 0xffff0000};//Red
-    int c1[TRIANGLE_AMOUNT] = {0xff00ff00, 0xff00ff00, 0xff00ff00, 0xff00ff00, 0xff00ff00};//Green
-    int c2[TRIANGLE_AMOUNT] = {0xff0000ff, 0xff0000ff, 0xff0000ff, 0xff0000ff, 0xff0000ff};//Blue
+    v4nm32s c0[TRIANGLE_AMOUNT] = {0};
+    v4nm32s c1[TRIANGLE_AMOUNT] = {0};
+    v4nm32s c2[TRIANGLE_AMOUNT] = {0};
+
+    //TODO:R,G,B,A order is used in c0,c1,c2. May be it will be necessary to use B,G,R,A order 
+    nm32s* curC = (nm32s*)c0;
+    for (int i = 0; i < TRIANGLE_AMOUNT; i++) {
+        curC[0] = (nm32s)255;//r
+        curC[1] = (nm32s)0;//g
+        curC[2] = (nm32s)0;//b
+        curC[3] = (nm32s)255;//a
+        curC += 4;
+    }
+    
+    curC = (nm32s*)c1;
+    for (int i = 0; i < TRIANGLE_AMOUNT; i++) {
+        curC[0] = (nm32s)0;//r
+        curC[1] = (nm32s)255;//g
+        curC[2] = (nm32s)0;//b
+        curC[3] = (nm32s)255;//a
+        curC += 4;
+    }
+
+    curC = (nm32s*)c2;
+    for (int i = 0; i < TRIANGLE_AMOUNT; i++) {
+        curC[0] = (nm32s)0;//r
+        curC[1] = (nm32s)0;//g
+        curC[2] = (nm32s)255;//b
+        curC[3] = (nm32s)255;//a
+        curC += 4;
+    }
 
     float z[TRIANGLE_AMOUNT] = {1.0f, 1.0f, 1.0f, 1.0f, 1.0f}; //minus (z in camera space)
     unsigned int pixelCount[TRIANGLE_AMOUNT] = {8, 32, 128, 512, 298}; //minus (z in camera space)

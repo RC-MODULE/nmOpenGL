@@ -86,21 +86,22 @@ namespace tex_nm0 {
         float x2 = triangles->x2[cnt];
         float y2 = triangles->y2[cnt];
 
+        //TODO:R,G,B,A order is used in c0,c1,c2. May be it will be necessary to use B,G,R,A order 
         float scaleCoeff = 1.0/255.0;
-        float a0 = ((triangles->c0[cnt] >> 24) & 0x000000ff) * scaleCoeff;
-        float r0 = ((triangles->c0[cnt] >> 16) & 0x000000ff) * scaleCoeff;
-        float g0 = ((triangles->c0[cnt] >> 8) & 0x000000ff) * scaleCoeff;
-        float b0 = ((triangles->c0[cnt]) & 0x000000ff) * scaleCoeff;
+        float r0 = (float)( triangles->c0[cnt].vec[0]        & 0x00000000ffffffff) * scaleCoeff;
+        float g0 = (float)((triangles->c0[cnt].vec[0] >> 32) & 0x00000000ffffffff) * scaleCoeff;
+        float b0 = (float)( triangles->c0[cnt].vec[1]        & 0x00000000ffffffff) * scaleCoeff;
+        float a0 = (float)((triangles->c0[cnt].vec[1] >> 32) & 0x00000000ffffffff) * scaleCoeff;
 
-        float a1 = ((triangles->c1[cnt] >> 24) & 0x000000ff) * scaleCoeff;
-        float r1 = ((triangles->c1[cnt] >> 16) & 0x000000ff) * scaleCoeff;
-        float g1 = ((triangles->c1[cnt] >> 8) & 0x000000ff) * scaleCoeff;
-        float b1 = ((triangles->c1[cnt]) & 0x000000ff) * scaleCoeff;
+        float r1 = (float)( triangles->c1[cnt].vec[0]        & 0x00000000ffffffff) * scaleCoeff;
+        float g1 = (float)((triangles->c1[cnt].vec[0] >> 32) & 0x00000000ffffffff) * scaleCoeff;
+        float b1 = (float)( triangles->c1[cnt].vec[1]        & 0x00000000ffffffff) * scaleCoeff;
+        float a1 = (float)((triangles->c1[cnt].vec[1] >> 32) & 0x00000000ffffffff) * scaleCoeff;
 
-        float a2 = ((triangles->c2[cnt] >> 24) & 0x000000ff) * scaleCoeff;
-        float r2 = ((triangles->c2[cnt] >> 16) & 0x000000ff) * scaleCoeff;
-        float g2 = ((triangles->c2[cnt] >> 8) & 0x000000ff) * scaleCoeff;
-        float b2 = ((triangles->c2[cnt]) & 0x000000ff) * scaleCoeff;
+        float r2 = (float)( triangles->c2[cnt].vec[0]        & 0x00000000ffffffff) * scaleCoeff; 
+        float g2 = (float)((triangles->c2[cnt].vec[0] >> 32) & 0x00000000ffffffff) * scaleCoeff; 
+        float b2 = (float)( triangles->c2[cnt].vec[1]        & 0x00000000ffffffff) * scaleCoeff; 
+        float a2 = (float)((triangles->c2[cnt].vec[1] >> 32) & 0x00000000ffffffff) * scaleCoeff; 
 
         float z0 = triangles->z0[cnt];
         float z1 = triangles->z1[cnt];
