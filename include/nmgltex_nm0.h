@@ -96,7 +96,7 @@ struct NMGL_Context_NM0_Texture {
 	
 };
 
-namespace tex_nm0 {
+namespace nm0_version {
 /**
 \defgroup textureFunctions Функции текстурирования
 \brief Функции текстурирования для nmOpenGL.
@@ -158,7 +158,7 @@ void edgeFunction(float x0, float y0, float x1, float y1, float x2, float y2, fl
 \retval void
 */
 void textureTriangle(TrianglesInfo* triangles, nm32s* pDstTriangle, int count);
-} //endof namespace tex_nm0
+} //endof namespace nm0_version
 
 extern "C"{
 void abs_32f(float* src, float* dst, int size);

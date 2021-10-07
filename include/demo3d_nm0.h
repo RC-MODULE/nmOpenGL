@@ -1562,7 +1562,7 @@ void printTriangles(Triangles* data, int elementsAmount);
 void printBitMask(BitMask *bitmask, int nSeg, int elementAmount);
 void printTrianglePointers(TrianglePointers* data, int elementsAmount);
 
-namespace tex_nm0 {
+namespace nm0_version {
 void triangleShadeSmooth(TrianglesInfo* triangles, nm32s* pDstTriangle, int count);
 }
 #endif

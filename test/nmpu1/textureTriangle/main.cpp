@@ -23,7 +23,7 @@
 #define SECTION(sec)
 #endif // __GNUC__
 
-using namespace tex_nm1;
+using namespace nm1_version;
 
 #define TRIANGLE_AMOUNT 5 
 

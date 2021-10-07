@@ -5,7 +5,7 @@
 int totalSum(nm32s* pVec, int size);
 
 //TEXTURING_PART
-using namespace tex_nm1; 
+using namespace nm1_version; 
 SECTION(".data_imu0") TrianglesInfo triangles;
 //TEXTURING_PART
 

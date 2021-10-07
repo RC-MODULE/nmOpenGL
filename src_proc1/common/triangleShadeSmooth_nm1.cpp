@@ -11,7 +11,7 @@
 //#define USE_BARYCENTRIC
 #define PERSPECTIVE_CORRECT
 
-namespace tex_nm1 {
+namespace nm1_version {
 
   typedef struct Vec4f {
     float x;
@@ -314,4 +314,4 @@ namespace tex_nm1 {
     }
 
 
-} //end of namespace tex_nm1 
+} //end of namespace nm1_version 

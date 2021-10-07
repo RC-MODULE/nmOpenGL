@@ -13,7 +13,7 @@
 //#define USE_BARYCENTRIC
 #define PERSPECTIVE_CORRECT
 
-namespace tex_nm1 {
+namespace nm1_version {
 // typedef enum { NEAREST, LINEAR, NEAREST_MIPMAP_NEAREST, NEAREST_MIPMAP_LINEAR, LINEAR_MIPMAP_NEAREST, LINEAR_MIPMAP_LINEAR } filter_mode_t;
 // typedef enum { REPEAT, CLAMP_TO_EDGE } wrap_mode_t;
 typedef enum { MINIFICATION, MAGNIFICATION } lod_t;
@@ -1107,4 +1107,4 @@ void edgeFunction(float x0, float y0, float x1, float y1, float x2, float y2, fl
 }
 //TEXTURING_PART
 
-} //end of namespace tex_nm1 
+} //end of namespace nm1_version 

@@ -93,7 +93,7 @@ struct NMGL_Context_NM1_Texture {
 };
 
 
-namespace tex_nm1 {
+namespace nm1_version {
 /**
 \defgroup textureFunctions Функции текстурирования
 \brief Функции текстурирования для nmOpenGL.
@@ -176,5 +176,5 @@ void textureTriangle(Pattern* patterns,
 
 
 //! \}
-} //end of namespace tex_nm1
+} //end of namespace nm1_version
 #endif

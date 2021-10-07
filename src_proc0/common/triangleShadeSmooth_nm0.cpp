@@ -13,7 +13,7 @@
 
 #define PERSPECTIVE_CORRECT
 
-namespace tex_nm0 {
+namespace nm0_version {
 
   typedef struct Vec4f {
     float x;
@@ -275,4 +275,4 @@ namespace tex_nm0 {
       *res = (x2 - x0) * (y1 - y0) - (y2 - y0) * (x1 - x0);
     }
   
-} //end of namespace nm0
+} //end of namespace nm0_version

@@ -410,7 +410,7 @@ void getPatternsPackT(DataForNmpu1* data, PatternsArray* patternsArray, Size* im
  */
 void drawPrimitives(NMGL_Context_NM1 *context, int countPrimitives);
 
-namespace tex_nm1 {
+namespace nm1_version {
 
 void triangleShadeSmooth(Pattern* patterns, 
     TrianglesInfo* triangles,
