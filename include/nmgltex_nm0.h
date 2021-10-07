@@ -3,6 +3,16 @@
 
 #include "demo3d_common.h"
 #include "nmgltex_common.h"
+#include "hal.h"
+#include "hal_target.h"
+
+//extern NMGLubyte* init_mem_palettes();
+//extern unsigned int* get_palette_width_p(NMGLint name);
+
+extern NMGLubyte* palettes_p; // texture palette memory
+extern unsigned int* palettes_widths_p;
+
+
 struct NMGL_Context_NM0_Texture {
 	
 	/*
@@ -18,6 +28,14 @@ struct NMGL_Context_NM0_Texture {
 	* Массив текстурных объектов.
 	*/
 	TexObject texObjects [NMGL_MAX_TEX_OBJECTS];
+	
+	/**
+	* Массив длин палитр для каждого текстурного объекта
+	*/
+
+	//unsigned int paletts_widths[(NMGL_MAX_TEX_OBJECTS+1)];
+	unsigned int* paletts_widths_pointers[(NMGL_MAX_TEX_OBJECTS+1)];
+
 /**
 	* Определяет имена для текстурных объектов, которые можно использовать.
 	*	Имена генерируются путём инкрементации данной переменной на 1 для каждого имени
@@ -69,10 +87,21 @@ struct NMGL_Context_NM0_Texture {
 	* текстурирование активировано.
 	*/
 	unsigned int textureEnabled;
+
+	/**
+	* Flag
+	*/
+	NMGLboolean using_shared_palette;
 	
+	//NMGLubyte * palettes_pointer;
+	NMGLubyte * palette_pointers[(NMGL_MAX_TEX_OBJECTS+1)];//0-shared
+
+
 	void init(){
 	
 		//firstFreeTexByte=NULL;
+		//palettes_pointer = init_mem_palettes();
+		using_shared_palette = NMGL_FALSE;
 		activeTexUnit = NMGL_TEXTURE0;
 		activeTexUnitIndex = 0;
 		clientActiveTexUnit = NMGL_TEXTURE0;
@@ -86,6 +115,35 @@ struct NMGL_Context_NM0_Texture {
 			texcoordArray[i].type = NMGL_FLOAT;
 			texcoordArray[i].enabled = NMGL_FALSE;
 		}
+/*
+		for (int i = 0; i < NMGL_MAX_TEX_OBJECTS+1; i++)
+		{
+			paletts_widths[i]=1;
+			if(i == 0)
+			{
+				palette_pointers[i]=init_mem_palettes();
+			}
+			else{
+				palette_pointers[i]=(NMGLubyte*)palette_pointers[i-1]+NMGL_MAX_PALETTE_WIDTH*RGBA_TEXEL_SIZE_UBYTE;
+			}
+			for(int j=0;j<3;j++)
+			{
+				*((NMGLubyte*)palette_pointers[i]+j)=0x1;
+			}
+		}
+*/
+//INIT_PALETTE_MEMORY_POINTERS();
+palette_pointers[0] = palettes_p;
+paletts_widths_pointers[0] = palettes_widths_p;
+
+for (int i = 1; i < NMGL_MAX_TEX_OBJECTS+1; i++)
+{
+	palette_pointers[i] = (NMGLubyte*)palette_pointers[i-1]+NMGL_MAX_PALETTE_WIDTH*RGBA_TEXEL_SIZE_UBYTE;
+	paletts_widths_pointers[i] = (unsigned int*)((unsigned int*)paletts_widths_pointers[0]+i);
+}
+//halSyncAddr(palette_pointers[0], 1);
+//halSyncAddr(paletts_widths_pointers[0], 1);
+
 //==========TEX_UNITS_INIT====================================
 		INIT_TEX_UNITS();
 //==========TEX_OBJ_INIT====================================
@@ -93,7 +151,33 @@ struct NMGL_Context_NM0_Texture {
 		unpackAlignment=4;
 		textureEnabled = 0;
 	}
-	
+	void use_shared_palette()
+	{
+		for (int i = 0; i < NMGL_MAX_TEX_OBJECTS; i++)
+		{
+			//texObjects[i].palette.setColors(get_shared_palette_p());
+			texObjects[i].palette.colors=get_shared_palette_p();
+			//texObjects[i].palette.setWidth_p(&paletts_widths[0]);
+			texObjects[i].palette.width = paletts_widths_pointers[0];
+		}
+	}
+	void use_local_palettes()
+	{
+		for (int i = 0; i < NMGL_MAX_TEX_OBJECTS; i++)
+		{
+			texObjects[i].palette.colors = get_palette_by_name_p(texObjects[i].name);
+			texObjects[i].palette.width = paletts_widths_pointers[(texObjects[i].name+1)];
+		}
+	}
+	NMGLubyte* get_shared_palette_p()
+	{
+		return palette_pointers[0];
+	}
+	NMGLubyte* get_palette_by_name_p(NMGLuint name)
+	{
+		
+		return (NMGLubyte*)(palette_pointers[(name+1)]);
+	}
 };
 
 namespace tex_nm0 {

@@ -50,7 +50,7 @@ SECTION(".data_imu0") HalRingBufferData<NM_Command, PRIORITY_SIZE> linkSynchro;
 SECTION(".data_imu0") HalRingBufferConnector<NM_Command, PRIORITY_SIZE> linkConnector(&linkSynchro);
 
 #define LINK_PORT 2
-SECTION(".data_imu0") NMGL_SynchroSlaveRingBuffer nmglSynchro;				///< Структура для общения процессоров друг с другом
+SECTION(".data_imu0") NMGL_SynchroSlaveRingBuffer nmglSynchro;				///< пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 
 template<class T> T* myMallocT(int size) {
 	T* result = (T*)halMalloc32(size * sizeof32(T));
@@ -89,6 +89,9 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 		NMGL_Context_NM1::bind(&nmglContext);
 		cntxt = NMGL_Context_NM1::getContext();
 		
+	cntxt->texState.palette_pointers[0] = (NMGLubyte *)halSyncAddr(0, 0);
+	cntxt->texState.paletts_widths_pointers[0] = (unsigned int*)halSyncAddr(0, 0);
+
 		setHeap(11);
 		cntxt->patterns = myMallocT<PatternsArray>();
 		
@@ -114,7 +117,7 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 		return e;
 	}
 #ifdef TEST_NMGL_TEX_FUNC
-	halSyncAddr((void*)cntxt, 0);
+	halSyncAddr((void*)cntxt, 0);	
 #endif //TEST_NMGL_TEX_FUNC
 	halSync(0x600DB00F, 0);	// send ok to host
 

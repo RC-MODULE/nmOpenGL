@@ -63,6 +63,9 @@ extern "C" {
 
 extern  NMGLubyte* mipmap; //texture memory
 
+NMGLubyte* palettes_p; // texture palette memory
+unsigned int* palettes_widths_p; // texture palettes widths memory
+
 int counter = 0;
 
 #define PRINT_ADDR(a) printf(#a"=%p\n", a)
@@ -114,7 +117,34 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 		//PRINT_ADDR(synchroData);
 		synchroData->init();
 		halSyncAddr(synchroData, 1);
-
+//TEXTURE -- PALETTE MEM INITIALIZATION
+		
+		setHeap(12);
+		try
+    	{
+    	   palettes_p = (NMGLubyte*)myMallocT<NMGLubyte>(NMGL_MAX_PALETTE_WIDTH*RGBA_TEXEL_SIZE_UBYTE*(NMGL_MAX_TEX_OBJECTS+1)); 
+    	}
+    	catch(int& e)
+    	{
+    	    printf("Error! Cant allocate texture palette memory!");
+    	    return -1;
+    	}
+    	DEBUG_PRINT(("allocated palette_pointer:0x%x",palettes_p));
+		halSyncAddr(palettes_p, 1);
+		
+		 try
+        {
+           palettes_widths_p = (unsigned int *)myMallocT<unsigned int>((NMGL_MAX_TEX_OBJECTS+1)); 
+        }
+        catch(int& e)
+        {
+            printf("Error! Cant allocate texture palette width memory!");
+            return -1;
+        }
+		halSyncAddr(palettes_widths_p, 1);
+		
+		
+		
 		setHeap(7);
 		NMGL_Context_NM0::create();
 		cntxt = NMGL_Context_NM0::getContext();

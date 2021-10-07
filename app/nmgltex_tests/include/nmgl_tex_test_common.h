@@ -26,7 +26,7 @@ typedef struct TexImage2D_data
 	NMGLenum type;//UNSIGNED_BYTE
 	void *pixels;
 } TexImage2D_data;
-#define WAIT_PERIOD 200
+#define WAIT_PERIOD 300
 #define wait_for_nm1_if_available if(nmpu1IsAccessible == 1) halSleep(WAIT_PERIOD)
 
 #ifdef DEBUG

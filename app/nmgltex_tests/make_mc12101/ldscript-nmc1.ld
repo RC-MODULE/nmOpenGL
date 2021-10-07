@@ -12,6 +12,7 @@ MEMORY
 
 SECTIONS
 {
+
   .text : ALIGN(0x8)
   {
     *(.text);

@@ -51,10 +51,13 @@ include $(ROOT)/global.mk
 include 		 nmc4vars_win.mk
 #-------------- target & input dirs -------------------
 PROJECT          = main1
+ifdef DEBUG
+PROJECT 		 = main1d
+endif
 OUT_DIR          = .
 TARGET           = $(OUT_DIR)/$(PROJECT).abs
 INC_DIRS         = -I"$(NMPP)/include" -I$(HAL)/include -I$(ROOT)/include
-SRC_DIRS         = $(ROOT)/nmglvs_mc12101-gcc/src_nmc1 $(ROOT)/src_proc1/common $(ROOT)/src_proc $(ROOT)/src_proc1/nm ../src_target1 ./
+SRC_DIRS         = $(ROOT)/nmglvs_mc12101-gcc/src_nmc1 $(ROOT)/src_proc1/common $(ROOT)/src_proc $(ROOT)/src_proc1/nm ../src_target1 ./ 
 LIB_DIRS         = -L "$(NMC_GCC_TOOLPATH)/nmc4-ide/lib" -L"$(NMPP)/lib" -L"$(HAL)/lib" -L$(ROOT)/lib
 TMP_DIR          ?= tmp_obj
 #-------------- RELEASE/ALL config -------------------

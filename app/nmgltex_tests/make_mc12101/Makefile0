@@ -59,7 +59,7 @@ endif
 OUT_DIR          = .
 TARGET           = $(OUT_DIR)/$(PROJECT).abs
 INC_DIRS         = -I"$(NMPP)/include" -I$(HAL)/include -I$(ROOT)/include -I"../include"
-SRC_DIRS         = $(ROOT)/nmglvs_mc12101-gcc/src_nmc0 ../src_target0 ./ ../src_nm ../src_target0/tests
+SRC_DIRS         = $(ROOT)/nmglvs_mc12101-gcc/src_nmc0 ../src_target0 ./ ../src_nm ../src_target0/tests 
 LIB_DIRS         = -L"$(NMC_GCC_TOOLPATH)/nmc4-ide/lib" -L"$(NMPP)/lib" -L"$(HAL)/lib" -L$(ROOT)/lib
 TMP_DIR          ?= tmp_obj
 #-------------- RELEASE/ALL config -------------------

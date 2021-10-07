@@ -30,6 +30,47 @@ void nmglGetFloatv(NMGLenum pname, NMGLfloat * params) {
 		}
 		//nmblas_scopy(16, (float*)cntxt->projectionMatrixStack.top(), 1, params, 1);
 		break;
+	case NMGL_SHARED_TEXTURE_PALETTE_EXT:		
+		break;
+	case NMGL_CURRENT_COLOR:
+		break;
+	case NMGL_CURRENT_TEXTURE_COORDS:
+		break;
+	case NMGL_CURRENT_NORMAL:
+		break;	
+	case NMGL_CURRENT_RASTER_COLOR:
+		break;	
+	case NMGL_CURRENT_RASTER_TEXTURE_COORDS:
+		break;	
+	case NMGL_DEPTH_RANGE:
+		break;
+	case NMGL_POINT_SIZE:
+		break;
+	case NMGL_LINE_WIDTH:
+		break;
+	case NMGL_POLYGON_OFFSET_FACTOR:
+		break;
+	case NMGL_POLYGON_OFFSET_UNITS:
+		break;
+	case NMGL_ALPHA_TEST_REF:
+		break;
+	case NMGL_COLOR_CLEAR_VALUE:
+		break;
+	case NMGL_DEPTH_CLEAR_VALUE:
+		break;
+	case NMGL_ALIASED_POINT_SIZE_RANGE:
+		break;
+	case NMGL_SMOOTH_POINT_SIZE_RANGE:
+		break;
+	case NMGL_SMOOTH_POINT_SIZE_GRANULARITY:
+		break;
+	case NMGL_ALIASED_LINE_WIDTH_RANGE:
+		break;
+	case NMGL_SMOOTH_LINE_WIDTH_RANGE:
+		break;
+	case NMGL_SMOOTH_LINE_WIDTH_GRANULARITY:
+	break;
+
 	default:
 		cntxt->error = NMGL_INVALID_ENUM;
 	}

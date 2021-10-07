@@ -62,7 +62,7 @@ SECTION(".text_nmglvs") int nmglvsNm1Step()
 	case NMC1_EXIT:
 		NMGL_Exit(cntxt, command);
 		break;
-	case NMC1_DEPTH:
+	case NMC1_DEPTH: 
 		NMGL_Depth(cntxt, command);
 		break;	
 	case NMC1_SET_ACTIVE_TEXTURE: 
@@ -77,9 +77,15 @@ SECTION(".text_nmglvs") int nmglvsNm1Step()
 	case NMC1_SET_WHF: 
 		NMGL_SetWhf(cntxt, command);
 		break;
-	case NMC1_SET_COLOR_PALETTE: 
+	/*case NMC1_SET_COLOR_PALETTE: 
 		NMGL_SetColorPalette(cntxt, command);
+		break;*/
+	case NMC1_USE_SHARED_PALETTE: 
+		NMGL_UseSharedPalette(cntxt, command);
 		break;
+	case NMC1_USE_LOCAL_PALETTE: 
+		NMGL_UseLocalPalette(cntxt, command);
+		break;	
 	case NMC1_SET_TEX_ENV_COLOR: 
 		NMGL_SetTexEnvColor(cntxt, command);
 		break;
