@@ -93,11 +93,11 @@ SECTION(".text_shared0") int main()
 	//nmglViewport(128, 128, 384, 384);
 	//nmglViewport(0, 0, 256, 256);
 	//nmglEnable(NMGL_SCISSOR_TEST);
-	//nmglScissor(128, 128, 384, 384);
+	
 	//nmglOrthof(-384, 384, -384, 384, -100, 100);
 	//nmglFrustumf(-384, 384, -384, 384, 0, 100);
 	nmglMatrixMode(NMGL_MODELVIEW);
-	nmglPointSize(2);
+	//nmglPointSize(2);
 
 	nmglEnable(NMGL_LIGHTING);
 	nmglEnable(NMGL_LIGHT0);
@@ -112,6 +112,10 @@ SECTION(".text_shared0") int main()
 	NMGLenum error;
 	unsigned time;
 
+	nmglScissor(128, 128, 384, 384);
+	nmglEnable(NMGL_SCISSOR_TEST);
+
+
 	int counter = 0;
 	while(nmglvsNm0Run()){
 		nmglEnableClientState(NMGL_VERTEX_ARRAY);
@@ -119,6 +123,7 @@ SECTION(".text_shared0") int main()
 
 		nmglClear(NMGL_COLOR_BUFFER_BIT | NMGL_DEPTH_BUFFER_BIT);
 
+		
 		nmglVertexPointer(4, NMGL_FLOAT, 0, vertices_DDR);
 		nmglNormalPointer(NMGL_FLOAT, 0, normal_DDR);
 		nmglLoadIdentity();
@@ -134,7 +139,7 @@ SECTION(".text_shared0") int main()
 		PROFILER_SIZE(amountPolygons);
 		nmglDrawArrays(NMGL_TRIANGLES, 0, 3 * amountPolygons);
 
-		nmglVertexPointer(4, NMGL_FLOAT, 0, vertices_DDR2);
+		/*nmglVertexPointer(4, NMGL_FLOAT, 0, vertices_DDR2);
 		nmglNormalPointer(NMGL_FLOAT, 0, normal_DDR2);
 		nmglLoadIdentity();
 		nmglScalef(0.95f, 0.95f, 0.95f);
@@ -149,7 +154,7 @@ SECTION(".text_shared0") int main()
 		nmglRotatef(angle, 0.707, 0.707, 0);
 		nmglTranslatef(150, 150, 0);
 		PROFILER_SIZE(amountPolygons2);
-		nmglDrawArrays(NMGL_TRIANGLES, 0, 3 * amountPolygons2);
+		nmglDrawArrays(NMGL_TRIANGLES, 0, 3 * amountPolygons2);*/
 		angle += 1.72;
 #ifdef __OPEN_GL__
 		halSleep(100);
