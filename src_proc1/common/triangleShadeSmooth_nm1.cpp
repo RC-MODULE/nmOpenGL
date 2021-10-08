@@ -20,6 +20,9 @@ namespace nm1_version {
     float w;
   } Vec4f;
 
+
+  void edgeFunction(float x0, float y0, float x1, float y1, float x2, float y2, float* res);
+
   SECTION(TRIANGLE_SHADE_SECTION)
     void triangleShadeSmooth(Pattern* patterns, 
         TrianglesInfo* triangles,
@@ -305,13 +308,5 @@ namespace nm1_version {
 
       return;
     }
-
-
-  SECTION(TRIANGLE_SHADE_SECTION)
-    void edgeFunction(float x0, float y0, float x1, float y1, float x2, float y2, float* res)
-    {
-      *res = (x2 - x0) * (y1 - y0) - (y2 - y0) * (x1 - x0);
-    }
-
 
 } //end of namespace nm1_version 
