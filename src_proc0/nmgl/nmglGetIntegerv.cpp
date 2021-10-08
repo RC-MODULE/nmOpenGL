@@ -9,8 +9,11 @@ SECTION(".text_nmgl")
 void nmglGetIntegerv(NMGLenum pname, NMGLint * params) {
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
 	switch(pname){
-		
-	default:
-		cntxt->error = NMGL_INVALID_ENUM;
+		case NMGL_SHADE_MODEL:
+			params[0] = (NMGLint)cntxt->shadeModel;
+			break;
+
+		default:
+			cntxt->error = NMGL_INVALID_ENUM;
 	}
 }

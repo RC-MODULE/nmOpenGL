@@ -296,6 +296,7 @@ public:
 	LightingInfo lightingInfo;
 
 	NMGL_Context_NM0_Texture texState; 	///< textures data
+	int shadeModel;
 
 
 	ImageConnector imageConnector;
@@ -358,6 +359,7 @@ public:
 		
 		pointRadius = 0.5f;
 		texState.init();
+		shadeModel = NMGL_SMOOTH;
 		
 	}
 };

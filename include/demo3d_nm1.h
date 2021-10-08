@@ -89,6 +89,7 @@ public:
 	// TEXTURING PART
 	
 	NMGL_Context_NM1_Texture texState;
+	int shadeModel;
 
 };
 
