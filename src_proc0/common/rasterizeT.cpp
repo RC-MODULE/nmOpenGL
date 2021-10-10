@@ -24,6 +24,7 @@ SECTION(".text_demo3d") void triangleOffset(Triangles &src, Triangles &dst, int 
 	//TODO: May be remove check cntxt->texState.textureEnabled value
 	//if it is slowing down pipeline more than extra sum.
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
+	//for nmglShadeModel: || cntxt->shadeModel == NMGL_SMOOTH
 	if (cntxt->texState.textureEnabled) {
 		dst.s0 = src.s0 + offset;
 		dst.t0 = src.t0 + offset;
@@ -60,6 +61,7 @@ void rasterizeT(const Triangles* triangles, const BitMask* masks){
 	int* indices = (int*)cntxt->buffer4;
 
 	// TEXTURING_PART
+	//for nmglShadeModel: || cntxt->shadeModel == NMGL_SMOOTH
 	if (cntxt->texState.textureEnabled) {
 		localTrian.s0 = cntxt->buffer0 + 10 * NMGL_SIZE;
 		localTrian.t0 = cntxt->buffer0 + 11 * NMGL_SIZE;
@@ -83,6 +85,7 @@ void rasterizeT(const Triangles* triangles, const BitMask* masks){
 					NMGL_PopSegment(rectangles[iSeg], iSeg);
 				}
 
+				//for nmglShadeModel: || cntxt->shadeModel == NMGL_SMOOTH
 				if (cntxt->texState.textureEnabled) {
 					// TEXTURING_PART
 					copyArraysByIndices((void**)triangles, indices, (void**)&localTrian, 16, resultSize);
