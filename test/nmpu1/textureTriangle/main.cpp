@@ -336,13 +336,6 @@ int main ()
     //Массив значений цветов для треугольников, один цвет на треугольник
     nm32s valueC [TRIANGLE_AMOUNT] = {0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff}; //0xARGB
 	
-    //Массив значений цветов для треугольников, один цвет на треугольник
-    v4nm32s colors [1];
-	((nm32s*)colors)[0] = (nm32s)255;
-	((nm32s*)colors)[1] = (nm32s)255;
-	((nm32s*)colors)[2] = (nm32s)255;
-	((nm32s*)colors)[3] = (nm32s)255;
-	
 	//Информация о размещении видимой части треугольников в сегменте
     Vector2 ptrnInnPoints [TRIANGLE_AMOUNT];
     Size ptrnSizes [TRIANGLE_AMOUNT];
@@ -468,8 +461,6 @@ int main ()
 			triangles.z0 = &z[i];
 			triangles.z1 = &z[i];
 			triangles.z2 = &z[i];
-
-			triangles.colors = colors;
 
 			Vector2* curPtrnInnPoint = &ptrnInnPoints[i];
 			Size* curPtrnSize = &ptrnSizes[i];
