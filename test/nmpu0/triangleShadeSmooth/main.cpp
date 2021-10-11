@@ -232,9 +232,18 @@ int main ()
         // Save to bmp file on x86    
         // before correction test because it corrupts images
         char filename[256];
+        char filename_ref[256];
+        Size win_32x32;
+        win_32x32.width = WIDTH_PTRN;
+        win_32x32.height= HEIGHT_PTRN;
+
         snprintf(filename, 256, "%i_res.%s", refId + 1, "bmp");
         rawToImage(pDstTriangle, ptrnSizes, result_images, 1);
         saveToBmp (32, result_images[0], filename);
+
+        snprintf(filename_ref, 256, "%i_ref.%s", refId + 1, "bmp");
+        rawToImage(references[refId], &win_32x32, result_images, 1);
+        saveToBmp (32, result_images[0], filename_ref);
 #endif //__NM__        
         corr = compareImages(pDstTriangle, references[refId], WIDTH_PTRN, HEIGHT_PTRN);
       }
