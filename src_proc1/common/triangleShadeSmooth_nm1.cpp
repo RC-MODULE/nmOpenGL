@@ -33,11 +33,6 @@ namespace nm1_version {
         int count)
     {
 
-
-#ifdef DEBUG
-      // printf ("Start triangleShadeSmooth\n"); 
-#endif //DEBUG
-
       NMGL_Context_NM1 *cntxt = NMGL_Context_NM1::getContext();
 
       long long int temp;
@@ -95,10 +90,7 @@ namespace nm1_version {
         float z2 = triangles->z2[cnt];
 
 #ifdef PERSPECTIVE_CORRECT        
-        // Compute some coefficients.
-        // Used for:
-        // * something similar to linear-rational interpolation 
-        // * to calculate scale factor
+        // Compute some coefficients to interpolate attribute values.
         // Formulas obtained by simlifying formulas for barycentric coordinates.
         float z12 = z1 * z2;
         float z02 = z0 * z2;
@@ -302,9 +294,6 @@ namespace nm1_version {
         }
         dst += ptrnSizes[cnt].height * ptrnSizes[cnt].width;
       }
-#ifdef DEBUG
-      // printf ("End triangleShadeSmooth\n");     
-#endif //DEBUG
 
       return;
     }

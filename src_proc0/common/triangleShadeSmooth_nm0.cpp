@@ -30,7 +30,6 @@ namespace nm0_version {
   extern float vecy [32];
   extern float ones [32];
   extern float oneOverDenominator [32];
-  extern float derivOneOverDenom [32];
   extern float buf0 [32];
 
   SECTION(".data_imu0") float vecr [32];
@@ -46,17 +45,13 @@ namespace nm0_version {
     void triangleShadeSmooth(TrianglesInfo* triangles, nm32s* pDstTriangle, int count)
     {
 
-#ifdef DEBUG
-      // printf ("Start triangleShadeSmooth\n"); 
-#endif //DEBUG
-
       long long int temp;
       nm32s* dst = pDstTriangle;
       int winX0 = 0;
       int winY0 = 0;
 
       for(int cnt=0;cnt<count;cnt++){
-        nm32s* dstTriagle = (nm32s*) (pDstTriangle + WIDTH_PTRN * HEIGHT_PTRN * cnt);
+        nm32s* dstTriangle = (nm32s*) (pDstTriangle + WIDTH_PTRN * HEIGHT_PTRN * cnt);
 
         float area = 0;
         float x0 = triangles->x0[cnt];
@@ -97,10 +92,7 @@ namespace nm0_version {
         unsigned int primWidth = maxX - winX0 + 1;
 
 #ifdef PERSPECTIVE_CORRECT        
-        // Compute some coefficients.
-        // Used for:
-        // * something similar to linear-rational interpolation 
-        // * to calculate scale factor
+        // Compute some coefficients to interpolate attribute values.
         // Formulas obtained by simlifying formulas for barycentric coordinates.
         float z12 = z1 * z2;
         float z02 = z0 * z2;
@@ -177,7 +169,7 @@ namespace nm0_version {
 
         for(int y = 0; y < primHeight; y++){
 
-          nm32s* pDst = (nm32s*)(dstTriagle + y * WIDTH_PTRN);
+          nm32s* pDst = (nm32s*)(dstTriangle + y * WIDTH_PTRN);
 
 #ifdef PERSPECTIVE_CORRECT
           //float oneOverDenominator = 1 / (A2*xf + B2*yf + D2);
@@ -241,9 +233,6 @@ namespace nm0_version {
           nmppsAddC_32f(vecyf, vecyf, 1.0, primWidth);
         }
       }
-#ifdef DEBUG
-      // printf ("End triangleShadeSmooth\n");     
-#endif //DEBUG
 
       return;
     }
