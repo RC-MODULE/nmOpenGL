@@ -798,6 +798,39 @@ static void cmpSrcInit(float* src, int count)
   //
   void cmpNeV_f(float* src1, float* src2, nm1* dstMaskEven, nm1* dstMaskOdd, int size); 
   //! \}
+  
+  /*!
+   *  \defgroup cmpLtCSelVC_f cmpLtCSelVC_f
+   *  \ingroup filter_api 
+   *  \brief Функция реализует тернарную операцию 'dst[i] = src[i]<C ? val1[i]:val2'.
+   *  \author 
+   *  \param src [in] Входной массив элементов для сравнения с константой.
+   *  \param С [in] Константа для сравнения.
+   *  \param val1 [in] Входной массив значений, помещаемых в выходной массив при выполнении условия сравнения.
+   *  \param val2 [in] Входная константа, помещаемая в выходной массив при невыполнении условия сравнения. 
+   *  \param dst [out] Выходной массив значений.
+   *  \param size [in] Число элементов входного массива для сравнения. Должно быть неотрицательным целым числом.
+   *  
+   *  \par
+   *  \xmlonly
+   *      <testperf>
+   *          <param name="src"> im00 im10 im20 im30 im40 im50 im60 im70 </param>
+   *          <param name="C"> 2.0 </param>
+   *          <param name="val1"> im01 im11 im21 im31 im41 im51 im61 im71 </param>
+   *          <param name="val2"> 123 </param>
+   *          <param name="dst"> im02 im12 im22 im32 im42 im52 im62 im72 </param>
+   *          <param name="size"> 16 32 64 128 256 512 1024 </param>
+   *          <init>
+   *            cmpSrcInit(src, size);
+   *          </init>
+   *          <size> size </size>
+   *      </testperf>
+   *
+   *  \endxmlonly
+   */
+  //! \{
+  void cmpLtCSelVC_f(float* src, float C, int* val1, int val2, int* dst, int size);
+  //! \}
 }
 
 
