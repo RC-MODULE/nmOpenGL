@@ -23,23 +23,23 @@ typedef void DepthCore32();
 #define DEPTH_BUFFER 2
 
 struct NMGL_Buffer {
-#ifdef __GNUC__
-	void* data;
-#else
-	int data;
-#endif
-	int enabled;
+	void* data = 0;
+	int enabled = NMGL_FALSE;
 	int mask;
 	int mode;
+	//int pixelType;
+	//int isExisted = 0;
 };
 
 class NMGL_Framebuffer {
-private:
+	//порядок важен
+public:
 	int mWidth;
 	int mHeight;
 	int mSize;
 	int dummy;
-public:
+	int sizeOfAddr32;
+	int sizeOfBufferStruct32;
 	volatile unsigned long long head;
 	volatile unsigned long long tail;
 	NMGL_Buffer imageBuffer;		/// буфер, который в данный момент отрисовывается (GL_LEFT_BACK)
@@ -48,6 +48,8 @@ public:
 	NMGL_Buffer stencilBuffer;
 
 	NMGL_Framebuffer() {
+		sizeOfAddr32 = sizeof32(void*);
+		sizeOfBufferStruct32 = sizeof32(NMGL_Buffer);
 		mWidth = 0xdeadb00f;
 		mHeight = 0xdeadb00f;
 		head = 0;

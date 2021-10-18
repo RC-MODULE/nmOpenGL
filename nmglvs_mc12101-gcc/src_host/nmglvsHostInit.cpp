@@ -11,6 +11,7 @@
 #include "demo3d_host.h"
 #include "imagebuffer.h"
 #include <thread>
+#include "imagebuffer_host.h"
 
 #ifdef STACK_TRACE_ENABLED
 #include "stacktrace.h"
@@ -67,6 +68,7 @@ int nmglvsHostInit()
 
 	framebufferAddr = halSyncAddr(0, 0);
 	NMGL_Framebuffer framebuffer;
-	halReadMemBlock(&framebuffer, framebufferAddr, sizeof32(NMGL_Framebuffer), 0);
+	halReadMemBlock(&framebuffer, framebufferAddr, sizeof32(NMGL_Framebuffer), 4);
+
 	return 0;
 };

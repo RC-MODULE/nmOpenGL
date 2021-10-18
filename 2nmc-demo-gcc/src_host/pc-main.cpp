@@ -8,20 +8,37 @@
 #include "nmglvs_host.h"
 #include <fstream>
 
+#include "imagebuffer_host.h"
+
 
 int main()
 {
-	if (nmglvsHostInit() != 0) {
+	
+	/*if (nmglvsHostInit() != 0) {
 		return 1;
+	}*/
+
+	if (halOpen(PROGRAM, PROGRAM1, NULL)) {
+		printf("Connection to mc12101 error!\n");
+		return -1;
 	}
+
+	int handshake = halSync(0xC0DE0086, 0);
+	if (handshake != 0xC0DE0000) {
+		printf("Handshake with mc12101-nmc0 error!\n");
+		return -1;
+	}
+
+	int framebufferAddr = halSyncAddr(0, 0);
+	NMGL_FramebufferHost framebuffer(framebufferAddr, 0);
 
 	//----------------init-VShell--------------------------------------------
 	if (!VS_Init())
 		return 0;
 
-	int width = nmglvsGetWidth();
-	int height = nmglvsGetHeight();
-	VS_CreateImage("Source Image", 1, nmglvsGetWidth(), nmglvsGetHeight(), VS_RGB32, 0);	// Create window for 8-bit source grayscale image
+	int width = framebuffer.getWidth();
+	int height = framebuffer.getHeight();
+	VS_CreateImage("Source Image", 1, width, height, VS_RGB32, 0);	// Create window for 8-bit source grayscale image
 	int *currentImage = new int[width * height];
 	VS_OpRunForward();
 
@@ -67,7 +84,8 @@ int main()
 #ifdef EMULATION
 		halSleep(100);
 #endif //EMULATION
-		nmglvsHostReadImage(currentImage);
+		framebuffer.readImage(currentImage);
+		//nmglvsHostReadImage(currentImage);
 		VS_SetData(1, currentImage);
 		
 		counter++;
