@@ -106,6 +106,7 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 		cntxt->colorBuffer.init(cntxt->imageConnector.ptrHead(), WIDTH_IMAGE, HEIGHT_IMAGE);
 		cntxt->depthBuffer.init(depthImage, WIDTH_IMAGE, HEIGHT_IMAGE);
 		cntxt->texState.init();
+		cntxt->shadeModel=NMGL_SMOOTH;
 	}
 	catch (int &e) {
 		if (e == -2) {

@@ -17,6 +17,7 @@
 #define sort() 	nmppsMerge_32f(triangles->x0, triangles->y0, temp0, count);	 \
 	nmppsMerge_32f(triangles->x1, triangles->y1, temp1, count);				 \
 	nmppsMerge_32f(triangles->x2, triangles->y2, temp2, count);				 \
+	/*for nmglShadeModel: && cntxt->shadeModel != NMGL_SMOOTH*/ \
 	if (cntxt->texState.textureEnabled == 0) {                                \
 		sortByY3(temp0, temp1, temp2, count);									 \
 	}																		 \
@@ -66,6 +67,7 @@ void updatePolygonsT(DataForNmpu1* data, Triangles* triangles, int count, v2nm32
 	nmblas_scopy(4 * count, (float*)triangles->colors, 1, (float*)data->color + 4 * data->count, 1);
 
 //TEXTURING_PART
+	//for nmglShadeModel: || cntxt->shadeModel == NMGL_SMOOTH
 	if (cntxt->texState.textureEnabled) {
 		nmblas_scopy(count, (float*)triangles->s0, 1, (float*)data->s0 + data->count, 1);
 		nmblas_scopy(count, (float*)triangles->t0, 1, (float*)data->t0 + data->count, 1);

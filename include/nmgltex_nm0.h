@@ -96,7 +96,7 @@ struct NMGL_Context_NM0_Texture {
 	
 };
 
-namespace tex_nm0 {
+namespace nm0_version {
 /**
 \defgroup textureFunctions Функции текстурирования
 \brief Функции текстурирования для nmOpenGL.
@@ -124,7 +124,10 @@ struct TrianglesInfo{
 	float* t1; /**< Текстурная координата t 1-ой вершины треугольника */
 	float* s2; /**< Текстурная координата s 2-ой вершины треугольника */
 	float* t2; /**< Текстурная координата t 2-ой вершины треугольника */
-	v4nm32s* colors; /**< Цвет треугольника (один на три вершины) */
+  v4nm32s* colors; /**< Цвет треугольника (один на три вершины). Используется для текстурирования. */
+	v4nm32s* c0;  /**< Цвет 0 вершины треугольника. Используется для ShadeModel(SMOOTH).*/
+	v4nm32s* c1;  /**< Цвет 1 вершины треугольника. Используется для ShadeModel(SMOOTH).*/
+	v4nm32s* c2;  /**< Цвет 2 вершины треугольника. Используется для ShadeModel(SMOOTH).*/
 };
 
 /** 
@@ -155,7 +158,7 @@ void edgeFunction(float x0, float y0, float x1, float y1, float x2, float y2, fl
 \retval void
 */
 void textureTriangle(TrianglesInfo* triangles, nm32s* pDstTriangle, int count);
-} //endof namespace tex_nm0
+} //endof namespace nm0_version
 
 extern "C"{
 void abs_32f(float* src, float* dst, int size);

@@ -89,6 +89,7 @@ public:
 	// TEXTURING PART
 	
 	NMGL_Context_NM1_Texture texState;
+	int shadeModel;
 
 };
 
@@ -409,5 +410,16 @@ void getPatternsPackT(DataForNmpu1* data, PatternsArray* patternsArray, Size* im
  *  
  */
 void drawPrimitives(NMGL_Context_NM1 *context, int countPrimitives);
+
+namespace nm1_version {
+
+void triangleShadeSmooth(Pattern* patterns, 
+    TrianglesInfo* triangles,
+    nm32s** pROI,
+    Vector2* ptrnPoints,
+    Size* ptrnSizes,
+    nm32s* pDstTriangle, 
+    int count);
+}
 
 #endif

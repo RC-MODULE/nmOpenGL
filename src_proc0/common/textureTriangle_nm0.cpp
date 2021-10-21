@@ -13,7 +13,7 @@
 //TEXTURING_PART
 #define PERSPECTIVE_CORRECT
 
-namespace tex_nm0 {
+namespace nm0_version {
 // typedef enum { NEAREST, LINEAR, NEAREST_MIPMAP_NEAREST, NEAREST_MIPMAP_LINEAR, LINEAR_MIPMAP_NEAREST, LINEAR_MIPMAP_LINEAR } filter_mode_t;
 // typedef enum { REPEAT, CLAMP_TO_EDGE } wrap_mode_t;
 typedef enum { MINIFICATION, MAGNIFICATION } lod_t;
@@ -48,28 +48,25 @@ int textureBaseLevel = 0;
 int textureMaxLevel = 1000;
 color borderColor;
 
-SECTION(".data_imu0") float initVecx [32] = {0.5,   1.5,  2.5,  3.5,  4.5,  5.5,  6.5,  7.5,  8.5,  9.5, 
-										10.5, 11.5, 12.5, 13.5, 14.5, 15.5, 16.5, 17.5, 18.5, 19.5,
-										20.5, 21.5, 22.5, 23.5, 24.5, 25.5, 26.5, 27.5, 28.5, 29.5,
-										30.5, 31.5};
-SECTION(".data_imu0") float initVecy [32] = {0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 
-										0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 
-										0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 
-										0.5, 0.5};
-SECTION(".data_imu0") float vecxf [32];
-SECTION(".data_imu0") float vecyf [32];
-SECTION(".data_imu0") float vecx [32];
-SECTION(".data_imu0") float vecy [32];
+extern float initVecx [32];
+extern float initVecy [32];
+extern float vecxf [32];
+extern float vecyf [32];
+extern float vecx [32];
+extern float vecy [32];
+extern float ones [32];
+extern float oneOverDenominator [32];
+extern float derivOneOverDenom [32];
+extern float buf0 [32];
+
+
+int minf(float a, float b);
+int maxf(float a, float b);
+void edgeFunction(float x0, float y0, float x1, float y1, float x2, float y2, float* res);
+
 SECTION(".data_imu0") float vecs [32];
 SECTION(".data_imu0") float vect [32];
 
-SECTION(".data_imu0") float ones [32] = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 
-										1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 
-										1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 
-										1.0, 1.0};
-
-SECTION(".data_imu0") float oneOverDenominator [32];
-SECTION(".data_imu0") float derivOneOverDenom [32];
 SECTION(".data_imu0") float vecdudx [32];
 SECTION(".data_imu0") float vecdudy [32];
 SECTION(".data_imu0") float vecdvdx [32];
@@ -95,7 +92,6 @@ SECTION(".data_imu0") float vecmu [32];
 SECTION(".data_imu0") float vecmv [32];
 SECTION(".data_imu0") float vecScaleFactor [32];
 
-SECTION(".data_imu0") float buf0 [32];
 SECTION(".data_imu0") float buf1 [32];
 SECTION(".data_imu0") float buf2 [32];
 SECTION(".data_imu0") float buf3 [32];
@@ -112,17 +108,6 @@ int min (int a, int b)
     return (b < a) ? b : a;
 }
 
-SECTION(TEXTURE_TRIANGLE_SECTION)
-int minf(float a, float b)
-{
-	return (b < a) ? b : a;
-}
-
-SECTION(TEXTURE_TRIANGLE_SECTION)
-int maxf(float a, float b)
-{
-	return (b > a) ? b : a;
-}
 
 /* Compare two floats, 1 if are equal, 0 - otherwise */
 SECTION(TEXTURE_TRIANGLE_SECTION)
@@ -486,7 +471,7 @@ void textureTriangle(TrianglesInfo* triangles, nm32s* pDstTriangle, int count)
         float z1 = triangles->z1[cnt];
         float z2 = triangles->z2[cnt];
 		
-        v4nm32s colors = triangles->colors[cnt];
+        v4nm32s colors = triangles->colors[cnt];//TODO: colors should be pointer to colored  fragments of incoming primitive. At now all pixels of triangle has one color, so Cf always has the same value.
         
 		winY0 = minf(y0, minf(y1, y2)); //TODO: here should be minx of triangle 
 		winX0 = minf(x0, minf(x1, x2)); //TODO: here should be miny of triangle
@@ -891,8 +876,10 @@ void textureTriangle(TrianglesInfo* triangles, nm32s* pDstTriangle, int count)
 				vecas[x] = as;
 			}
 			
+      //TODO:R,G,B,A order is used in colors. May be it will be necessary to use B,G,R,A order 
 			Vec3f cf; //primary color components of the incoming fragment (primary color of PRIMITIVE pixel OR fragment color from previous texture unit)
 					  //Not framebuffer color.Framebuffer color can be used at another stage called Blending (glBlendFunc...)
+            //TODO: colors should be pointer to colored  fragments of incoming primitive. At now all pixels of triangle has one color, so Cf always has the same value.
 			float af; 
 			cf.x = (float)(colors.vec[0] & 0x00000000ffffffff)/255.0;//r;
 			cf.y = (float)((colors.vec[0] >> 32) & 0x00000000ffffffff)/255.0;//g;
@@ -1316,11 +1303,4 @@ void textureTriangle(TrianglesInfo* triangles, nm32s* pDstTriangle, int count)
     return;
 }
 
-//TEXTURING_PART
-SECTION(TEXTURE_TRIANGLE_SECTION)
-void edgeFunction(float x0, float y0, float x1, float y1, float x2, float y2, float* res)
-{
-    *res = (x2 - x0) * (y1 - y0) - (y2 - y0) * (x1 - x0);
-}
-//TEXTURING_PART
-} //end of namespace tex_nm0
+} //end of namespace nm0_version
