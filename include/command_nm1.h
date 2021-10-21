@@ -35,6 +35,7 @@ void NMGL_Texture2d(NMGL_Context_NM1 *context, NM_Command *command);
 void NMGL_Finish(NMGL_Context_NM1 *context, NM_Command *command);
 void NMGL_UseSharedPalette(NMGL_Context_NM1 *context, NM_Command *command);
 void NMGL_UseLocalPalette(NMGL_Context_NM1 *context, NM_Command *command);
+void NMGL_ShadeModel(NMGL_Context_NM1 *context, NM_Command *command);
 
 
 #endif //COMMAND_NM1_H 

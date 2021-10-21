@@ -10,7 +10,6 @@
 #include "time.h"
 #include "compareImages.h"
 #include "references.h"
-#include "scenarios.h"
 
 #ifndef __NM__
 #include "bmp.h"
@@ -27,13 +26,9 @@ using namespace nm0_version;
 
 #define TRIANGLE_AMOUNT 5 
 
-//Массив текстур в виде структур типа image_t
-#define TEXTURE_AMOUNT 9
-
 #ifndef __NM__
-//массив изображений после текстурирования
+//массив изображений после закрашивания 
 image_t result_images [1]; 
-
 
 /**
 Функция rawToImage выполняет преобразование массива цветов пикселей в структуру типа image_t.
@@ -60,7 +55,7 @@ void printPattern(Pattern* patterns, int count);
 Функция extractTriangleByPattern затирает пиксели, находящиеся вне шаблона.
 
 \param patterns [in] Массив паттернов треугольников
-\param triangle [in] Массив, содержащий треугольник с наложенной текстурой
+\param triangle [in] Массив, содержащий закрашенный треугольник 
 \param count [in] Количество паттернов
 */
 void extractTriangleByPattern(Pattern* patterns, nm32s *triangle, int count);
@@ -145,12 +140,6 @@ int main ()
 	nm32s pSrcTriangle[WIDTH_PTRN * HEIGHT_PTRN * 1];
 	nm32s pDstTriangle [WIDTH_PTRN * HEIGHT_PTRN * 1]; 
     
-    //Массив значений цветов для треугольников, один цвет на треугольник
-    v4nm32s colors [1];
-	((nm32s*)colors)[0] = (nm32s)255;
-	((nm32s*)colors)[1] = (nm32s)255;
-	((nm32s*)colors)[2] = (nm32s)255;
-	((nm32s*)colors)[3] = (nm32s)255;
 	
 	//Информация о размещении видимой части треугольников в сегменте
 	Size ptrnSizes[1];
@@ -162,7 +151,7 @@ int main ()
 	clock_t clkEnd=0;
 	clock_t diff = 0;
 
-	printf ("Start texturing test...\n");
+	printf ("\nStart shading test...\n");
 
     ptrnSizes[0].width = 32;
     ptrnSizes[0].height = 32;
@@ -174,103 +163,101 @@ int main ()
     float x2[TRIANGLE_AMOUNT] = {3.0f, 7.0f, 15.0f, 31.0f, 26.0f};
     float y2[TRIANGLE_AMOUNT] = {0.0f, 0.0f,  0.0f,  0.0f, 32.0f - 5.0f};
    
-	float s0[TRIANGLE_AMOUNT] = {0.0f, 0.0f,  0.0f,  0.0f, 0.0f};
-    float t0[TRIANGLE_AMOUNT] = {1.0f, 1.0f,  1.0f,  1.0f, 0.3125f};
-    float s1[TRIANGLE_AMOUNT] = {0.0f, 0.0f,  0.0f,  0.0f, 0.46875f};
-    float t1[TRIANGLE_AMOUNT] = {0.0f, 0.0f,  0.0f,  0.0f, 0.9375f};
-    float s2[TRIANGLE_AMOUNT] = {1.0f, 1.0f,  1.0f,  1.0f, 0.8125f};
-    float t2[TRIANGLE_AMOUNT] = {1.0f, 1.0f,  1.0f,  1.0f, 0.15625f};
+    v4nm32s c0[TRIANGLE_AMOUNT] = {0};
+    v4nm32s c1[TRIANGLE_AMOUNT] = {0};
+    v4nm32s c2[TRIANGLE_AMOUNT] = {0};
+
+    //TODO:R,G,B,A order is used in c0,c1,c2. May be it will be necessary to use B,G,R,A order 
+    nm32s* curC = (nm32s*)c0;
+    for (int i = 0; i < TRIANGLE_AMOUNT; i++) {
+        curC[0] = (nm32s)255;//r
+        curC[1] = (nm32s)0;//g
+        curC[2] = (nm32s)0;//b
+        curC[3] = (nm32s)255;//a
+        curC += 4;
+    }
+    
+    curC = (nm32s*)c1;
+    for (int i = 0; i < TRIANGLE_AMOUNT; i++) {
+        curC[0] = (nm32s)0;//r
+        curC[1] = (nm32s)255;//g
+        curC[2] = (nm32s)0;//b
+        curC[3] = (nm32s)255;//a
+        curC += 4;
+    }
+
+    curC = (nm32s*)c2;
+    for (int i = 0; i < TRIANGLE_AMOUNT; i++) {
+        curC[0] = (nm32s)0;//r
+        curC[1] = (nm32s)0;//g
+        curC[2] = (nm32s)255;//b
+        curC[3] = (nm32s)255;//a
+        curC += 4;
+    }
 
     float z[TRIANGLE_AMOUNT] = {1.0f, 1.0f, 1.0f, 1.0f, 1.0f}; //minus (z in camera space)
     unsigned int pixelCount[TRIANGLE_AMOUNT] = {8, 32, 128, 512, 298}; //minus (z in camera space)
     
-	//Активный текстурный модуль
-	test_cntxt->texState.activeTexUnitIndex = 0;
-	unsigned int activeTexUnitIndex = test_cntxt->texState.activeTexUnitIndex;
+    int refId = 0;
 
-	//Текстурный объект, привязанный к активному текстурному модулю
-	test_cntxt->texState.texUnits[activeTexUnitIndex].boundTexObject = &test_cntxt->texState.texObjects[0];
-	TexObject* boundTexObject = test_cntxt->texState.texUnits[activeTexUnitIndex].boundTexObject;
+    // Performance tests: TRIANGLE_AMOUNT triangles
+    for (i = 0; i < TRIANGLE_AMOUNT; ++i){
+      double corr = -1.0;		// -1.0 - correctness is not calculated
+      triangles.x0 = &x0[i];
+      triangles.y0 = &y0[i];
+      triangles.x1 = &x1[i];
+      triangles.y1 = &y1[i];
+      triangles.x2 = &x2[i];
+      triangles.y2 = &y2[i];
 
-	//default texEnvColor is (0.0f, 0.0f, 0.0f, 0.0f)
-	test_cntxt->texState.texUnits[activeTexUnitIndex].texEnvColor[0] = 0.0f;
-	test_cntxt->texState.texUnits[activeTexUnitIndex].texEnvColor[1] = 0.0f;
-	test_cntxt->texState.texUnits[activeTexUnitIndex].texEnvColor[2] = 0.0f;
-	test_cntxt->texState.texUnits[activeTexUnitIndex].texEnvColor[3] = 0.0f;
+      triangles.z0 = &z[i];
+      triangles.z1 = &z[i];
+      triangles.z2 = &z[i];
 
-	int refId = 0;
-	for (auto& scenario : scenarios){
-		printf("%2i: ", refId + 1);
-		// Set texture images
-		for (int i = 0; i < scenario.texture_count; ++i){
-			boundTexObject->texImages2D[i] = *(scenario.texname[i]);
-		}
+      triangles.c0 = &c0[i];
+      triangles.c1 = &c1[i];
+      triangles.c2 = &c2[i];
 
-		boundTexObject->texMagFilter = scenario.magFilter; 	//default LINEAR
-		boundTexObject->texMinFilter = scenario.minFilter;
-		boundTexObject->texWrapS = scenario.wrapS; 			// default REPEAT
-		boundTexObject->texWrapT = scenario.wrapT;			// default REPEAT
-		test_cntxt->texState.texUnits[activeTexUnitIndex].texFunctionName = scenario.texFunction; //default = NMGL_MODULATE
-		
-		// Performance tests: TRIANGLE_AMOUNT triangles
-		int i = 0;
-		for (i = 0; i < TRIANGLE_AMOUNT; ++i){
-			double corr = -1.0;		// -1.0 - correctness is not calculated
-			triangles.x0 = &x0[i];
-			triangles.y0 = &y0[i];
-			triangles.x1 = &x1[i];
-			triangles.y1 = &y1[i];
-			triangles.x2 = &x2[i];
-			triangles.y2 = &y2[i];
+      clock_t start_time = 0;
+      start_time = clock();
+      triangleShadeSmooth(&triangles, pDstTriangle, 1);
+      clock_t end_time = 0;
+      end_time = clock();
 
-			triangles.s0 = (i < TRIANGLE_AMOUNT - 1) ? &s0[i] : &(scenario.texCoords.s0);
-			triangles.t0 = (i < TRIANGLE_AMOUNT - 1) ? &t0[i] : &(scenario.texCoords.t0);
-			triangles.s1 = (i < TRIANGLE_AMOUNT - 1) ? &s1[i] : &(scenario.texCoords.s1);
-			triangles.t1 = (i < TRIANGLE_AMOUNT - 1) ? &t1[i] : &(scenario.texCoords.t1);
-			triangles.s2 = (i < TRIANGLE_AMOUNT - 1) ? &s2[i] : &(scenario.texCoords.s2);
-			triangles.t2 = (i < TRIANGLE_AMOUNT - 1) ? &t2[i] : &(scenario.texCoords.t2);
-
-			triangles.z0 = &z[i];
-			triangles.z1 = &z[i];
-			triangles.z2 = &z[i];
-
-			triangles.colors = colors;
-
-			clock_t start_time = 0;
-			start_time = clock();
-			textureTriangle(&triangles, pDstTriangle, 1);
-			clock_t end_time = 0;
-			end_time = clock();
-
-
-			// Correctness tests: the last set of coordinates 
-			// with scenario texcoords
-			if (i == TRIANGLE_AMOUNT - 1){
-				extractTriangleByPattern(patterns, pDstTriangle, 1);
+      // Correctness tests: the last set of coordinates 
+      // with scenario texcoords
+      if (i == TRIANGLE_AMOUNT - 1){
+        extractTriangleByPattern(patterns, pDstTriangle, 1);
 #ifndef __NM__
-				// Save to bmp file on x86    
-				// before correction test because it corrupts images
-				char filename[256];
-				snprintf(filename, 256, "%i_res.%s", refId + 1, "bmp");
-				rawToImage(pDstTriangle, ptrnSizes, result_images, 1);
-				saveToBmp (32, result_images[0], filename);
+        // Save to bmp file on x86    
+        // before correction test because it corrupts images
+        char filename[256];
+        char filename_ref[256];
+        Size win_32x32;
+        win_32x32.width = WIDTH_PTRN;
+        win_32x32.height= HEIGHT_PTRN;
+
+        snprintf(filename, 256, "%i_res.%s", refId + 1, "bmp");
+        rawToImage(pDstTriangle, ptrnSizes, result_images, 1);
+        saveToBmp (32, result_images[0], filename);
+
+        snprintf(filename_ref, 256, "%i_ref.%s", refId + 1, "bmp");
+        rawToImage(references[refId], &win_32x32, result_images, 1);
+        saveToBmp (32, result_images[0], filename_ref);
 #endif //__NM__        
-				corr = compareImages(pDstTriangle, references[refId], WIDTH_PTRN, HEIGHT_PTRN);
-			}
-			
-			// Output result
-			printf("\t%10i/", (int)(end_time - start_time));
-			printf("%6i/", (int)(end_time - start_time)/pixelCount[i]);
-			if (corr < 0){
-				printf("-", (double)(end_time - start_time));
-			} else {
-				printf("%8.6f", corr * 100);
-			}
-		}
-		puts("");
-		refId++;
-	}
-	printf ("End texturing test...\n");
+        corr = compareImages(pDstTriangle, references[refId], WIDTH_PTRN, HEIGHT_PTRN);
+      }
+
+      // Output result
+      printf("\t%10i/", (int)(end_time - start_time));
+      printf("%6i/", (int)(end_time - start_time)/pixelCount[i]);
+      if (corr < 0){
+        printf("-", (double)(end_time - start_time));
+      } else {
+        printf("%8.6f", corr * 100);
+      }
+    }
+    printf ("\nEnd shading test...\n");
     return 0;
 }
 

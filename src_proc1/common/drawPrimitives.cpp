@@ -5,7 +5,7 @@
 int totalSum(nm32s* pVec, int size);
 
 //TEXTURING_PART
-using namespace tex_nm1; 
+using namespace nm1_version; 
 SECTION(".data_imu0") TrianglesInfo triangles;
 //TEXTURING_PART
 
@@ -53,6 +53,7 @@ SECTION(".text_demo3d") void drawPrimitives(NMGL_Context_NM1 *context, int count
 				localSize);
 		}
 		//color v4nm8s in imgOffset
+		//for nmglShadeModel: if (context->shadeModel == NMGL_FLAT) {
 		//PROFILER_SIZE(fullSize);
 		mMulCVxN_2s_RGB8888(
 			patternPack->patterns + point,
@@ -62,6 +63,39 @@ SECTION(".text_demo3d") void drawPrimitives(NMGL_Context_NM1 *context, int count
 			mulC,
 			localSize);
 		//mulBuffer теперь хранит цвет
+///for nmglShadeModel:
+//		}
+//		else if (context->shadeModel == NMGL_SMOOTH) {
+//			triangles.x0 = context->x0 + point;
+//			triangles.y0 = context->y0 + point;
+//			triangles.x1 = context->x1 + point;
+//			triangles.y1 = context->y1 + point;
+//			triangles.x2 = context->x2 + point;
+//			triangles.y2 = context->y2 + point;
+//
+//			triangles.z0 = context->w0 + point;
+//			triangles.z1 = context->w1 + point;
+//			triangles.z2 = context->w2 + point; 
+//			
+//			//here should be c0,c1 and c2 colors of triangle vertices
+//			triangles.c0 = context->valuesC + point;
+//			triangles.c1 = context->valuesC + point;
+//			triangles.c2 = context->valuesC + point;
+//
+//			triangleShadeSmooth(patternPack->patterns + point,
+//								&triangles, 
+//								(nm32s**)(context->imagePoints + point), 
+//								patternPack->origins + point, 
+//								patternPack->sizes + point, 
+//								mulC, 
+//								localSize);
+//
+//		}
+//		else {
+//#ifdef DEBUG
+//			printf ("NM1 Error: unknown shade model mode.\n");
+//#endif //DEBUG
+//		}
 
 //TEXTURING_PART
         if (context->texState.textureEnabled) {

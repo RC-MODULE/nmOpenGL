@@ -149,7 +149,7 @@ INIT_TEX_OBJECTS();
 };
 
 
-namespace tex_nm1 {
+namespace nm1_version {
 /**
 \defgroup textureFunctions Функции текстурирования
 \brief Функции текстурирования для nmOpenGL.
@@ -172,7 +172,9 @@ struct TrianglesInfo{
 	float* z0;  /**< Координата z0 треугольника */ //TODO: Needed float z in camera space, so float value
 	float* z1;  /**< Координата z1 треугольника */ //TODO: Needed float z in camera space, so float value
 	float* z2;  /**< Координата z2 треугольника */ //TODO: Needed float z in camera space, so float value
-	v4nm32s* colors; /**< Цвет треугольника (один на три вершины) */
+	int* c0;  /**< Цвет 0 вершины треугольника. Используется для ShadeModel(SMOOTH).*/
+	int* c1;  /**< Цвет 1 вершины треугольника. Используется для ShadeModel(SMOOTH).*/
+	int* c2;  /**< Цвет 2 вершины треугольника. Используется для ShadeModel(SMOOTH).*/
 	int size;   /**< Количество треугольников */
 	int maxSize; /**< Максимальное обрабатываемое количество треугольников */
     
@@ -230,5 +232,5 @@ void textureTriangle(Pattern* patterns,
 
 
 //! \}
-} //end of namespace tex_nm1
+} //end of namespace nm1_version
 #endif

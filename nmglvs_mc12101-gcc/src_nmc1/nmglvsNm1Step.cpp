@@ -98,6 +98,9 @@ SECTION(".text_nmglvs") int nmglvsNm1Step()
 	case NMC1_TEXTURE2D: 
 		NMGL_Texture2d(cntxt, command);
 		break;
+	case NMC1_SHADE_MODEL: 
+		NMGL_ShadeModel(cntxt, command);
+		break;
 	default:
 		break;
 	}
