@@ -101,6 +101,20 @@ void nmglDisable(NMGLenum cap) {
 		//code
 		break;
 	
+	case NMGL_SHARED_TEXTURE_PALETTE_EXT:
+		cntxt->texState.using_shared_palette = NMGL_FALSE;
+		cntxt->texState.use_local_palettes();
+		
+		//NM_Command command_stp1;
+		command.instr = NMC1_USE_LOCAL_PALETTE;
+		command.params[0] = CommandArgument(cntxt->texState.palette_pointers[0]);
+		//command_stp1.params[1] = CommandArgument(width);
+		//command_stp1.params[2] = CommandArgument(nm1_name);
+		//cntxt->synchro.pushInstr(&command_stp1);	
+		NMGL_SetValue(command);
+		
+		break;
+
 	case NMGL_TEXTURE_2D:
 		cntxt->texState.texUnits[cntxt->texState.activeTexUnitIndex].enabled = NMGL_FALSE;
 		cntxt->texState.textureEnabled = cntxt->texState.textureEnabled & (~((unsigned int)1 << cntxt->texState.activeTexUnitIndex));
@@ -110,7 +124,13 @@ void nmglDisable(NMGLenum cap) {
 		NMGL_SetValue(command);
 		//cntxt->synchro.writeInstr(1, NMC1_TEXTURE2D, NMGL_FALSE);
 		break;
-	
+
+	case NMGL_LINE_STIPPLE:
+		break;
+
+	case NMGL_POLYGON_STIPPLE:
+		break;
+
 	case NMGL_CLIP_PLANE0:
 		//code
 		break;

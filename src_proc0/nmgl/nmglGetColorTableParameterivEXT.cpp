@@ -11,14 +11,14 @@ void nmglGetColorTableParameterivEXT (NMGLenum target, NMGLenum pname, NMGLint *
 {
 	int i=0;
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
-	if (target !=NMGL_TEXTURE_2D) {cntxt->error=NMGL_INVALID_ENUM;return;}	
+	if ((target != NMGL_TEXTURE_2D)&& (target != NMGL_SHARED_TEXTURE_PALETTE_EXT )) {cntxt->error=NMGL_INVALID_ENUM;return;}	
 	switch(pname)
 	{
 		case NMGL_COLOR_TABLE_FORMAT_EXT:
 				*params=NMGL_COLOR_INDEX8_EXT;
 				break;
 		case NMGL_COLOR_TABLE_WIDTH_EXT:
-				*params=ActiveTexObjectP->palette.width;
+				*params=*ActiveTexObjectP->palette.width;
 				break;
 		case NMGL_COLOR_TABLE_RED_SIZE_EXT:
 				*params=1;

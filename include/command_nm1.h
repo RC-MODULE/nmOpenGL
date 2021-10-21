@@ -27,12 +27,14 @@ void NMGL_SetActiveTexture(NMGL_Context_NM1 *context, NM_Command *command);
 void NMGL_SetMipmapLvlPointer(NMGL_Context_NM1 *context, NM_Command *command);
 void NMGL_BindActiveTexObject(NMGL_Context_NM1 *context, NM_Command *command);
 void NMGL_SetWhf(NMGL_Context_NM1 *context, NM_Command *command);
-void NMGL_SetColorPalette(NMGL_Context_NM1 *context, NM_Command *command);
+//void NMGL_SetColorPalette(NMGL_Context_NM1 *context, NM_Command *command);
 void NMGL_SetTexEnvColor(NMGL_Context_NM1 *context, NM_Command *command);
 void NMGL_SetTexEnvMode(NMGL_Context_NM1 *context, NM_Command *command);
 void NMGL_SetTexParami(NMGL_Context_NM1 *context, NM_Command *command);
 void NMGL_Texture2d(NMGL_Context_NM1 *context, NM_Command *command);
 void NMGL_Finish(NMGL_Context_NM1 *context, NM_Command *command);
+void NMGL_UseSharedPalette(NMGL_Context_NM1 *context, NM_Command *command);
+void NMGL_UseLocalPalette(NMGL_Context_NM1 *context, NM_Command *command);
 void NMGL_ShadeModel(NMGL_Context_NM1 *context, NM_Command *command);
 
 

@@ -1,6 +1,7 @@
 #ifndef __NMGLTEX_NM1_H__
 #define __NMGLTEX_NM1_H__
-
+#include "hal.h"
+#include "hal_target.h"
 #include "nmgltex_common.h"
 
 struct NMGL_Context_NM1_Texture {
@@ -32,7 +33,7 @@ struct NMGL_Context_NM1_Texture {
 	/**
 	* Массив текстурных объектов.
 	*/
-	TexObject texObjects [NMGL_MAX_TEX_OBJECTS];
+	TexObject texObjects [(NMGL_MAX_TEX_OBJECTS)];
 	/**
 	* Массивы текущих текстурных координат.
 	* Тип Array определен в demo3d_common.h
@@ -67,14 +68,27 @@ struct NMGL_Context_NM1_Texture {
 	* текстурирование активировано.
 	*/
 	unsigned int textureEnabled;
+/**
+	* Массив длин палитр для каждого текстурного объекта
+	*/
 
+	unsigned int* paletts_widths_pointers[(NMGL_MAX_TEX_OBJECTS+1)];
 	
+/*
+Указатель на общую палитру цветов
+*/
+NMGLubyte * palette_pointers[(NMGL_MAX_TEX_OBJECTS+1)];//0-shared
+
+
+unsigned int palette_is_shared; 
+
 #ifdef TEST_NMGL_TEX_FUNC
 	//ref value to check the accessibility of nmpu1
 	unsigned int refValue = 0xC0DEC0DE;
 #endif //TEST_NMGL_TEX_FUNC
 	
 	void init(){	
+		palette_is_shared = 0;
 		activeTexUnit = NMGL_TEXTURE0;
 		activeTexUnitIndex = 0;
 		clientActiveTexUnit = NMGL_TEXTURE0;
@@ -86,8 +100,50 @@ struct NMGL_Context_NM1_Texture {
 		//curTexCoords
 		//unpackAlignment
 		textureEnabled = 0;
-		INIT_TEX_UNITS();
-		INIT_TEX_OBJECTS();
+		
+	/*
+		for (int i = 0; i < NMGL_MAX_TEX_OBJECTS+1; i++)
+		{
+			paletts_widths[i]=1;
+			if(i == 0)
+			{
+				palette_pointers[i]=init_mem_palettes();
+			}
+			else{
+				palette_pointers[i]=(NMGLubyte*)palette_pointers[i-1]+NMGL_MAX_PALETTE_WIDTH*RGBA_TEXEL_SIZE_UBYTE;
+			}
+			for(int j=0;j<3;j++)
+			{
+				*((NMGLubyte*)palette_pointers[i]+j)=0x1;
+			}
+		}
+	*/
+//INIT_PALETTE_MEMORY_POINTERS();
+
+//palette_pointers[0] = (NMGLubyte *)halSyncAddr(0, 0);
+//paletts_widths_pointers[0] = (unsigned int*)halSyncAddr(0, 0);
+
+
+DEBUG_PRINT(("got palette_pointer:0x%x",palette_pointers[0]));
+DEBUG_PRINT(("got palette_width pointer:0x%x",paletts_widths_pointers[0]));
+for (int i = 1; i < NMGL_MAX_TEX_OBJECTS+1; i++)
+{
+	palette_pointers[i] = (NMGLubyte*)palette_pointers[i-1]+NMGL_MAX_PALETTE_WIDTH*RGBA_TEXEL_SIZE_UBYTE;
+	paletts_widths_pointers[i] = (unsigned int*)((unsigned int*)paletts_widths_pointers[0]+i);
+}
+INIT_TEX_UNITS();
+INIT_TEX_OBJECTS(); 
+/*for(int i = 0; i < NMGL_MAX_TEX_OBJECTS; i++) 
+{
+	 //texObjects[i].palette.setColors(palette_pointers[i+1]);
+	 texObjects[i].palette.colors=(NMGLubyte*)0xAAA+i;
+}
+*/
+	}
+	NMGLubyte* get_palette_by_name_p(NMGLuint name)
+	{
+		
+		return (NMGLubyte*)(palette_pointers[(name+1)]);	
 	}
 	
 };

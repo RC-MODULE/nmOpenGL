@@ -18,16 +18,17 @@ Internal format:	RGBA,RGB,LUMINANCE,ALPHA,LUMINANCE_ALPHA
 The format must match the base internal format (no conversions from
 one format to another during texture image processing are supported.
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void nmglColorSubTableEXT (NMGLenum target, NMGLsizei start, NMGLsizei count, NMGLenum format, NMGLenum type, const void *data);
+void nmglColorSubTableEXT (NMGLenum target, NMGLsizei start, NMGLsizei count, NMGLenum format, NMGLenum type, const void *data1);
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	
 */
-extern NMGLubyte mem_palette [NMGL_MAX_PALETTE_WIDTH*RGBA_TEXEL_SIZE_UBYTE*NMGL_MAX_TEX_OBJECTS];
-void *data=&mem_palette[(int)(NMGL_MAX_PALETTE_WIDTH*RGBA_TEXEL_SIZE_UBYTE*(NMGL_MAX_TEX_OBJECTS-1))];   
+//extern NMGLubyte mem_palette [NMGL_MAX_PALETTE_WIDTH*RGBA_TEXEL_SIZE_UBYTE*NMGL_MAX_TEX_OBJECTS];
+//void *data1=&mem_palette[(int)(NMGL_MAX_PALETTE_WIDTH*RGBA_TEXEL_SIZE_UBYTE*(NMGL_MAX_TEX_OBJECTS-1))];   
+void* data1;
 //////////////////////////////////////////////////////////////////////////////////////////////
-int check_palette(NMGL_Context_NM0 *cntxt,NMGLsizei start,NMGLsizei count,const void* data);
-void inc_palette(void* data,NMGLsizei curw);
+int check_palette(NMGL_Context_NM0 *cntxt,NMGLsizei start,NMGLsizei count,const void* data1);
+void inc_palette(void* data1,NMGLsizei curw);
 ///
 //Тестовые сценарии
 int nmglColorSubTableEXT_wrongArgs_isError();
@@ -36,23 +37,22 @@ int nmglColorSubTableEXT_setContext_ContextCorrect();
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 
-int check_palette(NMGL_Context_NM0 *cntxt,NMGLsizei start,NMGLsizei count,const void* data)
+int check_palette(NMGLubyte* palette,NMGLsizei start,NMGLsizei count,const void* data1)
 {
 	int i=0;
 	for (i=0;i<count*RGBA_TEXEL_SIZE_UBYTE;i++)
 	{
-		if (start+i/RGBA_TEXEL_SIZE_UBYTE >= ActiveTexObjectP->palette.width) break;
-		if(*((NMGLubyte*)ActiveTexObjectP->palette.colors+start*RGBA_TEXEL_SIZE_UBYTE+i) != *((NMGLubyte*)data+i)) return 0;
+		
+		if(*((NMGLubyte*)palette + start*RGBA_TEXEL_SIZE_UBYTE+i) != *((NMGLubyte*)data1+i)) return 0;
 	}
 return 1;//match
 }
-void inc_palette(void* data,NMGLsizei curw)
+void inc_palette(void* data1,NMGLsizei curw)
 {
 	int i=0;
-	for(i=0;i<curw;i++)
-	{
-		if(i>=NMGL_MAX_PALETTE_WIDTH) break;
-		*((NMGLubyte*)data+i)+=1;
+	for(i=0;i<curw*RGBA_TEXEL_SIZE_UBYTE;i++)
+	{	
+		*((NMGLubyte*)data1+i)+=1;
 	}
 }
 
@@ -83,37 +83,44 @@ int nmglColorSubTableEXT_wrongArgs_isError()
 
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
 	
+
+	data1=(NMGLubyte*)cntxt->texState.get_palette_by_name_p(NMGL_MAX_TEX_OBJECTS-1);
 	cntxt->error=NMGL_NO_ERROR;
 	cntxt->texState.activeTexUnit=NMGL_TEXTURE0;
 	cntxt->texState.activeTexUnitIndex=0;
 	cntxt->texState.texUnits[0].boundTexObject=&cntxt->texState.texObjects[0];
 
-nmglColorSubTableEXT (NMGL_TEXTURE_2D+1, 0, NMGL_MAX_PALETTE_WIDTH, NMGL_RGBA,NMGL_UNSIGNED_BYTE ,data);
+nmglColorSubTableEXT (NMGL_TEXTURE_2D+1, 0, NMGL_MAX_PALETTE_WIDTH, NMGL_RGBA,NMGL_UNSIGNED_BYTE ,data1);
 TEST_ASSERT(cntxt->error==NMGL_INVALID_ENUM);
 cntxt->error=NMGL_NO_ERROR;
 
-nmglColorSubTableEXT (NMGL_TEXTURE_2D, -1, NMGL_MAX_PALETTE_WIDTH, NMGL_RGBA,NMGL_UNSIGNED_BYTE ,data);
+nmglColorSubTableEXT (NMGL_TEXTURE_2D, -1, NMGL_MAX_PALETTE_WIDTH, NMGL_RGBA,NMGL_UNSIGNED_BYTE ,data1);
 TEST_ASSERT(cntxt->error==NMGL_INVALID_VALUE);
 cntxt->error=NMGL_NO_ERROR;
 
-nmglColorSubTableEXT (NMGL_TEXTURE_2D, NMGL_MAX_PALETTE_WIDTH, 0, NMGL_RGBA,NMGL_UNSIGNED_BYTE ,data);
+nmglColorSubTableEXT (NMGL_TEXTURE_2D, NMGL_MAX_PALETTE_WIDTH, 0, NMGL_RGBA,NMGL_UNSIGNED_BYTE ,data1);
 TEST_ASSERT(cntxt->error==NMGL_INVALID_VALUE);
 cntxt->error=NMGL_NO_ERROR;
 
-nmglColorSubTableEXT (NMGL_TEXTURE_2D, NMGL_MAX_PALETTE_WIDTH, 1, NMGL_RGBA,NMGL_UNSIGNED_BYTE ,data);
+nmglColorSubTableEXT (NMGL_TEXTURE_2D, NMGL_MAX_PALETTE_WIDTH, 1, NMGL_RGBA,NMGL_UNSIGNED_BYTE ,data1);
 TEST_ASSERT(cntxt->error==NMGL_INVALID_VALUE);
 cntxt->error=NMGL_NO_ERROR;
 
-nmglColorSubTableEXT (NMGL_TEXTURE_2D, 0, NMGL_MAX_PALETTE_WIDTH, NMGL_RGBA+1,NMGL_UNSIGNED_BYTE ,data);
+nmglColorSubTableEXT (NMGL_TEXTURE_2D, 0, NMGL_MAX_PALETTE_WIDTH, NMGL_RGBA+1,NMGL_UNSIGNED_BYTE ,data1);
 TEST_ASSERT(cntxt->error==NMGL_INVALID_VALUE);
 cntxt->error=NMGL_NO_ERROR;
 
-nmglColorSubTableEXT (NMGL_TEXTURE_2D, 0, NMGL_MAX_PALETTE_WIDTH, NMGL_RGBA,NMGL_UNSIGNED_BYTE+1 ,data);
+nmglColorSubTableEXT (NMGL_TEXTURE_2D, 0, NMGL_MAX_PALETTE_WIDTH, NMGL_RGBA,NMGL_UNSIGNED_BYTE+1 ,data1);
 TEST_ASSERT(cntxt->error==NMGL_INVALID_ENUM);
 cntxt->error=NMGL_NO_ERROR;
-nmglColorSubTableEXT (NMGL_TEXTURE_2D, 0, NMGL_MAX_PALETTE_WIDTH, NMGL_RGBA,NMGL_UNSIGNED_BYTE,data);
+nmglColorSubTableEXT (NMGL_TEXTURE_2D, 0, NMGL_MAX_PALETTE_WIDTH, NMGL_RGBA,NMGL_UNSIGNED_BYTE,data1);
 TEST_ASSERT(cntxt->error==NMGL_NO_ERROR);
-	
+nmglColorSubTableEXT (NMGL_TEXTURE_2D, 1, NMGL_MAX_PALETTE_WIDTH, NMGL_RGBA,NMGL_UNSIGNED_BYTE,data1);
+TEST_ASSERT(cntxt->error==NMGL_NO_ERROR);
+nmglColorSubTableEXT (NMGL_SHARED_TEXTURE_PALETTE_EXT, 0, NMGL_MAX_PALETTE_WIDTH, NMGL_RGBA,NMGL_UNSIGNED_BYTE,data1);
+TEST_ASSERT(cntxt->error==NMGL_NO_ERROR);
+nmglColorSubTableEXT (NMGL_SHARED_TEXTURE_PALETTE_EXT, 1, NMGL_MAX_PALETTE_WIDTH, NMGL_RGBA,NMGL_UNSIGNED_BYTE,data1);
+TEST_ASSERT(cntxt->error==NMGL_NO_ERROR);
 	return 0;
 }
 //------------------------------------------------------------------------------
@@ -121,27 +128,46 @@ TEST_ASSERT(cntxt->error==NMGL_NO_ERROR);
 int nmglColorSubTableEXT_setContext_ContextCorrect()
 {
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
-
+data1=(NMGLubyte*)cntxt->texState.get_palette_by_name_p(NMGL_MAX_TEX_OBJECTS-1);
+	NMGLint n_bytes=0; 
 	cntxt->error=NMGL_NO_ERROR;
 	cntxt->texState.activeTexUnit=NMGL_TEXTURE0;
 	cntxt->texState.activeTexUnitIndex=0;
 	cntxt->texState.texUnits[0].boundTexObject=&cntxt->texState.texObjects[0];
 	NMGLsizei  start=0,i;
 	NMGLsizei curw=(NMGL_MAX_PALETTE_WIDTH)>>2;
-	ActiveTexObjectP->palette.width=NMGL_MAX_PALETTE_WIDTH;
-	ActiveTexObjectP->palette.colors=(NMGLubyte*)(mem_palette+ActiveTexObjectP->name*NMGL_MAX_PALETTE_WIDTH*RGBA_TEXEL_SIZE_UBYTE);//delete
+	unsigned int psize=  NMGL_MAX_PALETTE_WIDTH;
+	n_bytes = curw;
+
+	//ActiveTexObjectP->palette.setWidth_p(&psize);
+	*ActiveTexObjectP->palette.width = psize;
+	*cntxt->texState.paletts_widths_pointers[0] = psize;
+	//ActiveTexObjectP->palette.setColors((NMGLubyte*)(cntxt->texState.get_palette_by_name_p(ActiveTexObjectP->name)));//delete
+	ActiveTexObjectP->palette.colors = ((NMGLubyte*)(cntxt->texState.get_palette_by_name_p(ActiveTexObjectP->name)));//delete
 	for(i=0;i<NMGL_MAX_PALETTE_WIDTH;i++)
 	{
-		*((NMGLubyte*)ActiveTexObjectP->palette.colors+i)=0x1+i;
-		*((NMGLubyte*)data+i)=0x0;
+		*((NMGLubyte*)ActiveTexObjectP->palette.getColors()+i)=0x1+i;
+		*((NMGLubyte*)cntxt->texState.palette_pointers[0]+i)=0x2+i;
+		*((NMGLubyte*)data1+i)=0x0;
 	}
-	for(i=0,start=0;i<NMGL_MAX_PALETTE_WIDTH*3;i++,++start)
+	while(curw <= psize)
 	{
-		if(i%NMGL_MAX_PALETTE_WIDTH == 0) {start =0;curw<<=2;}
-		nmglColorSubTableEXT (NMGL_TEXTURE_2D, start,curw-start, NMGL_RGBA, NMGL_UNSIGNED_BYTE, data);
-		 if(!check_palette(cntxt,start,curw-start,data)){TEST_ASSERT(0);}
-		inc_palette(data,curw);
+		for(start=0;start<NMGL_MAX_PALETTE_WIDTH;++start)
+		{
+		
+			if( start+curw > psize ) n_bytes = psize-start;
+			else {n_bytes = curw;} 
+			
+			nmglColorSubTableEXT (NMGL_TEXTURE_2D, start,n_bytes, NMGL_RGBA, NMGL_UNSIGNED_BYTE, data1);
+			nmglColorSubTableEXT (NMGL_SHARED_TEXTURE_PALETTE_EXT, start,n_bytes, NMGL_RGBA, NMGL_UNSIGNED_BYTE, data1);
+			 if(!check_palette(cntxt->texState.palette_pointers[ActiveTexObjectP->name+1],start,n_bytes,data1)){TEST_ASSERT(0);}
+			 if(!check_palette(cntxt->texState.palette_pointers[0],start,n_bytes,data1)){TEST_ASSERT(0);}
+			inc_palette(data1,curw);
+			
+		}
+		curw<<=1;
 	}
+	
 
 	
 	

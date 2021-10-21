@@ -1,6 +1,6 @@
 #include "demo3d_nm1.h"
 
-
+#define DEBUG_LEVEL 1
 
 SECTION(".text_demo3d") void NMGL_SetActiveTexture(NMGL_Context_NM1 *cntxt, NM_Command *command) {
 	cntxt->texState.activeTexUnitIndex = command->params[0].ui;
@@ -48,10 +48,63 @@ SECTION(".text_demo3d") void NMGL_SetWhf(NMGL_Context_NM1 *cntxt, NM_Command *co
 	}
 }
 
-SECTION(".text_demo3d") void NMGL_SetColorPalette(NMGL_Context_NM1 *cntxt, NM_Command *command){
-	cntxt->texState.texObjects[command->params[2].i].palette.colors=(NMGLubyte*)command->params[0].p;
-	cntxt->texState.texObjects[command->params[2].i].palette.width=command->params[1].i;				
+SECTION(".text_demo3d") void NMGL_UseSharedPalette(NMGL_Context_NM1 *cntxt, NM_Command *command){
+		cntxt->texState.palette_is_shared = 1;
+		/*
+		for (int i = 0; i < NMGL_MAX_TEX_OBJECTS+1; i++)
+		{
+			cntxt->texState.palette_pointers[i]=(NMGLubyte*)((NMGLubyte*)command->params[0].p+i*NMGL_MAX_PALETTE_WIDTH*RGBA_TEXEL_SIZE_UBYTE);
+		}
+		*/
+		for (int i = 0; i < NMGL_MAX_TEX_OBJECTS; i++)
+		{	
+			//cntxt->texState.texObjects[i].palette.setColors(cntxt->texState.palette_pointers[0]);
+			cntxt->texState.texObjects[i].palette.colors = cntxt->texState.palette_pointers[0];
+			//cntxt->texState.texObjects[i].palette.setWidth_p(&cntxt->texState.paletts_widths[0]);
+			cntxt->texState.texObjects[i].palette.width = cntxt->texState.paletts_widths_pointers[0];
+		}				
 }
+SECTION(".text_demo3d") void NMGL_UseLocalPalette(NMGL_Context_NM1 *cntxt, NM_Command *command){
+		cntxt->texState.palette_is_shared = 0;
+		/*
+		for (int i = 0; i < NMGL_MAX_TEX_OBJECTS; i++)
+		{
+			cntxt->texState.palette_pointers[i]=(NMGLubyte*)((NMGLubyte*)command->params[0].p+i*NMGL_MAX_PALETTE_WIDTH*RGBA_TEXEL_SIZE_UBYTE);
+		}
+		*/
+		for (int i = 0; i < NMGL_MAX_TEX_OBJECTS; i++)
+		{
+			//cntxt->texState.texObjects[i].palette.setColors(cntxt->texState.palette_pointers[(i+1)]);
+			cntxt->texState.texObjects[i].palette.colors = cntxt->texState.palette_pointers[(i+1)];
+			cntxt->texState.texObjects[i].palette.width = cntxt->texState.paletts_widths_pointers[(i+1)];
+			//cntxt->texState.texObjects[i].palette.setWidth_p(&cntxt->texState.paletts_widths[(i+1)]);
+		}				
+}
+/*
+SECTION(".text_demo3d") void NMGL_SetColorPalette(NMGL_Context_NM1 *cntxt, NM_Command *command){
+	
+		//cntxt->texState.palette_pointers[command->params[2].i] = (NMGLubyte*)command->params[0].p;
+		//cntxt->texState.paletts_widths[command->params[2].i]=command->params[1].i;
+		
+		DEBUG_PRINT2(("nm1 got width==%d from object:%d\n", command->params[1].i, command->params[2].i));
+		if(command->params[2].i >0){
+		DEBUG_PRINT2(("READ from object=%d\n", *cntxt->texState.texObjects[command->params[2].i].palette.width));
+		}
+		
+DEBUG_PRINT2(("Pointers/ObjectPointers:\n"));
+		DEBUG_PRINT2(("   pointer[0]=0x%x\n", cntxt->texState.palette_pointers[0]));
+		for(int i=1;i<NMGL_MAX_TEX_OBJECTS+1;i++)
+		{
+			DEBUG_PRINT2(("   pointer[%d]=0x%x objpointer=0x%x\n", i,cntxt->texState.paletts_widths_pointers[i],cntxt->texState.texObjects[i-1].palette.colors));
+		}
+DEBUG_PRINT2(("widthAddress/ObjectWidthPointer:\n"));
+		DEBUG_PRINT2(("   widthAddr[0]=0x%x width=%d\n", &cntxt->texState.paletts_widths_pointers[0],cntxt->texState.paletts_widths_pointers[0],*cntxt->texState.paletts_widths[0]));
+		for(int i=1;i<NMGL_MAX_TEX_OBJECTS+1;i++)
+		{
+			DEBUG_PRINT2(("   widthAddr[%d]=0x%x objpointer=0x%x width=%d\n", i,cntxt->texState.paletts_widths_pointers[i],cntxt->texState.texObjects[i-1].palette.width,*cntxt->texState.texObjects[i-1].palette.width));
+		}
+		
+}*/
 
 SECTION(".text_demo3d") void NMGL_SetTexEnvColor(NMGL_Context_NM1 *cntxt, NM_Command *command){
 	Intfloat temp;

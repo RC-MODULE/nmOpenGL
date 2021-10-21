@@ -85,6 +85,8 @@
 #define NMGL_CW                             0x0900
 #define NMGL_CCW                            0x0901
 #define NMGL_CURRENT_COLOR                  0x0B00
+#define NMGL_CURRENT_RASTER_COLOR           0x0B04
+#define NMGL_CURRENT_RASTER_TEXTURE_COORDS  0x0B06
 #define NMGL_CURRENT_NORMAL                 0x0B02
 #define NMGL_CURRENT_TEXTURE_COORDS         0x0B03
 #define NMGL_POINT_SIZE                     0x0B11
@@ -337,6 +339,11 @@
 #define NMGL_DOT3_RGB                       0x86AE
 #define NMGL_DOT3_RGBA                      0x86AF
 
+#define NMGL_SMOOTH_POINT_SIZE_GRANULARITY  0x0B13
+#define NMGL_SMOOTH_LINE_WIDTH_GRANULARITY  0x0B23
+
+//EXT_shared_texture_palette
+#define NMGL_SHARED_TEXTURE_PALETTE_EXT     0x81FB
 //EXT_paletted_texture
 #define NMGL_COLOR_TABLE_FORMAT_EXT         0x80D8
 #define NMGL_COLOR_TABLE_WIDTH_EXT          0x80D9
@@ -346,6 +353,9 @@
 #define NMGL_COLOR_TABLE_ALPHA_SIZE_EXT     0x80DD
 #define NMGL_COLOR_TABLE_LUMINANCE_SIZE_EXT 0x80DE
 #define NMGL_COLOR_TABLE_INTENSITY_SIZE_EXT 0x80DF
+
+#define NMGL_LINE_STIPPLE                   0x0B24
+#define NMGL_POLYGON_STIPPLE                0x0B42
 
 #ifdef DEBUG 
 #define DEBUG_PRINT(x) printf x  

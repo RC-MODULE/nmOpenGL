@@ -115,8 +115,39 @@ struct TexImage2D {
 */
 struct EXT_palette
 {
-    NMGLubyte *colors;
-    NMGLint width;
+   // private:
+
+        NMGLubyte *colors;
+        unsigned int* width;
+
+   // public:
+        void init(unsigned int* widths, NMGLubyte* colors)
+        {
+            width=widths;
+            colors=colors;
+        }
+        unsigned int  getWidth()
+        {
+            return *width;
+        }
+        unsigned int* getWidth_p()
+        {
+            return width;
+        }
+       NMGLubyte*  getColors()
+        {
+            return colors;
+        }
+        void setColors(NMGLubyte* colors)
+        {
+            colors=colors;
+        }
+        void setWidth_p(unsigned int* widthp)
+        {
+            width=widthp;
+        }
+
+
 };
 /**
 *   Текстурный объект
@@ -162,7 +193,7 @@ struct TexObject{
     */
     EXT_palette palette;
 
-    NMGLubyte init_palette[RGBA_TEXEL_SIZE_UBYTE];
+    //NMGLubyte init_palette[RGBA_TEXEL_SIZE_UBYTE];
     /*
     * Флаг, определяющий, было ли задано изображение (через glTexImage2D):
     * 0 - glTexImage2D ещё не вызывалась
@@ -221,6 +252,26 @@ typedef union Intfloat {
 	float f;
 } Intfloat;
 //----------------------------FUNCTIONS----------------------------------------------------------------------------------
+
+#define INIT_PALETTE_MEMORY_POINTERS() for (int i = 0; i < NMGL_MAX_TEX_OBJECTS+1; i++) \
+{                                                                                       \
+    paletts_widths_pointers[i]=get_palette_width_p(i);                                  \
+    *paletts_widths_pointers[i]=0x1;                                                    \
+    if(i == 0)                                                                          \
+    {                                                                                   \
+        palette_pointers[i]=init_mem_palettes();                                        \
+    }                                                                                   \
+    else{                                                                               \
+        palette_pointers[i]=(NMGLubyte*)palette_pointers[i-1]+NMGL_MAX_PALETTE_WIDTH*RGBA_TEXEL_SIZE_UBYTE; \
+        }                                                                               \
+        for(int j=0;j<4;j++)                                                            \
+        {                                                                               \
+            *((NMGLubyte*)palette_pointers[i]+j)=0x1;                                   \
+        }                                                                               \
+}
+
+
+
 #define INIT_TEX_UNITS() for (int i = 0; i < NMGL_MAX_TEX_UNITS; i++) \
 {                                                                     \
     texUnits[i].enabled=NMGL_FALSE;                                   \
@@ -243,13 +294,9 @@ typedef union Intfloat {
 			texObjects[i].texMinFilter=NMGL_NEAREST_MIPMAP_LINEAR;      \
 			texObjects[i].texMagFilter=NMGL_LINEAR;                     \
 			texObjects[i].imageIsSet=0;                                 \
-			texObjects[i].init_palette[0]=0x1;                          \
-			texObjects[i].init_palette[1]=0x1;                          \
-			texObjects[i].init_palette[2]=0x1;                          \
-			texObjects[i].init_palette[3]=0x1;                          \
-            texObjects[i].palette.width=1;                              \
-            texObjects[i].palette.colors=&texObjects[i].init_palette[0];\
-			for(int j=0;j<=NMGL_MAX_MIPMAP_LVL;j++)                     \
+            texObjects[i].palette.width=paletts_widths_pointers[i+1];   \
+            texObjects[i].palette.colors=palette_pointers[i+1];         \
+            for(int j=0;j<=NMGL_MAX_MIPMAP_LVL;j++)                     \
             {                                                           \
             texObjects[i].texImages2D[j].pixels=NULL;                   \
 				texObjects[i].texImages2D[j].internalformat=NMGL_RGBA;  \
@@ -257,7 +304,7 @@ typedef union Intfloat {
                 texObjects[i].texImages2D[j].height=0;                  \
                 }			                                            \
 		}
-
+//texObjects[i].palette.init(&paletts_widths[(i+1)],palette_pointers[i+1]); \
 //===================PRINTING==============================================================
 
 #endif

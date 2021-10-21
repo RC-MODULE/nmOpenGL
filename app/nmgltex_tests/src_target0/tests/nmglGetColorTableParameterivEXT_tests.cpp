@@ -57,9 +57,11 @@ int nmglGetColorTableParameterivEXT_setColorTable_contextCorrect()
 	NMGLint array;
 	nmglGetColorTableParameterivEXT (NMGL_TEXTURE_2D, NMGL_COLOR_TABLE_FORMAT_EXT, &array);
 TEST_ASSERT(array==NMGL_COLOR_INDEX8_EXT);
-	ActiveTexObjectP->palette.width=NMGL_MAX_PALETTE_WIDTH;
+	unsigned int curwidth=NMGL_MAX_PALETTE_WIDTH;
+	//ActiveTexObjectP->palette.width=NMGL_MAX_PALETTE_WIDTH;
+	ActiveTexObjectP->palette.setWidth_p(&curwidth);
 	nmglGetColorTableParameterivEXT (NMGL_TEXTURE_2D, NMGL_COLOR_TABLE_WIDTH_EXT, &array);
-TEST_ASSERT(array==ActiveTexObjectP->palette.width);
+TEST_ASSERT(array == *ActiveTexObjectP->palette.width);
 	nmglGetColorTableParameterivEXT (NMGL_TEXTURE_2D, NMGL_COLOR_TABLE_RED_SIZE_EXT, &array);
 TEST_ASSERT(array==1);
 array=0;
