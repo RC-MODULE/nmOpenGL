@@ -72,27 +72,16 @@ int run_nmglGenTextures_test()
 int nmglGenTextures_genTextures_correctCountAndValues()
 {
 	
-	//printf("Values[0]=%d",values[0]);
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
 	uTexName=cntxt->texState.lastTexName;
 	cntxt->texState.lastTexName=0;
-	//printf("context pointer is %x\n",cntxt);
-	//printf("lastTexName=%d\n",cntxt->texState.lastTexName);
-//cntxt->texState.lastTexName=0;
-	nmglGenTextures(1,values);
-		//printf("values[0]=%d\n",values[0]);
 
-	//printf("Values[0]=%d",values[0]);
+	nmglGenTextures(1,values);
+	
 	nmglGenTextures(1,values+1);
 	nmglGenTextures(3,values+2);
 	nmglGenTextures(4,values+5);
-	/*printf("Values are:\n");
-	for(iter=0;iter<9;iter++)
-	{
-		printf("%d ",values[iter]);
-	}
-	printf("\n");
-		*/
+	
 	for(iter=0;iter<9;iter++)
 	{
 		if(values[iter]!=(iter+1))
@@ -113,16 +102,8 @@ int nmglGenTextures_genTextures_correctCountAndValues()
 //------------------------------------------------------------------------------
 // проверка корректности установки соответствующих полей контекста
 int nmglGenTextures_genTextures_setContextCorrect()
-{
-	//CHANGE_REPORT
-	/*
-		1 вызов - 10
-		2 вызов - 11
-		3 вызов - 12,13,14
-		4 вызов - 15,16,17,18
-	*/
+{	
 	int cs=0;
-	//cntxt.lastTexName=0;
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
 	uTexName=cntxt->texState.lastTexName;
 	cntxt->texState.lastTexName=0;

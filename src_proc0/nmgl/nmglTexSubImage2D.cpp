@@ -33,10 +33,10 @@ void nmglTexSubImage2D (NMGLenum target, NMGLint level, NMGLint xoffset, NMGLint
 	//line=ActiveTexObjectP->texImages2D[level].width*size;
 	line=ActiveTexObjectP->texImages2D[level].width*tSize;
 
-	paddings=((width*tSize) % cntxt->texState.unpackAlignment == 0) ? 0 : (cntxt->texState.unpackAlignment - (width*tSize) % cntxt->texState.unpackAlignment);
+	paddings=((width*tSize) % cntxt->unpackAlignment == 0) ? 0 : (cntxt->unpackAlignment - (width*tSize) % cntxt->unpackAlignment);
 
-//DEBUG_PRINT1(("width=%d height=%d alignment=%d paddings=%d\n",width, height,cntxt->texState.unpackAlignment, paddings ));
-//DEBUG_PRINT(("width=%d height=%d alignment=%d paddings=%d\n",width, height,cntxt->texState.unpackAlignment, paddings ));
+//DEBUG_PRINT1(("width=%d height=%d alignment=%d paddings=%d\n",width, height,cntxt->unpackAlignment, paddings ));
+//DEBUG_PRINT(("width=%d height=%d alignment=%d paddings=%d\n",width, height,cntxt->unpackAlignment, paddings ));
 	//xstart=yoffset*line+xoffset*size;
 //DEBUG_PRINT(("texelUbytes00=%x TheOne=%x\n",getTexelSizeUbytes(ActiveTexObjectP->texImages2D[level].internalformat)),1+getTexelSizeUbytes(ActiveTexObjectP->texImages2D[level].internalformat));
 //DEBUG_PRINT(("format is=%x should be %x\n",ActiveTexObjectP->texImages2D[level].internalformat,NMGL_RGBA));

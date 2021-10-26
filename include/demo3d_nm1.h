@@ -24,6 +24,41 @@ private:
 	//NMGL_Context_NM1() {};		// недоступный конструктор
 	//~NMGL_Context_NM1() {};		// и деструктор
 public:
+	void init_elements(){
+		unpackAlignment=4;
+		packAlignment=4;
+		
+		point.smooth_enabled = NMGL_FALSE;
+		line.smooth_enabled  = NMGL_FALSE;
+		line.stipple.enabled = NMGL_FALSE;
+		
+		line.width			 = 1.0;
+		line.stipple.factor	 = 1;
+		line.stipple.pattern = 0xFFFF;
+
+		polygon.stipple.enabled 	= NMGL_FALSE;
+
+		polygon.offset_fill_enabled = NMGL_FALSE;
+
+
+		alpha_test.enabled 	 = NMGL_FALSE;
+		alpha_test.func		 = NMGL_ALWAYS;
+		alpha_test.ref		 = 0;
+
+
+		stencil_test.enabled = NMGL_FALSE;
+		stencil_test.func = NMGL_ALWAYS;
+		stencil_test.ref = 0;
+		stencil_test.mask = (NMGLuint)-1;
+
+		
+		blend.enabled = NMGL_FALSE;
+		blend.sfactor = NMGL_ONE;
+		blend.dfactor = NMGL_ZERO;
+
+
+	}
+	
 	static void create() {
 		//context = (NMGL_Context_NM1*)halMalloc32(sizeof32(NMGL_Context_NM1));
 	}
@@ -90,6 +125,21 @@ public:
 	
 	NMGL_Context_NM1_Texture texState;
 	int shadeModel;
+
+	NMGLint unpackAlignment;
+	NMGLint packAlignment;
+
+	Point_cntxt_t	point;
+	Line_cntxt_t 	line;
+	Polygon_cntxt_t polygon;
+	Blend_cntxt_t	blend;
+
+	NMGL_AlphaTest   alpha_test;
+
+	NMGL_StencilTest stencil_test;
+
+	
+
 
 };
 

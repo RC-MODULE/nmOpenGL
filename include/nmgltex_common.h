@@ -72,8 +72,45 @@ int getTexelSizeUbytes(NMGLint format);
 */
 #define NMGL_TEX_MAX_LEVEL 1000
 
+/**
+* Длина стороны квадратного шаблона для PoligonStipple в NMGLubyte 
+*/
+#define NMGL_POLIGON_STIPPLE_SIDE_UBYTES 32
 
 
+/**
+*  Структура для хранения данных режима Blend
+*/
+struct Blend{
+    NMGLenum sfactor;
+    NMGLenum dfactor;
+};
+
+/**
+*  Структура для хранения данных режима пунктирных многоугольников PolygonOffset
+*/
+struct PolygonOffset{
+    NMGLfloat factor;
+    NMGLfloat units;
+};
+
+
+/**
+*  Структура для хранения данных режима пунктирных многоугольников PolygonStipple
+*/
+struct PolygonStipple{
+    NMGLboolean flag;
+    NMGLubyte *pattern;
+};
+
+/**
+*  Структура для хранения данных режима пунктирных линий LineStipple
+*/
+struct LineStipple{
+    NMGLboolean flag;
+    NMGLint factor;
+    NMGLushort pattern;
+};
 /**
 *  Структура для хранения изображения текстуры, загружаемой функцией nmglTexImage2D
 */

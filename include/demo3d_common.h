@@ -60,6 +60,8 @@ typedef v4nm8s rgb8888;
 
 #define COUNT_POLYGONS_BUFFER 4
 #define COUNT_IMAGE_BUFFER 8
+
+#define NMGL_POLIGON_STIPPLE_SIDE_UBYTES 32
 //#define COUNT_IMAGE_BUFFER 2
 
 
@@ -175,6 +177,24 @@ struct WindowInfo {
 	Size imageSize;
 };
 
+struct NMGL_DepthTest{
+	NMGLboolean enabled;
+	NMGLenum func;
+};
+
+
+
+struct NMGL_StencilTest{
+	NMGLboolean enabled;
+	NMGLenum func;
+	NMGLint ref;
+	NMGLuint mask;
+};
+struct NMGL_AlphaTest{
+	NMGLboolean enabled;
+	NMGLenum func;
+	NMGLclampf ref;
+};
 struct NMGL_ScissorTest {
 	ImageSegments segments;
 	Vector2 origin;
@@ -182,4 +202,73 @@ struct NMGL_ScissorTest {
 	int isEnabled;
 	int dummy;
 };
+
+/*!
+ *  \brief Структура контекста для хранения прааметров BlendFunc
+ */
+struct Blend_cntxt_t{
+	NMGLboolean  enabled;
+	NMGLenum  	sfactor;
+	NMGLenum  	dfactor;
+};
+
+/*!
+ *  \brief Структура контекста для хранения настроек использования точек 
+ */
+struct Point_cntxt_t {
+	NMGLboolean smooth_enabled;
+	//TODO: move NMGLfloat size here (pointRadius) 
+
+};
+
+
+
+/*!
+ *  \brief Структура контекста для хранения настроек штриховки полигонов
+ */
+struct PolygonStipple_t{
+	NMGLboolean enabled;
+	NMGLubyte  *pattern;
+};
+
+/*!
+ *  \brief Структура контекста для хранения смещения полигонов
+ */
+struct PolygonOffset_t{
+	NMGLfloat factor;
+	NMGLfloat units;
+	
+};
+/*!
+ *  \brief Структура контекста для хранения настроек использования полигонов 
+ */
+struct Polygon_cntxt_t {
+	
+	PolygonStipple_t stipple;
+	PolygonOffset_t  offset;
+	NMGLboolean 	 offset_fill_enabled;
+	//TODO: move CullFace settings here
+};
+
+
+
+	/*!
+ *  \brief Структура контекста для хранения настроек штриховки линий
+ */
+struct LineStipple_t{
+	NMGLboolean enabled;
+	NMGLint 	factor;
+	NMGLushort  pattern;
+};
+
+/*!
+ *  \brief Структура контекста для хранения настроек использования линий 
+ */
+struct Line_cntxt_t {
+	NMGLboolean smooth_enabled;
+	NMGLfloat width;
+	LineStipple_t stipple;
+
+};
+
 #endif

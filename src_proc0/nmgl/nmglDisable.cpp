@@ -15,11 +15,18 @@ void nmglDisable(NMGLenum cap) {
 	switch (cap) {
 
 	case NMGL_ALPHA_TEST:
-		//code
+		cntxt->alpha_test.enabled = NMGL_FALSE;
+		command.instr = NMC1_ALPHA_TEST;
+		command.params[0] = CommandArgument(NMGL_FALSE);
+		NMGL_SetValue(command);
 		break;
 
 	case NMGL_BLEND:
-		//code
+		cntxt->blend.enabled = NMGL_FALSE;
+		command.instr = NMC1_BLEND;
+		command.params[0] = CommandArgument(NMGL_FALSE);
+		NMGL_SetValue(command);
+		
 		break;
 		
 	case NMGL_COLOR_LOGIC_OP:
@@ -39,6 +46,8 @@ void nmglDisable(NMGLenum cap) {
 		break;	
 
 	case NMGL_DEPTH_TEST:
+
+		cntxt->depth_test.enabled = NMGL_FALSE;
 		command.instr = NMC1_DEPTH;
 		command.params[0] = CommandArgument(NMGL_FALSE);
 		NMGL_SetValue(command);
@@ -53,7 +62,10 @@ void nmglDisable(NMGLenum cap) {
 		break;
 		
 	case NMGL_LINE_SMOOTH:
-		//code
+		cntxt->line.smooth_enabled = NMGL_FALSE;
+		command.instr = NMC1_LINE_SMOOTH;
+		command.params[0] = CommandArgument(NMGL_FALSE);
+		NMGL_SetValue(command);
 		break;
 		
 	case NMGL_MULTISAMPLE:
@@ -65,7 +77,10 @@ void nmglDisable(NMGLenum cap) {
 		break;
 		
 	case NMGL_POINT_SMOOTH:
-		//code
+		cntxt->point.smooth_enabled = NMGL_FALSE;
+		command.instr = NMC1_POINT_SMOOTH;
+		command.params[0] = CommandArgument(NMGL_FALSE);
+		NMGL_SetValue(command);
 		break;
 		
 /*	case NMGL_POINT_SPRITE_OES:
@@ -73,7 +88,10 @@ void nmglDisable(NMGLenum cap) {
 		break;*/
 		
 	case NMGL_POLYGON_OFFSET_FILL:
-		//code
+		cntxt->polygon.offset_fill_enabled = NMGL_FALSE;
+		command.instr = NMC1_POLYGON_OFFSET_FILL;
+		command.params[0] = CommandArgument(NMGL_FALSE);
+		NMGL_SetValue(command);
 		break;
 		
 	case NMGL_RESCALE_NORMAL:
@@ -98,11 +116,11 @@ void nmglDisable(NMGLenum cap) {
 		break;
 		
 	case NMGL_STENCIL_TEST:
-		//code
+		cntxt->stencil_test.enabled = NMGL_FALSE;
 		break;
 	
 	case NMGL_SHARED_TEXTURE_PALETTE_EXT:
-		cntxt->texState.using_shared_palette = NMGL_FALSE;
+		cntxt->texState.shared_palette_enabled = NMGL_FALSE;
 		cntxt->texState.use_local_palettes();
 		
 		//NM_Command command_stp1;
@@ -126,9 +144,17 @@ void nmglDisable(NMGLenum cap) {
 		break;
 
 	case NMGL_LINE_STIPPLE:
+		cntxt->line.stipple.enabled = NMGL_FALSE;
+		command.instr = NMC1_LINE_STIPPLE;
+		command.params[0] = CommandArgument(NMGL_FALSE);
+		NMGL_SetValue(command);
 		break;
 
 	case NMGL_POLYGON_STIPPLE:
+		cntxt->polygon.stipple.enabled = NMGL_FALSE;
+		command.instr = NMC1_POLYGON_STIPPLE;
+		command.params[0] = CommandArgument(NMGL_FALSE);
+		NMGL_SetValue(command);
 		break;
 
 	case NMGL_CLIP_PLANE0:

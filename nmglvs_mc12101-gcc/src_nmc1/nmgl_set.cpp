@@ -39,3 +39,18 @@ SECTION(".text_demo3d") void NMGL_PointSize(NMGL_Context_NM1 *context, NM_Comman
 }
 
 
+
+SECTION(".text_demo3d") void NMGL_AlphaTestSet(NMGL_Context_NM1 *context, NM_Command *command){
+	context->alpha_test.enabled = command->params[0].b;
+}
+
+SECTION(".text_demo3d") void NMGL_BlendSet(NMGL_Context_NM1 *context, NM_Command *command){
+	context->blend.enabled = command->params[0].b;
+}
+
+
+SECTION(".text_demo3d") void NMGL_PolygonOffsetFill(NMGL_Context_NM1 *context, NM_Command *command){
+	context->polygon.offset_fill_enabled = command->params[0].b;
+}
+
+

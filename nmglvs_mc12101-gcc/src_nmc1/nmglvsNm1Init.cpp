@@ -91,6 +91,7 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 		
 	cntxt->texState.palette_pointers[0] = (NMGLubyte *)halSyncAddr(0, 0);
 	cntxt->texState.paletts_widths_pointers[0] = (unsigned int*)halSyncAddr(0, 0);
+	cntxt->polygon.stipple.pattern = (NMGLubyte *)halSyncAddr(0, 0);
 
 		setHeap(11);
 		cntxt->patterns = myMallocT<PatternsArray>();
@@ -109,6 +110,7 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 		cntxt->colorBuffer.init(cntxt->imageConnector.ptrHead(), WIDTH_IMAGE, HEIGHT_IMAGE);
 		cntxt->depthBuffer.init(depthImage, WIDTH_IMAGE, HEIGHT_IMAGE);
 		cntxt->texState.init();
+		cntxt->init_elements();
 		cntxt->shadeModel=NMGL_SMOOTH;
 	}
 	catch (int &e) {

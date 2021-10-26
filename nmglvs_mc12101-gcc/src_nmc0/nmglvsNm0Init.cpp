@@ -65,7 +65,7 @@ extern  NMGLubyte* mipmap; //texture memory
 
 NMGLubyte* palettes_p; // texture palette memory
 unsigned int* palettes_widths_p; // texture palettes widths memory
-
+NMGLubyte* PolygonsStipplePattern_p;
 int counter = 0;
 
 #define PRINT_ADDR(a) printf(#a"=%p\n", a)
@@ -142,13 +142,23 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
             return -1;
         }
 		halSyncAddr(palettes_widths_p, 1);
-		
-		
+		try
+    	{
+    	   PolygonsStipplePattern_p = (NMGLubyte*)myMallocT<NMGLubyte>(NMGL_POLIGON_STIPPLE_SIDE_UBYTES*(NMGL_POLIGON_STIPPLE_SIDE_UBYTES>>3)); 
+    	}
+    	catch(int& e)
+    	{
+    	    printf("Error! Cant allocate PolygonsStipplePattern memory!");
+    	    return -1;
+    	}
+		halSyncAddr(PolygonsStipplePattern_p, 1);
 		
 		setHeap(7);
 		NMGL_Context_NM0::create();
 		cntxt = NMGL_Context_NM0::getContext();
 		cntxt->synchro.init(synchroData);		
+
+		cntxt->polygon.stipple.pattern = PolygonsStipplePattern_p;
 
 		setHeap(10);
 		PolygonsArray* trianData = myMallocT<PolygonsArray>(36);

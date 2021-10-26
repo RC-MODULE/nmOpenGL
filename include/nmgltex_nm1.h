@@ -56,12 +56,8 @@ struct NMGL_Context_NM1_Texture {
 	*  Используется для доступа к клиентскому активному текстурному модулю
 	*/
 	unsigned int clientActiveTexUnitIndex;
-	/**
-	*  Количество байт, по которому выровнены данные в загруженном текстурном изображении.
-	*  Устанавливается в функции glPixelStore и испльзуется при чтении данных из загруженного изображения текстуры.
-	*  По спецификации требуется.
-	*/
-	unsigned int unpackAlignment;
+	
+	
     
 	/**
 	* Признак активации текстурирования (битовая маска). Значение > 0 означает, что 
@@ -79,8 +75,12 @@ struct NMGL_Context_NM1_Texture {
 */
 NMGLubyte * palette_pointers[(NMGL_MAX_TEX_OBJECTS+1)];//0-shared
 
-
+/*
+Флаг использования разделяемой палитры
+*/
 unsigned int palette_is_shared; 
+
+
 
 #ifdef TEST_NMGL_TEX_FUNC
 	//ref value to check the accessibility of nmpu1
@@ -88,6 +88,10 @@ unsigned int palette_is_shared;
 #endif //TEST_NMGL_TEX_FUNC
 	
 	void init(){	
+
+		
+		
+
 		palette_is_shared = 0;
 		activeTexUnit = NMGL_TEXTURE0;
 		activeTexUnitIndex = 0;

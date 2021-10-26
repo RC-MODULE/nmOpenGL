@@ -80,7 +80,6 @@ struct NMGL_Context_NM0_Texture {
 	*  Устанавливается в функции glPixelStore и используется при чтении данных из загруженного изображения текстуры.
 	*  По спецификации требуется.
 	*/
-	unsigned int unpackAlignment;
     
 	/**
 	* Признак активации текстурирования (битовая маска). Значение > 0 означает, что
@@ -91,17 +90,18 @@ struct NMGL_Context_NM0_Texture {
 	/**
 	* Flag
 	*/
-	NMGLboolean using_shared_palette;
+	NMGLboolean shared_palette_enabled;
 	
 	//NMGLubyte * palettes_pointer;
 	NMGLubyte * palette_pointers[(NMGL_MAX_TEX_OBJECTS+1)];//0-shared
-
+	
 
 	void init(){
 	
 		//firstFreeTexByte=NULL;
 		//palettes_pointer = init_mem_palettes();
-		using_shared_palette = NMGL_FALSE;
+		
+		shared_palette_enabled = NMGL_FALSE;
 		activeTexUnit = NMGL_TEXTURE0;
 		activeTexUnitIndex = 0;
 		clientActiveTexUnit = NMGL_TEXTURE0;
@@ -148,7 +148,7 @@ for (int i = 1; i < NMGL_MAX_TEX_OBJECTS+1; i++)
 		INIT_TEX_UNITS();
 //==========TEX_OBJ_INIT====================================
 		INIT_TEX_OBJECTS();
-		unpackAlignment=4;
+		
 		textureEnabled = 0;
 	}
 	void use_shared_palette()

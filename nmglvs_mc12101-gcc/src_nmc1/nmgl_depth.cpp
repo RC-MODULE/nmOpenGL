@@ -18,3 +18,5 @@ SECTION(".text_demo3d") void NMGL_DepthFunc(NMGL_Context_NM1 *context, NM_Comman
 SECTION(".text_demo3d") void NMGL_Depth(NMGL_Context_NM1 *context, NM_Command *command){
 	context->depthBuffer.enabled = command->params[0].b;
 }
+
+

@@ -135,7 +135,7 @@ int copyPixels(const void* pfrom,NMGLint format,NMGLint width,NMGLint height,voi
 	NMGLubyte* pfrom_cur;
 	
 	int padLength=0;
-	int unpackAlign=cntxt->texState.unpackAlignment;
+	int unpackAlign=cntxt->unpackAlignment;
     //size=4;//32bit word
    if(*pto==NULL)
    {

@@ -125,7 +125,7 @@ int cmpRefreshPixels(void* active,void *initial,void *subimageWpaddings,int pixs
     //int startsubx=
    // int startsuby=
 
-   int paddings=(subline % cntxt->texState.unpackAlignment == 0) ? 0 : (cntxt->texState.unpackAlignment - subline % cntxt->texState.unpackAlignment);
+   int paddings=(subline % cntxt->unpackAlignment == 0) ? 0 : (cntxt->unpackAlignment - subline % cntxt->unpackAlignment);
 	DEBUG_PRINT1(("\n\ncmpRpixels:width=%d height=%d\n",width,height));
 	DEBUG_PRINT1(("cmpRpixels:wsub=%d hsub=%d\n",wsub,hsub));
 	DEBUG_PRINT1(("cmpRpixels:xstart=%d ystart=%d\n",xstart,ystart));
@@ -229,7 +229,7 @@ int nmglTexSubImage2D_TexSubImage_contextStateCorrect()
 	cntxt->error=NMGL_NO_ERROR;
 	cntxt->texState.activeTexUnit=NMGL_TEXTURE0;
 	cntxt->texState.activeTexUnitIndex=0;
-	cntxt->texState.unpackAlignment=alignments[curAlignment];
+	cntxt->unpackAlignment=alignments[curAlignment];
 	cntxt->texState.texUnits[0].boundTexObject=&cntxt->texState.texObjects[0];
 	cntxt->texState.texObjects[0].imageIsSet=1;
 			
@@ -263,7 +263,7 @@ int nmglTexSubImage2D_TexSubImage_contextStateCorrect()
 						DEBUG_PRINT(("SubWidth=%d	SubHeight=%d \n",curw,curh));
 						}
 #endif
-						cntxt->texState.unpackAlignment=1;
+						cntxt->unpackAlignment=1;
 						copyPixels(ActiveTexObjectP->texImages2D[k].pixels,ActiveTexObjectP->texImages2D[k].internalformat,		ActiveTexObjectP->texImages2D[k].width,ActiveTexObjectP->texImages2D[k].height,(void**)&testarray,cntxt);
 						if(cmpPixelsUbytes(ActiveTexObjectP->texImages2D[k].pixels, testarray, ActiveTexObjectP->texImages2D[k].		width*ActiveTexObjectP->texImages2D[k].height*getTexelSizeUbytes(formats[curFormat])) != 1)
 						{
@@ -274,7 +274,7 @@ int nmglTexSubImage2D_TexSubImage_contextStateCorrect()
 						else {
 							DEBUG_PRINT1(("Active to initial copy operation ok!\n"));
 						}
-						cntxt->texState.unpackAlignment=alignments[curAlignment];
+						cntxt->unpackAlignment=alignments[curAlignment];
 						nmglTexSubImage2D (NMGL_TEXTURE_2D, k, i, j, curw, curh, formats[curFormat], NMGL_UNSIGNED_BYTE, pixels);
 
 						DEBUG_PRINT1(("k=%d i=%d j=%d\n",k,i,j));						
