@@ -43,6 +43,7 @@ struct LightingInfo {
 	void init() {
 		specularExp = 0;
 		isLighting = NMGL_FALSE;
+		isColorMaterial = NMGL_FALSE;
 
 		materialAmbient.vec[0] = 0.2f;
 		materialAmbient.vec[1] = 0.2f;
