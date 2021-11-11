@@ -214,6 +214,12 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 				nmppsConvert_32s32f((int*)cntxt->colorResult, cntxt->buffer0, cntxt->colorArray.size * localSize);
 				nmppsMulC_32f(cntxt->buffer0, (float*)cntxt->colorResult, 1.0 / 255.0, cntxt->colorArray.size * localSize);
 			}
+		} else{
+			cntxt->tmp.vec[0] = 1;
+			cntxt->tmp.vec[1] = 1;
+			cntxt->tmp.vec[2] = 1;
+			cntxt->tmp.vec[3] = 1;
+			set_v4nm32f(cntxt->colorResult, &cntxt->tmp, localSize);
 		}
 
 
@@ -224,13 +230,6 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 		if (cntxt->lightingInfo.isLighting) {
 			PROFILER_SIZE(localSize);
 			light(cntxt->vertexResult, cntxt->normalResult, cntxt->colorResult, localSize);
-		}
-		else {
-			cntxt->tmp.vec[0] = 1;
-			cntxt->tmp.vec[1] = 1;
-			cntxt->tmp.vec[2] = 1;
-			cntxt->tmp.vec[3] = 1;
-			set_v4nm32f(cntxt->colorResult, &cntxt->tmp, localSize);
 		}
 		//nmprofiler_disable();
 		//color
