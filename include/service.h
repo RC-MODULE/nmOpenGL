@@ -130,6 +130,174 @@ extern "C" void convertRGB565_RGB8888(const rgb565 *srcArray, rgb8888 *dstArray,
 extern "C" int vertexPrimitiveRepack(const v4nm32f *srcVertex, const v4nm32f *srcColor, nm32f *dstVertex, v4nm32f *dstColor, int mode, int vertCount);
 //! \}
 
+static void initDstTrianglePointers(TrianglePointers *dst, int outputTrianglesCount)
+{
+	const int ATTR_PER_VERTEX = 10;
+	nm32f *buf = (nm32f *)(dst + 1);
+	dst->v0.x = buf;
+	dst->v0.y = dst->v0.x + outputTrianglesCount;
+	dst->v0.z = dst->v0.y + outputTrianglesCount;
+	dst->v0.w = dst->v0.z + outputTrianglesCount;
+	dst->v0.s = dst->v0.w + outputTrianglesCount;
+	dst->v0.t = dst->v0.s + outputTrianglesCount;
+    dst->v0.color = (v4nm32f *)(dst->v0.t + outputTrianglesCount);
+
+	dst->v1.x = buf + ATTR_PER_VERTEX * outputTrianglesCount;
+	dst->v1.y = dst->v1.x + outputTrianglesCount;
+	dst->v1.z = dst->v1.y + outputTrianglesCount;
+	dst->v1.w = dst->v1.z + outputTrianglesCount;
+	dst->v1.s = dst->v1.w + outputTrianglesCount;
+	dst->v1.t = dst->v1.s + outputTrianglesCount;
+    dst->v1.color = (v4nm32f *)(dst->v1.t + outputTrianglesCount);
+	
+	dst->v2.x = buf + ATTR_PER_VERTEX * 2 * outputTrianglesCount;
+	dst->v2.y = dst->v2.x + outputTrianglesCount;
+	dst->v2.z = dst->v2.y + outputTrianglesCount;
+	dst->v2.w = dst->v2.z + outputTrianglesCount;
+	dst->v2.s = dst->v2.w + outputTrianglesCount;
+	dst->v2.t = dst->v2.s + outputTrianglesCount;
+    dst->v2.color = (v4nm32f *)(dst->v2.t + outputTrianglesCount);
+}
+
+/*!
+ *  \ingroup service_api
+ *  \defgroup repackToPrimitives_t repackToPrimitives_t
+ *  \brief Функции переупаковки вершин TRIANGLES
+ *  \author Жиленков Иван
+ *
+ *  \param srcVertex [in] Входной массив вершин
+ *  \param srcColor [in] Входной массив цветов 
+ *  \param srcTex [in] Входной массив текстурных координат 
+ *  \param dstVertex [out] Выходной массив треугольников
+ *  \param vertexAmount [in] Количество вершин во входных массивах для обработки 
+ *  \return Возвращает количество треугольников в выходном массиве
+ *  \details Details
+ *  \par
+ *  \xmlonly
+ *  	<testperf>
+ *   		<param name=" srcVertex "> im10 </param>
+ *   		<param name=" srcColor ">  im20 </param>
+ *   		<param name=" srcTex ">    im30 </param>
+ *   		<param name=" dstVertex "> im40 </param>
+ *   		<param name=" vertexAmount "> 48 96 192 384 </param>
+ *			<init>
+ *				initDstTrianglePointers(dstVertex, vertexAmount);
+ *			</init>
+ *			<size> vertexAmount </size>
+ *  	</testperf>
+ *  	<testperf>
+ *   		<param name=" srcVertex "> im00 im10 im20 im30 im40 im50 im60 im70 </param>
+ *   		<param name=" srcColor ">  im01 im11 im21 im31 im41 im51 im61 im71 </param>
+ *   		<param name=" srcTex ">    im02 im12 im22 im32 im42 im52 im62 im72 </param>
+ *			<param name=" dstVertex "> im03 im13 im23 im33 im43 im53 im63 im73 </param>
+ *   		<param name=" vertexAmount "> 48 96 </param>
+ *			<init>
+ *				initDstTrianglePointers(dstVertex, vertexAmount);
+ *			</init>
+ *			<size> vertexAmount </size>
+ *  	</testperf>
+ *  \endxmlonly
+ */
+ //! \{
+extern "C" int repackToPrimitives_t(const v4nm32f *srcVertex,
+	const v4nm32f *srcColor,
+	const v2nm32f *srcTex,
+	TrianglePointers *dstVertex,
+	int vertexAmount);
+ //! \}
+
+/*!
+ *  \ingroup service_api
+ *  \defgroup repackToPrimitives_ts repackToPrimitives_ts
+ *  \brief Функции переупаковки вершин TRIANGLE_STRIP
+ *
+ *  \param srcVertex [in] Входной массив вершин
+ *  \param srcColor [in] Входной массив цветов 
+ *  \param srcTex [in] Входной массив текстурных координат 
+ *  \param dstVertex [out] Выходной массив треугольников
+ *  \param vertexAmount [in] Количество вершин во входных массивах для обработки 
+ *  \return Возвращает количество треугольников в выходном массиве
+ *  \details Details
+ *  \par
+ *  \xmlonly
+ *  	<testperf>
+ *   		<param name=" srcVertex "> im10 </param>
+ *   		<param name=" srcColor ">  im20 </param>
+ *   		<param name=" srcTex ">    im30 </param>
+ *   		<param name=" dstVertex "> im40 </param>
+ *   		<param name=" vertexAmount "> 34 66 136 264 </param>
+ *			<init>
+ *				initDstTrianglePointers(dstVertex, vertexAmount);
+ *			</init>
+ *			<size> vertexAmount </size>
+ *  	</testperf>
+ *  	<testperf>
+ *   		<param name=" srcVertex "> im00 im10 im20 im30 im40 im50 im60 im70 </param>
+ *   		<param name=" srcColor ">  im01 im11 im21 im31 im41 im51 im61 im71 </param>
+ *   		<param name=" srcTex ">    im02 im12 im22 im32 im42 im52 im62 im72 </param>
+ *			<param name=" dstVertex "> im03 im13 im23 im33 im43 im53 im63 im73 </param>
+ *   		<param name=" vertexAmount "> 34 66 </param>
+ *			<init>
+ *				initDstTrianglePointers(dstVertex, vertexAmount);
+ *			</init>
+ *			<size> vertexAmount </size>
+ *  	</testperf>
+ *  \endxmlonly
+ */
+ //! \{
+extern "C" int repackToPrimitives_ts(const v4nm32f *srcVertex,
+	const v4nm32f *srcColor,
+	const v2nm32f *srcTex,
+	TrianglePointers *dstVertex,
+	int vertexAmount);
+ //! \}
+
+/*!
+ *  \ingroup service_api
+ *  \defgroup repackToPrimitives_tf repackToPrimitives_tf
+ *  \brief Функции переупаковки вершин треугольников TRIANGLE_FAN
+ *
+ *  \param srcVertex [in] Входной массив вершин
+ *  \param srcColor [in] Входной массив цветов 
+ *  \param srcTex [in] Входной массив текстурных координат 
+ *  \param dstVertex [out] Выходной массив треугольников
+ *  \param vertexAmount [in] Количество вершин во входных массивах для обработки 
+ *  \return Возвращает количество треугольников в выходном массиве
+ *  \details Details
+ *  \par
+ *  \xmlonly
+ *  	<testperf>
+ *   		<param name=" srcVertex "> im10 </param>
+ *   		<param name=" srcColor ">  im20 </param>
+ *   		<param name=" srcTex ">    im30 </param>
+ *   		<param name=" dstVertex "> im40 </param>
+ *   		<param name=" vertexAmount "> 34 66 136 264 </param>
+ *			<init>
+ *				initDstTrianglePointers(dstVertex, vertexAmount);
+ *			</init>
+ *			<size> vertexAmount </size>
+ *  	</testperf>
+ *  	<testperf>
+ *   		<param name=" srcVertex "> im00 im10 im20 im30 im40 im50 im60 im70 </param>
+ *   		<param name=" srcColor ">  im01 im11 im21 im31 im41 im51 im61 im71 </param>
+ *   		<param name=" srcTex ">    im02 im12 im22 im32 im42 im52 im62 im72 </param>
+ *			<param name=" dstVertex "> im03 im13 im23 im33 im43 im53 im63 im73 </param>
+ *   		<param name=" vertexAmount "> 34 66 </param>
+ *			<init>
+ *				initDstTrianglePointers(dstVertex, vertexAmount);
+ *			</init>
+ *			<size> vertexAmount </size>
+ *  	</testperf>
+ *  \endxmlonly
+ */
+ //! \{
+extern "C" int repackToPrimitives_tf(const v4nm32f *srcVertex,
+	const v4nm32f *srcColor,
+	const v2nm32f *srcTex,
+	TrianglePointers *dstVertex,
+	int vertexAmount);
+ //! \}
+
 /**
 \defgroup texCoordsRepack_f texCoordsRepack
 \ingroup service_api
@@ -213,6 +381,8 @@ struct Triangle {
 	nm32f edgeSize(int i) const;
 	bool isTooBig(nm32f xMax, nm32f yMax) const;
 	edgeProjection edgeGetProjection(int i) const;
+	nm32f GetWidth(void) const;
+	nm32f GetHeight(void) const;
 };
 
 typedef struct Vertices 
@@ -270,6 +440,7 @@ static int pushFrontWclips(Buffer *wbuf, Wclips *wclips);
 static int popBackWclips(Buffer *wbuf, Wclips *wclips);
 
 int triangulateOneTriangle(const Triangle& tr, nm32f xMax, nm32f yMax, Buffer *verticesStack, Buffer *colorsStack, Buffer *texcoordsStack, Buffer *wclipsStack);
+//int triangulateOneTriangle(const Triangle &tr, nm32f xMax, nm32f yMax, Buffer *verticesStack, Buffer *colorsStack);
 int splitOneTriangle(const Triangle& tr, nm32f xMax, nm32f yMax, Buffer *buf);
 
 /*
@@ -385,5 +556,9 @@ static void srcVertexInit(nm32f *srcVertex, int srcCount)
 //! \{
 int triangulate(const nm32f *srcVertex, const v4nm32f *srcColor, const nm32f *srcTexcoords, const nm32f *srcWclip, int srcCount, int maxWidth, int maxHeight, int maxDstSize, nm32f *dstVertex, v4nm32f *dstColor, nm32f *dstTexcoords, nm32f *dstWclip, int *srcTreatedCount);
 //! \}
+
+extern "C" int buildMatrix(nm32f *x, nm32f *y, nm32f *z, const nm32f *ab_dxy, const nm32f *dz, int k);
+extern "C" int splitTrs(TrianglePointers *inTrs, int srcCount, int maxWidth, int maxHeight, int maxDstSize, TrianglePointers *outTrs, int *srcTreatedCount);
+extern "C" void nmppsConvert_32f32s_ceil(const nm32f* pSrcVec, nm32s* pDstVec, int nSize);
 
 #endif //__SERVICE_H__

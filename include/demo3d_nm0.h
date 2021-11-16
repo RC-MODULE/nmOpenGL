@@ -1389,27 +1389,23 @@ extern "C"{
 	 */
 	void tripleMulC_32f(float* src1, float* src2, float* src3, float C, float* dst1, float* dst2, float* dst3, int size);
 
-	/*!
-	 *  \ingroup service_api
-	 *  \defgroup repackToPrimitives repackToPrimitives
-	 *  \brief Функции переупаковки вершин
-	 *  \author Жиленков Иван
-	 *  
-	 *  \param srcVertex [in] Description for srcVertex
-	 *  \param srcColor [in] Description for srcColor
-	 *  \param srcTex [in] Description for srcTex
-	 *  \param dstVertex [in] Description for dstVertex
-	 *  \param vertexAmount [in] Description for vertexAmount
-	 *  \return Return description
-	 *  \details Details
-	 *  
-	 */
-	 //! \{
-	int repackToPrimitives_t(const v4nm32f *srcVertex,
-		const v4nm32f *srcColor,
-		const v2nm32f *srcTex,
-		TrianglePointers *dstVertex,
-		int vertexAmount);
+    /*!                                                      
+     *  \ingroup service_api                                 
+     *  \defgroup repackToPrimitives_l[sl] repackToPrimitives_l[sl]
+     *  \brief Функции переупаковки вершин линий
+     *  \author Жиленков Иван                                
+     *                                                       
+ 	 *  \param srcVertex [in] Входной массив вершин
+ 	 *  \param srcColor [in] Входной массив цветов 
+ 	 *  \param srcTex [in] Входной массив текстурных координат 
+ 	 *  \param dstVertex [out] Выходной массив линий
+ 	 *  \param vertexAmount [in] Количество вершин во входных массивах для обработки 
+     *  \return Возвращает количество линий в выходном массиве                           
+     *  \details Details                                     
+     *                                                       
+     */                                                      
+     //! \{                                                  
+
 	// Functions for TEXTURE_ENABLED macro enabled/disabled
 	int repackToPrimitives_t_full(const v4nm32f *srcVertex,
 		const v4nm32f *srcColor,
@@ -1421,16 +1417,8 @@ extern "C"{
 		const v2nm32f *srcTex,
 		TrianglePointers *dstVertex,
 		int vertexAmount);
-	int repackToPrimitives_ts(const v4nm32f *srcVertex,
-		const v4nm32f *srcColor,
-		const v2nm32f *srcTex,
-		TrianglePointers *dstVertex,
-		int vertexAmount);
-	int repackToPrimitives_tf(const v4nm32f *srcVertex,
-		const v4nm32f *srcColor,
-		const v2nm32f *srcTex,
-		TrianglePointers *dstVertex,
-		int vertexAmount);
+
+	 
 	int repackToPrimitives_l(const v4nm32f *srcVertex,
 		const v4nm32f *srcColor,
 		const v2nm32f *srcTex,
