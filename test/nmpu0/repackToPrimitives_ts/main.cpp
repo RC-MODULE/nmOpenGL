@@ -11,7 +11,6 @@
 // Performance testing
 #include "time.h"
 
-
 void Print(nm32f *ptr, size_t size);
 void PrintV4nm32f(v4nm32f *ptr, size_t size);
 void ZeroV4nm32f(v4nm32f *ptr, size_t size);
@@ -40,15 +39,6 @@ int repackToPrimitives_ts_0_200_OutputTriangles_v2TextureCoordsAreCorrect();
 //Performance tests
 clock_t repackToPrimitive_ts_192Vertices();
 clock_t repackToPrimitive_ts_48Vertices();
-
-// TEMP test
-//int repackToPrimitives_ts(const v4nm32f *srcVertex,
-//	const v4nm32f *srcColor,
-//	const v2nm32f *srcTex,
-//	TrianglePointers *dstVertex,
-//	int vertexAmount);
-//
-
 
 void Print(nm32f *ptr, size_t size)
 {
@@ -80,7 +70,7 @@ void ZeroV4nm32f(v4nm32f *ptr, size_t size)
 
 int main(int argc, char **argv)
 {
-    //puts("VertexPrimitiveRepack tests: ");
+    puts("repackToPrimitives_ts tests: ");
 	RUN_TEST(repackToPrimitives_ts_0_200_OutputTriangles_AllDataAreCorrect);
 	RUN_TEST(repackToPrimitives_ts_0_200_OutputTriangles_v0CoordsAreCorrect);
 	RUN_TEST(repackToPrimitives_ts_0_200_OutputTriangles_v1CoordsAreCorrect);
