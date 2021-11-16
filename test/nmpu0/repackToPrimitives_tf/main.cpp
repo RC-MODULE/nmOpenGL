@@ -11,44 +11,34 @@
 // Performance testing
 #include "time.h"
 
-
 void Print(nm32f *ptr, size_t size);
 void PrintV4nm32f(v4nm32f *ptr, size_t size);
 void ZeroV4nm32f(v4nm32f *ptr, size_t size);
 void initializeInput(v4nm32f *srcVertex, v4nm32f *srcColor, v2nm32f *srcTex, int vertCount);
 void setDst(TrianglePointers *dst, nm32f *buf, int outputTrianglesCount);
-int repackToPrimitives_ts_nOutputTriangles_AllDataAreCorrect(int n);
-int repackToPrimitives_ts_nOutputTriangles_v0CoordsAreCorrect(int n);
-int repackToPrimitives_ts_nOutputTriangles_v0ColorsAreCorrect(int n);
-int repackToPrimitives_ts_nOutputTriangles_v1CoordsAreCorrect(int n);
-int repackToPrimitives_ts_nOutputTriangles_v1ColorsAreCorrect(int n);
-int repackToPrimitives_ts_nOutputTriangles_v2CoordsAreCorrect(int n);
-int repackToPrimitives_ts_nOutputTriangles_v2ColorsAreCorrect(int n);
-int repackToPrimitives_ts_nOutputTriangles_v0TextureCoordsAreCorrect(int n);
-int repackToPrimitives_ts_nOutputTriangles_v1TextureCoordsAreCorrect(int n);
-int repackToPrimitives_ts_nOutputTriangles_v2TextureCoordsAreCorrect(int n);
-int repackToPrimitives_ts_0_200_OutputTriangles_AllDataAreCorrect();
-int repackToPrimitives_ts_0_200_OutputTriangles_v0CoordsAreCorrect();
-int repackToPrimitives_ts_0_200_OutputTriangles_v1CoordsAreCorrect();
-int repackToPrimitives_ts_0_200_OutputTriangles_v2CoordsAreCorrect();
-int repackToPrimitives_ts_0_200_OutputTriangles_v0ColorsAreCorrect();
-int repackToPrimitives_ts_0_200_OutputTriangles_v1ColorsAreCorrect();
-int repackToPrimitives_ts_0_200_OutputTriangles_v2ColorsAreCorrect();
-int repackToPrimitives_ts_0_200_OutputTriangles_v0TextureCoordsAreCorrect();
-int repackToPrimitives_ts_0_200_OutputTriangles_v1TextureCoordsAreCorrect();
-int repackToPrimitives_ts_0_200_OutputTriangles_v2TextureCoordsAreCorrect();
+int repackToPrimitives_tf_nOutputTriangles_AllDataAreCorrect(int n);
+int repackToPrimitives_tf_nOutputTriangles_v0CoordsAreCorrect(int n);
+int repackToPrimitives_tf_nOutputTriangles_v0ColorsAreCorrect(int n);
+int repackToPrimitives_tf_nOutputTriangles_v1CoordsAreCorrect(int n);
+int repackToPrimitives_tf_nOutputTriangles_v1ColorsAreCorrect(int n);
+int repackToPrimitives_tf_nOutputTriangles_v2CoordsAreCorrect(int n);
+int repackToPrimitives_tf_nOutputTriangles_v2ColorsAreCorrect(int n);
+int repackToPrimitives_tf_nOutputTriangles_v0TextureCoordsAreCorrect(int n);
+int repackToPrimitives_tf_nOutputTriangles_v1TextureCoordsAreCorrect(int n);
+int repackToPrimitives_tf_nOutputTriangles_v2TextureCoordsAreCorrect(int n);
+int repackToPrimitives_tf_0_200_OutputTriangles_AllDataAreCorrect();
+int repackToPrimitives_tf_0_200_OutputTriangles_v0CoordsAreCorrect();
+int repackToPrimitives_tf_0_200_OutputTriangles_v1CoordsAreCorrect();
+int repackToPrimitives_tf_0_200_OutputTriangles_v2CoordsAreCorrect();
+int repackToPrimitives_tf_0_200_OutputTriangles_v0ColorsAreCorrect();
+int repackToPrimitives_tf_0_200_OutputTriangles_v1ColorsAreCorrect();
+int repackToPrimitives_tf_0_200_OutputTriangles_v2ColorsAreCorrect();
+int repackToPrimitives_tf_0_200_OutputTriangles_v0TextureCoordsAreCorrect();
+int repackToPrimitives_tf_0_200_OutputTriangles_v1TextureCoordsAreCorrect();
+int repackToPrimitives_tf_0_200_OutputTriangles_v2TextureCoordsAreCorrect();
 //Performance tests
-clock_t repackToPrimitive_ts_192Vertices();
-clock_t repackToPrimitive_ts_48Vertices();
-
-// TEMP test
-//int repackToPrimitives_ts(const v4nm32f *srcVertex,
-//	const v4nm32f *srcColor,
-//	const v2nm32f *srcTex,
-//	TrianglePointers *dstVertex,
-//	int vertexAmount);
-//
-
+clock_t repackToPrimitives_tf_192Vertices();
+clock_t repackToPrimitives_tf_48Vertices();
 
 void Print(nm32f *ptr, size_t size)
 {
@@ -80,24 +70,24 @@ void ZeroV4nm32f(v4nm32f *ptr, size_t size)
 
 int main(int argc, char **argv)
 {
-    //puts("VertexPrimitiveRepack tests: ");
-	RUN_TEST(repackToPrimitives_ts_0_200_OutputTriangles_AllDataAreCorrect);
-	RUN_TEST(repackToPrimitives_ts_0_200_OutputTriangles_v0CoordsAreCorrect);
-	RUN_TEST(repackToPrimitives_ts_0_200_OutputTriangles_v1CoordsAreCorrect);
-	RUN_TEST(repackToPrimitives_ts_0_200_OutputTriangles_v2CoordsAreCorrect);
-	RUN_TEST(repackToPrimitives_ts_0_200_OutputTriangles_v0ColorsAreCorrect);
-	RUN_TEST(repackToPrimitives_ts_0_200_OutputTriangles_v1ColorsAreCorrect);
-	RUN_TEST(repackToPrimitives_ts_0_200_OutputTriangles_v2ColorsAreCorrect);
-	RUN_TEST(repackToPrimitives_ts_0_200_OutputTriangles_v0TextureCoordsAreCorrect);
-	RUN_TEST(repackToPrimitives_ts_0_200_OutputTriangles_v1TextureCoordsAreCorrect);
-	RUN_TEST(repackToPrimitives_ts_0_200_OutputTriangles_v2TextureCoordsAreCorrect);
-	//RUN_ARG_TEST(repackToPrimitives_ts_nOutputTriangles, 65);
+    puts("repackToPrimitives_tf tests: ");
+	RUN_TEST(repackToPrimitives_tf_0_200_OutputTriangles_AllDataAreCorrect);
+	RUN_TEST(repackToPrimitives_tf_0_200_OutputTriangles_v0CoordsAreCorrect);
+	RUN_TEST(repackToPrimitives_tf_0_200_OutputTriangles_v1CoordsAreCorrect);
+	RUN_TEST(repackToPrimitives_tf_0_200_OutputTriangles_v2CoordsAreCorrect);
+	RUN_TEST(repackToPrimitives_tf_0_200_OutputTriangles_v0ColorsAreCorrect);
+	RUN_TEST(repackToPrimitives_tf_0_200_OutputTriangles_v1ColorsAreCorrect);
+	RUN_TEST(repackToPrimitives_tf_0_200_OutputTriangles_v2ColorsAreCorrect);
+	RUN_TEST(repackToPrimitives_tf_0_200_OutputTriangles_v0TextureCoordsAreCorrect);
+	RUN_TEST(repackToPrimitives_tf_0_200_OutputTriangles_v1TextureCoordsAreCorrect);
+	RUN_TEST(repackToPrimitives_tf_0_200_OutputTriangles_v2TextureCoordsAreCorrect);
+	//RUN_ARG_TEST(repackToPrimitives_tf_nOutputTriangles, 65);
 
 	puts("");
     puts("Performance tests: ");
 	clock_t dt[2];
-	dt[0] = repackToPrimitive_ts_192Vertices();
-	dt[1] = repackToPrimitive_ts_48Vertices();
+	dt[0] = repackToPrimitives_tf_192Vertices();
+	dt[1] = repackToPrimitives_tf_48Vertices();
 	for (int i = 0; i < 2; ++i){
 		printf("dt[%i] = %i\n\r", i + 1, (int)dt[i]);
 	}
@@ -136,31 +126,31 @@ void initializeExpectedOutput(TrianglePointers *dst_exp,
 {
 	if (trianglesCount > 0){
 		for (int i = 0; i < trianglesCount; i++){
-			dst_exp->v0.x[i] = srcVertex[2 * ((i + 1) >> 1)].vec[0];
-			dst_exp->v0.y[i] = srcVertex[2 * ((i + 1) >> 1)].vec[1];
-			dst_exp->v0.z[i] = srcVertex[2 * ((i + 1) >> 1)].vec[2];
-			dst_exp->v0.w[i] = srcVertex[2 * ((i + 1) >> 1)].vec[3];
+			dst_exp->v0.x[i] = srcVertex[0].vec[0];
+			dst_exp->v0.y[i] = srcVertex[0].vec[1];
+			dst_exp->v0.z[i] = srcVertex[0].vec[2];
+			dst_exp->v0.w[i] = srcVertex[0].vec[3];
 			// TEXTURING_PART
-			dst_exp->v0.s[i] = srcTex[2 * ((i + 1) >> 1)].v0;
-			dst_exp->v0.t[i] = srcTex[2 * ((i + 1) >> 1)].v1;
+			dst_exp->v0.s[i] = srcTex[0].v0;
+			dst_exp->v0.t[i] = srcTex[0].v1;
 			// TEXTURING_PART
-			dst_exp->v0.color[i].vec[0] = srcColor[2 * ((i + 1) >> 1)].vec[0];
-			dst_exp->v0.color[i].vec[1] = srcColor[2 * ((i + 1) >> 1)].vec[1];
-			dst_exp->v0.color[i].vec[2] = srcColor[2 * ((i + 1) >> 1)].vec[2];
-			dst_exp->v0.color[i].vec[3] = srcColor[2 * ((i + 1) >> 1)].vec[3];
+			dst_exp->v0.color[i].vec[0] = srcColor[0].vec[0];
+			dst_exp->v0.color[i].vec[1] = srcColor[0].vec[1];
+			dst_exp->v0.color[i].vec[2] = srcColor[0].vec[2];
+			dst_exp->v0.color[i].vec[3] = srcColor[0].vec[3];
 
-			dst_exp->v1.x[i] = srcVertex[i + ((~i)&1)].vec[0];
-			dst_exp->v1.y[i] = srcVertex[i + ((~i)&1)].vec[1];
-			dst_exp->v1.z[i] = srcVertex[i + ((~i)&1)].vec[2];
-			dst_exp->v1.w[i] = srcVertex[i + ((~i)&1)].vec[3];
+			dst_exp->v1.x[i] = srcVertex[i + 1].vec[0];
+			dst_exp->v1.y[i] = srcVertex[i + 1].vec[1];
+			dst_exp->v1.z[i] = srcVertex[i + 1].vec[2];
+			dst_exp->v1.w[i] = srcVertex[i + 1].vec[3];
 			// TEXTURING_PART
-			dst_exp->v1.s[i] = srcTex[i + ((~i)&1)].v0;
-			dst_exp->v1.t[i] = srcTex[i + ((~i)&1)].v1;
+			dst_exp->v1.s[i] = srcTex[i + 1].v0;
+			dst_exp->v1.t[i] = srcTex[i + 1].v1;
 			// TEXTURING_PART
-			dst_exp->v1.color[i].vec[0] = srcColor[i + ((~i)&1)].vec[0];
-			dst_exp->v1.color[i].vec[1] = srcColor[i + ((~i)&1)].vec[1];
-			dst_exp->v1.color[i].vec[2] = srcColor[i + ((~i)&1)].vec[2];
-			dst_exp->v1.color[i].vec[3] = srcColor[i + ((~i)&1)].vec[3];
+			dst_exp->v1.color[i].vec[0] = srcColor[i + 1].vec[0];
+			dst_exp->v1.color[i].vec[1] = srcColor[i + 1].vec[1];
+			dst_exp->v1.color[i].vec[2] = srcColor[i + 1].vec[2];
+			dst_exp->v1.color[i].vec[3] = srcColor[i + 1].vec[3];
 
 			dst_exp->v2.x[i] = srcVertex[i + 2].vec[0];         
 			dst_exp->v2.y[i] = srcVertex[i + 2].vec[1];         
@@ -250,7 +240,19 @@ void setDst(TrianglePointers *dst, nm32f *buf, int outputTrianglesCount)
     dst->v2.color = (v4nm32f *)(dst->v2.t + outputTrianglesCount);
 }
 
-int repackToPrimitives_ts_nOutputTriangles_AllDataAreCorrect(int n)
+//@case Все атрибуты выходных вершин (пространственные координаты, текстурные координаты, цвета) формируются корректно для n выходных треугольников; функция переупаковки при работе не изменяет лишние данные в выходных массивах
+	//@step Установить количество ZERO_COUNT дополнительных (нулевых) треугольников в выходном массиве, вершины которых не должны быть затронуты при работе функцией переупаковки, равным 4
+	//@step Установить количество входных вершин vertCount так, чтобы на выходе сформировалось n треугольников
+	//@step Определить ожидаемое количество треугольников expectedTrianglesCount (ближайшее четное для n справа), которые будут сформированы на выходе функцией переупаковки
+	//@step Установить полное количество треугольников на выходе outputTrianglesCount равным сумме количества ожидаемых треугольников expectedTrianglesCount и количества нулевых треугольников ZERO_COUNT 
+	//@step Создать и инициализировать входные массивы для хранения vertCount вершин: массив пространственных координат, массив текстурных координат, массив цветов 
+	//@step Создать массивы для хранения фактических и ожидаемых результатов работы функции
+	//@step Инициализировать массив фактических результатов работы функции 
+	//@step Инициализировать массив ожидаемых результатов работы функции (пространственные координаты, текстурные координаты, цвета)
+	//@step Вызвать функцию переупаковки repackToPrimitives_tf, передав ей необходимые аргументы
+	//@assert Сравнить значения всех атрибутов выходных вершин треугольников (пространственные координаты, текстурные координаты, цвета) с ожидаемыми значениями
+	//@pass Значения всех атрибутов выходных вершин треугольников (пространственные координаты, текстурные координаты, цвета), проверяемые на шаге #assert, совпадают с ожидаемыми значениями; при этом функция переупаковки не затрагивает вершины следующих (нулевых) треугольников в выходном массиве
+int repackToPrimitives_tf_nOutputTriangles_AllDataAreCorrect(int n)
 {
 	int trianglesCount = n;							// number of output triangles
 	// ZERO_COUNT - количество выходных параметров, которые должны остаться неизменными после работы функции
@@ -308,14 +310,26 @@ int repackToPrimitives_ts_nOutputTriangles_AllDataAreCorrect(int n)
 
 	// Act
     int res;
-	res = repackToPrimitives_ts(srcVertex, srcColor, srcTex, &dst, vertCount);
+	res = repackToPrimitives_tf(srcVertex, srcColor, srcTex, &dst, vertCount);
 
 	// Assert
     TEST_ARRAYS_EQUAL(real_output, expected_output, outputCoordCount);
     return 0;
 }
 
-int repackToPrimitives_ts_nOutputTriangles_v0CoordsAreCorrect(int n)
+//@case Пространственные координаты первых вершин формируются корректно для n выходных треугольников; функция переупаковки при работе не изменяет лишние данные в выходных массивах
+	//@step Установить количество ZERO_COUNT дополнительных (нулевых) треугольников в выходном массиве, вершины которых не должны быть затронуты при работе функцией переупаковки, равным 4
+	//@step Установить количество входных вершин vertCount так, чтобы на выходе сформировалось n треугольников
+	//@step Определить ожидаемое количество треугольников expectedTrianglesCount (ближайшее четное для n справа), которые будут сформированы на выходе функцией переупаковки
+	//@step Установить полное количество треугольников на выходе outputTrianglesCount равным сумме количества ожидаемых треугольников expectedTrianglesCount и количества нулевых треугольников ZERO_COUNT 
+	//@step Создать и инициализировать входные массивы для хранения vertCount вершин: массив пространственных координат, массив текстурных координат, массив цветов 
+	//@step Создать массивы для хранения фактических и ожидаемых результатов работы функции
+	//@step Инициализировать массив фактических результатов работы функции 
+	//@step Инициализировать массив ожидаемых результатов работы функции (пространственные координаты, текстурные координаты, цвета)
+	//@step Вызвать функцию переупаковки repackToPrimitives_tf, передав ей необходимые аргументы
+	//@assert Сравнить значения пространственных координат первых вершин выходных треугольников с ожидаемыми значениями
+	//@pass Значения пространственных координат первых вершин выходных треугольников, проверяемые на шаге #assert, совпадают с ожидаемыми значениями; при этом функция переупаковки не затрагивает вершины следующих (нулевых) треугольников в выходном массиве
+int repackToPrimitives_tf_nOutputTriangles_v0CoordsAreCorrect(int n)
 {
 	int trianglesCount = n;							// number of output triangles
 	// ZERO_COUNT - количество выходных параметров, которые должны остаться неизменными после работы функции
@@ -373,7 +387,7 @@ int repackToPrimitives_ts_nOutputTriangles_v0CoordsAreCorrect(int n)
 
 	// Act
     int res;
-	res = repackToPrimitives_ts(srcVertex, srcColor, srcTex, &dst, vertCount);
+	res = repackToPrimitives_tf(srcVertex, srcColor, srcTex, &dst, vertCount);
 
 	// Assert
     TEST_ARRAYS_EQUAL(dst.v0.x, dst_exp.v0.x, outputTrianglesCount);
@@ -382,7 +396,20 @@ int repackToPrimitives_ts_nOutputTriangles_v0CoordsAreCorrect(int n)
     TEST_ARRAYS_EQUAL(dst.v0.w, dst_exp.v0.w, outputTrianglesCount);
     return 0;
 }
-int repackToPrimitives_ts_nOutputTriangles_v0ColorsAreCorrect(int n)
+
+//@case Цвета первых вершин формируются корректно для n выходных треугольников; функция переупаковки при работе не изменяет лишние данные в выходных массивах
+	//@step Установить количество ZERO_COUNT дополнительных (нулевых) треугольников в выходном массиве, вершины которых не должны быть затронуты при работе функцией переупаковки, равным 4
+	//@step Установить количество входных вершин vertCount так, чтобы на выходе сформировалось n треугольников
+	//@step Определить ожидаемое количество треугольников expectedTrianglesCount (ближайшее четное для n справа), которые будут сформированы на выходе функцией переупаковки
+	//@step Установить полное количество треугольников на выходе outputTrianglesCount равным сумме количества ожидаемых треугольников expectedTrianglesCount и количества нулевых треугольников ZERO_COUNT 
+	//@step Создать и инициализировать входные массивы для хранения vertCount вершин: массив пространственных координат, массив текстурных координат, массив цветов 
+	//@step Создать массивы для хранения фактических и ожидаемых результатов работы функции
+	//@step Инициализировать массив фактических результатов работы функции 
+	//@step Инициализировать массив ожидаемых результатов работы функции (пространственные координаты, текстурные координаты, цвета)
+	//@step Вызвать функцию переупаковки repackToPrimitives_tf, передав ей необходимые аргументы
+	//@assert Сравнить значения цветов первых вершин выходных треугольников с ожидаемыми значениями
+	//@pass Значения цветов первых вершин выходных треугольников, проверяемые на шаге #assert, совпадают с ожидаемыми значениями; при этом функция переупаковки не затрагивает вершины следующих (нулевых) треугольников в выходном массиве
+int repackToPrimitives_tf_nOutputTriangles_v0ColorsAreCorrect(int n)
 {
 	int trianglesCount = n;							// number of output triangles
 	// ZERO_COUNT - количество выходных параметров, которые должны остаться неизменными после работы функции
@@ -440,13 +467,26 @@ int repackToPrimitives_ts_nOutputTriangles_v0ColorsAreCorrect(int n)
 
 	// Act
     int res;
-	res = repackToPrimitives_ts(srcVertex, srcColor, srcTex, &dst, vertCount);
+	res = repackToPrimitives_tf(srcVertex, srcColor, srcTex, &dst, vertCount);
 
 	// Assert
     TEST_VEC_ARRAYS_EQUAL(dst.v0.color, dst_exp.v0.color, outputTrianglesCount);
     return 0;
 }
-int repackToPrimitives_ts_nOutputTriangles_v1CoordsAreCorrect(int n)
+
+//@case Пространственные координаты вторых вершин формируются корректно для n выходных треугольников; функция переупаковки при работе не изменяет лишние данные в выходных массивах
+	//@step Установить количество ZERO_COUNT дополнительных (нулевых) треугольников в выходном массиве, вершины которых не должны быть затронуты при работе функцией переупаковки, равным 4
+	//@step Установить количество входных вершин vertCount так, чтобы на выходе сформировалось n треугольников
+	//@step Определить ожидаемое количество треугольников expectedTrianglesCount (ближайшее четное для n справа), которые будут сформированы на выходе функцией переупаковки
+	//@step Установить полное количество треугольников на выходе outputTrianglesCount равным сумме количества ожидаемых треугольников expectedTrianglesCount и количества нулевых треугольников ZERO_COUNT 
+	//@step Создать и инициализировать входные массивы для хранения vertCount вершин: массив пространственных координат, массив текстурных координат, массив цветов 
+	//@step Создать массивы для хранения фактических и ожидаемых результатов работы функции
+	//@step Инициализировать массив фактических результатов работы функции 
+	//@step Инициализировать массив ожидаемых результатов работы функции (пространственные координаты, текстурные координаты, цвета)
+	//@step Вызвать функцию переупаковки repackToPrimitives_tf, передав ей необходимые аргументы
+	//@assert Сравнить значения пространственных координат вторых вершин выходных треугольников с ожидаемыми значениями
+	//@pass Значения пространственных координат вторых вершин выходных треугольников, проверяемые на шаге #assert, совпадают с ожидаемыми значениями; при этом функция переупаковки не затрагивает вершины следующих (нулевых) треугольников в выходном массиве
+int repackToPrimitives_tf_nOutputTriangles_v1CoordsAreCorrect(int n)
 {
 	int trianglesCount = n;							// number of output triangles
 	// ZERO_COUNT - количество выходных параметров, которые должны остаться неизменными после работы функции
@@ -504,7 +544,7 @@ int repackToPrimitives_ts_nOutputTriangles_v1CoordsAreCorrect(int n)
 
 	// Act
     int res;
-	res = repackToPrimitives_ts(srcVertex, srcColor, srcTex, &dst, vertCount);
+	res = repackToPrimitives_tf(srcVertex, srcColor, srcTex, &dst, vertCount);
 
 	// Assert
     TEST_ARRAYS_EQUAL(dst.v1.x, dst_exp.v1.x, outputTrianglesCount);
@@ -513,7 +553,20 @@ int repackToPrimitives_ts_nOutputTriangles_v1CoordsAreCorrect(int n)
     TEST_ARRAYS_EQUAL(dst.v1.w, dst_exp.v1.w, outputTrianglesCount);
     return 0;
 }
-int repackToPrimitives_ts_nOutputTriangles_v1ColorsAreCorrect(int n)
+
+//@case Цвета вторых вершин формируются корректно для n выходных треугольников; функция переупаковки при работе не изменяет лишние данные в выходных массивах
+	//@step Установить количество ZERO_COUNT дополнительных (нулевых) треугольников в выходном массиве, вершины которых не должны быть затронуты при работе функцией переупаковки, равным 4
+	//@step Установить количество входных вершин vertCount так, чтобы на выходе сформировалось n треугольников
+	//@step Определить ожидаемое количество треугольников expectedTrianglesCount (ближайшее четное для n справа), которые будут сформированы на выходе функцией переупаковки
+	//@step Установить полное количество треугольников на выходе outputTrianglesCount равным сумме количества ожидаемых треугольников expectedTrianglesCount и количества нулевых треугольников ZERO_COUNT 
+	//@step Создать и инициализировать входные массивы для хранения vertCount вершин: массив пространственных координат, массив текстурных координат, массив цветов 
+	//@step Создать массивы для хранения фактических и ожидаемых результатов работы функции
+	//@step Инициализировать массив фактических результатов работы функции 
+	//@step Инициализировать массив ожидаемых результатов работы функции (пространственные координаты, текстурные координаты, цвета)
+	//@step Вызвать функцию переупаковки repackToPrimitives_tf, передав ей необходимые аргументы
+	//@assert Сравнить значения цветов вторых вершин выходных треугольников с ожидаемыми значениями
+	//@pass Значения цветов вторых вершин выходных треугольников, проверяемые на шаге #assert, совпадают с ожидаемыми значениями; при этом функция переупаковки не затрагивает вершины следующих (нулевых) треугольников в выходном массиве
+int repackToPrimitives_tf_nOutputTriangles_v1ColorsAreCorrect(int n)
 {
 	int trianglesCount = n;							// number of output triangles
 	// ZERO_COUNT - количество выходных параметров, которые должны остаться неизменными после работы функции
@@ -571,14 +624,26 @@ int repackToPrimitives_ts_nOutputTriangles_v1ColorsAreCorrect(int n)
 
 	// Act
     int res;
-	res = repackToPrimitives_ts(srcVertex, srcColor, srcTex, &dst, vertCount);
+	res = repackToPrimitives_tf(srcVertex, srcColor, srcTex, &dst, vertCount);
 
 	// Assert
     TEST_VEC_ARRAYS_EQUAL(dst.v1.color, dst_exp.v1.color, outputTrianglesCount);
     return 0;
 }
 
-int repackToPrimitives_ts_nOutputTriangles_v2CoordsAreCorrect(int n)
+//@case Пространственные координаты третьих вершин формируются корректно для n выходных треугольников; функция переупаковки при работе не изменяет лишние данные в выходных массивах
+	//@step Установить количество ZERO_COUNT дополнительных (нулевых) треугольников в выходном массиве, вершины которых не должны быть затронуты при работе функцией переупаковки, равным 4
+	//@step Установить количество входных вершин vertCount так, чтобы на выходе сформировалось n треугольников
+	//@step Определить ожидаемое количество треугольников expectedTrianglesCount (ближайшее четное для n справа), которые будут сформированы на выходе функцией переупаковки
+	//@step Установить полное количество треугольников на выходе outputTrianglesCount равным сумме количества ожидаемых треугольников expectedTrianglesCount и количества нулевых треугольников ZERO_COUNT 
+	//@step Создать и инициализировать входные массивы для хранения vertCount вершин: массив пространственных координат, массив текстурных координат, массив цветов 
+	//@step Создать массивы для хранения фактических и ожидаемых результатов работы функции
+	//@step Инициализировать массив фактических результатов работы функции 
+	//@step Инициализировать массив ожидаемых результатов работы функции (пространственные координаты, текстурные координаты, цвета)
+	//@step Вызвать функцию переупаковки repackToPrimitives_tf, передав ей необходимые аргументы
+	//@assert Сравнить значения пространственных координат третьих вершин выходных треугольников с ожидаемыми значениями
+	//@pass Значения пространственных координат третьих вершин выходных треугольников, проверяемые на шаге #assert, совпадают с ожидаемыми значениями; при этом функция переупаковки не затрагивает вершины следующих (нулевых) треугольников в выходном массиве
+int repackToPrimitives_tf_nOutputTriangles_v2CoordsAreCorrect(int n)
 {
 	int trianglesCount = n;							// number of output triangles
 	// ZERO_COUNT - количество выходных параметров, которые должны остаться неизменными после работы функции
@@ -636,7 +701,7 @@ int repackToPrimitives_ts_nOutputTriangles_v2CoordsAreCorrect(int n)
 
 	// Act
     int res;
-	res = repackToPrimitives_ts(srcVertex, srcColor, srcTex, &dst, vertCount);
+	res = repackToPrimitives_tf(srcVertex, srcColor, srcTex, &dst, vertCount);
 
 	// Assert
     TEST_ARRAYS_EQUAL(dst.v2.x, dst_exp.v2.x, outputTrianglesCount);
@@ -646,7 +711,19 @@ int repackToPrimitives_ts_nOutputTriangles_v2CoordsAreCorrect(int n)
     return 0;
 }
 
-int repackToPrimitives_ts_nOutputTriangles_v2ColorsAreCorrect(int n)
+//@case Цвета третьих вершин формируются корректно для n выходных треугольников; функция переупаковки при работе не изменяет лишние данные в выходных массивах
+	//@step Установить количество ZERO_COUNT дополнительных (нулевых) треугольников в выходном массиве, вершины которых не должны быть затронуты при работе функцией переупаковки, равным 4
+	//@step Установить количество входных вершин vertCount так, чтобы на выходе сформировалось n треугольников
+	//@step Определить ожидаемое количество треугольников expectedTrianglesCount (ближайшее четное для n справа), которые будут сформированы на выходе функцией переупаковки
+	//@step Установить полное количество треугольников на выходе outputTrianglesCount равным сумме количества ожидаемых треугольников expectedTrianglesCount и количества нулевых треугольников ZERO_COUNT 
+	//@step Создать и инициализировать входные массивы для хранения vertCount вершин: массив пространственных координат, массив текстурных координат, массив цветов 
+	//@step Создать массивы для хранения фактических и ожидаемых результатов работы функции
+	//@step Инициализировать массив фактических результатов работы функции 
+	//@step Инициализировать массив ожидаемых результатов работы функции (пространственные координаты, текстурные координаты, цвета)
+	//@step Вызвать функцию переупаковки repackToPrimitives_tf, передав ей необходимые аргументы
+	//@assert Сравнить значения цветов третьих вершин выходных треугольников с ожидаемыми значениями
+	//@pass Значения цветов третьих вершин выходных треугольников, проверяемые на шаге #assert, совпадают с ожидаемыми значениями; при этом функция переупаковки не затрагивает вершины следующих (нулевых) треугольников в выходном массиве
+int repackToPrimitives_tf_nOutputTriangles_v2ColorsAreCorrect(int n)
 {
 	int trianglesCount = n;							// number of output triangles
 	// ZERO_COUNT - количество выходных параметров, которые должны остаться неизменными после работы функции
@@ -704,14 +781,26 @@ int repackToPrimitives_ts_nOutputTriangles_v2ColorsAreCorrect(int n)
 
 	// Act
     int res;
-	res = repackToPrimitives_ts(srcVertex, srcColor, srcTex, &dst, vertCount);
+	res = repackToPrimitives_tf(srcVertex, srcColor, srcTex, &dst, vertCount);
 
 	// Assert
     TEST_VEC_ARRAYS_EQUAL(dst.v2.color, dst_exp.v2.color, outputTrianglesCount);
     return 0;
 }
 
-int repackToPrimitives_ts_nOutputTriangles_v0TextureCoordsAreCorrect(int n)
+//@case Текстурные координаты первых вершин формируются корректно для n выходных треугольников; функция переупаковки при работе не изменяет лишние данные в выходных массивах
+	//@step Установить количество ZERO_COUNT дополнительных (нулевых) треугольников в выходном массиве, вершины которых не должны быть затронуты при работе функцией переупаковки, равным 4
+	//@step Установить количество входных вершин vertCount так, чтобы на выходе сформировалось n треугольников
+	//@step Определить ожидаемое количество треугольников expectedTrianglesCount (ближайшее четное для n справа), которые будут сформированы на выходе функцией переупаковки
+	//@step Установить полное количество треугольников на выходе outputTrianglesCount равным сумме количества ожидаемых треугольников expectedTrianglesCount и количества нулевых треугольников ZERO_COUNT 
+	//@step Создать и инициализировать входные массивы для хранения vertCount вершин: массив пространственных координат, массив текстурных координат, массив цветов 
+	//@step Создать массивы для хранения фактических и ожидаемых результатов работы функции
+	//@step Инициализировать массив фактических результатов работы функции 
+	//@step Инициализировать массив ожидаемых результатов работы функции (пространственные координаты, текстурные координаты, цвета)
+	//@step Вызвать функцию переупаковки repackToPrimitives_tf, передав ей необходимые аргументы
+	//@assert Сравнить значения текстурных координат первых вершин выходных треугольников с ожидаемыми значениями
+	//@pass Значения текстурных координат первых вершин выходных треугольников, проверяемые на шаге #assert, совпадают с ожидаемыми значениями; при этом функция переупаковки не затрагивает вершины следующих (нулевых) треугольников в выходном массиве
+int repackToPrimitives_tf_nOutputTriangles_v0TextureCoordsAreCorrect(int n)
 {
 	int trianglesCount = n;							// number of output triangles
 	// ZERO_COUNT - количество выходных параметров, которые должны остаться неизменными после работы функции
@@ -769,7 +858,7 @@ int repackToPrimitives_ts_nOutputTriangles_v0TextureCoordsAreCorrect(int n)
 
 	// Act
     int res;
-	res = repackToPrimitives_ts(srcVertex, srcColor, srcTex, &dst, vertCount);
+	res = repackToPrimitives_tf(srcVertex, srcColor, srcTex, &dst, vertCount);
 
 	// Assert
 	// TEXTURING_PART
@@ -779,7 +868,19 @@ int repackToPrimitives_ts_nOutputTriangles_v0TextureCoordsAreCorrect(int n)
     return 0;
 }
 
-int repackToPrimitives_ts_nOutputTriangles_v1TextureCoordsAreCorrect(int n)
+//@case Текстурные координаты вторых вершин формируются корректно для n выходных треугольников; функция переупаковки при работе не изменяет лишние данные в выходных массивах
+	//@step Установить количество ZERO_COUNT дополнительных (нулевых) треугольников в выходном массиве, вершины которых не должны быть затронуты при работе функцией переупаковки, равным 4
+	//@step Установить количество входных вершин vertCount так, чтобы на выходе сформировалось n треугольников
+	//@step Определить ожидаемое количество треугольников expectedTrianglesCount (ближайшее четное для n справа), которые будут сформированы на выходе функцией переупаковки
+	//@step Установить полное количество треугольников на выходе outputTrianglesCount равным сумме количества ожидаемых треугольников expectedTrianglesCount и количества нулевых треугольников ZERO_COUNT 
+	//@step Создать и инициализировать входные массивы для хранения vertCount вершин: массив пространственных координат, массив текстурных координат, массив цветов 
+	//@step Создать массивы для хранения фактических и ожидаемых результатов работы функции
+	//@step Инициализировать массив фактических результатов работы функции 
+	//@step Инициализировать массив ожидаемых результатов работы функции (пространственные координаты, текстурные координаты, цвета)
+	//@step Вызвать функцию переупаковки repackToPrimitives_tf, передав ей необходимые аргументы
+	//@assert Сравнить значения текстурных координат вторых вершин выходных треугольников с ожидаемыми значениями
+	//@pass Значения текстурных координат вторых вершин выходных треугольников, проверяемые на шаге #assert, совпадают с ожидаемыми значениями; при этом функция переупаковки не затрагивает вершины следующих (нулевых) треугольников в выходном массиве
+int repackToPrimitives_tf_nOutputTriangles_v1TextureCoordsAreCorrect(int n)
 {
 	int trianglesCount = n;							// number of output triangles
 	// ZERO_COUNT - количество выходных параметров, которые должны остаться неизменными после работы функции
@@ -837,7 +938,7 @@ int repackToPrimitives_ts_nOutputTriangles_v1TextureCoordsAreCorrect(int n)
 
 	// Act
     int res;
-	res = repackToPrimitives_ts(srcVertex, srcColor, srcTex, &dst, vertCount);
+	res = repackToPrimitives_tf(srcVertex, srcColor, srcTex, &dst, vertCount);
 
 	// Assert
 	// TEXTURING_PART
@@ -847,7 +948,19 @@ int repackToPrimitives_ts_nOutputTriangles_v1TextureCoordsAreCorrect(int n)
     return 0;
 }
 
-int repackToPrimitives_ts_nOutputTriangles_v2TextureCoordsAreCorrect(int n)
+//@case Текстурные координаты третьих вершин формируются корректно для n выходных треугольников; функция переупаковки при работе не изменяет лишние данные в выходных массивах
+	//@step Установить количество ZERO_COUNT дополнительных (нулевых) треугольников в выходном массиве, вершины которых не должны быть затронуты при работе функцией переупаковки, равным 4
+	//@step Установить количество входных вершин vertCount так, чтобы на выходе сформировалось n треугольников
+	//@step Определить ожидаемое количество треугольников expectedTrianglesCount (ближайшее четное для n справа), которые будут сформированы на выходе функцией переупаковки
+	//@step Установить полное количество треугольников на выходе outputTrianglesCount равным сумме количества ожидаемых треугольников expectedTrianglesCount и количества нулевых треугольников ZERO_COUNT 
+	//@step Создать и инициализировать входные массивы для хранения vertCount вершин: массив пространственных координат, массив текстурных координат, массив цветов 
+	//@step Создать массивы для хранения фактических и ожидаемых результатов работы функции
+	//@step Инициализировать массив фактических результатов работы функции 
+	//@step Инициализировать массив ожидаемых результатов работы функции (пространственные координаты, текстурные координаты, цвета)
+	//@step Вызвать функцию переупаковки repackToPrimitives_tf, передав ей необходимые аргументы
+	//@assert Сравнить значения текстурных координат третьих вершин выходных треугольников с ожидаемыми значениями
+	//@pass Значения текстурных координат третьих вершин выходных треугольников, проверяемые на шаге #assert, совпадают с ожидаемыми значениями; при этом функция переупаковки не затрагивает вершины следующих (нулевых) треугольников в выходном массиве
+int repackToPrimitives_tf_nOutputTriangles_v2TextureCoordsAreCorrect(int n)
 {
 	int trianglesCount = n;							// number of output triangles
 	// ZERO_COUNT - количество выходных параметров, которые должны остаться неизменными после работы функции
@@ -905,7 +1018,7 @@ int repackToPrimitives_ts_nOutputTriangles_v2TextureCoordsAreCorrect(int n)
 
 	// Act
     int res;
-	res = repackToPrimitives_ts(srcVertex, srcColor, srcTex, &dst, vertCount);
+	res = repackToPrimitives_tf(srcVertex, srcColor, srcTex, &dst, vertCount);
 
 	// Assert
 	// TEXTURING_PART
@@ -915,97 +1028,97 @@ int repackToPrimitives_ts_nOutputTriangles_v2TextureCoordsAreCorrect(int n)
     return 0;
 }
 
-int repackToPrimitives_ts_0_200_OutputTriangles_AllDataAreCorrect()
+int repackToPrimitives_tf_0_200_OutputTriangles_AllDataAreCorrect()
 {
 	int res = 0;
 	for (int i = 0; i < 200; ++i){
-    	res += repackToPrimitives_ts_nOutputTriangles_AllDataAreCorrect(i);
+    	res += repackToPrimitives_tf_nOutputTriangles_AllDataAreCorrect(i);
 	}
 	return res;
 }
 
-int repackToPrimitives_ts_0_200_OutputTriangles_v0CoordsAreCorrect()
+int repackToPrimitives_tf_0_200_OutputTriangles_v0CoordsAreCorrect()
 {
 	int res = 0;
 	for (int i = 0; i < 200; ++i){
-    	res += repackToPrimitives_ts_nOutputTriangles_v0CoordsAreCorrect(i);
+    	res += repackToPrimitives_tf_nOutputTriangles_v0CoordsAreCorrect(i);
 	}
 	return res;
 }
 
-int repackToPrimitives_ts_0_200_OutputTriangles_v1CoordsAreCorrect()
+int repackToPrimitives_tf_0_200_OutputTriangles_v1CoordsAreCorrect()
 {
 	int res = 0;
 	for (int i = 0; i < 200; ++i){
-    	res += repackToPrimitives_ts_nOutputTriangles_v1CoordsAreCorrect(i);
+    	res += repackToPrimitives_tf_nOutputTriangles_v1CoordsAreCorrect(i);
 	}
 	return res;
 }
 
-int repackToPrimitives_ts_0_200_OutputTriangles_v2CoordsAreCorrect()
+int repackToPrimitives_tf_0_200_OutputTriangles_v2CoordsAreCorrect()
 {
 	int res = 0;
 	for (int i = 0; i < 200; ++i){
-    	res += repackToPrimitives_ts_nOutputTriangles_v2CoordsAreCorrect(i);
+    	res += repackToPrimitives_tf_nOutputTriangles_v2CoordsAreCorrect(i);
 	}
 	return res;
 }
 
-int repackToPrimitives_ts_0_200_OutputTriangles_v0ColorsAreCorrect()
+int repackToPrimitives_tf_0_200_OutputTriangles_v0ColorsAreCorrect()
 {
 	int res = 0;
 	for (int i = 0; i < 200; ++i){
-    	res += repackToPrimitives_ts_nOutputTriangles_v0ColorsAreCorrect(i);
+    	res += repackToPrimitives_tf_nOutputTriangles_v0ColorsAreCorrect(i);
 	}
 	return res;
 }
 
-int repackToPrimitives_ts_0_200_OutputTriangles_v1ColorsAreCorrect()
+int repackToPrimitives_tf_0_200_OutputTriangles_v1ColorsAreCorrect()
 {
 	int res = 0;
 	for (int i = 0; i < 200; ++i){
-    	res += repackToPrimitives_ts_nOutputTriangles_v1ColorsAreCorrect(i);
+    	res += repackToPrimitives_tf_nOutputTriangles_v1ColorsAreCorrect(i);
 	}
 	return res;
 }
 
-int repackToPrimitives_ts_0_200_OutputTriangles_v2ColorsAreCorrect()
+int repackToPrimitives_tf_0_200_OutputTriangles_v2ColorsAreCorrect()
 {
 	int res = 0;
 	for (int i = 0; i < 200; ++i){
-    	res += repackToPrimitives_ts_nOutputTriangles_v2ColorsAreCorrect(i);
+    	res += repackToPrimitives_tf_nOutputTriangles_v2ColorsAreCorrect(i);
 	}
 	return res;
 }
 
-int repackToPrimitives_ts_0_200_OutputTriangles_v0TextureCoordsAreCorrect()
+int repackToPrimitives_tf_0_200_OutputTriangles_v0TextureCoordsAreCorrect()
 {
 	int res = 0;
 	for (int i = 0; i < 200; ++i){
-    	res += repackToPrimitives_ts_nOutputTriangles_v0TextureCoordsAreCorrect(i);
+    	res += repackToPrimitives_tf_nOutputTriangles_v0TextureCoordsAreCorrect(i);
 	}
 	return res;
 }
 
-int repackToPrimitives_ts_0_200_OutputTriangles_v1TextureCoordsAreCorrect()
+int repackToPrimitives_tf_0_200_OutputTriangles_v1TextureCoordsAreCorrect()
 {
 	int res = 0;
 	for (int i = 0; i < 200; ++i){
-    	res += repackToPrimitives_ts_nOutputTriangles_v1TextureCoordsAreCorrect(i);
+    	res += repackToPrimitives_tf_nOutputTriangles_v1TextureCoordsAreCorrect(i);
 	}
 	return res;
 }
 
-int repackToPrimitives_ts_0_200_OutputTriangles_v2TextureCoordsAreCorrect()
+int repackToPrimitives_tf_0_200_OutputTriangles_v2TextureCoordsAreCorrect()
 {
 	int res = 0;
 	for (int i = 0; i < 200; ++i){
-    	res += repackToPrimitives_ts_nOutputTriangles_v2TextureCoordsAreCorrect(i);
+    	res += repackToPrimitives_tf_nOutputTriangles_v2TextureCoordsAreCorrect(i);
 	}
 	return res;
 }
 
-clock_t repackToPrimitive_ts_192Vertices()
+clock_t repackToPrimitives_tf_192Vertices()
 {
 	// Arrange
 	int trianglesCount = 64;							// number of output triangles
@@ -1037,7 +1150,7 @@ clock_t repackToPrimitive_ts_192Vertices()
 	// Act
 	int res;
 	t1 = clock();
-	res = repackToPrimitives_ts(srcVertex, srcColor, srcTex, &dst, vertCount);
+	res = repackToPrimitives_tf(srcVertex, srcColor, srcTex, &dst, vertCount);
 	t2 = clock();
 	dt = t2 - t1;
 	(void) res;
@@ -1045,7 +1158,7 @@ clock_t repackToPrimitive_ts_192Vertices()
 	return dt;
 }
 
-clock_t repackToPrimitive_ts_48Vertices()
+clock_t repackToPrimitives_tf_48Vertices()
 {
 	// Arrange
 	int trianglesCount = 16;							// number of output triangles
@@ -1077,7 +1190,7 @@ clock_t repackToPrimitive_ts_48Vertices()
 	// Act
 	int res;
 	t1 = clock();
-	res = repackToPrimitives_ts(srcVertex, srcColor, srcTex, &dst, vertCount);
+	res = repackToPrimitives_tf(srcVertex, srcColor, srcTex, &dst, vertCount);
 	t2 = clock();
 	dt = t2 - t1;
 	(void) res;
