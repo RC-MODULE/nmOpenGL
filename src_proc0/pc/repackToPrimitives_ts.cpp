@@ -1,5 +1,5 @@
 #include "nmpp.h"
-#include "demo3d_nm0.h"
+#include "service.h"
 
 #include "nmblas.h"
 
