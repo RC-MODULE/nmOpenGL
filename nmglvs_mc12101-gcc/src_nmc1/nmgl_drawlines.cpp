@@ -11,26 +11,18 @@ SECTION(".text_demo3d") void NMGL_DrawLines(NMGL_Context_NM1 *context, NM_Comman
 	PolygonsArray* polygons = (PolygonsArray*)command->params[0].p;
 	PolygonsConnector connector; 
 	connector.init(polygons);
-	connector.incTail();
-	return;
 
 	DataForNmpu1* poly = connector.ptrTail();
 
-	//getAddrPtrnsL(poly);
-	//COMMON_DRAW_TYPE* mulZ = (COMMON_DRAW_TYPE*)context->buffer0;
-	//COMMON_DRAW_TYPE* mulC = (COMMON_DRAW_TYPE*)context->buffer0;
-	//COMMON_DRAW_TYPE* zMaskBuffer = (COMMON_DRAW_TYPE*)context->buffer1;
-	//int count = poly->count;
-	//
-	//msdWaitDma(0);
-	//
-	//int point = 0;
-	//
-	//msdWaitDma(1);
+	getAddrPtrnsL(poly);
+	
+	msdWaitDma(0);
+	msdWaitDma(1);
 
+	int count = poly->count;
 	poly->count = 0;
 	connector.incTail();
 
-	//drawPrimitives(context, count);
+	drawPrimitives(context, count);
 	return;
 }
