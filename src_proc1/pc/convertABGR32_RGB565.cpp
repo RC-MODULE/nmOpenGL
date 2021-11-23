@@ -6,6 +6,14 @@
 
 void convertABGR32_RGB565(const abgr32 *srcArray, rgb565 *dstArray, int count)
 {
+	// Increase count up to the nearest multiple of 4
+	if (count % 4){
+		count = count + (4 - count % 4);
+#ifdef DEBUG
+		printf("Warning: count should be a multiple of 4!");
+#endif
+	}
+
     for (int i = 0; i < count; i++)
     {
 	int16b RGB565_temp; // Temporary storage for the RGB565 value

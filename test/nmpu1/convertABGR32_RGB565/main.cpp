@@ -48,14 +48,34 @@ int main(int argc, char **argv)
     return 0;
 }
 
+
+//@case Функция корректно обрабатывает n входных значений и не изменяет лишние данные в выходном массиве
+	//@step Установить количество элементов во входном массиве равным n 
+	//@step Задать количество untouched_count значений в конце выходного массива, которые не должны быть изменены функцией в процессе работы, равным 4
+	//@step Задать количество processed_count элементов в выходном массиве, установленных функцией конвертации (processed_count - ближайшее справа число к n, кратное 4)
+	//@step Создать входной массив цветов для хранения (processed_count + untouched_count) элементов в формате ABGR32.
+	//@step Создать выходной массив цветов для хранения (processed_count + untouched_count) элементов.
+	//@step Создать массив ожидаемых значений
+	//@step Инициализировать входной массив с помощью следующих элементов: 0xAAAAAAAACCCCCCCC3333333355555555, 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF, 0xFFFFFFFFA8000000D800000050000000, 0xFFFFFFFFB8000000E800000060000000
+	//@step Инициализировать выходной массив нулевыми значениями.
+	//@step Инициализировать массив ожидаемых значений с помощью следующих элементов: 0xAE6C, 0xFFFF, 0x2B08, 0x3518
+	//@step Обнулить untouched_count последних элементов массива ожидаемых значений
+	//@step Вызвать функцию convertABGR32_RGB565
+	//@assert Сравнить массивы фактических и ожидаемых выходных значений
+	//@pass Массивы фактических и ожидаемых значений, сравниваемые на шаге #assert, полностью совпадают
 int convertABGR32_RGB565_nInputValues_nOutputValues(int n)
 {
     // Arrange
     int count = n;
-    int processed_count = count + (4 - count % 4) * ((count % 4) != 0);
+    int processed_count = count + (4 - count % 4) * ((count % 4) != 0); // Increase count up to the nearest multiple of 4
     int untouched_count = 4;
 
+#ifdef __NM__
     abgr32 srcArray[processed_count + untouched_count];    
+#else
+    abgr32 *srcArray = (abgr32 *) calloc(sizeof(abgr32) * (processed_count + untouched_count), sizeof(abgr32));    
+#endif	// __NM__
+
     abgr32 srcInit[4] = {    
 	{0x3333333355555555, 0xAAAAAAAACCCCCCCC},
 	{0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF},
@@ -69,8 +89,13 @@ int convertABGR32_RGB565_nInputValues_nOutputValues(int n)
     nm32u expectedRGB565Values[4] = {0xAE6C, 0xFFFF, 0x2B08, 0x3518};
 
     // The following arrays are used for comparison
+#ifdef __NM__
     uint16b dstArray_uint16b[processed_count + untouched_count];
     uint16b expectedDstArray_uint16b[processed_count + untouched_count];
+#else
+    uint16b *dstArray_uint16b			 = (uint16b *) calloc(sizeof(uint16b) * (processed_count + untouched_count), sizeof(uint16b));
+    uint16b *expectedDstArray_uint16b	 = (uint16b *) calloc(sizeof(uint16b) * (processed_count + untouched_count), sizeof(uint16b));
+#endif	// __NM__
 
     for (int i = 0; i < processed_count + untouched_count; ++i){
 	    srcArray[i].vec[0] = srcInit[i % 4].vec[0];
@@ -91,8 +116,8 @@ int convertABGR32_RGB565_nInputValues_nOutputValues(int n)
     // Get the elements from the dstArray and expectedDstArray, 
     // convert them to nm32u for better comparison
     for(int i = 0; i < processed_count + untouched_count; ++i){
-		nmppsGetVal_16u(dstArray, i, &(dstArray_uint16b[i]));
-		nmppsGetVal_16u(expectedDstArray, i, &expectedDstArray_uint16b[i]);
+		nmppsGetVal_16u((nm16u *) dstArray, i, &(dstArray_uint16b[i]));
+		nmppsGetVal_16u((nm16u *) expectedDstArray, i, &expectedDstArray_uint16b[i]);
     }
 
     TEST_ARRAYS_EQUALI(((nm32u *) dstArray_uint16b), 
@@ -109,13 +134,19 @@ int convertABGR32_RGB565_nInputValues_nOutputValues(int n)
 int convertABGR32_RGB565_0_200_InputValues_0_200_OutputValues()
 {
 	int res = 0;
-	for (int i = 0; i < 200; ++i){
+	for (int i = 0; i < 10; ++i){
     	res += convertABGR32_RGB565_nInputValues_nOutputValues(i);
 	}
 	return res;
 }
 
-
+//@case Функция корректно преобразует одно максимальное значение цвета в представлении ABGR32
+	//@step Установить количество элементов во входном массиве равным 1.
+	//@step Первому элементу входного массива присвоить максимально возможное значение цвета 0xFFFFFFFF_FFFFFFFF_FFFFFFFF_FFFFFFFF.
+	//@step Создать выходной массив цветов для хранения одного значения цвета.
+	//@step Вызвать функцию convertABGR32_RGB565.
+	//@assert Проверить значение первого элемента в выходном массиве.
+	//@pass Первый элемент выходного массива содержит значение 0xFFFF в представлении RGB565.
 int convertABGR32_RGB565_singleInputMaxValue_SingleOutputMaxValue()
 {
     // Arrange
@@ -150,6 +181,13 @@ int convertABGR32_RGB565_singleInputMaxValue_SingleOutputMaxValue()
     return 0;
 }
 
+//@case Функция корректно преобразует одно минимальное значение цвета в представлении ABGR32
+	//@step Установить количество элементов во входном массиве равным 1.
+	//@step Первому элементу входного массива присвоить минимально возможное значение цвета 0.
+	//@step Создать выходной массив цветов для хранения одного значения цвета.
+	//@step Вызвать функцию convertABGR32_RGB565.
+	//@assert Проверить значение первого элемента в выходном массиве.
+	//@pass Первый элемент выходного массива содержит значение 0 в представлении RGB565.
 int convertABGR32_RGB565_singleInputMinValue_singleOutputMinValue()
 {
     // Arrange
@@ -184,6 +222,13 @@ int convertABGR32_RGB565_singleInputMinValue_singleOutputMinValue()
     return 0;
 }
 
+//@case Функция корректно преобразует одно промежуточное значение цвета в представлении ABGR32
+//@step Установить количество элементов во входном массиве равным 1.
+//@step Первому элементу входного массива присвоить промежуточное значение цвета 0xAAAAAAAACCCCCCCC3333333355555555.
+//@step Создать выходной массив цветов для хранения одного значения цвета.
+//@step Вызвать функцию convertABGR32_RGB565.
+//@assert Проверить значение первого элемента в выходном массиве.
+//@pass Первый элемент выходного массива содержит значение 0xAE6C в представлении RGB565
 int convertABGR32_RGB565_singleInputIntermediateValue_singleOutputIntermediateValue()
 {
     // Arrange

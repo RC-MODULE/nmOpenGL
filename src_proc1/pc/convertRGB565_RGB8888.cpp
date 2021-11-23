@@ -6,6 +6,7 @@
 
 void convertRGB565_RGB8888(const rgb565 *srcArray, rgb8888 *dstArray, int count)
 {
+    count = (count >> 2) << 2;	// nearest left multiple of 4
 	for (int i = 0; i < count; i++)
 	{
 		nm32u val;
