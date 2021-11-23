@@ -9,6 +9,7 @@ typedef v4nm32u abgr32;
 
 /*!
 \ingroup service_api
+\defgroup convertABGR32_RGB565 convertABGR32_RGB565 
 \brief Преобразование формата ABGR32-32-32-32 в формат RGB565 
 \param srcArray [in] Входной массив элементов в формате ABGR32
 \param dstArray [in] Выходной массив элементов в формате RGB565
@@ -40,6 +41,7 @@ extern "C" void convertABGR32_RGB565(const abgr32  *srcArray, rgb565 *dstArray, 
 
 /*!
 \ingroup service_api
+\defgroup convertRGB565_RGB8888 convertRGB565_RGB8888 
 \brief Преобразование формата RGB565 в формат RGB8888 
 \details Количество обрабатываемых элементов должно быть кратно 4, в противном случае
 оно округляется до кратного 4 в нижнюю сторону (например, если count = 5, 
@@ -563,6 +565,6 @@ int triangulate(const nm32f *srcVertex, const v4nm32f *srcColor, const nm32f *sr
 
 extern "C" int buildMatrix(nm32f *x, nm32f *y, nm32f *z, const nm32f *ab_dxy, const nm32f *dz, int k);
 extern "C" int splitTrs(TrianglePointers *inTrs, int srcCount, int maxWidth, int maxHeight, int maxDstSize, TrianglePointers *outTrs, int *srcTreatedCount);
-extern "C" void nmppsConvert_32f32s_ceil(const nm32f* pSrcVec, nm32s* pDstVec, int nSize);
+extern "C" void nmppsConvert_32f32s_ceil(const nm32f* pSrcVec, nm32f* pDstVec, int nSize);
 
 #endif //__SERVICE_H__
