@@ -221,6 +221,9 @@ struct MatrixStack {
 };
 
 
+
+
+
 /*!
  *  \brief Контекст nmOpengl на ядре NMPU0
  *  \author Жиленков Иван
@@ -305,8 +308,50 @@ public:
 
 
 	ImageConnector imageConnector;
+
+
+	NMGLint unpackAlignment;
+	NMGLint packAlignment;
+
+	Point_cntxt_t	point;
+	Line_cntxt_t 	line;
+	Polygon_cntxt_t polygon;
+	Blend_cntxt_t	blend;
+
+	NMGL_AlphaTest   alpha_test;
+
+	NMGL_StencilTest stencil_test;
+
+	NMGL_DepthTest 		 depth_test;
+
+	NMGLboolean color_write_mask_flags[4];
+	NMGLboolean depth_write_mask_enabled;
 	
+
 	void init(){
+		int i;
+		unpackAlignment=4;
+		packAlignment=4;
+		
+		point.smooth_enabled = NMGL_FALSE;
+		line.smooth_enabled  = NMGL_FALSE;
+		line.stipple.enabled = NMGL_FALSE;
+		
+		for(i=0;i<4;i++){
+			color_write_mask_flags[i] = NMGL_TRUE;
+		}
+		
+		depth_write_mask_enabled = NMGL_TRUE;
+
+
+		line.width			 = 1.0;
+		line.stipple.factor	 = 1;
+		line.stipple.pattern = 0xFFFF;
+
+		polygon.stipple.enabled 	= NMGL_FALSE;
+		
+		polygon.offset_fill_enabled = NMGL_FALSE;
+
 		currentSegments = &windowInfo.segments;
 
 		currentMatrixStack = &modelviewMatrixStack;
@@ -315,7 +360,27 @@ public:
 		cullFaceType = NMGL_BACK;
 		frontFaceOrientation = NMGL_CCW;
 		normalizeEnabled = NMGL_FALSE;
-		
+
+		scissorTest.isEnabled = NMGL_FALSE;
+
+		alpha_test.enabled 	 = NMGL_FALSE;
+		alpha_test.func		 = NMGL_ALWAYS;
+		alpha_test.ref		 = 0;
+
+
+		stencil_test.enabled = NMGL_FALSE;
+		stencil_test.func = NMGL_ALWAYS;
+		stencil_test.ref = 0;
+		stencil_test.mask = (NMGLuint)-1;
+
+		depth_test.enabled		 = NMGL_FALSE;
+		depth_test.func			 = NMGL_LESS;
+
+		blend.enabled = NMGL_FALSE;
+		blend.sfactor = NMGL_ONE;
+		blend.dfactor = NMGL_ZERO;
+
+
 		lightingInfo.init();
 
 		currentColor.vec[0] = (float)1.0;

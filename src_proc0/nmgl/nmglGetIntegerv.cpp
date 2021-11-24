@@ -12,7 +12,12 @@ void nmglGetIntegerv(NMGLenum pname, NMGLint * params) {
 		case NMGL_SHADE_MODEL:
 			params[0] = (NMGLint)cntxt->shadeModel;
 			break;
-
+		case NMGL_UNPACK_ALIGNMENT:
+			params[0] = (NMGLint)cntxt->unpackAlignment;
+			break;
+		case NMGL_PACK_ALIGNMENT:
+			params[0] = (NMGLint)cntxt->packAlignment;
+			break;
 		default:
 			cntxt->error = NMGL_INVALID_ENUM;
 	}

@@ -64,7 +64,29 @@ SECTION(".text_nmglvs") int nmglvsNm1Step()
 		break;
 	case NMC1_DEPTH: 
 		NMGL_Depth(cntxt, command);
-		break;	
+		break;
+	case NMC1_ALPHA_TEST:
+		NMGL_AlphaTestSet(cntxt,command);
+		break;
+	case NMC1_BLEND:
+		NMGL_BlendSet(cntxt,command);
+		break;		
+	case NMC1_LINE_SMOOTH:
+		NMGL_LineSmoothSet(cntxt,command);
+		break;			
+	case NMC1_POINT_SMOOTH:
+		NMGL_PointSmoothSet(cntxt,command);
+		break;		
+	case NMC1_POLYGON_OFFSET_FILL:
+		NMGL_PolygonOffsetFill(cntxt,command);
+		break;
+	case NMC1_LINE_STIPPLE:
+		NMGL_LineStippleSet(cntxt,command);
+		break;
+	case NMC1_POLYGON_STIPPLE:
+		NMGL_PolygonStippleSet(cntxt,command);
+		break;
+		
 	case NMC1_SET_ACTIVE_TEXTURE: 
 		NMGL_SetActiveTexture(cntxt, command);
 		break;

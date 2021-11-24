@@ -172,6 +172,65 @@ cntxt_nm1 = (NMGL_Context_NM1*)cntxtAddr_nm1;
 	run_nmglGetColorTableParameterivEXT_test();
 #endif
 
+
+
+
+
+#ifdef TEST_NMGL_PIXEL_STORE_I
+	run_nmglPixelStorei_test();
+#endif
+
+#ifdef TEST_NMGL_LINE_WIDTH
+	run_nmglLineWidth_test();
+#endif
+
+#ifdef TEST_NMGL_LINE_STIPPLE
+	run_nmglLineStipple_test();
+#endif
+
+#ifdef TEST_NMGL_POLYGON_STIPPLE
+	run_nmglPolygonStipple_test();
+#endif
+
+#ifdef TEST_NMGL_GET_POLYGON_STIPPLE
+	run_nmglGetPolygonStipple_test();
+#endif
+
+#ifdef TEST_NMGL_POLYGON_OFFSET
+	run_nmglPolygonOffset_test();
+#endif
+
+#ifdef TEST_NMGL_BLEND_FUNC
+	run_nmglBlendFunc_test();
+#endif
+
+#ifdef TEST_NMGL_GET_POINTER_V
+	run_nmglGetPointerv_test();
+#endif
+
+#ifdef TEST_NMGL_GET_STRING
+	run_nmglGetString_test();
+#endif
+
+#ifdef TEST_NMGL_GET_BOOLEAN_V
+	run_nmglGetBooleanv_test();
+#endif
+
+#ifdef TEST_NMGL_IS_ENABLED
+	run_nmglIsEnabled_test();
+#endif
+
+#ifdef TEST_NMGL_GET_LIGHT_V
+	run_nmglGetLightfv_test();
+#endif
+
+#ifdef TEST_NMGL_ALPHA_FUNC
+	run_nmglAlphaFunc_test();
+#endif
+
+#ifdef TEST_NMGL_COLOR_MASK
+	run_nmglColorMask_test();
+#endif
 printf("\n***** End nmgl texture functions tests *****\n");
 while(nmglvsNm0Run()){
 		nmglClear(NMGL_COLOR_BUFFER_BIT);

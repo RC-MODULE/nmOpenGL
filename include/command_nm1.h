@@ -37,5 +37,12 @@ void NMGL_UseSharedPalette(NMGL_Context_NM1 *context, NM_Command *command);
 void NMGL_UseLocalPalette(NMGL_Context_NM1 *context, NM_Command *command);
 void NMGL_ShadeModel(NMGL_Context_NM1 *context, NM_Command *command);
 
+void NMGL_AlphaTestSet(NMGL_Context_NM1 *context, NM_Command *command);
+void NMGL_BlendSet(NMGL_Context_NM1 *context, NM_Command *command);
+void NMGL_PolygonOffsetFill(NMGL_Context_NM1 *context, NM_Command *command);
+void NMGL_LineSmoothSet(NMGL_Context_NM1 *context, NM_Command *command);
+void NMGL_PointSmoothSet(NMGL_Context_NM1 *context, NM_Command *command);
+void NMGL_LineStippleSet(NMGL_Context_NM1 *context, NM_Command *command);
+void NMGL_PolygonStippleSet(NMGL_Context_NM1 *context, NM_Command *command);
 
 #endif //COMMAND_NM1_H 

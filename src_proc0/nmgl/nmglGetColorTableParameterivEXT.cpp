@@ -18,7 +18,14 @@ void nmglGetColorTableParameterivEXT (NMGLenum target, NMGLenum pname, NMGLint *
 				*params=NMGL_COLOR_INDEX8_EXT;
 				break;
 		case NMGL_COLOR_TABLE_WIDTH_EXT:
-				*params=*ActiveTexObjectP->palette.width;
+				if(target == NMGL_TEXTURE_2D)
+				{
+					*params = *cntxt->texState.paletts_widths_pointers[ActiveTexObjectP->name+1];				
+				}
+				else
+				{
+					*params = *cntxt->texState.paletts_widths_pointers[0];	
+				}
 				break;
 		case NMGL_COLOR_TABLE_RED_SIZE_EXT:
 				*params=1;

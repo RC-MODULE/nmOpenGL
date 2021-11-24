@@ -10,7 +10,7 @@ NMGLboolean nmglIsEnabled(NMGLenum cap)
     switch (cap) {
 
 	case NMGL_SHARED_TEXTURE_PALETTE_EXT:
-		return cntxt->texState.using_shared_palette;		
+		return cntxt->texState.shared_palette_enabled;		
 
     case NMGL_VERTEX_ARRAY:
         return cntxt->vertexArray.enabled;
@@ -26,7 +26,7 @@ NMGLboolean nmglIsEnabled(NMGLenum cap)
         
     case NMGL_NORMALIZE:
         return cntxt->normalizeEnabled;
-
+    
     case NMGL_RESCALE_NORMAL:
         return NMGL_FALSE;
     
@@ -47,22 +47,22 @@ NMGLboolean nmglIsEnabled(NMGLenum cap)
 	    return cntxt->lightingInfo.isEnabledLight[cap - NMGL_LIGHT0];
 
     case NMGL_POINT_SMOOTH:    
-        return NMGL_FALSE;
+        return cntxt->point.smooth_enabled;
 
     case NMGL_LINE_SMOOTH:    
-        return NMGL_FALSE;
+        return cntxt->line.smooth_enabled;
 
     case NMGL_LINE_STIPPLE:    
-        return NMGL_FALSE;
+        return cntxt->line.stipple.enabled;
 
     case NMGL_CULL_FACE:
        return cntxt->isCullFace;
     
     case NMGL_POLYGON_OFFSET_FILL:
-       return NMGL_FALSE;
+       return cntxt->polygon.offset_fill_enabled;
 
     case NMGL_POLYGON_STIPPLE:
-       return NMGL_FALSE;
+       return cntxt->polygon.stipple.enabled;
 
     case NMGL_TEXTURE_2D:
         return cntxt->texState.texUnits[cntxt->texState.activeTexUnitIndex].enabled;
@@ -71,16 +71,16 @@ NMGLboolean nmglIsEnabled(NMGLenum cap)
 		return cntxt->scissorTest.isEnabled;
 
     case NMGL_ALPHA_TEST:
-		return NMGL_FALSE;
+		return cntxt->alpha_test.enabled;
 
     case NMGL_STENCIL_TEST:
-        return NMGL_FALSE;
+        return cntxt->stencil_test.enabled;
 
     case NMGL_DEPTH_TEST:
-        return NMGL_FALSE;//TODO:add context field
+        return cntxt->depth_test.enabled;//TODO:add context field
 
     case NMGL_BLEND:
-        return NMGL_FALSE;
+        return cntxt->blend.enabled;
 
 
     default:

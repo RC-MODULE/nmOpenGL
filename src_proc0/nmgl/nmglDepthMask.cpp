@@ -9,6 +9,8 @@ SECTION(".text_nmgl")
 void nmglDepthMask (NMGLboolean flag){
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
 	NM_Command command;
+	if(flag != NMGL_FALSE) flag = NMGL_TRUE;
+	cntxt->depth_write_mask_enabled = flag;
 	command.instr = NMC1_DEPTH_MASK;
 	command.params[0] = CommandArgument(flag);
 	NMGL_SetValue(command);

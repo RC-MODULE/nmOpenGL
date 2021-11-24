@@ -14,12 +14,6 @@ extern unsigned int nmpu1IsAccessible;
 
 
 #define DEBUG_LEVEL 1
-
-//extern NMGLubyte mem_palette [NMGL_MAX_PALETTE_WIDTH*RGBA_TEXEL_SIZE_UBYTE*NMGL_MAX_TEX_OBJECTS];
-
-//extern void *data;   
-
-
 /*
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void nmglColorTableEXT (NMGLenum target, NMGLenum internalformat, NMGLsizei width, NMGLenum format, NMGLenum type, const void *data);
@@ -28,7 +22,7 @@ void nmglColorTableEXT (NMGLenum target, NMGLenum internalformat, NMGLsizei widt
 /////////////////////////////////////////////////////////////////////////////////////////////////
 //Тестовые сценарии
 int nmglColorTableEXT_wrongArgs_isError();
-int nmglColorTableEXT_setColorTable_contextCorrect();
+int nmglColorTableEXT_contextCorrect();
 //----------------------------------------------------------------
 /////////////////////////////////////////////////////////////////////////////////////////////////
 //========================================================================================
@@ -38,10 +32,9 @@ int nmglColorTableEXT_setColorTable_contextCorrect();
 int run_nmglColorTableEXT_test()
 {
 	
-	//std::cout << "Hello";
 	printf ("\nStart nmglColorTableEXT tests\n\n");	
 		RUN_TEST(nmglColorTableEXT_wrongArgs_isError);
-		RUN_TEST(nmglColorTableEXT_setColorTable_contextCorrect);
+		RUN_TEST(nmglColorTableEXT_contextCorrect);
 	printf ("\nEnd nmglColorTableEXT tests\n");
 
 	return 0;
@@ -56,7 +49,6 @@ int run_nmglColorTableEXT_test()
 int nmglColorTableEXT_wrongArgs_isError()
 {
 	
-	//printf("Values[0]=%d",values[0]);
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
 	data=(NMGLubyte*)((NMGLubyte*)cntxt->texState.get_palette_by_name_p(NMGL_MAX_TEX_OBJECTS-1));
 	cntxt->error=NMGL_NO_ERROR;
@@ -98,7 +90,7 @@ cntxt->error=NMGL_NO_ERROR;
 }
 //------------------------------------------------------------------------------
 // 
-int nmglColorTableEXT_setColorTable_contextCorrect()
+int nmglColorTableEXT_contextCorrect()
 {
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
 	int i=0;
@@ -119,7 +111,6 @@ int nmglColorTableEXT_setColorTable_contextCorrect()
 	}
 	nmglColorTableEXT (NMGL_TEXTURE_2D, NMGL_RGBA, cwidth, NMGL_RGBA, NMGL_UNSIGNED_BYTE, data);
 	wait_for_nm1_if_available;
-	//DEBUG_PRINT(("cwidth=%d 0width=%d\n", cwidth, cntxt->texState.texObjects[0].palette.getWidth()));
 	DEBUG_PRINT1(("cwidth=%d 0width=%d\n", cwidth, *cntxt->texState.texObjects[0].palette.width));
 	TEST_ASSERT(cwidth == *cntxt->texState.texObjects[0].palette.width);
 	if(nmpu1IsAccessible == 1) {
