@@ -130,11 +130,7 @@ unsigned int palette_is_shared;
 
 DEBUG_PRINT(("got palette_pointer:0x%x",palette_pointers[0]));
 DEBUG_PRINT(("got palette_width pointer:0x%x",paletts_widths_pointers[0]));
-for (int i = 1; i < NMGL_MAX_TEX_OBJECTS+1; i++)
-{
-	palette_pointers[i] = (NMGLubyte*)palette_pointers[i-1]+NMGL_MAX_PALETTE_WIDTH*RGBA_TEXEL_SIZE_UBYTE;
-	paletts_widths_pointers[i] = (unsigned int*)((unsigned int*)paletts_widths_pointers[0]+i);
-}
+
 INIT_TEX_UNITS();
 INIT_TEX_OBJECTS(); 
 /*for(int i = 0; i < NMGL_MAX_TEX_OBJECTS; i++) 

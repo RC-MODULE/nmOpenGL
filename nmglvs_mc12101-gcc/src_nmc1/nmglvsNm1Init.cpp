@@ -77,6 +77,7 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 	//---------- start nm program ------------
 	NMGL_Context_NM1 *cntxt;
 	ImageData* imagesData;
+	int i;
 	try {
 		int fromNm0 = halSync(0xC0DE0001, 0);		// send handshake to host
 		if (fromNm0 != 0xC0DE0000) {					// get  handshake from host
@@ -92,6 +93,11 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 	cntxt->texState.palette_pointers[0] = (NMGLubyte *)halSyncAddr(0, 0);
 	cntxt->texState.paletts_widths_pointers[0] = (unsigned int*)halSyncAddr(0, 0);
 	cntxt->polygon.stipple.pattern = (NMGLubyte *)halSyncAddr(0, 0);
+	for (int i = 1; i < NMGL_MAX_TEX_OBJECTS+1; i++)
+	{
+		cntxt->texState.palette_pointers[i] = (NMGLubyte*)cntxt->texState.palette_pointers[i-1]+NMGL_MAX_PALETTE_WIDTH*RGBA_TEXEL_SIZE_UBYTE;
+		cntxt->texState.paletts_widths_pointers[i] = (unsigned int*)((unsigned int*)cntxt->texState.paletts_widths_pointers[0]+i);
+	}
 
 		setHeap(11);
 		cntxt->patterns = myMallocT<PatternsArray>();

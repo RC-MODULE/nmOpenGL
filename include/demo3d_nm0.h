@@ -330,7 +330,7 @@ public:
 
 	void init(){
 		int i;
-		int heap;
+	/*	int heap;
 		heap = getHeap();
 		
 		setHeap(12);
@@ -342,7 +342,7 @@ public:
     	    printf("Error! Cant allocate PolygonsStipplePattern memory!");
     	}
 		setHeap(heap);
-
+ 	*/
 		
 		unpackAlignment=4;
 		packAlignment=4;

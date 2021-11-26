@@ -94,16 +94,22 @@ struct NMGL_Context_NM0_Texture {
 	
 	//NMGLubyte * palettes_pointer;
 	NMGLubyte * palette_pointers[(NMGL_MAX_TEX_OBJECTS+1)];//0-shared
-	
+	void init_elements(){
+		//==========TEX_UNITS_INIT====================================
+		INIT_TEX_UNITS();
+//==========TEX_OBJ_INIT====================================
+		INIT_TEX_OBJECTS();
+		
+	}
 
 	void init(){
 	
 		//firstFreeTexByte=NULL;
 		//palettes_pointer = init_mem_palettes();
-		int heap;
+	/*	int heap;
 		heap = getHeap();
-		setHeap(12);
-		
+
+		setHeap(12);		
 		palette_pointers[0] = (NMGLubyte*)halMalloc32(NMGL_MAX_PALETTE_WIDTH*RGBA_TEXEL_SIZE_UBYTE*(NMGL_MAX_TEX_OBJECTS+1)*sizeof32(NMGLubyte)); 
     	if(palette_pointers[0] == 0)
     	{
@@ -114,7 +120,8 @@ struct NMGL_Context_NM0_Texture {
         {
             printf("Error! Cant allocate texture palette width memory!");
         }
-	setHeap(heap);
+		setHeap(heap);
+	*/
 
 
 
@@ -153,20 +160,17 @@ struct NMGL_Context_NM0_Texture {
 //INIT_PALETTE_MEMORY_POINTERS();
 //palette_pointers[0] = palettes_p;
 //paletts_widths_pointers[0] = palettes_widths_p;
-
+/*
 for (int i = 1; i < NMGL_MAX_TEX_OBJECTS+1; i++)
 {
 	palette_pointers[i] = (NMGLubyte*)palette_pointers[i-1]+NMGL_MAX_PALETTE_WIDTH*RGBA_TEXEL_SIZE_UBYTE;
 	paletts_widths_pointers[i] = (unsigned int*)((unsigned int*)paletts_widths_pointers[0]+i);
 }
+*/
 //halSyncAddr(palette_pointers[0], 1);
 //halSyncAddr(paletts_widths_pointers[0], 1);
 
-//==========TEX_UNITS_INIT====================================
-		INIT_TEX_UNITS();
-//==========TEX_OBJ_INIT====================================
-		INIT_TEX_OBJECTS();
-		
+
 		textureEnabled = 0;
 	}
 	void use_shared_palette()
