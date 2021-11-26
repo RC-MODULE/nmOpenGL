@@ -330,6 +330,20 @@ public:
 
 	void init(){
 		int i;
+		int heap;
+		heap = getHeap();
+		
+		setHeap(12);
+
+    	polygon.stipple.pattern = (NMGLubyte*)halMalloc32(NMGL_POLIGON_STIPPLE_SIDE_UBYTES*(NMGL_POLIGON_STIPPLE_SIDE_UBYTES>>3)*sizeof32(NMGLubyte)); 
+    	
+    	if(polygon.stipple.pattern == 0)
+    	{
+    	    printf("Error! Cant allocate PolygonsStipplePattern memory!");
+    	}
+		setHeap(heap);
+
+		
 		unpackAlignment=4;
 		packAlignment=4;
 		

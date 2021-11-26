@@ -3,7 +3,7 @@
 
 #include "demo3d_common.h"
 #include "nmgltex_common.h"
-#include "hal.h"
+#include "hal.h" 
 #include "hal_target.h"
 
 //extern NMGLubyte* init_mem_palettes();
@@ -100,7 +100,25 @@ struct NMGL_Context_NM0_Texture {
 	
 		//firstFreeTexByte=NULL;
 		//palettes_pointer = init_mem_palettes();
+		int heap;
+		heap = getHeap();
+		setHeap(12);
 		
+		palette_pointers[0] = (NMGLubyte*)halMalloc32(NMGL_MAX_PALETTE_WIDTH*RGBA_TEXEL_SIZE_UBYTE*(NMGL_MAX_TEX_OBJECTS+1)*sizeof32(NMGLubyte)); 
+    	if(palette_pointers[0] == 0)
+    	{
+    	    printf("Error! Cant allocate texture palette memory!");
+    	}
+		paletts_widths_pointers[0] = (unsigned int *)halMalloc32((NMGL_MAX_TEX_OBJECTS+1)*sizeof32(unsigned int)); 
+        if(paletts_widths_pointers[0] == 0)
+        {
+            printf("Error! Cant allocate texture palette width memory!");
+        }
+	setHeap(heap);
+
+
+
+
 		shared_palette_enabled = NMGL_FALSE;
 		activeTexUnit = NMGL_TEXTURE0;
 		activeTexUnitIndex = 0;
@@ -133,8 +151,8 @@ struct NMGL_Context_NM0_Texture {
 		}
 */
 //INIT_PALETTE_MEMORY_POINTERS();
-palette_pointers[0] = palettes_p;
-paletts_widths_pointers[0] = palettes_widths_p;
+//palette_pointers[0] = palettes_p;
+//paletts_widths_pointers[0] = palettes_widths_p;
 
 for (int i = 1; i < NMGL_MAX_TEX_OBJECTS+1; i++)
 {
