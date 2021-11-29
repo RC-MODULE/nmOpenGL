@@ -94,7 +94,7 @@ struct NMGL_Context_NM0_Texture {
 	
 	//NMGLubyte * palettes_pointer;
 	NMGLubyte * palette_pointers[(NMGL_MAX_TEX_OBJECTS+1)];//0-shared
-	void init_elements(){
+	void init_units_objects(){
 		//==========TEX_UNITS_INIT====================================
 		INIT_TEX_UNITS();
 //==========TEX_OBJ_INIT====================================

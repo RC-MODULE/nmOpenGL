@@ -63,9 +63,6 @@ extern "C" {
 
 extern  NMGLubyte* mipmap; //texture memory
 
-//NMGLubyte* palettes_p; // texture palette memory
-//unsigned int* palettes_widths_p; // texture palettes widths memory
-//NMGLubyte* PolygonsStipplePattern_p;
 int counter = 0;
 
 #define PRINT_ADDR(a) printf(#a"=%p\n", a)
@@ -117,43 +114,6 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 		//PRINT_ADDR(synchroData);
 		synchroData->init();
 		halSyncAddr(synchroData, 1);
-//TEXTURE -- PALETTE MEM INITIALIZATION
-		/*
-		setHeap(12);
-		try
-    	{
-    	   palettes_p = (NMGLubyte*)myMallocT<NMGLubyte>(NMGL_MAX_PALETTE_WIDTH*RGBA_TEXEL_SIZE_UBYTE*(NMGL_MAX_TEX_OBJECTS+1)); 
-    	}
-    	catch(int& e)
-    	{
-    	    printf("Error! Cant allocate texture palette memory!");
-    	    return -1;
-    	}
-		*/
-    	//DEBUG_PRINT(("allocated palette_pointer:0x%x",palettes_p));
-		//halSyncAddr(palettes_p, 1);
-		
-	/*	 try
-        {
-           palettes_widths_p = (unsigned int *)myMallocT<unsigned int>((NMGL_MAX_TEX_OBJECTS+1)); 
-        }
-        catch(int& e)
-        {
-            printf("Error! Cant allocate texture palette width memory!");
-            return -1;
-        }*/
-		//halSyncAddr(palettes_widths_p, 1);
-		/*try
-    	{
-    	   PolygonsStipplePattern_p = (NMGLubyte*)myMallocT<NMGLubyte>(NMGL_POLIGON_STIPPLE_SIDE_UBYTES*(NMGL_POLIGON_STIPPLE_SIDE_UBYTES>>3)); 
-    	}
-    	catch(int& e)
-    	{
-    	    printf("Error! Cant allocate PolygonsStipplePattern memory!");
-    	    return -1;
-    	}*/
-		//halSyncAddr(PolygonsStipplePattern_p, 1);
-		
 		setHeap(7);
 		NMGL_Context_NM0::create();
 		cntxt = NMGL_Context_NM0::getContext();
@@ -161,15 +121,15 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 		
 		setHeap(12);		
 		cntxt->texState.palette_pointers[0] = (NMGLubyte*)myMallocT<NMGLubyte>(NMGL_MAX_PALETTE_WIDTH*RGBA_TEXEL_SIZE_UBYTE*(NMGL_MAX_TEX_OBJECTS+1)); 
-    	if(cntxt->texState.palette_pointers[0] == 0)
-    	{
-    	    printf("Error! Cant allocate texture palette memory!");
-    	}
+		if(cntxt->texState.palette_pointers[0] == 0)
+		{
+		    printf("Error! Cant allocate texture palette memory!");
+		}
 		cntxt->texState.paletts_widths_pointers[0] = (unsigned int *)myMallocT<unsigned int>((NMGL_MAX_TEX_OBJECTS+1)); 
-        if(cntxt->texState.paletts_widths_pointers[0] == 0)
-        {
-            printf("Error! Cant allocate texture palette width memory!");
-        }
+		 if(cntxt->texState.paletts_widths_pointers[0] == 0)
+		 {
+		     printf("Error! Cant allocate texture palette width memory!");
+		 }
 		for (int i = 1; i < NMGL_MAX_TEX_OBJECTS+1; i++)
 		{
 			cntxt->texState.palette_pointers[i] = (NMGLubyte*)cntxt->texState.palette_pointers[i-1]+NMGL_MAX_PALETTE_WIDTH*RGBA_TEXEL_SIZE_UBYTE;
@@ -177,17 +137,17 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 		}
 
 		cntxt->polygon.stipple.pattern = (NMGLubyte*)myMallocT<NMGLubyte>(NMGL_POLIGON_STIPPLE_SIDE_UBYTES*(NMGL_POLIGON_STIPPLE_SIDE_UBYTES>>3)); 
-    	
-    	if(cntxt->polygon.stipple.pattern == 0)
-    	{
-    	    printf("Error! Cant allocate PolygonsStipplePattern memory!");
-    	}
+
+		if(cntxt->polygon.stipple.pattern == 0)
+		{
+		    printf("Error! Cant allocate PolygonsStipplePattern memory!");
+		}
 
 
 		halSyncAddr(cntxt->texState.palette_pointers[0], 1);
 		halSyncAddr(cntxt->texState.paletts_widths_pointers[0], 1);
 		halSyncAddr(cntxt->polygon.stipple.pattern, 1);
-		cntxt->texState.init_elements();
+		cntxt->texState.init_units_objects();
 		//cntxt->polygon.stipple.pattern = PolygonsStipplePattern_p;
 
 		setHeap(10);
