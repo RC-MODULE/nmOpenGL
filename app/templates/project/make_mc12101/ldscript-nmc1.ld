@@ -12,14 +12,14 @@ MEMORY
 
 SECTIONS
 {
-  .data_imu0 : ALIGN(0x8)
+  .text_imu0 : ALIGN(0x8)
   {   
-    /*---------Text----------- */
     *(.text_nmplv); 
     *(.text_nmplm); 
     *(.text_nmvcore);  
-  
-    /*---------Data----------- */
+  } > C1_IMU0
+  .data_imu0 : ALIGN(0x8)
+  {   
     *(.data);  
     *(.data_imu0);  
     *(.data_demo3d);
@@ -35,9 +35,13 @@ SECTIONS
     *(.bss.data_imu0);  
     *(.bss.data_nmplv_G)  
     *(.bss);   
-    *(.stack); 
-    *(.nobits); 
+    *(.nobits)
   } > C1_IMU0
+  .stack : ALIGN(0x8)
+  {
+    *(.stack);     
+  } > C1_IMU0
+
 
 
   .data_imu1 : ALIGN(0x8)
@@ -119,7 +123,7 @@ SECTIONS
     *(.gcc_except_table)
     *(.rpc_services.bss); 
   } > EMI1
-  .shared1.bss : ALIGN(0x8)
+  .data_emi1.bss : ALIGN(0x8)
   {
     *(.bss.data_shared1);  
     *(.heap);

@@ -47,7 +47,6 @@ ROOT = ../..
 #============== PROJECT & BUILD CONFIGURATION ==========
 #
 
-
 include $(ROOT)/global.mk
 include 		 nmc4vars_win.mk
 #-------------- target & input dirs -------------------
@@ -59,15 +58,19 @@ endif
 OUT_DIR          = .
 TARGET           = $(OUT_DIR)/$(PROJECT).abs
 INC_DIRS         = -I"$(NMPP)/include" -I$(HAL)/include -I$(ROOT)/include
-SRC_DIRS         = $(ROOT)/nmglvs_mc12101-gcc/src_nmc1 ../src_target1 ./
-LIB_DIRS         = -L "$(NMC_GCC_TOOLPATH)/nmc4-ide/lib" -L"$(NMPP)/lib" -L"$(HAL)/lib" -L$(ROOT)/lib
+SRC_DIRS         = $(ROOT)/nmglvs_mc12101-gcc/src_nmc1 $(ROOT)/src_proc1/common $(ROOT)/src_proc $(ROOT)/src_proc1/nm ../src_target1
+LIB_DIRS         = -L "$(NMC_GCC_TOOLPATH)/nmc4-ide/lib" -L"$(NMPP)/lib" -L"$(HAL)/lib"
+ifdef DEBUG
+TMP_DIR          = Debug
+else
 TMP_DIR          = Release
+endif
 #-------------- RELEASE/ALL config -------------------
 CC 				 = nmc-g++
 CC_FLAGS		 = -O2 -fno-builtin-printf -std=c++11
 AS               = nmc-gcc 				 
 AS_FLAGS    	 = -c -mmas -x assembler -Wa,-split_sir -mnmc4-fixed
-LIBS             = -lnmopengl-nmc4 -lhal-mc12101 -lnmpp-nmc4 
+LIBS             = -lnmpp-nmc4 -lhal-mc12101
 MAP		         = $(PROJECT).map
 CFG				 = ldscript-nmc1.ld
 LINKER_FLAGS     = -Xlinker -Map=$(MAP) $(LIB_DIRS) "-Wl,-T$(CFG)"  -Wl,--whole-archive -lmc12101 -Wl,--no-whole-archive -o$(TARGET)
@@ -94,16 +97,17 @@ OBJECTS_CPP = $(notdir $(patsubst %.cpp,%.o,$(ALL_CPP)))
 OBJECTS_ASM = $(notdir $(patsubst %.asm,%.o,$(ALL_ASM)))
 OBJECTS_C   = $(notdir $(patsubst %.c,%.o,$(ALL_C)))
 OBJECTS     = $(addprefix $(TMP_DIR)/, $(OBJECTS_C) $(OBJECTS_CPP)  $(OBJECTS_ASM))
+$(info "===" $(OBJECTS_C))
 
 #======================== BUILD RULES ====================================
 .PHONY:all  clean skip
 
 .DEFAULT_GOAL=default
-default: $(TARGET) 
+default: $(TARGET)
 
 #$(TMP_DIR) $(OUT_DIR)  $(TARGET)
 
-all:  $(TARGET)
+all: $(TARGET) dump
 	
 #	$(MAKE) -j4 DEBUG=y
 #	$(MAKE) -j4
@@ -116,7 +120,7 @@ $(TARGET): $(TMP_DIR) $(OBJECTS) $(CFG) nmc4vars_win.mk Makefile $(ALL_H)
 	$(CC) $(LINKER_FLAGS) $(OBJECTS) $(LIBS)
 
 nmc4vars_win.mk:
-	copy "$(NMC_GCC_TOOLPATH)\nmc4-ide\include\nmc4vars_win.mk" nmc4vars_win.mk
+	copy "$(NMC_GCC_TOOLPATH)\nmc4-ide\include\nmc4vars_win.mk" nmc4vars_win.mk profile
 
 $(OUT_DIR): 
 	-mkdir "$(@)"
@@ -130,25 +134,11 @@ $(TMP_DIR)/%.o: %.cpp  $(ALL_H) $(CFG)
 $(TMP_DIR)/%.o: %.c $(ALL_H) $(CFG)
 	$(CC) $(CC_FLAGS) -c $(<) -o$(@) $(INC_DIRS)
 	
-profile:	
+$(PROFILE):
 	python $(HAL)/script/profiler.py > $(PROFILE)
-	$(MAKE)
+profile: $(TARGET)
 	python $(HAL)/script/profiler.py $(MAP) > $(PROFILE)
 	
 
-#========================== Visual Studio  ===================
-export ALL_CPP ALL_ASM ALL_C ALL_H
-
-PROVIDER = host-x86
-
-$(PROVIDER).vcxproj :	premake5.lua 
-	premake5 vs2015
-
-$(PROVIDER).vcproj :	premake5.lua 
-	premake5 vs2005
-
-vs2015:   $(PROVIDER).vcxproj
-	"$(VS140COMNTOOLS)vsvars32" && msbuild $(PROVIDER).vcxproj
-#	"$(VS140COMNTOOLS)vsvars32" && msbuild $(PROJECT).vcxproj /p:Configuration=Release
 
 include $(ROOT)/clean.mk
