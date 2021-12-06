@@ -113,7 +113,6 @@ SECTIONS
   .data : ALIGN(0x8)  
   {    
     *(.data_shared1);  
-    *(.rpc_services);  
     *(SORT(.data.*))
     *(SORT(.data_asm))
     *(SORT(.data_matr_4s2s))
@@ -121,7 +120,8 @@ SECTIONS
     *(SORT(.rodata*))
     *(.bsst)
     *(.gcc_except_table)
-    *(.rpc_services.bss); 
+    /**(.rpc_services);  
+    *(.rpc_services.bss); */
   } > EMI1
   .data_emi1.bss : ALIGN(0x8)
   {
