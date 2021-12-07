@@ -563,8 +563,22 @@ static void srcVertexInit(nm32f *srcVertex, int srcCount)
 int triangulate(const nm32f *srcVertex, const v4nm32f *srcColor, const nm32f *srcTexcoords, const nm32f *srcWclip, int srcCount, int maxWidth, int maxHeight, int maxDstSize, nm32f *dstVertex, v4nm32f *dstColor, nm32f *dstTexcoords, nm32f *dstWclip, int *srcTreatedCount);
 //! \}
 
-extern "C" int buildMatrix(nm32f *x, nm32f *y, nm32f *z, const nm32f *ab_dxy, const nm32f *dz, int k);
-extern "C" int splitTrs(TrianglePointers *inTrs, int srcCount, int maxWidth, int maxHeight, int maxDstSize, TrianglePointers *outTrs, int *srcTreatedCount);
-extern "C" void nmppsConvert_32f32s_ceil(const nm32f* pSrcVec, nm32f* pDstVec, int nSize);
+/**
+\defgroup splitTriangles_uniform splitTriangles_uniform
+\ingroup service_api
+\brief Разбиение большого треугольника на одинаковые треугольники меньшего размера (триангуляция)
+\param srcTriangles [in] Массив входных треугольников
+\param srcCount [in] Количество входных треугольников
+\param maxWidth [in] Максимально допустимая ширина треугольника
+\param maxHeight [in] Максимально допустимая высота треугольника
+\param maxDstSize [in] Максимально допустимое число выходных треугольников 
+\param dstTriangles [out] Массив выходных треугольников
+\param srcTreatedCount [out] Количество обработанных входных треугольников 
+\return Итоговое количество выходных треугольников
+\par
+*/
+//! \{
+extern "C" int splitTriangles_uniform(TrianglePointers *srcTriangles, int srcCount, int maxWidth, int maxHeight, int maxDstSize, TrianglePointers *dstTriangles, int *srcTreatedCount);
+//! \}
 
 #endif //__SERVICE_H__
