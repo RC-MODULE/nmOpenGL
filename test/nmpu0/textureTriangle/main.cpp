@@ -112,6 +112,10 @@ SECTION(".data_imu0") Pattern patterns [1] = {
     0x00000000, 0x00000000}, 
 };
 
+//Массивы растеризованных и закрашенных треугольников
+SECTION(".data_imu0") nm32s pSrcTriangle[WIDTH_PTRN * HEIGHT_PTRN * 1];
+SECTION(".data_imu0") nm32s pDstTriangle [WIDTH_PTRN * HEIGHT_PTRN * 1]; 
+
 int counter = 0;
 
 template<class T> inline T* myMallocT() {
@@ -147,9 +151,6 @@ int main ()
 	NMGL_Context_NM0::create();	
 	test_cntxt = NMGL_Context_NM0::getContext();
 	
-    //Массивы растеризованных и закрашенных треугольников
-	nm32s pSrcTriangle[WIDTH_PTRN * HEIGHT_PTRN * 1];
-	nm32s pDstTriangle [WIDTH_PTRN * HEIGHT_PTRN * 1]; 
     
     //Массив значений цветов для треугольников, один цвет на треугольник
     v4nm32s colors [1];
