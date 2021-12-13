@@ -58,9 +58,9 @@ profile1:
 	$(MAKE) -f Makefile1 profile
 
 dump0:
-	nmc-objdump -D $(PROJECT0).abs > $(PROJECT0).dasm
+	nmc-objdump -d -s -x -l $(PROJECT0).abs > $(PROJECT0).dasm
 dump1:
-	nmc-objdump -D $(PROJECT1).abs > $(PROJECT1).dasm
+	nmc-objdump -d -s -x -l $(PROJECT1).abs > $(PROJECT1).dasm
 	
 vs2005: $(HOST).vcproj 
 #	"$(VS80COMNTOOLS)vsvars32" && vcbuild $(HOST).vcproj

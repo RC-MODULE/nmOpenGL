@@ -22,7 +22,7 @@ SECTION(".data_imu6")	ArrayManager<float> texcoordAM;
 
 SECTION(".data_imu6")	BitDividedMask clipMask[10];
 
-SECTION("text_nmgl") void perpectiveDivView(CombinePointers &vertex, WindowInfo &windowInfo, float* tmpBuf, int size) {
+SECTION(".text_nmgl") void perpectiveDivView(CombinePointers &vertex, WindowInfo &windowInfo, float* tmpBuf, int size) {
 	nmppsDiv_32f(vertex.x, vertex.w, tmpBuf + 0 * NMGL_SIZE, size);
 	nmppsDiv_32f(vertex.y, vertex.w, tmpBuf + 1 * NMGL_SIZE, size);
 	nmppsDiv_32f(vertex.z, vertex.w, tmpBuf + 2 * NMGL_SIZE, size);
@@ -58,7 +58,7 @@ nmglVertexPointer, nmglNormalPointer, nmglColorPointer
 */
 
 
-SECTION("text_demo3d") void clipSelect(TrianglePointers *src, float* srcColor, int* indices, TrianglePointers * dst, float* dstColor, int size) {
+SECTION(".text_demo3d") void clipSelect(TrianglePointers *src, float* srcColor, int* indices, TrianglePointers * dst, float* dstColor, int size) {
 	copyArraysByIndices((void**)&src->v0, indices, (void**)&dst->v0, 4, size);
 	copyArraysByIndices((void**)&src->v1, indices, (void**)&dst->v1, 4, size);
 	copyArraysByIndices((void**)&src->v2, indices, (void**)&dst->v2, 4, size);

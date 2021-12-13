@@ -26,8 +26,6 @@ SECTIONS
     *(.text_int);
     *(.text_nmblas);
     *(.text_nmplv);
-    *(.text_hal_libc);
-    *(.text_hal)
   } > C0_IMU0
   .data_imu0 : ALIGN(0x8)
   {
@@ -201,9 +199,10 @@ SECTIONS
     *(.text_nmgl)
     *(.text_nmprofiler)
     *(.text_nmglvs)
-    *(.text_printf)
-    *(text)
     *(.text_demo3d)
+    *(.text_printf)
+    *(.text_hal_libc);
+    *(.text_hal)
     *(.comment)
     *(SORT(.gnu*))
     *(SORT(.text.*))
@@ -217,20 +216,20 @@ SECTIONS
     *(.data_hal)
     *(.data_DDR)
     *(.data_shared0)
-    *(.rpc_services)
     *(.gcc_except_table)
     *(SORT(.rodata.*))
     *(.bsst)
-    *(.rpc_services.bss)
+    /**(.rpc_services)
+    *(.rpc_services.bss)*/
     _section_emi0_end = .;
   } > EMI0
   .bss (NOLOAD): ALIGN(0x8)
   {
-    *(.bss)
     *(.bss.data_hal)
     *(.bss.data_shared0)
-    *(COMMON)
+    *(.bss)
     *(SORT(.bss.*))
+    *(COMMON)
   } > EMI0
   .heap10 (NOLOAD): ALIGN(0x8)
   {

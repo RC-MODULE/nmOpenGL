@@ -60,9 +60,9 @@ TMP_DIR          = Release
 CC 				 = nmc-g++
 AS               = nmc-gcc 				 
 AS_FLAGS    	 = -c -mmas -x assembler -Wa,-split_sir -mnmc4-float
-CC_FLAGS		 = -std=c++11
+CC_FLAGS	 	 = -std=c++11 -fno-builtin-printf -mnmc4-float
 LIBS             = -lnmopengl-nmc4f -lnmpp-nmc4f -lhal-mc12101 
-LINKER_FLAGS     =   -Xlinker -Map=.main0.map $(LIB_DIRS) "-Wl,-cmc12101brd-nmpu0.cfg"  -Wl,--whole-archive -lmc12101 -Wl,--no-whole-archive -o$(TARGET)
+LINKER_FLAGS     =   -Xlinker -Map=.main0.map $(LIB_DIRS) "-Wl,-Tldscript-nmc0.ld"  -Wl,--whole-archive -lmc12101 -Wl,--no-whole-archive -o$(TARGET)
 #=================== SOURCE & OBJECTS COLLECTION ===========================
 
 .SUFFIXES:
@@ -101,7 +101,7 @@ $(TMP_DIR):
 	-mkdir "$(@)"
 
 $(TARGET): $(TMP_DIR) $(OBJECTS) nmc4vars_win.mk Makefile
-	$(CC) $(LINKER_FLAGS) $(OBJECTS) $(LIBS)
+	$(CC) $(CC_FLAGS) $(LINKER_FLAGS) $(OBJECTS) $(LIBS)
 
 nmc4vars_win.mk:
 	copy "$(NMC_GCC_TOOLPATH)\nmc4-ide\include\nmc4vars_win.mk" nmc4vars_win.mk
@@ -112,10 +112,10 @@ $(OUT_DIR):
 $(TMP_DIR)/%.o: %.asm 
 	$(AS) $(AS_FLAGS) $(<) -o$(@)
 	
-$(TMP_DIR)/%.o: %.cpp 
-	$(CC) $(CC_FLAGS) -c $(<) -o$(@) $(INC_DIRS) -O2
+$(TMP_DIR)/%.o: %.cpp  $(ALL_H) $(CFG)
+	$(CC) $(CC_FLAGS) -c $(<) -o$(@) $(INC_DIRS)
 
-$(TMP_DIR)/%.o: %.c
-	$(CC) $(CC_FLAGS) -c $(<) -o$(@) $(INC_DIRS) -O2
+$(TMP_DIR)/%.o: %.c  $(ALL_H) $(CFG)
+	$(CC) $(CC_FLAGS) -c $(<) -o$(@) $(INC_DIRS)
 	
 include $(ROOT)/clean.mk
