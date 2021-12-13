@@ -10,7 +10,7 @@
 
 #define TEXTURE_TRIANGLE_SECTION ".text"
 
-//#define PERSPECTIVE_CORRECT
+#define PERSPECTIVE_CORRECT
 
 namespace nm0_version {
 
