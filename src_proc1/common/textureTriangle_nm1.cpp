@@ -9,15 +9,11 @@
 
 #define TEXTURE_TRIANGLE_SECTION ".text_demo3dExt"
 
-//TEXTURING_PART
 //#define USE_BARYCENTRIC
 #define PERSPECTIVE_CORRECT
 
 namespace nm1_version {
-// typedef enum { NEAREST, LINEAR, NEAREST_MIPMAP_NEAREST, NEAREST_MIPMAP_LINEAR, LINEAR_MIPMAP_NEAREST, LINEAR_MIPMAP_LINEAR } filter_mode_t;
-// typedef enum { REPEAT, CLAMP_TO_EDGE } wrap_mode_t;
 typedef enum { MINIFICATION, MAGNIFICATION } lod_t;
-// typedef enum { MODULATE, REPLACE, DECAL, BLEND, ADD} texEnv_mode_t;
 
 typedef struct Vec2f {
     float x;
@@ -37,10 +33,6 @@ typedef struct color {
     unsigned char a;
 } color;
 
-// filter_mode_t textureMinFilter = NEAREST; //default NEAREST_MIPMAP_LINEAR
-// filter_mode_t textureMagFilter = NEAREST; //default LINEAR
-// wrap_mode_t textureWrapS = REPEAT; // default REPEAT
-// wrap_mode_t textureWrapT = REPEAT; // default REPEAT
 float c = 0.0; // minification vs. magnification switchover point, look glspec 1.3, chapter 3.8.8
 lod_t minMagFlag = MINIFICATION;
 unsigned int borderWidth = 0; //TEXTURE BORDER - texture image's specified border width
@@ -97,14 +89,6 @@ int getPixelValue(unsigned int x, unsigned int y, TexImage2D image, color * pixe
     void * pixels = image.pixels;
     NMGLint format = image.internalformat;
     NMGLenum type = NMGL_UNSIGNED_BYTE;//TODO: if constant internal type then 'type' variable is unnecessary
-	int alignment = 1; //texImage2D loads texture so that unpackAlignment is 1
-
-#ifdef DEBUG
-		// if (alignment)
-		// {
-			// printf("%s: wrong alignment value (%d)", __func__, alignment);
-		// }
-#endif
 
 	switch (format)
 	{
@@ -131,15 +115,14 @@ int getPixelValue(unsigned int x, unsigned int y, TexImage2D image, color * pixe
 		  break;
 	}
 
-	int rowPaddingBytes = (width * bytesInPixel) % alignment ? alignment - (width * bytesInPixel) % alignment : 0;	
-	unsigned int imageRowWidthBytes = width * bytesInPixel + rowPaddingBytes; 
+	//It is supposed that unpack alignment is converted to 1 in TexImage2D.
+	//So alignment of row in texture images for textureTriangle is 1
+	unsigned int imageRowWidthBytes = width * bytesInPixel; 
 
 	unsigned int pixelPos = y * imageRowWidthBytes + x * bytesInPixel;
 
     if ((format == NMGL_RGB) && (type == NMGL_UNSIGNED_BYTE))
     {
-        //Чтение производится из массива данных изображения bmp с учетом наличия в нём 
-        //дополнительных байтов для выравнивания по границе 4 байтов
         pixelValue->r = ((NMGLubyte*)pixels)[pixelPos];
         pixelValue->g = ((NMGLubyte*)pixels)[pixelPos + 1];
         pixelValue->b = ((NMGLubyte*)pixels)[pixelPos + 2];
@@ -147,8 +130,6 @@ int getPixelValue(unsigned int x, unsigned int y, TexImage2D image, color * pixe
     }
     else if (((format == NMGL_RGBA) && (type == NMGL_UNSIGNED_BYTE)))
     {
-        //Чтение производится из массива данных изображения bmp с учетом наличия в нём 
-        //дополнительных байтов для выравнивания по границе 4 байтов
         pixelValue->r = ((NMGLubyte*)pixels)[pixelPos];
         pixelValue->g = ((NMGLubyte*)pixels)[pixelPos + 1];
         pixelValue->b = ((NMGLubyte*)pixels)[pixelPos + 2];
@@ -156,8 +137,6 @@ int getPixelValue(unsigned int x, unsigned int y, TexImage2D image, color * pixe
     }
     else if ((format == NMGL_ALPHA) && (type == NMGL_UNSIGNED_BYTE))
     {
-        //Чтение производится из массива данных изображения bmp с учетом наличия в нём 
-        //дополнительных байтов для выравнивания по границе 4 байтов
         pixelValue->r = 0;
         pixelValue->g = 0;
         pixelValue->b = 0;
@@ -165,8 +144,6 @@ int getPixelValue(unsigned int x, unsigned int y, TexImage2D image, color * pixe
     }
     else if ((format == NMGL_LUMINANCE) && (type == NMGL_UNSIGNED_BYTE))
     {
-        //Чтение производится из массива данных изображения bmp с учетом наличия в нём 
-        //дополнительных байтов для выравнивания по границе 4 байтов
         pixelValue->r = ((NMGLubyte*)pixels)[pixelPos];
         pixelValue->g = ((NMGLubyte*)pixels)[pixelPos];
         pixelValue->b = ((NMGLubyte*)pixels)[pixelPos];
@@ -174,8 +151,6 @@ int getPixelValue(unsigned int x, unsigned int y, TexImage2D image, color * pixe
     }
     else if ((format == NMGL_LUMINANCE_ALPHA) && (type == NMGL_UNSIGNED_BYTE))
     {
-        //Чтение производится из массива данных изображения bmp с учетом наличия в нём 
-        //дополнительных байтов для выравнивания по границе 4 байтов
         pixelValue->r = ((NMGLubyte*)pixels)[pixelPos];
         pixelValue->g = ((NMGLubyte*)pixels)[pixelPos];
         pixelValue->b = ((NMGLubyte*)pixels)[pixelPos];
@@ -192,7 +167,6 @@ SECTION(TEXTURE_TRIANGLE_SECTION)
 float wrapCoord (NMGLint textureWrapMode, int texAxisSize, float texCoord)
 {
 	float min_coord_val = 1 / (float)texAxisSize*0.5; //CLAMP_TO_EDGE
-	//float min_s = 0.0f; //CLAMP
 	float max_coord_val = 1.0f - min_coord_val;
 
 	float resTexCoord = 0.0f;
@@ -209,7 +183,6 @@ float wrapCoord (NMGLint textureWrapMode, int texAxisSize, float texCoord)
 	else
 	{
 		printf("Unsupported textureWrapS or textureWrapT value. Exit.\n");
-		getchar();
 		return -1.0;
 	}
 
@@ -332,7 +305,6 @@ color getPixelNearest(Vec2f st, TexImage2D texture)
 	return pixelValue;//TODO return by pointer
 
 }
-//TEXTURING_PART
 
 SECTION(TEXTURE_TRIANGLE_SECTION)
 void textureTriangle(Pattern* patterns, 
@@ -344,12 +316,7 @@ void textureTriangle(Pattern* patterns,
                  nm32s* pDstTriangle, 
                  int count)
 {
-//TEXTURING_PART
 
-#ifdef DEBUG
-    // printf ("Start textureTriangle\n"); 
-#endif //DEBUG
-    
     NMGL_Context_NM1 *cntxt = NMGL_Context_NM1::getContext();
     
     //Текущий текстурный модуль
@@ -684,7 +651,6 @@ void textureTriangle(Pattern* patterns,
 						//else
 						//	printf("minMagFlag = MINIFICATION\n");
 
-//						getchar();
 
 						unsigned int d = 0;
 						unsigned int d1 = 0;
@@ -726,7 +692,6 @@ void textureTriangle(Pattern* patterns,
 							else
 							{
 								printf("mipmap:NMGL_NEAREST_MIPMAP_NEAREST: d is undefined\n");
-								getchar();
 							}
 
 							if (textureMinFilter == NMGL_NEAREST_MIPMAP_NEAREST)
@@ -750,7 +715,6 @@ void textureTriangle(Pattern* patterns,
 							else
 							{
 								printf("textureMinFilter has unsupported value for mipmapping\n");
-								getchar();
 							}
 
 						}
@@ -807,7 +771,6 @@ void textureTriangle(Pattern* patterns,
 							else
 							{
 								printf("textureMinFilter has unsupported value for mipmapping\n");
-								getchar();
 							}
 							
 							float frac_lod = lod - floor(lod);
@@ -820,7 +783,6 @@ void textureTriangle(Pattern* patterns,
 						else
 						{
 							printf("Unsupported parameter combination. Exit.\n");
-							getchar();
                             return;
 						}
                         
@@ -1093,11 +1055,7 @@ void textureTriangle(Pattern* patterns,
         src += ptrnSizes[cnt].height * ptrnSizes[cnt].width;
         dst += ptrnSizes[cnt].height * ptrnSizes[cnt].width;
     }
-#ifdef DEBUG
-    // printf ("End textureTriangle\n");     
-#endif //DEBUG
 
-//TEXTURING_PART
     return;
 }
 

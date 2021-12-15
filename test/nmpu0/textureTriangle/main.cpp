@@ -112,6 +112,10 @@ SECTION(".data_imu0") Pattern patterns [1] = {
     0x00000000, 0x00000000}, 
 };
 
+//Массивы растеризованных и закрашенных треугольников
+SECTION(".data_imu0") nm32s pSrcTriangle[WIDTH_PTRN * HEIGHT_PTRN * 1];
+SECTION(".data_imu0") nm32s pDstTriangle [WIDTH_PTRN * HEIGHT_PTRN * 1]; 
+
 int counter = 0;
 
 template<class T> inline T* myMallocT() {
@@ -130,6 +134,12 @@ template<class T> inline T* myMallocT(int count) {
 
 SECTION(".data_imu0") NMGL_Context_NM0 *NMGL_Context_NM0::context;
 
+//Explicit definitions of variables that are defined in nmglvs to fix 'undefined reference' error.
+//The reason of the error is that these variables are defined in nmglvsNm0Init that is not linked with this test.
+//TODO: remove explicit definitions when the cause of the error will be removed. 
+NMGLubyte* palettes_p; // texture palette memory
+unsigned int* palettes_widths_p; // texture palettes widths memory
+
 SECTION(".text_demo3d") 
 int main ()
 {
@@ -141,9 +151,6 @@ int main ()
 	NMGL_Context_NM0::create();	
 	test_cntxt = NMGL_Context_NM0::getContext();
 	
-    //Массивы растеризованных и закрашенных треугольников
-	nm32s pSrcTriangle[WIDTH_PTRN * HEIGHT_PTRN * 1];
-	nm32s pDstTriangle [WIDTH_PTRN * HEIGHT_PTRN * 1]; 
     
     //Массив значений цветов для треугольников, один цвет на треугольник
     v4nm32s colors [1];
