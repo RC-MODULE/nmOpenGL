@@ -187,8 +187,8 @@ int splitTriangles(TrianglePointers *srcVertex,
 
 	Buffer buf = initBuf((void *) dstVertex, maxDstSize);
 
-	int i = 0; // make this iterator local to assign it later to srcTreatedCount
-	for (i = 0; i < srcCount; ++i) {
+	int i = *srcTreatedCount; // make this iterator local to assign it later to srcTreatedCount
+	for (i = *srcTreatedCount; i < srcCount; ++i) {
 		// Get the triangle from the source
 		Point a;
 		Point b;
