@@ -20,7 +20,7 @@ SECTION(".text_demo3d") void NMGL_DrawPoints(NMGL_Context_NM1 *context, NM_Comma
 	nmppsCopy_32s((nm32s*)poly, (nm32s*)dataTmp, 7 * POLYGONS_SIZE);
 	dataTmp->count = poly->count;
 	getAddrPtrnsP(dataTmp);
-	context->buffers[0].free(sizeof32(DataForNmpu1));
+	context->buffers[0].bufferFree(sizeof32(DataForNmpu1));
 
 	COMMON_DRAW_TYPE* mulZ = (COMMON_DRAW_TYPE*)context->buffer0;
 	COMMON_DRAW_TYPE* mulC = (COMMON_DRAW_TYPE*)context->buffer0;

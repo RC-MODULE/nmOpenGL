@@ -10,9 +10,10 @@ void nmglFlush (){
 
 //#ifdef USED_POLYGONS_BUFFER
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
+	NMGL_Context *context = NMGL_GetCurrentContext();
 
 	int nSegments = cntxt->currentSegments->count;
-	Rectangle* rectangles = cntxt->currentSegments->rectangles;
+	Rectangle *rectangles = cntxt->currentSegments->rectangles;
 
 	for (int iSeg = 0; iSeg < nSegments; iSeg++) {
 		bool drawingCheck = NMGL_PolygonsCurrent(NMGL_TRIANGLES, iSeg)->count > 0 ||

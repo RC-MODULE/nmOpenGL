@@ -8,14 +8,16 @@ SECTION(".text_nmgl")
 void nmglBegin(NMGLenum mode)
 {
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
-	if(cntxt->beginEndInfo.inBeginEnd){
+	NMGL_Context *context = NMGL_GetCurrentContext();
+
+	if(context->beginEndInfo.inBeginEnd){
 		cntxt->error = NMGL_INVALID_OPERATION;
 		return;
 	}
 
-	cntxt->beginEndInfo.inBeginEnd = true;
-	cntxt->beginEndInfo.mode = mode;
-	cntxt->beginEndInfo.vertexCounter = 0;
+	context->beginEndInfo.inBeginEnd = true;
+	context->beginEndInfo.mode = mode;
+	context->beginEndInfo.vertexCounter = 0;
 	//printf("begin\n");
 	
 }

@@ -7,12 +7,14 @@
 SECTION(".text_nmgl")
 void nmglPushMatrix() {
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
-	if (cntxt->currentMatrixStack->current < cntxt->currentMatrixStack->size - 1) {
-		nmblas_scopy(16, (float*)&cntxt->currentMatrixStack->base[cntxt->currentMatrixStack->size], 1,
-			(float*)&cntxt->currentMatrixStack->base[cntxt->currentMatrixStack->size + 1], 1);
-		cntxt->currentMatrixStack->current++;
-		if (cntxt->currentMatrixStack->type == NMGL_MODELVIEW_MATRIX) {
-			reverseMatrix3x3in4x4(cntxt->modelviewMatrixStack.top(), &cntxt->normalMatrix);
+	NMGL_Context *context = NMGL_GetCurrentContext();
+
+	if (context->currentMatrixStack->current < context->currentMatrixStack->size - 1) {
+		nmblas_scopy(16, (float *)&context->currentMatrixStack->base[context->currentMatrixStack->size], 1,
+					 (float *)&context->currentMatrixStack->base[context->currentMatrixStack->size + 1], 1);
+		context->currentMatrixStack->current++;
+		if (context->currentMatrixStack->type == NMGL_MODELVIEW_MATRIX) {
+			reverseMatrix3x3in4x4(context->modelviewMatrixStack.top(), &context->normalMatrix);
 		}
 	}
 	else{

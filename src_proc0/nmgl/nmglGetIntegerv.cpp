@@ -8,9 +8,10 @@
 SECTION(".text_nmgl")
 void nmglGetIntegerv(NMGLenum pname, NMGLint * params) {
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
+	NMGL_Context *context = NMGL_GetCurrentContext();
 	switch(pname){
 		case NMGL_SHADE_MODEL:
-			params[0] = (NMGLint)cntxt->shadeModel;
+			params[0] = (NMGLint)context->shadeModel;
 			break;
 		case NMGL_UNPACK_ALIGNMENT:
 			params[0] = (NMGLint)cntxt->unpackAlignment;

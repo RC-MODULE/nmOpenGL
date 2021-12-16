@@ -3,6 +3,10 @@
  *  \brief Заголовочный файл с информацией общей для nm0 и nm1
  *  \author Жиленков Иван
  */
+
+
+#define _DEBUG
+
 #ifndef __DEMO3D_COMMON_H_INCLUDED__
 #define __DEMO3D_COMMON_H_INCLUDED__
 #include "nmgltype.h"
@@ -24,7 +28,10 @@
 	#define nmprofiler_disable()
 #endif
 
-#define TRIANGULATION_ENABLED
+#define WIDTH_IMAGE 768
+#define HEIGHT_IMAGE 768
+
+//#define TRIANGULATION_ENABLED
 //#define PROFILER0
 //#define PROFILER1
 
@@ -38,9 +45,6 @@
 typedef nm16s rgb565;
 typedef v4nm8s rgb8888;
 
-//Возможные значения ширины или высоты: 480,640,768,960,1024,1152
-#define WIDTH_IMAGE 768
-#define HEIGHT_IMAGE 768
 
 #define MAX_LIGHTS 2
 
@@ -59,38 +63,11 @@ typedef v4nm8s rgb8888;
 #define WHITE 0xFFFFFFFF
 
 #define COUNT_POLYGONS_BUFFER 4
-#define COUNT_IMAGE_BUFFER 8
+#define COUNT_IMAGE_BUFFER 2
 
 #define NMGL_POLIGON_STIPPLE_SIDE_UBYTES 32
 //#define COUNT_IMAGE_BUFFER 2
 
-
-
-/*struct TrianglePackage{
-	int x0[POLYGONS_SIZE];
-	int y0[POLYGONS_SIZE];
-	int x1[POLYGONS_SIZE];
-	int y1[POLYGONS_SIZE];
-	int x2[POLYGONS_SIZE];
-	int y2[POLYGONS_SIZE];
-	int crossProducts[POLYGONS_SIZE];
-};
-
-struct LinePackage{
-	int x0[POLYGONS_SIZE];
-	int y0[POLYGONS_SIZE];
-	int x1[POLYGONS_SIZE];
-	int y1[POLYGONS_SIZE];
-	int crossProducts[POLYGONS_SIZE];
-};
-
-struct PointPackage {
-	int x0[POLYGONS_SIZE];
-	int y0[POLYGONS_SIZE];
-	int x1[POLYGONS_SIZE];
-	int y1[POLYGONS_SIZE];
-	int crossProducts[POLYGONS_SIZE];
-};*/
 
 
 /**
@@ -131,6 +108,7 @@ struct DataForNmpu1 {
 
 template <class T, int SIZE> class MyRingBufferConnector : public HalRingBufferConnector<T, SIZE> {
 	int dummy;
+	
 public:
 	HalRingBufferData<T, SIZE>* ringbufferDataPointer;
 
@@ -139,6 +117,49 @@ public:
 typedef HalRingBufferData<DataForNmpu1, COUNT_POLYGONS_BUFFER> PolygonsArray;
 typedef MyRingBufferConnector<DataForNmpu1, COUNT_POLYGONS_BUFFER> PolygonsConnector;
 
+/*!
+ *  \brief Структура для описывания блока glBegin/glEnd
+ *  \author Жиленков Иван
+ */
+class NmglBeginEndInfo
+{
+public:
+	v4nm32f *vertex;
+	v4nm32f *normal;
+	v4nm32f *color;
+	// TEXTURING PART
+	v2nm32f *texcoord; //XXX: Only one texture unit is supported.
+	// TEXTURING PART
+	int vertexCounter;
+
+	NMGLenum mode;
+	bool inBeginEnd;
+
+	int maxSize;
+
+	NmglBeginEndInfo()
+	{
+		vertexCounter = 0;
+		inBeginEnd = false;
+	}
+};
+
+/*!
+ *  \brief Структура, хранящая информацию о стеке матриц
+ *  \author Жиленков Иван
+ */
+struct MatrixStack
+{
+	mat4nm32f *base; ///< указатель на массив матриц
+	int current;	 ///< Индекс текущей матрицы
+	int size;		 ///< Размер массива
+	int type;		 ///< Тип матриц
+
+	mat4nm32f *top()
+	{
+		return &base[current];
+	}
+};
 
 /*!
  *  \brief Класс с информации о массиве используемом в функции nmglDrawArrays
@@ -168,21 +189,25 @@ struct ImageSegments{
  */
 struct WindowInfo {
 	ImageSegments segments;
-	float viewportMulX;
-	float viewportMulY;
-	float viewportMulZ;
-	float viewportAddX;
-	float viewportAddY;
-	float viewportAddZ;
+	
 	Size imageSize;
 };
 
 struct NMGL_DepthTest{
 	NMGLboolean enabled;
 	NMGLenum func;
+	NMGLboolean mask;
+	int dummy;
 };
 
-
+struct NMGL_Viewport{
+	float viewportMulX;
+	float viewportMulY;
+	float viewportMulZ;
+	float viewportAddX;
+	float viewportAddY;
+	float viewportAddZ;
+};
 
 struct NMGL_StencilTest{
 	NMGLboolean enabled;
@@ -196,7 +221,6 @@ struct NMGL_AlphaTest{
 	NMGLclampf ref;
 };
 struct NMGL_ScissorTest {
-	ImageSegments segments;
 	Vector2 origin;
 	Size size;
 	int isEnabled;

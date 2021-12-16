@@ -8,6 +8,7 @@
 #include "nmgltex_nm1.h"
 #include "nmsynchro.h"
 #include "nmbuffer.h"
+#include "context.h"
 #define BUFFERS_COUNT 3
 
 void selectPatterns(nm32s* dydxTable, nm32s* dX, nm32s* dY, nm32s* x0, nm32s* pPtrnPaintSide, nm32s** pSrcPack, int nSize, int* pTmp);
@@ -28,35 +29,6 @@ public:
 		unpackAlignment=4;
 		packAlignment=4;
 		
-		point.smooth_enabled = NMGL_FALSE;
-		line.smooth_enabled  = NMGL_FALSE;
-		line.stipple.enabled = NMGL_FALSE;
-		
-		line.width			 = 1.0;
-		line.stipple.factor	 = 1;
-		line.stipple.pattern = 0xFFFF;
-
-		polygon.stipple.enabled 	= NMGL_FALSE;
-
-		polygon.offset_fill_enabled = NMGL_FALSE;
-
-
-		alpha_test.enabled 	 = NMGL_FALSE;
-		alpha_test.func		 = NMGL_ALWAYS;
-		alpha_test.ref		 = 0;
-
-
-		stencil_test.enabled = NMGL_FALSE;
-		stencil_test.func = NMGL_ALWAYS;
-		stencil_test.ref = 0;
-		stencil_test.mask = (NMGLuint)-1;
-
-		
-		blend.enabled = NMGL_FALSE;
-		blend.sfactor = NMGL_ONE;
-		blend.dfactor = NMGL_ZERO;
-
-
 	}
 	
 	static void create() {
@@ -68,37 +40,33 @@ public:
 	inline static NMGL_Context_NM1 *getContext() {
 		return context;
 	}
-	static void free() {
-		//halFree(context);
-	}
-	long long unsigned colorClearValueTwice[8];
-	long long unsigned depthClearValueTwice[8];
-	PatternPack patternPack;
-	
-	PatternsArray* patterns;			///< Указатель на массив всевозможных двухбитных паттернов
-	int dummy;
-	int fillInnerTable[SIZE_TABLE];
-	ImageConnector imageConnector;				///< Коннектор к кольцевому буферу изображений
+
+	alignas(64) long long unsigned colorClearValueTwice[8];
+	alignas(64) long long unsigned depthClearValueTwice[8];
+	alignas(8) int fillInnerTable[SIZE_TABLE];
+	alignas(8) nm32s minusOne[SMALL_SIZE]; ///< массив со значения -1
+	Size segmentSize;
+
+	alignas(8) NMGL_FrameBuffer innerFramebuffer;
+
+	PatternsArray *patterns; 			///< Указатель на массив всевозможных двухбитных паттернов
+	alignas(8) PatternPack patternPack;
+
+	alignas(8) NMGL_FrameBufferConnector frameConnector;
+
 	int* imageOffsets;
 
 	int* buffer0;						///< Указатель на временный буфер 0. Размер должен быть не меньше SIZE_BUFFER_NM1
 	int* buffer1;						///< Указатель на временный буфер 1. Размер должен быть не меньше SIZE_BUFFER_NM1
 	int* buffer2;						///< Указатель на временный буфер 2. Размер должен быть не меньше SIZE_BUFFER_NM1
-	int pointSize;						///< Диаметр точек в режиме отрисовки GL_POINTS. Не должен быть больше 32
 
 	SimpleBuffer<int> buffers[BUFFERS_COUNT];
 	clock_t t0, t1;	
 
-	DepthBuffer depthBuffer;			///< Структура для работы с целым буфером глубины
-	ImageBufferRgb8888 colorBuffer;		///< Структура для работы с целым цветным буфером
-	ImageBufferRgb8888 smallColorBuff;	///< Структура для работы с куском буфера цвета, лежащим во внутренней памяти
-	ImageBufferRgb8888 smallDepthBuff;	///< Структура для работы с куском буфера глубины, лежащим во внутренней памяти	
-	Size segmentSize;
 
 	nm32s** zBuffPoints;				///
 	nm32s** imagePoints;
 
-	nm32s minusOne[SMALL_SIZE];				///< массив со значения -1
 	
 	int* valuesZ;
 	int* valuesC;
@@ -124,22 +92,9 @@ public:
 	// TEXTURING PART
 	
 	NMGL_Context_NM1_Texture texState;
-	int shadeModel;
 
 	NMGLint unpackAlignment;
 	NMGLint packAlignment;
-
-	Point_cntxt_t	point;
-	Line_cntxt_t 	line;
-	Polygon_cntxt_t polygon;
-	Blend_cntxt_t	blend;
-
-	NMGL_AlphaTest   alpha_test;
-
-	NMGL_StencilTest stencil_test;
-
-	
-
 
 };
 

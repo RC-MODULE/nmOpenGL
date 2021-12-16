@@ -6,6 +6,7 @@ include $(ROOT)/global.mk
 
 .SUFFIXES:
 
+DEBUG = y
 
 ifndef MC12101
 $(warning *** WARNING: 'MC12101' environment variable is not defined! Board SDK might not have installed correctly. )
@@ -53,9 +54,9 @@ host $(HOST): $(VS)
 
 profile: profile0 profile1
 profile0:
-	$(MAKE) -f Makefile0 profile
+	$(MAKE) -f Makefile0 profile DEBUG=y
 profile1:
-	$(MAKE) -f Makefile1 profile
+	$(MAKE) -f Makefile1 profile DEBUG=y
 
 dump0:
 	nmc-objdump -d -s -x -l $(PROJECT0).abs > $(PROJECT0).dasm
@@ -66,8 +67,12 @@ vs2005: $(HOST).vcproj
 #	"$(VS80COMNTOOLS)vsvars32" && vcbuild $(HOST).vcproj
 
 vs2015:	$(HOST).vcxproj
-#	"$(VS140COMNTOOLS)vsvars32" && msbuild $(HOST).vcxproj /p:Configuration=Release /p:Platform=x64
-#	"$(VS140COMNTOOLS)vsvars32" && msbuild $(HOST).vcxproj /p:Configuration=Debug /p:Platform=x64
+ifdef DEBUG
+	"$(VS140COMNTOOLS)vsvars32" && msbuild $(HOST).vcxproj /p:Configuration=Debug /p:Platform=x64
+else
+	"$(VS140COMNTOOLS)vsvars32" && msbuild $(HOST).vcxproj /p:Configuration=Release /p:Platform=x64
+endif
+
 
 $(HOST).vcproj:
 	premake5 vs2005

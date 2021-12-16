@@ -6,7 +6,8 @@
 
 SECTION(".text_nmgl")
 void nmglLoadMatrixf(const NMGLfloat *m){
-	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
+	NMGL_Context *cntxt = NMGL_GetCurrentContext();
+
 	for(int i=0;i< 16; i++){
 		cntxt->currentMatrixStack->top()->matr[i] = m[i];
 	}

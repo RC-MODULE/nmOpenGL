@@ -33,7 +33,7 @@ SECTION(".text_demo3d") int getAddrPtrnsL(DataForNmpu1* data) {
 			minX = data->x0[i];
 			maxX = data->x1[i];
 		}
-		srcPackTmp01[i] = (nm32s*)&cntxt->patterns->linePtrns[ptrnNo];
+		srcPackTmp01[i] = (nm32s *)&cntxt->patterns->linePtrns[ptrnNo];
 		dstPackTmp01[i] = (nm32s*)(patternPack->patterns + i);
 		if (dy == 0)
 			dy++;
@@ -56,17 +56,17 @@ SECTION(".text_demo3d") int getAddrPtrnsL(DataForNmpu1* data) {
 		}
 		else {
 			patternPack->origins[i].y = 0;
-		}		
-		maxX = MIN(cntxt->smallColorBuff.getWidth(), maxX);
-		int maxY = MIN(cntxt->smallColorBuff.getWidth(), data->y1[i]);		
+		}
+		maxX = MIN(cntxt->innerFramebuffer.width, maxX);
+		int maxY = MIN(cntxt->innerFramebuffer.width, data->y1[i]);
 		patternPack->sizes[i].width = maxX - minX;
 		patternPack->sizes[i].height = maxY - minY;
 		if (patternPack->sizes[i].width == 0)
 			patternPack->sizes[i].width++;
 		if (patternPack->sizes[i].height == 0)
 			patternPack->sizes[i].height++;
-		
-		int imageOffset = minY * cntxt->smallColorBuff.getWidth() + minX;
+
+		int imageOffset = minY * cntxt->innerFramebuffer.width + minX;
 		if (imageOffset % 2) {
 			imageOffset--;
 			patternPack->origins[i].x--;
@@ -76,8 +76,8 @@ SECTION(".text_demo3d") int getAddrPtrnsL(DataForNmpu1* data) {
 			patternPack->sizes[i].width++;
 		}
 
-		cntxt->imagePoints[i] = nmppsAddr_32s((nm32s*)cntxt->smallColorBuff.mData, imageOffset);
-		cntxt->zBuffPoints[i] = nmppsAddr_32s((nm32s*)cntxt->smallDepthBuff.mData, imageOffset);
+		cntxt->imagePoints[i] = nmppsAddr_32s((nm32s *)cntxt->innerFramebuffer.buffers[0], imageOffset);
+		cntxt->zBuffPoints[i] = nmppsAddr_32s((nm32s *)cntxt->innerFramebuffer.buffers[2], imageOffset);
 
 		cntxt->valuesC[i]  = (data->color[4 * i + 0] & 0xFF);
 		cntxt->valuesC[i] |= (data->color[4 * i + 1] & 0xFF) << 8;

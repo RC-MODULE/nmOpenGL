@@ -11,10 +11,10 @@
 #include "stdio.h"
 #include "math.h"
 
-//функциЯ рассчета освещения
-//n - нормаль
-//V - вершины
-//^ - единичный вектор
+//пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+//n - пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+//V - пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+//^ - пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 
 //SECTION(".data_imu3") v4nm32f resultColor[3 * NMGL_SIZE];
 
@@ -32,7 +32,9 @@ inline void normalize_v4nm32f(v4nm32f* src, v4nm32f* dst, int size, v2nm32f* tmp
 SECTION(".text_demo3d")
 void light(v4nm32f* vertex, v4nm32f* srcNormalDstColor, int countVertex) {
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
-	LightingInfo *lightingInfo = &cntxt->lightingInfo;
+	NMGL_Context *context = NMGL_GetCurrentContext();
+
+	LightingInfo *lightingInfo = &context->lightingInfo;
 	v4nm32f *resultColor = (v4nm32f*)cntxt->buffer4;
 	v2nm32f *n_dot_vp = (v2nm32f*)(cntxt->buffer0 + 6 * NMGL_SIZE);
 	v2nm32f *n_dot_h_in_srm = (v2nm32f*)(cntxt->buffer1 + 6 * NMGL_SIZE);

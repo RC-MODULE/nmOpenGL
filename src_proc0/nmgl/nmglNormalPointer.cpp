@@ -7,6 +7,8 @@
 SECTION(".text_nmgl")
 void nmglNormalPointer(NMGLenum type, NMGLsizei stride, const NMGLvoid *pointer) {
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
+	NMGL_Context *context = NMGL_GetCurrentContext();
+
 	if (type != NMGL_FLOAT) {
 		cntxt->error = NMGL_INVALID_ENUM;
 		return;
@@ -15,15 +17,17 @@ void nmglNormalPointer(NMGLenum type, NMGLsizei stride, const NMGLvoid *pointer)
 		cntxt->error = NMGL_INVALID_VALUE;
 		return;
 	}
-	cntxt->normalArray.pointer = pointer;
-	cntxt->normalArray.size = 3;
-	cntxt->normalArray.stride = stride;
-	cntxt->normalArray.type = type;
+	context->normalArray.pointer = pointer;
+	context->normalArray.size = 3;
+	context->normalArray.stride = stride;
+	context->normalArray.type = type;
 }
 
 SECTION(".text_nmgl")
 void nmglNormalPointerNM(NMGLenum type, NMGLsizei stride, const NMGLvoid *pointer) {
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
+	NMGL_Context *context = NMGL_GetCurrentContext();
+
 	if (type != NMGL_FLOAT) {
 		cntxt->error = NMGL_INVALID_ENUM;
 		return;
@@ -32,8 +36,8 @@ void nmglNormalPointerNM(NMGLenum type, NMGLsizei stride, const NMGLvoid *pointe
 		cntxt->error = NMGL_INVALID_VALUE;
 		return;
 	}
-	cntxt->normalArray.pointer = pointer;
-	cntxt->normalArray.size = 4;
-	cntxt->normalArray.stride = stride;
-	cntxt->normalArray.type = type;
+	context->normalArray.pointer = pointer;
+	context->normalArray.size = 4;
+	context->normalArray.stride = stride;
+	context->normalArray.type = type;
 }

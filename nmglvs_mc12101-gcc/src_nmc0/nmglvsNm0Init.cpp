@@ -12,6 +12,123 @@
 
 #include "nmgl.h"
 
+#define PRINT_ADDR(a) printf(#a "=%p\n", a)
+#define PRINT_HEX(a) printf(#a "=0x%x\n", a)
+
+//Возможные значения ширины или высоты: 480,640,768,960,1024,1152
+
+
+SECTION(".data_imo0") NMGL_Context *globalContext;
+
+void NMGL_FrameBufferInit(NMGL_FrameBuffer *fb, int width, int height){
+	fb->head = 0;
+	fb->tail = 0;
+	fb->sizeOfAddr = sizeof(void *);
+	fb->sizeOfInt = sizeof(int);
+	fb->width = width;
+	fb->height = height;
+}
+
+void NMGL_ContextInit(NMGL_Context *context)
+{
+	NMGL_FrameBufferInit(&context->defaultFrameBuffer, WIDTH_IMAGE, HEIGHT_IMAGE);
+
+	context->isUseTwoSidedMode = NMGL_FALSE;
+	context->isCullFace = NMGL_FALSE;
+	context->cullFaceType = NMGL_BACK;
+	context->frontFaceOrientation = NMGL_CCW;
+	context->normalizeEnabled = NMGL_FALSE;
+	context->pointSize = 1.0f;
+
+	context->lightingInfo.init();
+
+	context->currentMatrixStack = &context->modelviewMatrixStack;
+	context->modelviewMatrixStack.base = context->modelviewMatrix;
+	context->modelviewMatrixStack.current = 0;
+	context->modelviewMatrixStack.size = 16;
+	context->modelviewMatrixStack.type = NMGL_MODELVIEW_MATRIX;
+
+	context->projectionMatrixStack.base = context->projectionMatrix;
+	context->projectionMatrixStack.current = 0;
+	context->projectionMatrixStack.size = 2;
+	context->projectionMatrixStack.type = NMGL_PROJECTION_MATRIX;
+
+	for (int i = 0; i < 4; i++)
+	{
+		for (int j = 0; j < 4; j++)
+		{
+			if (i == j)
+			{
+				context->modelviewMatrix[0].matr[i * 4 + j] = 1.0f;
+				context->projectionMatrix[0].matr[i * 4 + j] = 1.0f;
+				context->normalMatrix.matr[i * 4 + j] = 1.0;
+			}
+			else
+			{
+				context->modelviewMatrix[0].matr[i * 4 + j] = 0.0f;
+				context->projectionMatrix[0].matr[i * 4 + j] = 0.0f;
+				context->normalMatrix.matr[i * 4 + j] = 0.0f;
+			}
+		}
+	}
+	context->normalMatrix.matr[15] = 0.0f;
+
+	context->vertexArray.enabled = NMGL_FALSE;
+	context->vertexArray.size = 0;
+	context->normalArray.enabled = NMGL_FALSE;
+	context->normalArray.size = 0;
+	context->colorArray.enabled = NMGL_FALSE;
+	context->colorArray.size = 0;
+
+	context->currentColor.vec[0] = (float)1.0;
+	context->currentColor.vec[1] = (float)1.0;
+	context->currentColor.vec[2] = (float)1.0;
+	context->currentColor.vec[3] = (float)1.0;
+
+	context->currentNormal.vec[0] = (float)0.0;
+	context->currentNormal.vec[1] = (float)0.0;
+	context->currentNormal.vec[2] = (float)1.0;
+	context->currentNormal.vec[3] = (float)0.0;
+
+	context->viewport.viewportMulZ = (1 - 0) * 0.5f * ZBUFF_MAX;
+	context->viewport.viewportAddZ = (1 + 0) * 0.5f * ZBUFF_MAX;
+
+	context->shadeModel = NMGL_SMOOTH;
+
+	context->point.smooth_enabled = NMGL_FALSE;
+	context->line.smooth_enabled = NMGL_FALSE;
+	context->line.stipple.enabled = NMGL_FALSE;
+	context->line.width = 1.0;
+	context->line.stipple.factor = 1;
+	context->line.stipple.pattern = 0xFFFF;
+
+	context->polygon.stipple.enabled = NMGL_FALSE;
+
+	context->polygon.offset_fill_enabled = NMGL_FALSE;
+
+	context->scissorTest.isEnabled = NMGL_FALSE;
+
+	context->alpha_test.enabled = NMGL_FALSE;
+	context->alpha_test.func = NMGL_ALWAYS;
+	context->alpha_test.ref = 0;
+
+	context->stencil_test.enabled = NMGL_FALSE;
+	context->stencil_test.func = NMGL_ALWAYS;
+	context->stencil_test.ref = 0;
+	context->stencil_test.mask = (NMGLuint)-1;
+
+	context->depth_test.enabled = NMGL_FALSE;
+	context->depth_test.func = NMGL_LESS;
+	context->depth_test.mask = NMGL_TRUE;
+
+	context->blend.enabled = NMGL_FALSE;
+	context->blend.sfactor = NMGL_ONE;
+	context->blend.dfactor = NMGL_ZERO;
+}
+
+NMGL_Context *NMGL_GetCurrentContext(){
+	return globalContext;
+}
 
 #define CHECK_EXIT0 if(nmglSynchro->exit_nm==EXIT) {	break;	}
 #ifdef TEST_NMGL_TEX_FUNC
@@ -68,7 +185,7 @@ unsigned int* palettes_widths_p; // texture palettes widths memory
 NMGLubyte* PolygonsStipplePattern_p;
 int counter = 0;
 
-#define PRINT_ADDR(a) printf(#a"=%p\n", a)
+
 
 template<class T> inline T* myMallocT() {
 	
@@ -89,21 +206,27 @@ template<class T> inline T* myMallocT(int count) {
 
 SECTION(".data_imu0") NMGL_Context_NM0 *NMGL_Context_NM0::context;
 
-SECTION(".text_nmglvs") int nmglvsNm0Init()
+#ifndef __GNUC__
+#pragma optimize( "", off)
+#else // __GNUC__
+SECTION(".text_nmglvs")
+#endif
+ int nmglvsNm0Init()
 {
+
+	int fromHost = halHostSync(0xC0DE0000); // send handshake to host
+	if (fromHost != 0xC0DE0086)
+	{ // get  handshake from host
+		return 1;
+	}
+
 	halSleep(500);
 
 	halSetProcessorNo(0);
 
 	NMGLSynchroData* synchroData;
 	NMGL_Context_NM0 *cntxt;
-	ImageData* imagesData;
 
-
-	int fromHost = halHostSync(0xC0DE0000);		// send handshake to host
-	if (fromHost != 0xC0DE0086) {					// get  handshake from host
-		return 1;
-	}
 
 	try {
 		int fromNm1 = halSync(0xC0DE0000, 1);
@@ -111,11 +234,21 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 			return 1;
 		}
 		setHeap(7);
+		NMGL_Context_NM0::create();
+		cntxt = NMGL_Context_NM0::getContext();
+		
+		globalContext = myMallocT<NMGL_Context>();
+		NMGL_ContextInit(globalContext);
+		NMGL_Context *context = NMGL_GetCurrentContext();
+		
+		halSyncAddr(globalContext, 1);
 
+		setHeap(7);
 		synchroData = myMallocT<NMGLSynchroData>();
 		//synchroData = new NMGLSynchroData();
 		//PRINT_ADDR(synchroData);
 		synchroData->init();
+		cntxt->synchro.init(synchroData);
 		halSyncAddr(synchroData, 1);
 //TEXTURE -- PALETTE MEM INITIALIZATION
 		
@@ -126,10 +259,10 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
     	}
     	catch(int& e)
     	{
-    	    printf("Error! Cant allocate texture palette memory!");
+    	    printf("Error! Cant allocate texture palette memory!\n");
     	    return -1;
     	}
-    	DEBUG_PRINT(("allocated palette_pointer:0x%x",palettes_p));
+    	DEBUG_PRINT(("allocated palette_pointer:0x%x\n",palettes_p));
 		halSyncAddr(palettes_p, 1);
 		
 		 try
@@ -138,7 +271,7 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
         }
         catch(int& e)
         {
-            printf("Error! Cant allocate texture palette width memory!");
+            printf("Error! Cant allocate texture palette width memory!\n");
             return -1;
         }
 		halSyncAddr(palettes_widths_p, 1);
@@ -148,17 +281,14 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
     	}
     	catch(int& e)
     	{
-    	    printf("Error! Cant allocate PolygonsStipplePattern memory!");
+    	    printf("Error! Cant allocate PolygonsStipplePattern memory!\n");
     	    return -1;
     	}
 		halSyncAddr(PolygonsStipplePattern_p, 1);
 		
-		setHeap(7);
-		NMGL_Context_NM0::create();
-		cntxt = NMGL_Context_NM0::getContext();
-		cntxt->synchro.init(synchroData);		
 
-		cntxt->polygon.stipple.pattern = PolygonsStipplePattern_p;
+		context->polygon.stipple.pattern = PolygonsStipplePattern_p;
+		cntxt->currentSegments = &cntxt->viewportSegments;
 
 		setHeap(10);
 		PolygonsArray* trianData = myMallocT<PolygonsArray>(36);
@@ -191,14 +321,14 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 		}
 
 		setHeap(10);
-		cntxt->beginEndInfo.vertex = myMallocT<v4nm32f>(BIG_NMGL_SIZE);
-		cntxt->beginEndInfo.normal = myMallocT<v4nm32f>(BIG_NMGL_SIZE);
-		cntxt->beginEndInfo.color = myMallocT<v4nm32f>(BIG_NMGL_SIZE);
+		context->beginEndInfo.vertex = myMallocT<v4nm32f>(BIG_NMGL_SIZE);
+		context->beginEndInfo.normal = myMallocT<v4nm32f>(BIG_NMGL_SIZE);
+		context->beginEndInfo.color = myMallocT<v4nm32f>(BIG_NMGL_SIZE);
 		//TEXTURING_PART
-		cntxt->beginEndInfo.texcoord = myMallocT<v2nm32f>(BIG_NMGL_SIZE); //XXX: Only one texture unit is supported.
+		context->beginEndInfo.texcoord = myMallocT<v2nm32f>(BIG_NMGL_SIZE); //XXX: Only one texture unit is supported.
 		//TEXTURING_PART
-		cntxt->beginEndInfo.inBeginEnd = false;
-		cntxt->beginEndInfo.maxSize = BIG_NMGL_SIZE;
+		context->beginEndInfo.inBeginEnd = false;
+		context->beginEndInfo.maxSize = BIG_NMGL_SIZE;
 
 		cntxt->buffer0 = (float*)nmglBuffer0;
 		cntxt->buffer1 = (float*)nmglBuffer1;
@@ -217,18 +347,19 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 		//Must be in EMI. 
 		//EMI has enough space and does not require address mapping at mc12101
 		setHeap(12);
-		imagesData = myMallocT<ImageData>();
-		imagesData->init();
-		for (int i = 0; i < COUNT_IMAGE_BUFFER; i++) {
-			for (int j = 0; j < WIDTH_IMAGE * HEIGHT_IMAGE; j++) {
-				((int*)imagesData->ptr(i))[j] = 0;
-			}
-		}
-		cntxt->imageConnector.init(imagesData);
-		halSyncAddr(imagesData, 1);
-		
+		ImageRGB8888* imagesData = myMallocT<ImageRGB8888>(2);
 		DepthImage* depthImage = myMallocT<DepthImage>();
-		halSyncAddr(depthImage, 1);
+		for (int i = 0; i < WIDTH_IMAGE * HEIGHT_IMAGE; i++) {
+			((int*)&imagesData[0])[i] = 0;
+			((int*)&imagesData[1])[i] = 0;
+			((int*)depthImage)[i] = ZBUFF_MAX;
+			//((int*)depthImage)[i] = 0;
+		}
+
+		context->defaultFrameBuffer.buffers[0] = imagesData + 0;
+		context->defaultFrameBuffer.buffers[1] = imagesData + 1;
+		context->defaultFrameBuffer.buffers[2] = depthImage;
+
 #ifdef TEST_NMGL_TEX_FUNC
 		cntxtAddr_nm1 = (void*)halSyncAddr(0, 1);
 #ifndef __NM__
@@ -240,7 +371,7 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 		if(ok != 0x600DB00F){
 			throw 2;
 		}
-		mipmap = myMallocT<NMGLubyte>(MIPMAP_MEM_SIZE); 
+		//mipmap = myMallocT<NMGLubyte>(MIPMAP_MEM_SIZE); 
 		//TEXTURING_PART
 	}
 	catch (int& e) {
@@ -302,18 +433,13 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 	nmglClearColor(0, 0, 0, 1.0f);
 	nmglClearDepthf(1);
 	nmglViewport(0, 0, WIDTH_IMAGE, HEIGHT_IMAGE);
-	cntxt->windowInfo.imageSize.width = WIDTH_IMAGE;
-	cntxt->windowInfo.imageSize.height = HEIGHT_IMAGE;
 	nmglScissor(0, 0, WIDTH_IMAGE, HEIGHT_IMAGE);
-	nmglDisable(NMGL_SCISSOR_TEST);
 	for (int i = 0; i < 36; i++) {
 		cntxt->segmentMasks[i].init((nm1*)masksBits[i]);
 	}
 	halSync(0x600D600D, 1);
 
-
-
-	halHostSyncAddr(imagesData);
+	halHostSyncAddr(&(NMGL_GetCurrentContext()->defaultFrameBuffer));
 	return 0;
 } 
 

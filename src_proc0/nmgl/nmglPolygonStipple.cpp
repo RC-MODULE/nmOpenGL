@@ -10,7 +10,7 @@ void nmglPolygonStipple (const NMGLubyte *mask) {
 
     int i=0;
 
-    NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
+    NMGL_Context *cntxt = NMGL_GetCurrentContext();
 
     for(i=0;i<(NMGL_POLIGON_STIPPLE_SIDE_UBYTES*(NMGL_POLIGON_STIPPLE_SIDE_UBYTES>>3));i++){
 

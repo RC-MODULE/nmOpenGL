@@ -5,7 +5,9 @@
 void nmglGetBooleanv (NMGLenum pname, NMGLboolean *params){
 
     NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
-	switch(pname){
+    NMGL_Context *context = NMGL_GetCurrentContext();
+
+    switch(pname){
 	case NMGL_SHARED_TEXTURE_PALETTE_EXT:
         *params = cntxt->texState.shared_palette_enabled;
     break;
@@ -22,15 +24,15 @@ void nmglGetBooleanv (NMGLenum pname, NMGLboolean *params){
     break;
 
     case NMGL_VERTEX_ARRAY:
-        *params = cntxt->vertexArray.enabled;
+        *params = context->vertexArray.enabled;
     break;
 
     case NMGL_NORMAL_ARRAY:
-        *params = cntxt->normalArray.enabled;
+        *params = context->normalArray.enabled;
     break;
 
     case NMGL_COLOR_ARRAY:
-        *params = cntxt->colorArray.enabled;
+        *params = context->colorArray.enabled;
     break;
 
     case NMGL_TEXTURE_COORD_ARRAY:
@@ -38,7 +40,7 @@ void nmglGetBooleanv (NMGLenum pname, NMGLboolean *params){
     break;
 
     case NMGL_NORMALIZE:
-        *params = cntxt->normalizeEnabled;
+        *params = context->normalizeEnabled;
     break;
 
     case NMGL_RESCALE_NORMAL:
@@ -46,11 +48,11 @@ void nmglGetBooleanv (NMGLenum pname, NMGLboolean *params){
     break;
     
     case NMGL_LIGHTING:
-        *params = cntxt->lightingInfo.isLighting;
+        *params = context->lightingInfo.isLighting;
     break;
 
     case NMGL_COLOR_MATERIAL:
-        *params = cntxt->lightingInfo.isColorMaterial;
+        *params = context->lightingInfo.isColorMaterial;
     break;
 
     case NMGL_LIGHT0:
@@ -61,31 +63,31 @@ void nmglGetBooleanv (NMGLenum pname, NMGLboolean *params){
 	case NMGL_LIGHT5:
 	case NMGL_LIGHT6:
 	case NMGL_LIGHT7:
-        *params = cntxt->lightingInfo.isEnabledLight[pname - NMGL_LIGHT0];
+        *params = context->lightingInfo.isEnabledLight[pname - NMGL_LIGHT0];
     break;
 
     case NMGL_POINT_SMOOTH:
-		*params = cntxt->point.smooth_enabled;
+		*params = context->point.smooth_enabled;
 	break;
 
     case NMGL_LINE_SMOOTH:
-		*params = cntxt->line.smooth_enabled;
+		*params = context->line.smooth_enabled;
 	break;
 
     case NMGL_LINE_STIPPLE:
-		*params = cntxt->line.stipple.enabled;
+		*params = context->line.stipple.enabled;
 	break;
 
     case NMGL_CULL_FACE:
-		*params = cntxt->isCullFace;
+		*params = context->isCullFace;
 	break;
 
     case NMGL_POLYGON_OFFSET_FILL:
-		*params = cntxt->polygon.offset_fill_enabled;
+		*params = context->polygon.offset_fill_enabled;
 	break;
 
     case NMGL_POLYGON_STIPPLE:
-		*params = cntxt->polygon.stipple.enabled;
+		*params = context->polygon.stipple.enabled;
 	break;
 
     case NMGL_TEXTURE_2D:
@@ -93,19 +95,19 @@ void nmglGetBooleanv (NMGLenum pname, NMGLboolean *params){
 	break;
 
     case NMGL_SCISSOR_TEST:
-		*params = cntxt->scissorTest.isEnabled;
+		*params = context->scissorTest.isEnabled;
     break;
     case NMGL_ALPHA_TEST:
-		*params =  cntxt->alpha_test.enabled;
+		*params =  context->alpha_test.enabled;
     break;
     case NMGL_STENCIL_TEST:
-        *params =  cntxt->stencil_test.enabled;
+        *params =  context->stencil_test.enabled;
     break;
     case NMGL_DEPTH_TEST:
-        *params =  cntxt->depth_test.enabled;//TODO:add context field
+        *params =  context->depth_test.enabled;//TODO:add context field
     break;
     case NMGL_BLEND:
-        *params =  cntxt->blend.enabled ;
+        *params =  context->blend.enabled ;
     break;
     default:
         cntxt->error = NMGL_INVALID_ENUM;

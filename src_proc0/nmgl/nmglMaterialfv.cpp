@@ -8,7 +8,8 @@
 SECTION(".text_nmgl")
 void nmglMaterialfv(NMGLenum face, NMGLenum pname, const NMGLfloat *params) {
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
-	LightingInfo* lightingInfo = &cntxt->lightingInfo;
+	LightingInfo *lightingInfo = &NMGL_GetCurrentContext()->lightingInfo;
+
 	if(face != NMGL_FRONT_AND_BACK){
 		cntxt->error = NMGL_INVALID_ENUM;
 		return;

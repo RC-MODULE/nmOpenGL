@@ -2,25 +2,52 @@
 #include "hal.h"
 #include "hal_host.h"
 #include "stdio.h"
-#include "demo3d_host.h"
 #include "hostprofiler.h"
-#include "nmglvs_host.h"
 #include <fstream>
+#include "framebuffer.h"
+
+#include "demo3d_host.h"
+#include "hal.h"
+#include "hal_host.h"
+
 
 int currentImage[WIDTH_IMAGE * HEIGHT_IMAGE];
+int currentDepth[WIDTH_IMAGE * HEIGHT_IMAGE];
+
+void readColorBackNM(void *data, NMGL_FrameBuffer *fb, int x, int y, int width, int height);
+void readDepthNM(void *data, NMGL_FrameBuffer *fb, int x, int y, int width, int height);
+void readColorFrontNM(void *data, NMGL_FrameBuffer *fb, int x, int y, int width, int height);
+bool frameBufferIsEmpty(NMGL_FrameBuffer *remoteAddr);
+void frameBufferIncTail(NMGL_FrameBuffer *remoteAddr);
 
 
 int main()
 {
-	if (nmglvsHostInit() != 0) {
-		return 1;
+
+	// load programs to nm
+	if (halOpen(PROGRAM, PROGRAM1, NULL))
+	{
+		printf("Connection to mc12101 error!\n");
+		return -1;
 	}
+
+	// check connection sync
+	int handshake = halSync(0xC0DE0086, 0);
+	if (handshake != 0xC0DE0000)
+	{
+		printf("Handshake with mc12101-nmc0 error!\n");
+		return -1;
+	}
+
+	// get framebuffer address
+	NMGL_FrameBuffer *remote = (NMGL_FrameBuffer *)halSyncAddr(0, 0);
 
 	//----------------init-VShell--------------------------------------------
 	if (!VS_Init())
 		return 0;
 
 	VS_CreateImage("Source Image", 1, WIDTH_IMAGE, HEIGHT_IMAGE, VS_RGB32, 0);	// Create window for 8-bit source grayscale image
+	//VS_CreateImage("Source Depth", 2, WIDTH_IMAGE, HEIGHT_IMAGE, VS_RGB32, 0);	// Create window for 8-bit source grayscale image
 	
 	VS_OpRunForward();
 
@@ -66,21 +93,27 @@ int main()
 #ifdef EMULATION
 		halSleep(100);
 #endif //EMULATION
-		nmglvsHostReadImage(currentImage);
-		VS_SetData(1, currentImage);
-		
+		// wait finish image in nm
+		while (frameBufferIsEmpty(remote));
+
+		// read back color buffer
+		readColorBackNM(currentImage, remote, 0, 0, WIDTH_IMAGE, HEIGHT_IMAGE);
+
+		// set finish copy flaf
+		frameBufferIncTail(remote);
+
 		counter++;
 		if (counter>=256 && flag) {
 			//halProfilerPrint2xml("main0d.map", 0, "../perf0.xml");
-			//return 0;
 			//halProfilerPrint2xml("main1d.map", 1, "../perf1.xml");
 			//return 0;
 			flag = 0;
 		}
 
+		VS_SetData(1, currentImage);
 		VS_Draw(VS_DRAW_ALL);
 	}
 	unsigned int result[2];
-	nmglvsExit(result);
+	//nmglvsExit(result);
 	return 0;
 };

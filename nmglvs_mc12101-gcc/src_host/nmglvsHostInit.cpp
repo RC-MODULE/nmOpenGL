@@ -5,17 +5,16 @@
 //
 //  Copyright (c) 2017 RC Module Inc.
 //------------------------------------------------------------------------
-
+#include "demo3d_host.h"
 #include "VShell.h"
 #include "hal.h"
 #include "hal_host.h"
 #include "math.h"
 #include "nmpp.h"
-#include "demo3d_host.h"
 #include "pattern.h"
 #include "ringbuffert.h"
-#include "imagebuffer.h"
 #include <thread>
+#include "framebuffer.h"
 
 #ifdef STACK_TRACE_ENABLED
 #include "stacktrace.h"
@@ -26,9 +25,10 @@ StackTraceConnector stackTraceConnector;
 
 using namespace std;
 
-ImageConnector hostImageRB; 
+NMGL_FrameBuffer *remote;
 
-bool gccmap_address2symbol_(char* mapfile, unsigned addr, char* fullname) {
+bool gccmap_address2symbol_(char *mapfile, unsigned addr, char *fullname)
+{
 	FILE* f;
 	char str[1024];
 	f = fopen(mapfile, "rt");
@@ -57,26 +57,6 @@ bool gccmap_address2symbol_(char* mapfile, unsigned addr, char* fullname) {
 	return false;
 }
 
-void*  writeMem(const void* src, void* dst, unsigned int size32) {
-	int ok = halWriteMemBlock((void*)src, (int)dst, size32, 1);
-	return 0;
-}
-
-void*  readMem(const void* src, void* dst, unsigned int size32) {
-	int ok = halReadMemBlock(dst, (int)src, size32, 1);
-	return 0;
-}
-
-
-void*  writeMem0(const void* src, void* dst, unsigned int size32) {
-	int ok = halWriteMemBlock((void*)src, (int)dst, size32, 0);
-	return 0;
-}
-void*  readMem0(const void* src, void* dst, unsigned int size32) {
-	int ok = halReadMemBlock(dst, (int)src, size32, 0);
-	return 0;
-}
-
 int nmglvsHostInit()
 {
 	if (halOpen(PROGRAM, PROGRAM1, NULL)){
@@ -90,7 +70,6 @@ int nmglvsHostInit()
 		return -1;
 	}
 
-	ImageData* nmImageRB = (ImageData*)halSyncAddr(0, 0);
-	hostImageRB.init(nmImageRB, writeMem0, readMem0);
+	remote = (NMGL_FrameBuffer *)halSyncAddr(0, 0);
 	return 0;
 };

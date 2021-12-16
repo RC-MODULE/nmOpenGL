@@ -6,7 +6,7 @@
 
 int cbUpdate();
 
-//структура данных с информацией о копированиях
+//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 //SECTION(".data_demo3d") MyDmaServer<MSD_SIZE, MSD_NUM_CHANNELS> dmaServer;
 SECTION(".data_demo3d") NM_MemCopyManagerDma dmaServer;
 
@@ -30,7 +30,7 @@ SECTION(".text_demo3d") void msdInit() {
 		printf("error width msdInit\n");
 	}
 	for (int i = 0; i < MSD_NUM_CHANNELS; i++) {
-		dmaServer.getChannel(i).memcopyPush = (tmemcopy32)nmppsCopy_32s;
+		dmaServer.getChannel(i).memcopyPush = (tmemcopy32)nmppsCopy_32s;		
 	}
 }
 
@@ -47,7 +47,7 @@ SECTION(".text_demo3d") unsigned int msdAdd(const void* src, void* dst, int size
 	current->callback = 0;
 	//current->t0 = clock();
 	dmaServer.getChannel(priority).incHead();
-	dmaServer.startJob();
+	//dmaServer.startJob();
 	return id;
 }
 
@@ -67,7 +67,7 @@ SECTION(".text_demo3d") unsigned int msdAdd2D(const void* src, void* dst, unsign
 	current->callback = 0;
 	//current->t0 = clock();
 	dmaServer.getChannel(priority).incHead();
-	dmaServer.startJob();
+	//dmaServer.startJob();
 	return id;
 }
 
@@ -78,11 +78,16 @@ SECTION(".text_demo3d") unsigned int msdAdd(MyDmaTask &task, int priority) {
 	}
 //	task.t0 = clock();
 	dmaServer.getChannel(priority).push(&task, 1);
-	dmaServer.startJob();
+	//dmaServer.startJob();
 	return id;
 }
 
-SECTION(".text_demo3d") bool msdGetStatusCopy(int index, int priority) {
+SECTION(".text_demo3d")void msdStart(){
+	dmaServer.startJob();
+}
+
+SECTION(".text_demo3d") bool msdGetStatusCopy(int index, int priority)
+{
 	return dmaServer.getChannel(priority).getTail() > index;
 }
 

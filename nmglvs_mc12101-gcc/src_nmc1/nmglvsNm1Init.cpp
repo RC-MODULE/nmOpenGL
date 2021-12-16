@@ -8,41 +8,52 @@
 #include "cache.h"
 #include "link.h"
 #include "pattern.h"
+#include "command_nm1.h"
 
 #include "nmgl.h"
 
-SECTION(".data_imu1")	int pool0[SIZE_BUFFER_NM1];
-SECTION(".data_imu1")	Pattern patternsPack[POLYGONS_SIZE];
-SECTION(".data_imu0")	Pattern* ppPatternsPack[POLYGONS_SIZE];
-SECTION(".data_imu2")	int pool1[SIZE_BUFFER_NM1];
-SECTION(".data_imu3")	int pool2[SIZE_BUFFER_NM1];
+SECTION(".data_imu1")	static int pool0[SIZE_BUFFER_NM1];
+SECTION(".data_imu1")	static Pattern patternsPack[POLYGONS_SIZE];
+SECTION(".data_imu0")	static Pattern* ppPatternsPack[POLYGONS_SIZE];
+SECTION(".data_imu2")	static int pool1[SIZE_BUFFER_NM1];
+SECTION(".data_imu3")	static int pool2[SIZE_BUFFER_NM1];
 
-SECTION(".data_imu3")	int segImage[WIDTH_SEG * HEIGHT_SEG];
-SECTION(".data_imu2")	int segZBuff[WIDTH_SEG * HEIGHT_SEG];
+SECTION(".data_imu3")	static int segImage[WIDTH_SEG * HEIGHT_SEG];
+SECTION(".data_imu2")	static int segZBuff[WIDTH_SEG * HEIGHT_SEG];
 
-SECTION(".data_imu0") Vector2 ptrnInnPoints[POLYGONS_SIZE];
-SECTION(".data_imu0") Size ptrnSizes[POLYGONS_SIZE];
+SECTION(".data_imu0") static Vector2 ptrnInnPoints[POLYGONS_SIZE];
+SECTION(".data_imu0") static Size ptrnSizes[POLYGONS_SIZE];
 SECTION(".data_shmem1") nm32s imageOffsets[POLYGONS_SIZE];
 
 //TEXTURING_PART
-SECTION(".data_imu0") float x0[POLYGONS_SIZE];
-SECTION(".data_imu0") float y0[POLYGONS_SIZE];
-SECTION(".data_imu0") float x1[POLYGONS_SIZE];
-SECTION(".data_imu0") float y1[POLYGONS_SIZE];
-SECTION(".data_imu0") float x2[POLYGONS_SIZE];
-SECTION(".data_imu0") float y2[POLYGONS_SIZE];
+SECTION(".data_imu0") static float x0_nmgl[POLYGONS_SIZE];
+SECTION(".data_imu0") static float y0_nmgl[POLYGONS_SIZE];
+SECTION(".data_imu0") static float x1_nmgl[POLYGONS_SIZE];
+SECTION(".data_imu0") static float y1_nmgl[POLYGONS_SIZE];
+SECTION(".data_imu0") static float x2_nmgl[POLYGONS_SIZE];
+SECTION(".data_imu0") static float y2_nmgl[POLYGONS_SIZE];
 
-SECTION(".data_imu0") float texS0[POLYGONS_SIZE];
-SECTION(".data_imu0") float texT0[POLYGONS_SIZE];
-SECTION(".data_imu0") float texS1[POLYGONS_SIZE];
-SECTION(".data_imu0") float texT1[POLYGONS_SIZE];
-SECTION(".data_imu0") float texS2[POLYGONS_SIZE];
-SECTION(".data_imu0") float texT2[POLYGONS_SIZE];
+SECTION(".data_imu0") static float texS0[POLYGONS_SIZE];
+SECTION(".data_imu0") static float texT0[POLYGONS_SIZE];
+SECTION(".data_imu0") static float texS1[POLYGONS_SIZE];
+SECTION(".data_imu0") static float texT1[POLYGONS_SIZE];
+SECTION(".data_imu0") static float texS2[POLYGONS_SIZE];
+SECTION(".data_imu0") static float texT2[POLYGONS_SIZE];
 
-SECTION(".data_imu0") float w0[POLYGONS_SIZE];
-SECTION(".data_imu0") float w1[POLYGONS_SIZE];
-SECTION(".data_imu0") float w2[POLYGONS_SIZE];
+SECTION(".data_imu0") static float w0[POLYGONS_SIZE];
+SECTION(".data_imu0") static float w1[POLYGONS_SIZE];
+SECTION(".data_imu0") static float w2[POLYGONS_SIZE];
 
+
+
+void readColorBufferDMA(void* data, NMGL_FrameBuffer *fb, int x, int y, int width, int height);
+void writeColorBufferDMA(void *data, NMGL_FrameBuffer *fb, int x, int y, int width, int height);
+void readDepthBufferDMA(void *data, NMGL_FrameBuffer *fb, int x, int y, int width, int height);
+void writeDepthBufferDMA(void *data, NMGL_FrameBuffer *fb, int x, int y, int width, int height);
+void readColorBufferRISC(void *data, NMGL_FrameBuffer *fb, int x, int y, int width, int height);
+void writeColorBufferRISC(void *data, NMGL_FrameBuffer *fb, int x, int y, int width, int height);
+void readDepthBufferRISC(void *data, NMGL_FrameBuffer *fb, int x, int y, int width, int height);
+void writeDepthBufferRISC(void *data, NMGL_FrameBuffer *fb, int x, int y, int width, int height);
 
 int exitNM1 = 0;
 
@@ -68,10 +79,18 @@ template<class T> T* myMallocT() {
 SECTION(".data_imu0A") NMGL_Context_NM1 nmglContext;
 SECTION(".data_imu0") NMGL_Context_NM1 *NMGL_Context_NM1::context;
 
+SECTION(".data_imu0") NMGL_Context *globalContext;
+
+
+
+NMGL_Context *NMGL_GetCurrentContext(){
+	return globalContext;
+}
 
 SECTION(".text_nmglvs") int nmglvsNm1Init()
 {
 	halSleep(500);
+
 
 	halSetProcessorNo(1);
 	//---------- start nm program ------------
@@ -82,36 +101,37 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 		if (fromNm0 != 0xC0DE0000) {					// get  handshake from host
 			throw -1;
 		}
-		NMGLSynchroData* synchroData = (NMGLSynchroData*)halSyncAddr(0, 0);
-		nmglSynchro.init(synchroData);
-
 		setHeap(0);
 		NMGL_Context_NM1::bind(&nmglContext);
 		cntxt = NMGL_Context_NM1::getContext();
 		
-	cntxt->texState.palette_pointers[0] = (NMGLubyte *)halSyncAddr(0, 0);
-	cntxt->texState.paletts_widths_pointers[0] = (unsigned int*)halSyncAddr(0, 0);
-	cntxt->polygon.stipple.pattern = (NMGLubyte *)halSyncAddr(0, 0);
+		globalContext = (NMGL_Context*)halSyncAddr(0, 0);
+
+		NMGLSynchroData* synchroData = (NMGLSynchroData*)halSyncAddr(0, 0);
+		nmglSynchro.init(synchroData);
+
+
+		
+		cntxt->texState.palette_pointers[0] = (NMGLubyte *)halSyncAddr(0, 0);
+		cntxt->texState.paletts_widths_pointers[0] = (unsigned int*)halSyncAddr(0, 0);
+		globalContext->polygon.stipple.pattern = (NMGLubyte *)halSyncAddr(0, 0);
 
 		setHeap(11);
 		cntxt->patterns = myMallocT<PatternsArray>();
-		
-		setHeap(13);
+
+		setHeap(11);
 		hostCreatePatterns(cntxt->patterns);
 		halSleep(10);
 
-		imagesData = (ImageData*)halSyncAddr(0, 0);
-		cntxt->imageConnector.init(imagesData);
 
-		DepthImage* depthImage = (DepthImage*)halSyncAddr(0, 0);
 		setHeap(11);
 		
-
-		cntxt->colorBuffer.init(cntxt->imageConnector.ptrHead(), WIDTH_IMAGE, HEIGHT_IMAGE);
-		cntxt->depthBuffer.init(depthImage, WIDTH_IMAGE, HEIGHT_IMAGE);
+		cntxt->frameConnector.readColor = readColorBufferDMA;
+		cntxt->frameConnector.writeColor = writeColorBufferDMA;
+		cntxt->frameConnector.readDepth = readDepthBufferDMA;
+		cntxt->frameConnector.writeDepth = writeDepthBufferDMA;
 		cntxt->texState.init();
 		cntxt->init_elements();
-		cntxt->shadeModel=NMGL_SMOOTH;
 	}
 	catch (int &e) {
 		if (e == -2) {
@@ -130,12 +150,11 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 	halInstrCacheEnable();
 #endif // __GNUC__
 	msdInit();
-	cntxt->smallColorBuff.init(segImage, WIDTH_SEG, HEIGHT_SEG);
-	cntxt->smallDepthBuff.init(segZBuff, WIDTH_SEG, HEIGHT_SEG);
+	NMGL_FrameBufferInit(&cntxt->innerFramebuffer, WIDTH_SEG, HEIGHT_SEG);
+	cntxt->innerFramebuffer.buffers[0] = segImage;
+	cntxt->innerFramebuffer.buffers[2] = segZBuff;	
 
-	//cntxt->smallClearColorBuff.init(colorClearBuff, WIDTH_SEG, HEIGHT_SEG);
-	//cntxt->smallClearDepthBuff.init(depthClearBuff, WIDTH_SEG, HEIGHT_SEG);
-	
+
 	cntxt->buffer0 = pool0;
 	cntxt->buffer1 = pool1;
 	cntxt->buffer2 = pool2;
@@ -167,15 +186,14 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 	cntxt->imagePoints = (nm32s**)(cntxt->buffer2 + 4 * POLYGONS_SIZE);
 
 	cntxt->t0 = clock();
-	cntxt->pointSize = 1;
 
 //TEXTURING_PART
-	cntxt->x0 = x0;
-	cntxt->y0 = y0;
-	cntxt->x1 = x1;
-	cntxt->y1 = y1;
-	cntxt->x2 = x2;
-	cntxt->y2 = y2;
+	cntxt->x0 = x0_nmgl;
+	cntxt->y0 = y0_nmgl;
+	cntxt->x1 = x1_nmgl;
+	cntxt->y1 = y1_nmgl;
+	cntxt->x2 = x2_nmgl;
+	cntxt->y2 = y2_nmgl;
 
 	cntxt->texS0 = texS0;
 	cntxt->texT0 = texT0;
@@ -188,7 +206,10 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 	cntxt->w1 = w1;
 	cntxt->w2 = w2;
 
+
 	halSync(0x600D600D, 0);
+
+
 	return 0;
 } 
 

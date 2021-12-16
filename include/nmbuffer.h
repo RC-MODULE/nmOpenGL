@@ -31,7 +31,7 @@ public:
 		mRemainSize -= size;
 		return result;
 	}
-	void free(int size){
+	void bufferFree(int size){
 		mTop -= size;
 		mRemainSize += size;
 	}

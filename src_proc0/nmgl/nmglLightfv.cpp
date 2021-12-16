@@ -8,7 +8,9 @@
 SECTION(".text_nmgl")
 void nmglLightfv(NMGLenum color, NMGLenum pname, const NMGLfloat *params) {
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
-	LightingInfo* lightingInfo = &cntxt->lightingInfo;
+	NMGL_Context *context = NMGL_GetCurrentContext();
+	LightingInfo *lightingInfo = &NMGL_GetCurrentContext()->lightingInfo;
+	
 	color -= NMGL_LIGHT0;
 	if (color >= MAX_LIGHTS) {
 		cntxt->error = NMGL_INVALID_ENUM;
@@ -39,9 +41,9 @@ void nmglLightfv(NMGLenum color, NMGLenum pname, const NMGLfloat *params) {
 		cntxt->tmp.vec[1] = params[1];
 		cntxt->tmp.vec[2] = params[2];
 		cntxt->tmp.vec[3] = params[3];
-		mul_mat4nm32f_v4nm32f(cntxt->modelviewMatrixStack.top(), 
-			&cntxt->tmp, 
-			&lightingInfo->lightPosition[color], 1);
+		mul_mat4nm32f_v4nm32f(context->modelviewMatrixStack.top(),
+							  &cntxt->tmp,
+							  &lightingInfo->lightPosition[color], 1);
 		break;
 	case NMGL_SPOT_DIRECTION:
 		lightingInfo->lightSpotDirection[color].vec[0] = params[0];

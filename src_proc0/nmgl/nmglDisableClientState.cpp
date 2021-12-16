@@ -7,16 +7,18 @@
 SECTION(".text_nmgl")
 void nmglDisableClientState(NMGLenum array) {
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
+	NMGL_Context *context = NMGL_GetCurrentContext();
+
 	switch (array)
 	{
 	case NMGL_VERTEX_ARRAY:
-		cntxt->vertexArray.enabled = NMGL_FALSE;
+		context->vertexArray.enabled = NMGL_FALSE;
 		break;
 	case NMGL_COLOR_ARRAY:
-		cntxt->colorArray.enabled = NMGL_FALSE;
+		context->colorArray.enabled = NMGL_FALSE;
 		break;
 	case NMGL_NORMAL_ARRAY:
-		cntxt->normalArray.enabled = NMGL_FALSE;
+		context->normalArray.enabled = NMGL_FALSE;
 	default:
 		cntxt->error = NMGL_INVALID_ENUM;
 		break;

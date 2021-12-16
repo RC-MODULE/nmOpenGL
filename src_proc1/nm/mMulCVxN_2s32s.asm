@@ -43,11 +43,11 @@ data ".data_demo3d"
 						   0a8000000_00000000hl,
 						   0a8000000_00000000hl,
 						   0a8000000_00000000hl);
-		//global _addC4DepthTest: word = 07FFFFFFFh;
+		global _addC4DepthTest: word = 07FFFFFFFh;
 
 end ".data_demo3d";
 
-extern _addC4DepthTest: word;
+//extern _addC4DepthTest: word;
 
 global _mMulCVxN_2s32s: label;
 global _mMulCVxN_2s_RGB8888: label;

@@ -8,20 +8,22 @@
 SECTION(".text_nmgl")
 void nmglClear(NMGLbitfield mask) {
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
+	NMGL_Context *context = NMGL_GetCurrentContext();
+
 	NM_Command command;
 	command.instr = NMC1_CLEAR;
 	command.params[0] = CommandArgument(mask);
-	if (cntxt->scissorTest.isEnabled) {
-		command.params[1] = CommandArgument(cntxt->scissorTest.origin.x);
-		command.params[2] = CommandArgument(cntxt->scissorTest.origin.y);
-		command.params[3] = CommandArgument(cntxt->scissorTest.size.width);
-		command.params[4] = CommandArgument(cntxt->scissorTest.size.height);
+	if (context->scissorTest.isEnabled) {
+		command.params[1] = CommandArgument(context->scissorTest.origin.x);
+		command.params[2] = CommandArgument(context->scissorTest.origin.y);
+		command.params[3] = CommandArgument(context->scissorTest.size.width);
+		command.params[4] = CommandArgument(context->scissorTest.size.height);
 	}
 	else {
 		command.params[1] = CommandArgument(0);
 		command.params[2] = CommandArgument(0);
-		command.params[3] = CommandArgument(cntxt->windowInfo.imageSize.width);
-		command.params[4] = CommandArgument(cntxt->windowInfo.imageSize.height);
+		command.params[3] = CommandArgument(context->defaultFrameBuffer.width);
+		command.params[4] = CommandArgument(context->defaultFrameBuffer.height);
 	}
 	
 	NMGL_SetValue(command);

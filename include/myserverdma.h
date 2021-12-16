@@ -58,6 +58,9 @@ public:
 			currentChannel->ptrTail()->callback();
 		}
 		currentChannel->incTail();
+		if (!currentChannel->isEmpty()) {
+			startFunc(currentChannel->ptrTail());
+		}
 		isWorking = false;
 	}
 #endif
@@ -71,6 +74,6 @@ void msdWaitDma(int channel);
 bool msdGetStatusCopy(int index, int priority = MSD_NUM_CHANNELS - 1);
 
 unsigned int msdAdd(MyDmaTask &task, int priority = MSD_NUM_CHANNELS - 1);
-
+void msdStart();
 
 #endif

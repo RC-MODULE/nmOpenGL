@@ -7,7 +7,7 @@
 SECTION(".text_nmgl")
 void nmglNormal3f(NMGLfloat x, NMGLfloat y, NMGLfloat z)
 {
-	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
+	NMGL_Context *cntxt = NMGL_GetCurrentContext();
 	cntxt->currentNormal.vec[0] = x;
 	cntxt->currentNormal.vec[1] = y;
 	cntxt->currentNormal.vec[2] = z;
@@ -17,7 +17,7 @@ void nmglNormal3f(NMGLfloat x, NMGLfloat y, NMGLfloat z)
 SECTION(".text_nmgl")
 void nmglNormal3fv(const NMGLfloat *v)
 {
-	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
+	NMGL_Context *cntxt = NMGL_GetCurrentContext();
 	cntxt->currentNormal.vec[0] = v[0];
 	cntxt->currentNormal.vec[1] = v[1];
 	cntxt->currentNormal.vec[2] = v[2];

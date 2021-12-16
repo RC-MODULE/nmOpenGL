@@ -15,12 +15,9 @@ void NMGL_DrawPoints(NMGL_Context_NM1 *context, NM_Command *command);
 void NMGL_Clear(NMGL_Context_NM1 *context, NM_Command *command);
 void NMGL_CopySegmentFromImage(NMGL_Context_NM1 *context, NM_Command *command);
 void NMGL_CopySegmentToImage(NMGL_Context_NM1 *context, NM_Command *command);
-void NMGL_PointSize(NMGL_Context_NM1 *context, NM_Command *command);
 void NMGL_SetColor(NMGL_Context_NM1 *context, NM_Command *command);
 void NMGL_SetDepth(NMGL_Context_NM1 *context, NM_Command *command);
-void NMGL_Depth(NMGL_Context_NM1 *context, NM_Command *command);
-void NMGL_DepthMask(NMGL_Context_NM1 *context, NM_Command *command);
-void NMGL_DepthFunc(NMGL_Context_NM1 *context, NM_Command *command);
+void NMGL_DepthUpdate(NMGL_Context_NM1 *context, NM_Command *command);
 void NMGL_SwapBuffer(NMGL_Context_NM1 *context, NM_Command *command);
 void NMGL_Exit(NMGL_Context_NM1 *context, NM_Command *command);
 void NMGL_SetActiveTexture(NMGL_Context_NM1 *context, NM_Command *command);
@@ -35,14 +32,5 @@ void NMGL_Texture2d(NMGL_Context_NM1 *context, NM_Command *command);
 void NMGL_Finish(NMGL_Context_NM1 *context, NM_Command *command);
 void NMGL_UseSharedPalette(NMGL_Context_NM1 *context, NM_Command *command);
 void NMGL_UseLocalPalette(NMGL_Context_NM1 *context, NM_Command *command);
-void NMGL_ShadeModel(NMGL_Context_NM1 *context, NM_Command *command);
-
-void NMGL_AlphaTestSet(NMGL_Context_NM1 *context, NM_Command *command);
-void NMGL_BlendSet(NMGL_Context_NM1 *context, NM_Command *command);
-void NMGL_PolygonOffsetFill(NMGL_Context_NM1 *context, NM_Command *command);
-void NMGL_LineSmoothSet(NMGL_Context_NM1 *context, NM_Command *command);
-void NMGL_PointSmoothSet(NMGL_Context_NM1 *context, NM_Command *command);
-void NMGL_LineStippleSet(NMGL_Context_NM1 *context, NM_Command *command);
-void NMGL_PolygonStippleSet(NMGL_Context_NM1 *context, NM_Command *command);
 
 #endif //COMMAND_NM1_H 

@@ -12,8 +12,6 @@ SECTION(".text_demo3d") void NMGL_SetColor(NMGL_Context_NM1 *context, NM_Command
 	mClearValue |= (red << 16);
 	mClearValue |= (alpha << 24);
 	mClearValue |= (mClearValue << 32);
-	context->colorBuffer.clearColor(red, green, blue, alpha);
-	context->smallColorBuff.mClearValue = context->colorBuffer.mClearValue;
 	for (int i = 0;i < 8;i++) {
 		context->colorClearValueTwice[i] = mClearValue;
 	}
@@ -22,8 +20,6 @@ SECTION(".text_demo3d") void NMGL_SetColor(NMGL_Context_NM1 *context, NM_Command
 }
 
 SECTION(".text_demo3d") void NMGL_SetDepth(NMGL_Context_NM1 *context, NM_Command *command) {
-	context->depthBuffer.mClearValue = command->params[0].ui;
-	context->smallDepthBuff.mClearValue = context->depthBuffer.mClearValue;
 	long long unsigned mClearValue = command->params[0].ui;
 	mClearValue |= (mClearValue << 32);
 	for (int i = 0;i < 8;i++) {
@@ -33,24 +29,5 @@ SECTION(".text_demo3d") void NMGL_SetDepth(NMGL_Context_NM1 *context, NM_Command
 	return;
 }
 
-SECTION(".text_demo3d") void NMGL_PointSize(NMGL_Context_NM1 *context, NM_Command *command) {
-	context->pointSize = command->params[0].i;
-	return;
-}
-
-
-
-SECTION(".text_demo3d") void NMGL_AlphaTestSet(NMGL_Context_NM1 *context, NM_Command *command){
-	context->alpha_test.enabled = command->params[0].b;
-}
-
-SECTION(".text_demo3d") void NMGL_BlendSet(NMGL_Context_NM1 *context, NM_Command *command){
-	context->blend.enabled = command->params[0].b;
-}
-
-
-SECTION(".text_demo3d") void NMGL_PolygonOffsetFill(NMGL_Context_NM1 *context, NM_Command *command){
-	context->polygon.offset_fill_enabled = command->params[0].b;
-}
 
 

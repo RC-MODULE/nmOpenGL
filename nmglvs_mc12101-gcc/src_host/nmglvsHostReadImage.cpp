@@ -14,7 +14,11 @@
 #include "stacktrace.h"
 
 
-extern ImageConnector hostImageRB;
+extern NMGL_FrameBuffer *remote;
+void readColorBackNM(void *data, NMGL_FrameBuffer *fb, int x, int y, int width, int height);
+void readColorFrontNM(void *data, NMGL_FrameBuffer *fb, int x, int y, int width, int height);
+bool frameBufferIsEmpty(NMGL_FrameBuffer *remoteAddr);
+void frameBufferIncTail(NMGL_FrameBuffer *remoteAddr);
 
 #ifdef STACK_TRACE_ENABLED
 extern StackTraceConnector stackTraceConnector;
@@ -48,29 +52,14 @@ int nmglvsHostReadImage(int* dstImage)
 {
 	S_VS_MouseStatus mouseStatus;
 	VS_GetMouseStatus(&mouseStatus);
-#if defined(PROFILER0) || defined(PROFILER1)
-	if (mouseStatus.nKey == VS_MOUSE_LBUTTON) {
-#else
-	if (mouseStatus.nKey != VS_MOUSE_LBUTTON) {
-#endif
-		clock_t t0, t1;
-		t0 = clock();
-		while (hostImageRB.isEmpty()) {
-			t1 = clock();
-			if (t1 - t0 > 10000) {
-				#ifdef STACK_TRACE_ENABLED
-				PrintTrace(&stackTraceConnector, 5, 5);
-				while (true);
-				#endif //STACK_TRACE_ENABLED
-			}
-		}
-		hostImageRB.pop((NMGL_IMAGE*)dstImage, 1);
-	}
-	else {
-		while (hostImageRB.isEmpty()) {
-			halSleep(2);
-		}
-		hostImageRB.incTail();
-	}
+
+
+	while (frameBufferIsEmpty(remote));
+
+	if (mouseStatus.nKey != VS_MOUSE_LBUTTON)
+		readColorBackNM(dstImage, remote, 0, 0, WIDTH_IMAGE, HEIGHT_IMAGE);
+
+	frameBufferIncTail(remote);
+
 	return 0;
 };

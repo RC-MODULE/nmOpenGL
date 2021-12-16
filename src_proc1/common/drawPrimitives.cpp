@@ -10,6 +10,8 @@ SECTION(".data_imu0") TrianglesInfo triangles;
 //TEXTURING_PART
 
 SECTION(".text_demo3d") void drawPrimitives(NMGL_Context_NM1 *context, int countPrimitives){
+	NMGL_Context *cntxt = NMGL_GetCurrentContext();
+
 	nm32s* mulZ = (nm32s*)context->buffer0;
 	nm32s* mulC = (nm32s*)context->buffer0;
 	nm32s* zMaskBuffer = (nm32s*)context->buffer1;
@@ -18,8 +20,8 @@ SECTION(".text_demo3d") void drawPrimitives(NMGL_Context_NM1 *context, int count
 	for(int point = 0; point < countPrimitives; point += SMALL_SIZE){
 		int localSize = MIN(countPrimitives - point, SMALL_SIZE);
 
-		//проверка активирования теста глубины
-		if (context->depthBuffer.enabled == NMGL_FALSE) {
+		//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+		if (cntxt->depth_test.enabled == NMGL_FALSE){
 			//PROFILER_SIZE(fullSize);
 			mMulCVxN_2s32s(
 				patternPack->patterns + point,
@@ -30,7 +32,7 @@ SECTION(".text_demo3d") void drawPrimitives(NMGL_Context_NM1 *context, int count
 				localSize);
 		}
 		else {
-			//умножение бинарных масок на Z
+			//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ Z
 			//PROFILER_SIZE(fullSize);
 			mMulCVxN_2s32s(
 				patternPack->patterns + point,
@@ -41,9 +43,9 @@ SECTION(".text_demo3d") void drawPrimitives(NMGL_Context_NM1 *context, int count
 				localSize);
 
 
-			//mulZ теперь хранит z-треугольники
+			//mulZ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ z-пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 
-			//функция теста глубины
+			//пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 			//PROFILER_SIZE(fullSize);
 			depthTest32((nm32s**)(context->zBuffPoints + point),
 				WIDTH_SEG,
@@ -62,7 +64,7 @@ SECTION(".text_demo3d") void drawPrimitives(NMGL_Context_NM1 *context, int count
 			context->valuesC + point,
 			mulC,
 			localSize);
-		//mulBuffer теперь хранит цвет
+		//mulBuffer пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
 ///for nmglShadeModel:
 //		}
 //		else if (context->shadeModel == NMGL_SMOOTH) {
@@ -129,8 +131,8 @@ SECTION(".text_demo3d") void drawPrimitives(NMGL_Context_NM1 *context, int count
         }
 //TEXTURING_PART
 
-		//функция накладывает маску на буфер с цветами 
-		//и копирует треугольник в изображение
+		//пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ 
+		//пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 
 		//PROFILER_SIZE(fullSize);
 		mMaskVxN_32s(mulC,

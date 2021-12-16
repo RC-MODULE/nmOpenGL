@@ -94,8 +94,10 @@ SECTION(".text_demo3d") int getAddrPtrnsP(DataForNmpu1* data) {
 	copyPacket_32s(srcPackTmp,
 		dstPackTmp,
 		sizePackTmp, size);*/
-		//этот кусок кода является си-реализацией этой функции и является более наглядным	
+		//пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ-пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ	
 	NMGL_Context_NM1 *cntxt = NMGL_Context_NM1::getContext();
+	NMGL_Context *context = NMGL_GetCurrentContext();
+
 	PatternPack * patternPack = &cntxt->patternPack;
 
 	int size = data->count;
@@ -104,7 +106,7 @@ SECTION(".text_demo3d") int getAddrPtrnsP(DataForNmpu1* data) {
 	Pattern** ppSrcPackPtrns = (Pattern**)cntxt->buffers[0].alloc(size * sizeof32(Pattern*));
 	int* nSizePtrn32 = cntxt->buffers[2].alloc(size);
 	for (int i = 0; i < size; i++) {
-		int pointSize = cntxt->pointSize;
+		int pointSize = context->pointSize;
 		int minX = data->x0[i] - pointSize / 2;
 		int maxX = data->x0[i] + pointSize / 2;
 		int minY = data->y0[i] - pointSize / 2;
@@ -137,8 +139,8 @@ SECTION(".text_demo3d") int getAddrPtrnsP(DataForNmpu1* data) {
 		if (patternPack->sizes[i].width % 2) {
 			patternPack->sizes[i].width++;
 		}
-		cntxt->imagePoints[i] = (int*)cntxt->smallColorBuff.mData + patternPack->imagePositions[i];
-		cntxt->zBuffPoints[i] = (int*)cntxt->smallDepthBuff.mData + patternPack->imagePositions[i];
+		cntxt->imagePoints[i] = (int *)cntxt->innerFramebuffer.buffers[0] + patternPack->imagePositions[i];
+		cntxt->zBuffPoints[i] = (int *)cntxt->innerFramebuffer.buffers[2] + patternPack->imagePositions[i];
 	}
 	static int counter = 0;
 	if (counter == 45){
@@ -146,7 +148,7 @@ SECTION(".text_demo3d") int getAddrPtrnsP(DataForNmpu1* data) {
 	}
 	copyPacket_32s((int**)ppSrcPackPtrns, (int**)patternPack->ppPattern, nSizePtrn32, size);
 	counter++;
-	cntxt->buffers[0].free(size * sizeof32(Pattern*));
-	cntxt->buffers[2].free(size);
+	cntxt->buffers[0].bufferFree(size * sizeof32(Pattern*));
+	cntxt->buffers[2].bufferFree(size);
 	return 0;
 }

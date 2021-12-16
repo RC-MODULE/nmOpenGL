@@ -9,7 +9,7 @@
 
 SECTION(".text_nmgl")
 void nmglDepthRangef(NMGLclampf near,	NMGLclampf far) {
-	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
-	cntxt->windowInfo.viewportMulZ = (far - near) * 0.5 * ZBUFF_MAX;
-	cntxt->windowInfo.viewportAddZ = (far + near) * 0.5 * ZBUFF_MAX;
+	NMGL_Context *cntxt = NMGL_GetCurrentContext();
+	cntxt->viewport.viewportMulZ = (far - near) * 0.5 * ZBUFF_MAX;
+	cntxt->viewport.viewportAddZ = (far + near) * 0.5 * ZBUFF_MAX;
 }

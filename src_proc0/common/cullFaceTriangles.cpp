@@ -32,6 +32,7 @@ extern "C" int cnvDividedMaskToIndices(nm1* maskEven, nm1* maskOdd, int* indices
 SECTION(".text_demo3d")
 int cullFaceSortTriangles(TrianglePointers &triangles, int count){
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
+	NMGL_Context *context = NMGL_GetCurrentContext();
 
 	float* walkDirection = cntxt->buffer2 + 6 * NMGL_SIZE;
 	float* temp0 = cntxt->buffer2;
@@ -46,12 +47,12 @@ int cullFaceSortTriangles(TrianglePointers &triangles, int count){
 	nmppsMul_Mul_Sub_32f(triangles.v2.x, triangles.v0.y, triangles.v0.x, triangles.v2.y, temp1, count);
 	nmppsAdd_32f(temp0, temp1, walkDirection, count);
 
-	if (cntxt->frontFaceOrientation == NMGL_CW) {
+	if (context->frontFaceOrientation == NMGL_CW) {
 		nmppsSubCRev_32f(walkDirection, walkDirection, 0, count);
 	}
 
 	cntxt->tmp.vec[0] = cntxt->tmp.vec[1] = 0;
-	if (cntxt->cullFaceType == NMGL_BACK) {
+	if (context->cullFaceType == NMGL_BACK) {
 		nmppsCmpLtC_v2nm32f((v2nm32f*)walkDirection, (v2nm32f*)&cntxt->tmp, evenMaskVec, oddMaskVec, 1, count / 2);
 	}
 	else {

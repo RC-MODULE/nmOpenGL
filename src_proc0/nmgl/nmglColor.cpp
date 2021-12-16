@@ -8,7 +8,7 @@
 SECTION(".text_nmgl")
 void nmglColor4f(NMGLfloat red, NMGLfloat green, NMGLfloat blue, NMGLfloat alpha)
 {
-	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
+	NMGL_Context *cntxt = NMGL_GetCurrentContext();
 	cntxt->currentColor.vec[0] = red;
 	cntxt->currentColor.vec[1] = green;
 	cntxt->currentColor.vec[2] = blue;
@@ -18,7 +18,7 @@ void nmglColor4f(NMGLfloat red, NMGLfloat green, NMGLfloat blue, NMGLfloat alpha
 SECTION(".text_nmgl")
 void nmglColor4ub(NMGLubyte red, NMGLubyte green, NMGLubyte blue, NMGLubyte alpha)
 {
-	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
+	NMGL_Context *cntxt = NMGL_GetCurrentContext();
 	cntxt->currentColor.vec[0] = (float)red / RED_COEFF;
 	cntxt->currentColor.vec[1] = (float)green / GREEN_COEFF;
 	cntxt->currentColor.vec[2] = (float)blue / BLUE_COEFF;
@@ -28,7 +28,7 @@ void nmglColor4ub(NMGLubyte red, NMGLubyte green, NMGLubyte blue, NMGLubyte alph
 SECTION(".text_nmgl")
 void nmglColor4fv(NMGLfloat *v)
 {
-	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
+	NMGL_Context *cntxt = NMGL_GetCurrentContext();
 	cntxt->currentColor.vec[0] = v[0];
 	cntxt->currentColor.vec[1] = v[1];
 	cntxt->currentColor.vec[2] = v[2];
@@ -38,7 +38,7 @@ void nmglColor4fv(NMGLfloat *v)
 SECTION(".text_nmgl")
 void nmglColor4ubv(NMGLubyte *v)
 {
-	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
+	NMGL_Context *cntxt = NMGL_GetCurrentContext();
 	cntxt->currentColor.vec[0] = (float)v[0];
 	cntxt->currentColor.vec[1] = (float)v[1];
 	cntxt->currentColor.vec[2] = (float)v[2];

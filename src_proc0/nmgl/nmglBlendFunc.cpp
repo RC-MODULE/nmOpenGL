@@ -5,6 +5,8 @@
 void nmglBlendFunc (NMGLenum sfactor, NMGLenum dfactor){
     
     NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
+    NMGL_Context *context = NMGL_GetCurrentContext();
+
     switch(sfactor)
     {
         case NMGL_ONE:
@@ -29,13 +31,8 @@ void nmglBlendFunc (NMGLenum sfactor, NMGLenum dfactor){
         default:
             cntxt->error = NMGL_INVALID_ENUM;
             return;
-    }    
-   
-    cntxt->blend.sfactor = sfactor;
-    cntxt->blend.dfactor = dfactor;
-   
+    }
 
-
-
-
+    context->blend.sfactor = sfactor;
+    context->blend.dfactor = dfactor;
 }

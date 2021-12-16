@@ -6,17 +6,19 @@
 #include "nmgl.h"
 #include "nmglvs_nmc0.h"
 #include "nmprofiler.h"
-
-
+#include "context.h"
 
 SECTION(".text_shared0") int main()
 {
+
 #if defined(__GNUC__) && defined(DEBUG)
 	//nmprofiler_init();
 	//nmprofiler_disable();
 #endif // __GNUC__
+	
 
 	nmglvsNm0Init();
+
 
 #ifdef __OPEN_GL__
 
@@ -59,7 +61,7 @@ SECTION(".text_shared0") int main()
 	int ok;
 	int amountPolygons = halHostSync(0);
 
-	//Массив цветов полигонов (по 4 компоненты на вершину)
+	//пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅ 4 пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ)
 	//sync1
 	halHostSyncAddr(vertices_DDR);
 
@@ -84,8 +86,8 @@ SECTION(".text_shared0") int main()
 	nmglOrthof(-384, 384, -384, 384, -384, 384);	
 	//nmglViewport(128, 128, 384, 384);
 	//nmglViewport(0, 0, 256, 256);
-	//nmglEnable(NMGL_SCISSOR_TEST);
-	//nmglScissor(128, 128, 384, 384);
+	// nmglEnable(NMGL_SCISSOR_TEST);
+	// nmglScissor(128, 128, 384, 384);
 	//nmglOrthof(-384, 384, -384, 384, -100, 100);
 	//nmglFrustumf(-384, 384, -384, 384, 0, 100);
 	nmglMatrixMode(NMGL_MODELVIEW);

@@ -16,7 +16,7 @@ SECTION(".text_demo3d") void lmCallbackIn() {
 	}
 	linkIn.currentChannel->incTail();
 	linkIn.startNextTask();
-	//halLedOff(6);
+	halLedOff(6);
 }
 SECTION(".text_demo3d") void lmCallbackOut() {
 	halLedOn(7);
@@ -26,7 +26,7 @@ SECTION(".text_demo3d") void lmCallbackOut() {
 	}
 	linkOut.currentChannel->incTail();
 	linkOut.startNextTask();
-	//halLedOff(7);
+	halLedOff(7);
 }
 
 SECTION(".text_demo3d") void lmInit() {

@@ -7,7 +7,7 @@
 
 SECTION(".text_nmgl")
 void nmglOrthof (NMGLfloat left, NMGLfloat right, NMGLfloat bottom, NMGLfloat top, NMGLfloat zNear, NMGLfloat zFar){
-	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
+	NMGL_Context *cntxt = NMGL_GetCurrentContext();
 	mat4nm32f temp ={2/(right-left),0,0,0,
 					 0,2/(top-bottom),0,0,
 					 0,0,-2/(zFar-zNear),0,

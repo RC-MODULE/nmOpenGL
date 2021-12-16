@@ -13,7 +13,9 @@ SECTION(".data_imu4")   int colorValuesSize;
 SECTION(".text_demo3d")
 void NMGL_StartCalculateColor(v4nm32f* srcVertex, v4nm32f* srcNormal, v4nm32f* srcColor, int vertexCount) {
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
-	LightingInfo* info = &NMGL_Context_NM0::getContext()->lightingInfo;
+	NMGL_Context *context = NMGL_GetCurrentContext();
+
+	LightingInfo *info = &context->lightingInfo;
 	colorValuesSize = vertexCount;
 	nmblas_scopy(colorValuesSize * 4, (float*)srcNormal, 1, (float*)colorValues, 1);
 	if(info->isLighting){
@@ -26,10 +28,10 @@ void NMGL_StartCalculateColor(v4nm32f* srcVertex, v4nm32f* srcNormal, v4nm32f* s
 		cntxt->tmp.vec[3] = 1;
 		set_v4nm32f(colorValues, &cntxt->tmp, colorValuesSize);
 	}
-	if (cntxt->colorArray.enabled) {
-		if (cntxt->colorArray.type == NMGL_UNSIGNED_BYTE) {
-			nmppsConvert_32s32f((int*)srcColor, cntxt->buffer0, cntxt->colorArray.size * colorValuesSize);
-			nmppsMulC_32f(cntxt->buffer0, (float*)colorValues, 1.0 / 255.0, cntxt->colorArray.size * colorValuesSize);
+	if (context->colorArray.enabled) {
+		if (context->colorArray.type == NMGL_UNSIGNED_BYTE) {
+			nmppsConvert_32s32f((int*) srcColor, cntxt->buffer0, context->colorArray.size * colorValuesSize);
+			nmppsMulC_32f(cntxt->buffer0, (float*) colorValues, 1.0 / 255.0, context->colorArray.size * colorValuesSize);
 		}
 	}
 	clamp_32f((float*)colorValues, 0, 1, (float*)cntxt->buffer3, 4 * colorValuesSize);

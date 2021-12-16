@@ -9,7 +9,7 @@ void nmglGetLightfv (NMGLenum light , NMGLenum pname, NMGLfloat *params)
 {
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
 	
-	LightingInfo* lightingInfo = &cntxt->lightingInfo;
+	LightingInfo* lightingInfo = &NMGL_GetCurrentContext()->lightingInfo;
 	
 	light -= NMGL_LIGHT0;
 	

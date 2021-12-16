@@ -8,7 +8,7 @@ SECTION(".text_nmgl")
 
 void nmglPolygonOffset (NMGLfloat factor, NMGLfloat units) {
 
-    NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
+    NMGL_Context *cntxt = NMGL_GetCurrentContext();
 
     cntxt->polygon.offset.factor = factor;
     cntxt->polygon.offset.units = units;

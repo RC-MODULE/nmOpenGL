@@ -11,22 +11,17 @@
 SECTION(".text_nmgl")
 void nmglDisable(NMGLenum cap) {
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
+	NMGL_Context *context = NMGL_GetCurrentContext();
+
 	NM_Command command;
 	switch (cap) {
 
 	case NMGL_ALPHA_TEST:
-		cntxt->alpha_test.enabled = NMGL_FALSE;
-		command.instr = NMC1_ALPHA_TEST;
-		command.params[0] = CommandArgument(NMGL_FALSE);
-		NMGL_SetValue(command);
+		context->alpha_test.enabled = NMGL_FALSE;
 		break;
 
 	case NMGL_BLEND:
-		cntxt->blend.enabled = NMGL_FALSE;
-		command.instr = NMC1_BLEND;
-		command.params[0] = CommandArgument(NMGL_FALSE);
-		NMGL_SetValue(command);
-		
+		context->blend.enabled = NMGL_FALSE;	
 		break;
 		
 	case NMGL_COLOR_LOGIC_OP:
@@ -34,25 +29,25 @@ void nmglDisable(NMGLenum cap) {
 		break;
 
 	case NMGL_COLOR_MATERIAL:
-		cntxt->lightingInfo.isColorMaterial = NMGL_FALSE;
-		cntxt->lightingInfo.materialAmbient = *cntxt->lightingInfo.pMaterialAmbient;// i.e. currentColor
-		cntxt->lightingInfo.materialDiffuse = *cntxt->lightingInfo.pMaterialDiffuse;// i.e. currentColor
-		cntxt->lightingInfo.pMaterialAmbient = &cntxt->lightingInfo.materialAmbient;
-		cntxt->lightingInfo.pMaterialDiffuse = &cntxt->lightingInfo.materialDiffuse;
+		context->lightingInfo.isColorMaterial = NMGL_FALSE;
+		context->lightingInfo.materialAmbient = *context->lightingInfo.pMaterialAmbient; // i.e. currentColor
+		context->lightingInfo.materialDiffuse = *context->lightingInfo.pMaterialDiffuse; // i.e. currentColor
+		context->lightingInfo.pMaterialAmbient = &context->lightingInfo.materialAmbient;
+		context->lightingInfo.pMaterialDiffuse = &context->lightingInfo.materialDiffuse;
 		break;		
 		
 	case NMGL_CULL_FACE:
-		cntxt->isCullFace = NMGL_FALSE;
+		context->isCullFace = NMGL_FALSE;
 		break;	
 
 	case NMGL_DEPTH_TEST:
-
-		cntxt->depth_test.enabled = NMGL_FALSE;
-		command.instr = NMC1_DEPTH;
-		command.params[0] = CommandArgument(NMGL_FALSE);
+	{
+		context->depth_test.enabled = NMGL_FALSE;
+		NM_Command command;
+		command.instr = NMC1_DEPTH_UPDATE;
 		NMGL_SetValue(command);
 		break;
-	
+	}
 	case NMGL_DITHER:
 		//code
 		break;
@@ -62,10 +57,7 @@ void nmglDisable(NMGLenum cap) {
 		break;
 		
 	case NMGL_LINE_SMOOTH:
-		cntxt->line.smooth_enabled = NMGL_FALSE;
-		command.instr = NMC1_LINE_SMOOTH;
-		command.params[0] = CommandArgument(NMGL_FALSE);
-		NMGL_SetValue(command);
+		context->line.smooth_enabled = NMGL_FALSE;
 		break;
 		
 	case NMGL_MULTISAMPLE:
@@ -73,14 +65,11 @@ void nmglDisable(NMGLenum cap) {
 		break;
 		
 	case NMGL_NORMALIZE:
-		cntxt->normalizeEnabled = NMGL_FALSE;
+		context->normalizeEnabled = NMGL_FALSE;
 		break;
 		
 	case NMGL_POINT_SMOOTH:
-		cntxt->point.smooth_enabled = NMGL_FALSE;
-		command.instr = NMC1_POINT_SMOOTH;
-		command.params[0] = CommandArgument(NMGL_FALSE);
-		NMGL_SetValue(command);
+		context->point.smooth_enabled = NMGL_FALSE;
 		break;
 		
 /*	case NMGL_POINT_SPRITE_OES:
@@ -88,10 +77,7 @@ void nmglDisable(NMGLenum cap) {
 		break;*/
 		
 	case NMGL_POLYGON_OFFSET_FILL:
-		cntxt->polygon.offset_fill_enabled = NMGL_FALSE;
-		command.instr = NMC1_POLYGON_OFFSET_FILL;
-		command.params[0] = CommandArgument(NMGL_FALSE);
-		NMGL_SetValue(command);
+		context->polygon.offset_fill_enabled = NMGL_FALSE;
 		break;
 		
 	case NMGL_RESCALE_NORMAL:
@@ -111,12 +97,12 @@ void nmglDisable(NMGLenum cap) {
 		break;
 	
 	case NMGL_SCISSOR_TEST:
-		cntxt->scissorTest.isEnabled = NMGL_FALSE;
-		cntxt->currentSegments = &cntxt->windowInfo.segments;
+		context->scissorTest.isEnabled = NMGL_FALSE;
+		cntxt->currentSegments = &cntxt->viewportSegments;
 		break;
 		
 	case NMGL_STENCIL_TEST:
-		cntxt->stencil_test.enabled = NMGL_FALSE;
+		context->stencil_test.enabled = NMGL_FALSE;
 		break;
 	
 	case NMGL_SHARED_TEXTURE_PALETTE_EXT:
@@ -144,17 +130,11 @@ void nmglDisable(NMGLenum cap) {
 		break;
 
 	case NMGL_LINE_STIPPLE:
-		cntxt->line.stipple.enabled = NMGL_FALSE;
-		command.instr = NMC1_LINE_STIPPLE;
-		command.params[0] = CommandArgument(NMGL_FALSE);
-		NMGL_SetValue(command);
+		context->line.stipple.enabled = NMGL_FALSE;
 		break;
 
 	case NMGL_POLYGON_STIPPLE:
-		cntxt->polygon.stipple.enabled = NMGL_FALSE;
-		command.instr = NMC1_POLYGON_STIPPLE;
-		command.params[0] = CommandArgument(NMGL_FALSE);
-		NMGL_SetValue(command);
+		context->polygon.stipple.enabled = NMGL_FALSE;
 		break;
 
 	case NMGL_CLIP_PLANE0:
@@ -162,7 +142,7 @@ void nmglDisable(NMGLenum cap) {
 		break;
 
 	case NMGL_LIGHTING:
-		cntxt->lightingInfo.isLighting = NMGL_FALSE;
+		context->lightingInfo.isLighting = NMGL_FALSE;
 		break;
 
 	case NMGL_LIGHT0:
@@ -173,7 +153,7 @@ void nmglDisable(NMGLenum cap) {
 	case NMGL_LIGHT5:
 	case NMGL_LIGHT6:
 	case NMGL_LIGHT7:
-		cntxt->lightingInfo.isEnabledLight[cap - NMGL_LIGHT0] = 0;
+		context->lightingInfo.isEnabledLight[cap - NMGL_LIGHT0] = 0;
 		break;
 	}
 }

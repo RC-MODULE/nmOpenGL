@@ -20,12 +20,10 @@ SECTION(".text_demo3d") void NMGL_DrawTriangles(NMGL_Context_NM1 *context, NM_Co
 	nmppsCopy_32s((nm32s*)poly, (nm32s*)dataTmp, 7 * POLYGONS_SIZE);
 	dataTmp->count = poly->count;
 	getAddrPtrnsT(dataTmp);
-	context->buffers[0].free(sizeof32(DataForNmpu1));
-	//connector.incTail();
-	//return;
+	context->buffers[0].bufferFree(sizeof32(DataForNmpu1));
 
-	baseAddrOffs_32s((nm32s*)context->smallColorBuff.mData, context->imageOffsets, context->imagePoints, poly->count);
-	baseAddrOffs_32s((nm32s*)context->smallDepthBuff.mData, context->imageOffsets, context->zBuffPoints, poly->count);
+	baseAddrOffs_32s((nm32s *)context->innerFramebuffer.buffers[0], context->imageOffsets, context->imagePoints, poly->count);
+	baseAddrOffs_32s((nm32s *)context->innerFramebuffer.buffers[2], context->imageOffsets, context->zBuffPoints, poly->count);
 
 	nmppsCopy_32s(poly->color, context->buffer0, 4 * poly->count);
 	nmppsConvert_32s8s(context->buffer0, (nm8s*)context->valuesC, 4 * poly->count);

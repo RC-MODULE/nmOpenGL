@@ -145,15 +145,16 @@ SECTION(".text_demo3d") void getPatternsPackT(
 
 	int fullSize = totalSum(sizePackTmp02, 3 * size);
 
-	buffers[0].free(6 * size + sizeof32(int*) * 6 * size);
-	buffers[1].free(9 * size);
-	buffers[2].free(3 * size);
+	buffers[0].bufferFree(6 * size + sizeof32(int*) * 6 * size);
+	buffers[1].bufferFree(9 * size);
+	buffers[2].bufferFree(3 * size);
 	
 	PROFILER_SIZE(fullSize);
 	copyPacket_32s(srcPackTmp02,
 		dstPackTmp02,
 		sizePackTmp02, 3 * size);
 
+	PROFILER_SIZE(fullSize);
 	mAndVxN_32u((nm32u**)dstPackTmp02,
 		(nm32u**)dstPackTmp01,
 		(nm32u**)patternPack->ppPattern,

@@ -23,16 +23,17 @@ int firstNonZeroIndx_32s(int* pSrcVec, int nSize);
 SECTION(".text_demo3d")
 void setSegmentMask(v2nm32f* minXY, v2nm32f* maxXY, BitMask* masks, int size){
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
+	NMGL_Context *context = NMGL_GetCurrentContext();
 
 	int nSegments = cntxt->currentSegments->count;
-	v2nm32f* lowerLimit = cntxt->currentSegments->lowerLeft;
-	v2nm32f* upperLimit = cntxt->currentSegments->upperRight;
+	v2nm32f *lowerLimit = cntxt->currentSegments->lowerLeft;
+	v2nm32f *upperLimit = cntxt->currentSegments->upperRight;
 
 	for (int iSeg = 0; iSeg < nSegments; iSeg++) {
 		checkRectanglesOverlaps(minXY, maxXY, upperLimit + iSeg, lowerLimit + iSeg, masks[iSeg].bits, size);
 		int size32 = (size + 31) / 32;
 		int ind = firstNonZeroIndx_32s(masks[iSeg].bits, size32);
-		//если ind = -1, значит все нули и в hasNotZeroBits писать 1, иначе наоборот
+		//пїЅпїЅпїЅпїЅ ind = -1, пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅ пїЅ hasNotZeroBits пїЅпїЅпїЅпїЅпїЅпїЅ 1, пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 		masks[iSeg].hasNotZeroBits = (ind != -1);
 
 	}

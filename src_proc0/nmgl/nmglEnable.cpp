@@ -11,21 +11,17 @@
 SECTION(".text_nmgl")
 void nmglEnable(NMGLenum cap) {
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
+	NMGL_Context *context = NMGL_GetCurrentContext();
+
 	NM_Command command;
 	switch (cap) {
 
 	case NMGL_ALPHA_TEST:
-		cntxt->alpha_test.enabled = NMGL_TRUE;
-		command.instr = NMC1_ALPHA_TEST;
-		command.params[0] = CommandArgument(NMGL_TRUE);
-		NMGL_SetValue(command);
+		context->alpha_test.enabled = NMGL_TRUE;
 		break;
 
 	case NMGL_BLEND:
-		cntxt->blend.enabled = NMGL_TRUE;
-		command.instr = NMC1_BLEND;
-		command.params[0] = CommandArgument(NMGL_TRUE);
-		NMGL_SetValue(command);
+		context->blend.enabled = NMGL_TRUE;
 		break;
 		
 	case NMGL_COLOR_LOGIC_OP:
@@ -33,22 +29,21 @@ void nmglEnable(NMGLenum cap) {
 		break;
 
 	case NMGL_COLOR_MATERIAL:
-		cntxt->lightingInfo.isColorMaterial = NMGL_TRUE;
-		cntxt->lightingInfo.pMaterialAmbient = &cntxt->currentColor;
-		cntxt->lightingInfo.pMaterialDiffuse = &cntxt->currentColor;
+		context->lightingInfo.isColorMaterial = NMGL_TRUE;
 		break;		
 		
 	case NMGL_CULL_FACE:
-		cntxt->isCullFace = NMGL_TRUE;
+		context->isCullFace = NMGL_TRUE;
 		break;	
 
 	case NMGL_DEPTH_TEST:
-		cntxt->depth_test.enabled = NMGL_TRUE;
-		command.instr = NMC1_DEPTH;
-		command.params[0] = CommandArgument(NMGL_TRUE);
+	{
+		context->depth_test.enabled = NMGL_TRUE;
+		NM_Command command;
+		command.instr = NMC1_DEPTH_UPDATE;
 		NMGL_SetValue(command);
 		break;
-	
+	}
 	case NMGL_DITHER:
 		//code
 		break;
@@ -58,10 +53,7 @@ void nmglEnable(NMGLenum cap) {
 		break;
 		
 	case NMGL_LINE_SMOOTH:
-		cntxt->line.smooth_enabled = NMGL_TRUE;
-		command.instr = NMC1_LINE_SMOOTH;
-		command.params[0] = CommandArgument(NMGL_TRUE);
-		NMGL_SetValue(command);
+		context->line.smooth_enabled = NMGL_TRUE;
 		break;
 		
 	case NMGL_MULTISAMPLE:
@@ -69,14 +61,11 @@ void nmglEnable(NMGLenum cap) {
 		break;
 		
 	case NMGL_NORMALIZE:
-		cntxt->normalizeEnabled = NMGL_TRUE;
+		context->normalizeEnabled = NMGL_TRUE;
 		break;
 		
 	case NMGL_POINT_SMOOTH:
-		cntxt->point.smooth_enabled = NMGL_TRUE;
-		command.instr = NMC1_POINT_SMOOTH;
-		command.params[0] = CommandArgument(NMGL_TRUE);
-		NMGL_SetValue(command);
+		context->point.smooth_enabled = NMGL_TRUE;
 		break;
 		
 /*	case NMGL_POINT_SPRITE_OES:
@@ -84,10 +73,7 @@ void nmglEnable(NMGLenum cap) {
 		break;*/
 		
 	case NMGL_POLYGON_OFFSET_FILL:
-		cntxt->polygon.offset_fill_enabled = NMGL_TRUE;
-		command.instr = NMC1_POLYGON_OFFSET_FILL;
-		command.params[0] = CommandArgument(NMGL_TRUE);
-		NMGL_SetValue(command);
+		context->polygon.offset_fill_enabled = NMGL_TRUE;
 		break;
 		
 	case NMGL_RESCALE_NORMAL:
@@ -107,12 +93,12 @@ void nmglEnable(NMGLenum cap) {
 		break;
 	
 	case NMGL_SCISSOR_TEST:
-		cntxt->scissorTest.isEnabled = NMGL_TRUE;
-		cntxt->currentSegments = &cntxt->scissorTest.segments;
+		context->scissorTest.isEnabled = NMGL_TRUE;
+		cntxt->currentSegments = &cntxt->scissorSegments;
 		break;
 		
 	case NMGL_STENCIL_TEST:
-		cntxt->stencil_test.enabled = NMGL_TRUE;
+		context->stencil_test.enabled = NMGL_TRUE;
 		break;
 	
 	case NMGL_SHARED_TEXTURE_PALETTE_EXT:
@@ -139,17 +125,11 @@ void nmglEnable(NMGLenum cap) {
 		break;
 		
 	case NMGL_LINE_STIPPLE:
-		cntxt->line.stipple.enabled = NMGL_TRUE;
-		command.instr = NMC1_LINE_STIPPLE;
-		command.params[0] = CommandArgument(NMGL_TRUE);
-		NMGL_SetValue(command);
+		context->line.stipple.enabled = NMGL_TRUE;
 		break;
 
 	case NMGL_POLYGON_STIPPLE:
-		cntxt->polygon.stipple.enabled = NMGL_FALSE;
-		command.instr = NMC1_POLYGON_STIPPLE;
-		command.params[0] = CommandArgument(NMGL_TRUE);
-		NMGL_SetValue(command);
+		context->polygon.stipple.enabled = NMGL_FALSE;
 		break;
 
 	case NMGL_CLIP_PLANE0:
@@ -157,7 +137,7 @@ void nmglEnable(NMGLenum cap) {
 		break;
 
 	case NMGL_LIGHTING:
-		cntxt->lightingInfo.isLighting = NMGL_TRUE;
+		context->lightingInfo.isLighting = NMGL_TRUE;
 		break;
 
 	case NMGL_LIGHT0:
@@ -168,7 +148,7 @@ void nmglEnable(NMGLenum cap) {
 	case NMGL_LIGHT5:
 	case NMGL_LIGHT6:
 	case NMGL_LIGHT7:
-		cntxt->lightingInfo.isEnabledLight[cap - NMGL_LIGHT0] = true;
+		context->lightingInfo.isEnabledLight[cap - NMGL_LIGHT0] = true;
 		break;
 	}
 }

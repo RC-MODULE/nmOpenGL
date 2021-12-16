@@ -1,6 +1,6 @@
 #ifndef __NMGLVS_HOST_H__
 #define __NMGLVS_HOST_H__
-
+#include "framebuffer.h"
 /*class HostTargetCommunication {
 private:
 	HostTargetCommunication(){}		//конструктор недоступен

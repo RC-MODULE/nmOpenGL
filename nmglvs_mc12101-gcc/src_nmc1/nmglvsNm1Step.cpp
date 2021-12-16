@@ -14,10 +14,8 @@
 
 SECTION(".text_nmglvs") int nmglvsNm1Step()
 {	
-	//halLed(0xFF);
 	NMGL_Context_NM1 *cntxt = NMGL_Context_NM1::getContext();
 	NM_Command *command = NMGL_ReadNM_Command();	
-	//halLed(command->instr >> 16);
 	switch (command->instr) {
 
 	case NMC1_CLEAR: 
@@ -38,20 +36,11 @@ SECTION(".text_nmglvs") int nmglvsNm1Step()
 	case NMC1_DRAW_POINTS: 
 		NMGL_DrawPoints(cntxt, command);
 		break;
-	case NMC1_POINT_SIZE: 
-		NMGL_PointSize(cntxt, command);
-		break;
 	case NMC1_SET_COLOR: 
 		NMGL_SetColor(cntxt, command);
 		break;
 	case NMC1_SET_DEPTH:
 		NMGL_SetDepth(cntxt, command);
-		break;
-	case NMC1_DEPTH_MASK: 
-		NMGL_DepthMask(cntxt, command);
-		break;
-	case NMC1_DEPTH_FUNC: 
-		NMGL_DepthFunc(cntxt, command);
 		break;
 	case NMC1_SWAP_BUFFER: 
 		NMGL_SwapBuffer(cntxt, command);
@@ -62,29 +51,8 @@ SECTION(".text_nmglvs") int nmglvsNm1Step()
 	case NMC1_EXIT:
 		NMGL_Exit(cntxt, command);
 		break;
-	case NMC1_DEPTH: 
-		NMGL_Depth(cntxt, command);
-		break;
-	case NMC1_ALPHA_TEST:
-		NMGL_AlphaTestSet(cntxt,command);
-		break;
-	case NMC1_BLEND:
-		NMGL_BlendSet(cntxt,command);
-		break;		
-	case NMC1_LINE_SMOOTH:
-		NMGL_LineSmoothSet(cntxt,command);
-		break;			
-	case NMC1_POINT_SMOOTH:
-		NMGL_PointSmoothSet(cntxt,command);
-		break;		
-	case NMC1_POLYGON_OFFSET_FILL:
-		NMGL_PolygonOffsetFill(cntxt,command);
-		break;
-	case NMC1_LINE_STIPPLE:
-		NMGL_LineStippleSet(cntxt,command);
-		break;
-	case NMC1_POLYGON_STIPPLE:
-		NMGL_PolygonStippleSet(cntxt,command);
+	case NMC1_DEPTH_UPDATE: 
+		NMGL_DepthUpdate(cntxt, command);
 		break;
 		
 	case NMC1_SET_ACTIVE_TEXTURE: 
@@ -99,9 +67,6 @@ SECTION(".text_nmglvs") int nmglvsNm1Step()
 	case NMC1_SET_WHF: 
 		NMGL_SetWhf(cntxt, command);
 		break;
-	/*case NMC1_SET_COLOR_PALETTE: 
-		NMGL_SetColorPalette(cntxt, command);
-		break;*/
 	case NMC1_USE_SHARED_PALETTE: 
 		NMGL_UseSharedPalette(cntxt, command);
 		break;
@@ -119,9 +84,6 @@ SECTION(".text_nmglvs") int nmglvsNm1Step()
 		break;    
 	case NMC1_TEXTURE2D: 
 		NMGL_Texture2d(cntxt, command);
-		break;
-	case NMC1_SHADE_MODEL: 
-		NMGL_ShadeModel(cntxt, command);
 		break;
 	default:
 		break;

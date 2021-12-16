@@ -7,12 +7,14 @@
 SECTION(".text_nmgl")
 void nmglMatrixMode(NMGLenum mode) {
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
+	NMGL_Context *context = NMGL_GetCurrentContext();
+
 	switch (mode) {
 	case NMGL_MODELVIEW:
-		cntxt->currentMatrixStack = &cntxt->modelviewMatrixStack;
+		context->currentMatrixStack = &context->modelviewMatrixStack;
 		break;
 	case NMGL_PROJECTION:
-		cntxt->currentMatrixStack = &cntxt->projectionMatrixStack;
+		context->currentMatrixStack = &context->projectionMatrixStack;
 		break;
 	case NMGL_TEXTURE:
 		break;

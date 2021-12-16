@@ -120,6 +120,8 @@ int splitTriangles_uniform(TrianglePointers *srcTriangles,
 	}
 
 	NMGL_Context_NM0 *cntxt 	= NMGL_Context_NM0::getContext();
+	NMGL_Context *context = NMGL_GetCurrentContext();
+
 	// Use these arrays when masks are used to decide if the triangles needs 
 	// division
 	//int widthMaskEven [16] 		= {0};
@@ -658,7 +660,7 @@ int splitTriangles_uniform(TrianglePointers *srcTriangles,
 				nmppsMul_AddC_32f(w, oneOverDenominator, 0.0, w, primWidth);
 #else //PERSPECTIVE_CORRECT                    
 				int primWidth = k * k;
-				if (NMGL_SMOOTH == cntxt->shadeModel) {
+				if (NMGL_SMOOTH == context->shadeModel) {
 					//r = A_r*x + B_r*y + D_r;
 					nmppsMulC_AddC_32f(y, B_r[i], D_r[i], buf, primWidth);
 					nmppsMulC_AddV_32f(x, buf,   r, A_r[i], primWidth);

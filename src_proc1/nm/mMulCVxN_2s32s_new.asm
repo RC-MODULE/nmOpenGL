@@ -1,9 +1,10 @@
 //void mMulCVxN_2s32s(Pattern* ppSrcTreangle_2s, Rectangle* window, int* valueC, nm32s* pDstTreangle_32s, int count)
 
+extern _addC4DepthTest: word;
 data ".data_demo3d"
 	matr: long[34] = (0hl dup 34);
 
-	global _addC4DepthTest: word = 07FFFFFFFh;
+	//global _addC4DepthTest: word = 07FFFFFFFh;
 
 	full_masks: long[33] = ( 0_00000000_00000003hl,
 						  	 0_00000000_0000000fhl,

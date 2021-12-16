@@ -8,6 +8,8 @@
 #include "imagebuffer.h"
 #include "nmsynchro.h"
 #include "lighting.h"
+#include "context.h"
+
 
 #define BIG_NMGL_SIZE (64 * NMGL_SIZE)
 
@@ -179,48 +181,6 @@ struct Triangles{
 };
 void copyTriangles(const Triangles &src, int offsetSrc, Triangles &dst, int offsetDst, int size);
 
-/*!
- *  \brief Структура для описывания блока glBegin/glEnd
- *  \author Жиленков Иван
- */
-class NmglBeginEndInfo{
-public:
-	v4nm32f* vertex;
-	v4nm32f* normal;
-	v4nm32f* color;
-	// TEXTURING PART
-	v2nm32f* texcoord;//XXX: Only one texture unit is supported.
-	// TEXTURING PART
-	int vertexCounter;
-
-	NMGLenum mode;
-	bool inBeginEnd;
-
-	int maxSize;
-
-	NmglBeginEndInfo(){
-		vertexCounter = 0;
-		inBeginEnd = false;
-	}
-
-};
-
-/*!
- *  \brief Структура, хранящая информацию о стеке матриц
- *  \author Жиленков Иван
- */
-struct MatrixStack {
-	mat4nm32f* base;	///< указатель на массив матриц
-	int current;		///< Индекс текущей матрицы
-	int size;			///< Размер массива
-	int type;			///< Тип матриц
-
-	mat4nm32f* top() {
-		return &base[current];
-	}
-};
-
-
 
 
 
@@ -245,13 +205,24 @@ public:
 	inline static NMGL_Context_NM0 *getContext() {
 		return context;
 	}
-	inline static void free() {
+	inline static void contextFree() {
 		halFree(context);
 	}
 
-
 	NMGL_SynchroMasterRingBuffer synchro;
+	alignas(8) ImageSegments viewportSegments; ///< Информация о расположении и размерах сегментов в изображении. Модифицируется функцией nmglViewport
+	alignas(8) ImageSegments scissorSegments;
+
+	// LightingInfo lightingInfo;
+
+	v4nm32f tmp;
+
+	alignas(8) Triangles trianInner;
+	alignas(8) Lines lineInner;
+	alignas(8) Points pointInner;
+
 	BitMask segmentMasks[36];
+
 	v4nm32f *vertexResult;
 	v4nm32f *colorOrNormal;
 	v2nm32f *texResult;
@@ -259,7 +230,8 @@ public:
 	v4nm32f *colorOrNormal2;
 	v2nm32f *texResult2;
 
-	ImageSegments* currentSegments;
+	ImageSegments *currentSegments;
+
 	PolygonsConnector* triangleConnectors;
 	PolygonsConnector* lineConnectors;
 	PolygonsConnector* pointConnectors;
@@ -268,61 +240,18 @@ public:
 	float* buffer2;
 	float* buffer3;
 	float* buffer4;
-	float* buffer5;	
+	float* buffer5;		
 	
-	int isUseTwoSidedMode;
 	NMGLenum error;
-	int isCullFace;
-	int cullFaceType;
-	int frontFaceOrientation;
-	int normalizeEnabled;				///< Состояние режима нормализации. NMGL_TRUE, если включен, иначе NMGL_FALSE
-	float pointRadius;					///< Радиус точек при рисование примитивов типа NMGL_POINTS
-	MatrixStack* currentMatrixStack;
-
-	Triangles trianInner;
-	Lines lineInner;
-	Points pointInner;
-	NmglBeginEndInfo beginEndInfo;
-	v4nm32f currentColor;
-	v4nm32f currentNormal;
-
-	mat4nm32f modelviewMatrix[16];
-	mat4nm32f projectionMatrix[2];
-	mat4nm32f normalMatrix;
-	MatrixStack modelviewMatrixStack;
-	MatrixStack projectionMatrixStack;
-
-	Array vertexArray;					///< Класс для работы со значением координат вершинам в nmglDrawArrays
-	Array normalArray;					///< Класс для работы с нормалями в nmglDrawArrays
-	Array colorArray;					///< Класс для работы с цветом в nmglDrawArrays
-
-	
-	WindowInfo windowInfo;				///< Информация о расположении и размерах сегментов в изображении. Модифицируется функцией nmglViewport
-	NMGL_ScissorTest scissorTest;
-	v4nm32f tmp;						
-
-	LightingInfo lightingInfo;
 
 	NMGL_Context_NM0_Texture texState; 	///< textures data
-	int shadeModel;
-
-
-	ImageConnector imageConnector;
 
 
 	NMGLint unpackAlignment;
 	NMGLint packAlignment;
 
-	Point_cntxt_t	point;
-	Line_cntxt_t 	line;
-	Polygon_cntxt_t polygon;
-	Blend_cntxt_t	blend;
+	
 
-	NMGL_AlphaTest   alpha_test;
-
-	NMGL_StencilTest stencil_test;
-
-	NMGL_DepthTest 		 depth_test;
 
 	NMGLboolean color_write_mask_flags[4];
 	NMGLboolean depth_write_mask_enabled;
@@ -333,103 +262,17 @@ public:
 		unpackAlignment=4;
 		packAlignment=4;
 		
-		point.smooth_enabled = NMGL_FALSE;
-		line.smooth_enabled  = NMGL_FALSE;
-		line.stipple.enabled = NMGL_FALSE;
+		
 		
 		for(i=0;i<4;i++){
 			color_write_mask_flags[i] = NMGL_TRUE;
 		}
-		
+
+
 		depth_write_mask_enabled = NMGL_TRUE;
-
-
-		line.width			 = 1.0;
-		line.stipple.factor	 = 1;
-		line.stipple.pattern = 0xFFFF;
-
-		polygon.stipple.enabled 	= NMGL_FALSE;
 		
-		polygon.offset_fill_enabled = NMGL_FALSE;
-
-		currentSegments = &windowInfo.segments;
-
-		currentMatrixStack = &modelviewMatrixStack;
-		isUseTwoSidedMode = NMGL_FALSE;
-		isCullFace = NMGL_FALSE;
-		cullFaceType = NMGL_BACK;
-		frontFaceOrientation = NMGL_CCW;
-		normalizeEnabled = NMGL_FALSE;
-
-		scissorTest.isEnabled = NMGL_FALSE;
-
-		alpha_test.enabled 	 = NMGL_FALSE;
-		alpha_test.func		 = NMGL_ALWAYS;
-		alpha_test.ref		 = 0;
-
-
-		stencil_test.enabled = NMGL_FALSE;
-		stencil_test.func = NMGL_ALWAYS;
-		stencil_test.ref = 0;
-		stencil_test.mask = (NMGLuint)-1;
-
-		depth_test.enabled		 = NMGL_FALSE;
-		depth_test.func			 = NMGL_LESS;
-
-		blend.enabled = NMGL_FALSE;
-		blend.sfactor = NMGL_ONE;
-		blend.dfactor = NMGL_ZERO;
-
-
-		lightingInfo.init();
-
-		currentColor.vec[0] = (float)1.0;
-		currentColor.vec[1] = (float)1.0;
-		currentColor.vec[2] = (float)1.0;
-		currentColor.vec[3] = (float)1.0;
-
-		currentNormal.vec[0] = (float)0.0;
-		currentNormal.vec[1] = (float)0.0;
-		currentNormal.vec[2] = (float)1.0;
-		currentNormal.vec[3] = (float)0.0;
-
-		modelviewMatrixStack.base = modelviewMatrix;
-		modelviewMatrixStack.current = 0;
-		modelviewMatrixStack.size = 16;
-		modelviewMatrixStack.type = NMGL_MODELVIEW_MATRIX;
-
-		projectionMatrixStack.base = projectionMatrix;
-		projectionMatrixStack.current = 0;
-		projectionMatrixStack.size = 2;
-		projectionMatrixStack.type = NMGL_PROJECTION_MATRIX;
-
-		for (int i = 0; i < 4; i++) {
-			for (int j = 0; j < 4; j++) {
-				if (i == j) {
-					modelviewMatrix[0].matr[i * 4 + j] = 1.0f;
-					projectionMatrix[0].matr[i * 4 + j] = 1.0f;
-					normalMatrix.matr[i * 4 + j] = 1.0;
-				}
-				else {
-					modelviewMatrix[0].matr[i * 4 + j] = 0.0f;
-					projectionMatrix[0].matr[i * 4 + j] = 0.0f;
-					normalMatrix.matr[i * 4 + j] = 0.0f;
-				}
-			}
-		}
-		normalMatrix.matr[15] = 0.0f;
-
-		windowInfo.viewportMulZ = (1 - 0) * 0.5f * ZBUFF_MAX;
-		windowInfo.viewportAddZ = (1 + 0) * 0.5f * ZBUFF_MAX;
-
-		//массивы
-		nmglDisableClientState(NMGL_VERTEX_ARRAY);
-		nmglDisableClientState(NMGL_COLOR_ARRAY);
-		nmglDisableClientState(NMGL_NORMAL_ARRAY);
 		
-		pointRadius = 0.5f;
 		texState.init();
-		shadeModel = NMGL_SMOOTH;
 		
 	}
 };

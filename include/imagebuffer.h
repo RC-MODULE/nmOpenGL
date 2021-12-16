@@ -220,16 +220,14 @@ public:
 };
 
 class DepthBuffer : public IMAGE_BUFFER_CLASS {
-private:
+public:
 	bool maskEnabled;
 	int mode;
 	int dummy;
-
-	void update();
-
-public:
 	bool enabled;
 
+	void update();
+	
 	DepthBuffer() {
 		enabled = NMGL_FALSE;
 		maskEnabled = NMGL_TRUE;

@@ -22,10 +22,11 @@ SECTION(".text_demo3d") void pointOffset(Points &src, Points &dst, int offset) {
 SECTION(".text_demo3d")
 void rasterizeP(const Points* points, const BitMask* masks){
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
+	NMGL_Context *context = NMGL_GetCurrentContext();
 
 	int nSegments = cntxt->currentSegments->count;
-	Rectangle* rectangles = cntxt->currentSegments->rectangles;
-	v2nm32f* lowerLeft = cntxt->currentSegments->lowerLeft;
+	Rectangle *rectangles = cntxt->currentSegments->rectangles;
+	v2nm32f *lowerLeft = cntxt->currentSegments->lowerLeft;
 
 	Points localPoint;
 	Points localPoint2;

@@ -25,11 +25,13 @@ extern "C" DepthCore16 depthTestCore16_A_r;*/
 extern int addC4DepthTest;
 //extern int addC4DepthTest_15s;
 
-void DepthBuffer::update() {
-	switch (maskEnabled)
+void DepthUpdate(int mask, int func) {
+	printf("mask=%d\n", mask);
+	printf("func=0x%x\n", func);
+	switch (mask)
 	{
 	case NMGL_TRUE:
-		switch (mode)
+		switch (func)
 		{
 		case NMGL_NEVER:
 			currentDepthTest32 = depthTestCore32_N_rw;
@@ -66,7 +68,7 @@ void DepthBuffer::update() {
 		}
 		break;
 	case NMGL_FALSE:
-		switch (mode)
+		switch (func)
 		{
 		case NMGL_NEVER:
 			currentDepthTest32 = depthTestCore32_N_r;

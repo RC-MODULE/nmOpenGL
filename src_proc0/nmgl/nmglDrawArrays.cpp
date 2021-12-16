@@ -22,7 +22,7 @@ SECTION(".data_imu6")	ArrayManager<float> texcoordAM;
 
 SECTION(".data_imu6")	BitDividedMask clipMask[10];
 
-SECTION(".text_nmgl") void perpectiveDivView(CombinePointers &vertex, WindowInfo &windowInfo, float* tmpBuf, int size) {
+SECTION(".text_nmgl") void perpectiveDivView(CombinePointers &vertex, NMGL_Viewport &windowInfo, float* tmpBuf, int size) {
 	nmppsDiv_32f(vertex.x, vertex.w, tmpBuf + 0 * NMGL_SIZE, size);
 	nmppsDiv_32f(vertex.y, vertex.w, tmpBuf + 1 * NMGL_SIZE, size);
 	nmppsDiv_32f(vertex.z, vertex.w, tmpBuf + 2 * NMGL_SIZE, size);
@@ -76,19 +76,21 @@ SECTION(".text_nmgl")
 void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
-	if (cntxt->vertexArray.enabled == NMGL_FALSE) {
+	NMGL_Context *context = NMGL_GetCurrentContext();
+
+	if (context->vertexArray.enabled == NMGL_FALSE) {
 		return;
 	}
 	if (count < 0) {
 		cntxt->error = NMGL_INVALID_VALUE;
 		return;
 	}
-	float* srcDDR_vertex = (float*)cntxt->vertexArray.pointer + cntxt->vertexArray.size * first;
-	float* srcDDR_normal = (float*)cntxt->normalArray.pointer + cntxt->normalArray.size * first;
-	v4nm32f* srcDDR_color = (v4nm32f*)cntxt->colorArray.pointer + first;
-	cntxt->vertexArray.offset = first;
-	cntxt->normalArray.offset = first;
-	cntxt->colorArray.offset = first;
+	float* srcDDR_vertex = (float*)context->vertexArray.pointer + context->vertexArray.size * first;
+	float* srcDDR_normal = (float*)context->normalArray.pointer + context->normalArray.size * first;
+	v4nm32f* srcDDR_color = (v4nm32f*)context->colorArray.pointer + first;
+	context->vertexArray.offset = first;
+	context->normalArray.offset = first;
+	context->colorArray.offset = first;
 
 //TEXTURING_PART
 	unsigned int clientActiveTexUnitIndex;
@@ -124,8 +126,8 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 		return;
 	}
 	if(first % 2 == 0 && count % 2 == 0){
-		vertexAM.set(srcDDR_vertex, cntxt->vertexArray.size * count, cntxt->vertexArray.size * maxInnerCount, copyVec<float>);
-		normalAM.set(srcDDR_normal, cntxt->normalArray.size * count, cntxt->normalArray.size * maxInnerCount, copyVec<float>);
+		vertexAM.set(srcDDR_vertex, context->vertexArray.size * count, context->vertexArray.size * maxInnerCount, copyVec<float>);
+		normalAM.set(srcDDR_normal, context->normalArray.size * count, context->normalArray.size * maxInnerCount, copyVec<float>);
 		colorAM.set(srcDDR_color, count, maxInnerCount, copyVec<v4nm32f>);
 //TEXTURING_PART
 		if (cntxt->texState.textureEnabled) {
@@ -134,8 +136,8 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 		}
 //TEXTURING_PART
 	}else{
-		vertexAM.set(srcDDR_vertex, cntxt->vertexArray.size * count, cntxt->vertexArray.size * maxInnerCount, copyRisc<float>);
-		normalAM.set(srcDDR_normal, cntxt->normalArray.size * count, cntxt->normalArray.size * maxInnerCount, copyRisc<float>);
+		vertexAM.set(srcDDR_vertex, context->vertexArray.size * count, context->vertexArray.size * maxInnerCount, copyRisc<float>);
+		normalAM.set(srcDDR_normal, context->normalArray.size * count, context->normalArray.size * maxInnerCount, copyRisc<float>);
 		colorAM.set(srcDDR_color, count, maxInnerCount, copyRisc<v4nm32f>);
 //TEXTURING_PART
 		if (cntxt->texState.textureEnabled) {
@@ -145,14 +147,14 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 //TEXTURING_PART
 	}
 
-	if (cntxt->lightingInfo.isLighting) {
-		cntxt->lightingInfo.update();
+	if (context->lightingInfo.isLighting) {
+		context->lightingInfo.update();
 	}
 
 	for (int pointer = 0; pointer < count; pointer += maxInnerCount) {
 		int localSize = MIN(count - pointer, maxInnerCount);
 		vertexAM.pop(cntxt->buffer0);
-		switch (cntxt->vertexArray.size)
+		switch (context->vertexArray.size)
 		{
 		case 2:
 			cnv32f_v2v4((v2nm32f*)cntxt->buffer0, (v4nm32f*)cntxt->buffer1, 0, 1, localSize);
@@ -167,7 +169,7 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			break;
 		}
 		//умножение на dидовую матрицу (Modelview matrix)
-		mul_mat4nm32f_v4nm32f(cntxt->modelviewMatrixStack.top(), (v4nm32f*)cntxt->buffer1, cntxt->vertexResult, localSize);
+		mul_mat4nm32f_v4nm32f(context->modelviewMatrixStack.top(), (v4nm32f *)cntxt->buffer1, cntxt->vertexResult, localSize);
 		//texcoords
 //TEXTURING_PART
 		if (cntxt->texState.textureEnabled) {
@@ -187,16 +189,16 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 		}
 //TEXTURING_PART
 		//normal
-		if (cntxt->normalArray.enabled) {
-			if (cntxt->normalArray.size == 3) {
+		if (context->normalArray.enabled) {
+			if (context->normalArray.size == 3) {
 				normalAM.pop(cntxt->buffer3);
 				cnv32f_v3v4(cntxt->buffer3, cntxt->buffer1, 0, localSize);
 			}
 			else {
 				normalAM.pop(cntxt->buffer1);
 			}
-			mul_v4nm32f_mat4nm32f((v4nm32f*)cntxt->buffer1, &cntxt->normalMatrix, cntxt->colorOrNormal, localSize);
-			if (cntxt->normalizeEnabled) {
+			mul_v4nm32f_mat4nm32f((v4nm32f *)cntxt->buffer1, &context->normalMatrix, cntxt->colorOrNormal, localSize);
+			if (context->normalizeEnabled) {
 				nmblas_scopy(4 * localSize, (float*)cntxt->colorOrNormal, 1, cntxt->buffer2, 1);
 				dotV_v4nm32f(cntxt->colorOrNormal, (v4nm32f*)cntxt->buffer2, (v2nm32f*)cntxt->buffer0, localSize);
 				fastInvSqrt(cntxt->buffer0, cntxt->buffer1, 2 * localSize);
@@ -208,7 +210,7 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 		//normal in colorOrNormal
 		//Освещение или наложение цветов
 		//nmprofiler_enable();
-		if (cntxt->lightingInfo.isLighting) {
+		if (context->lightingInfo.isLighting) {
 			PROFILER_SIZE(localSize);
 			light(cntxt->vertexResult, cntxt->colorOrNormal, localSize);
 		}
@@ -221,11 +223,11 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 		}
 		//nmprofiler_disable();
 		//color
-		if (cntxt->colorArray.enabled) {
+		if (context->colorArray.enabled) {
 			colorAM.pop(cntxt->colorOrNormal);
-			if (cntxt->colorArray.type == NMGL_UNSIGNED_BYTE) {
-				nmppsConvert_32s32f((int*)cntxt->colorOrNormal, cntxt->buffer0, cntxt->colorArray.size * localSize);
-				nmppsMulC_32f(cntxt->buffer0, (float*)cntxt->colorOrNormal, 1.0 / 255.0, cntxt->colorArray.size * localSize);
+			if (context->colorArray.type == NMGL_UNSIGNED_BYTE) {
+				nmppsConvert_32s32f((int*)cntxt->colorOrNormal, cntxt->buffer0, context->colorArray.size * localSize);
+				nmppsMulC_32f(cntxt->buffer0, (float*)cntxt->colorOrNormal, 1.0 / 255.0, context->colorArray.size * localSize);
 			}
 		}
 		clamp_32f((float*)cntxt->colorOrNormal, 0, 1, (float*)cntxt->buffer3, 4 * localSize);
@@ -237,7 +239,7 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 		mulC_v4nm32f((v4nm32f*)cntxt->buffer3, &cntxt->tmp, cntxt->colorOrNormal, localSize);
 
 		//умножение на матрицу проекции (Projection matrix)
-		mul_mat4nm32f_v4nm32f(cntxt->projectionMatrixStack.top(), cntxt->vertexResult, (v4nm32f*)cntxt->vertexResult, localSize);
+		mul_mat4nm32f_v4nm32f(context->projectionMatrixStack.top(), cntxt->vertexResult, (v4nm32f*)cntxt->vertexResult, localSize);
 
 		switch (mode)
 		{
@@ -317,11 +319,11 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			//------------clipping-------------------
 
 			//------------perspective-division-and-viewport----------------
-			perpectiveDivView(trianPointers.v0, cntxt->windowInfo, cntxt->buffer3, primCount);
-			perpectiveDivView(trianPointers.v1, cntxt->windowInfo, cntxt->buffer3, primCount);
-			perpectiveDivView(trianPointers.v2, cntxt->windowInfo, cntxt->buffer3, primCount);
+			perpectiveDivView(trianPointers.v0, context->viewport, cntxt->buffer3, primCount);
+			perpectiveDivView(trianPointers.v1, context->viewport, cntxt->buffer3, primCount);
+			perpectiveDivView(trianPointers.v2, context->viewport, cntxt->buffer3, primCount);
 
-			if (cntxt->isCullFace) {
+			if (context->isCullFace) {
 				primCount = cullFaceSortTriangles(trianPointers, primCount);
 				if (primCount == 0) {
 					break;
@@ -438,8 +440,8 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			//------------clipping-------------------
 
 			//------------perspective-division-and-viewport----------------
-			perpectiveDivView(linePointers.v0, cntxt->windowInfo, cntxt->buffer3, primCount);
-			perpectiveDivView(linePointers.v1, cntxt->windowInfo, cntxt->buffer3, primCount);
+			perpectiveDivView(linePointers.v0, context->viewport, cntxt->buffer3, primCount);
+			perpectiveDivView(linePointers.v1, context->viewport, cntxt->buffer3, primCount);
 
 			pushToLines(linePointers, cntxt->lineInner, primCount);
 			
@@ -474,16 +476,16 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			pointers.t = cntxt->buffer5 + 1 * NMGL_SIZE;
 
 			split_v4nm32f(cntxt->vertexResult, 1, pointers.x, pointers.y, pointers.z, pointers.w, localSize);
-			perpectiveDivView(pointers, cntxt->windowInfo, cntxt->buffer0, localSize);
+			perpectiveDivView(pointers, context->viewport, cntxt->buffer0, localSize);
 
 			nmppsConvert_32f32s_rounding(cntxt->buffer0, cntxt->pointInner.z, 0, localSize);
 			nmppsConvert_32f32s_rounding((float*)cntxt->colorOrNormal, (int*)cntxt->pointInner.colors, 0, 4 * localSize);
 
-			nmppsSubC_32f(cntxt->pointInner.x, cntxt->buffer0, cntxt->pointRadius, localSize);
-			nmppsSubC_32f(cntxt->pointInner.y, cntxt->buffer1, cntxt->pointRadius, localSize);
+			nmppsSubC_32f(cntxt->pointInner.x, cntxt->buffer0, context->pointSize / 2, localSize);
+			nmppsSubC_32f(cntxt->pointInner.y, cntxt->buffer1, context->pointSize / 2, localSize);
 			nmppsMerge_32f(cntxt->buffer0, cntxt->buffer1, (float*)minXY, localSize);
-			nmppsAddC_32f(cntxt->pointInner.x, cntxt->buffer0, cntxt->pointRadius, localSize);
-			nmppsAddC_32f(cntxt->pointInner.y, cntxt->buffer1, cntxt->pointRadius, localSize);
+			nmppsAddC_32f(cntxt->pointInner.x, cntxt->buffer0, context->pointSize / 2, localSize);
+			nmppsAddC_32f(cntxt->pointInner.y, cntxt->buffer1, context->pointSize / 2, localSize);
 			nmppsMerge_32f(cntxt->buffer0, cntxt->buffer1, (float*)maxXY, localSize);
 
 			cntxt->pointInner.size = localSize;

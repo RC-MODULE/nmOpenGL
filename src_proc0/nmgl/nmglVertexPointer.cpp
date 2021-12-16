@@ -7,6 +7,8 @@
 SECTION(".text_nmgl")
 void nmglVertexPointer(NMGLint size, NMGLenum type, NMGLsizei stride, const NMGLvoid *pointer) {
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
+	NMGL_Context *context = NMGL_GetCurrentContext();
+
 	if (size < 2 || size > 4) {
 		cntxt->error = NMGL_INVALID_VALUE;
 		return;
@@ -19,8 +21,8 @@ void nmglVertexPointer(NMGLint size, NMGLenum type, NMGLsizei stride, const NMGL
 		cntxt->error = NMGL_INVALID_VALUE;
 		return;
 	}
-	cntxt->vertexArray.pointer = pointer;
-	cntxt->vertexArray.size = size;
-	cntxt->vertexArray.stride = stride;
-	cntxt->vertexArray.type = type;
+	context->vertexArray.pointer = pointer;
+	context->vertexArray.size = size;
+	context->vertexArray.stride = stride;
+	context->vertexArray.type = type;
 }
