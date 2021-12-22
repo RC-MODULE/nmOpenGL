@@ -108,7 +108,23 @@ void light(v4nm32f* vertex, v4nm32f* srcNormal, v4nm32f* srcDstColor, int countV
 
 		nmppsAdd_32f(cntxt->buffer2, (float*)resultColor, (float*)resultColor, 4 * countVertex);
 	}
-	addC_v4nm32f((v4nm32f*)resultColor, &lightingInfo->ambientMul[MAX_LIGHTS],
-		(v4nm32f*)srcDstColor, countVertex);
+
+	if (lightingInfo->isColorMaterial == 0) {
+		addC_v4nm32f((v4nm32f*)resultColor, &lightingInfo->ambientMul[MAX_LIGHTS],
+					 (v4nm32f*)srcDstColor, countVertex);
+	} else {
+		v4nm32f *acm_mul_acs = (v4nm32f*)(cntxt->buffer2);
+		v4nm32f *acm_mul_acs_plus_ecm = (v4nm32f*)(cntxt->buffer3);
+
+		// resultColor + acm * acs + ecm
+		// acm * acs; acm = vertex colors (COLOR_MATERIAL enabled), acs = lightAmbient[MAX_LIGHTS]
+		mulC_v4nm32f(srcDstColor, &lightingInfo->lightAmbient[MAX_LIGHTS], acm_mul_acs, countVertex);
+		// acm * acs + ecm
+		addC_v4nm32f(acm_mul_acs, &lightingInfo->materialEmissive, acm_mul_acs_plus_ecm, countVertex);
+
+		nmppsAdd_32f((float*)acm_mul_acs_plus_ecm, (float*)resultColor, (float*)srcDstColor, 4 * countVertex);
+	}
+
+
 
 }

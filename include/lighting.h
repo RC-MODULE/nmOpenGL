@@ -32,12 +32,14 @@ struct LightingInfo {
 	int dummy;
 
 	void update(){
-		mulC_v4nm32f(lightAmbient, &materialAmbient, ambientMul, MAX_LIGHTS + 1);
-		mulC_v4nm32f(lightDiffuse, &materialDiffuse, diffuseMul, MAX_LIGHTS);
 		mulC_v4nm32f(lightSpecular, &materialSpecular, specularMul, MAX_LIGHTS);
-		nmppsAdd_32f((float*)(ambientMul + MAX_LIGHTS), 
-			(float*)&materialEmissive, 
-			(float*)(ambientMul + MAX_LIGHTS), 4);
+		if (isColorMaterial == 0) {
+			mulC_v4nm32f(lightAmbient, &materialAmbient, ambientMul, MAX_LIGHTS + 1);
+			mulC_v4nm32f(lightDiffuse, &materialDiffuse, diffuseMul, MAX_LIGHTS);
+			nmppsAdd_32f((float*)(ambientMul + MAX_LIGHTS), 
+						(float*)&materialEmissive, 
+						(float*)(ambientMul + MAX_LIGHTS), 4);
+		}
 	}
 
 	void init() {
