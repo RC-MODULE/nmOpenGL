@@ -341,16 +341,22 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 					trianPointers2.v0.z[currentCount] = trianPointers2.v0.z[currentCount - 1];
 					trianPointers2.v0.w[currentCount] = trianPointers2.v0.w[currentCount - 1];
 					trianPointers2.v0.color[currentCount] = trianPointers2.v0.color[currentCount - 1];
+					trianPointers2.v0.s[currentCount] = trianPointers2.v0.s[currentCount - 1];
+					trianPointers2.v0.t[currentCount] = trianPointers2.v0.t[currentCount - 1];
 					trianPointers2.v1.x[currentCount] = trianPointers2.v1.x[currentCount - 1];
 					trianPointers2.v1.y[currentCount] = trianPointers2.v1.y[currentCount - 1];
 					trianPointers2.v1.z[currentCount] = trianPointers2.v1.z[currentCount - 1];
 					trianPointers2.v1.w[currentCount] = trianPointers2.v1.w[currentCount - 1];
 					trianPointers2.v1.color[currentCount] = trianPointers2.v1.color[currentCount - 1];
+					trianPointers2.v1.s[currentCount] = trianPointers2.v1.s[currentCount - 1];
+					trianPointers2.v1.t[currentCount] = trianPointers2.v1.t[currentCount - 1];
 					trianPointers2.v2.x[currentCount] = trianPointers2.v2.x[currentCount - 1];
 					trianPointers2.v2.y[currentCount] = trianPointers2.v2.y[currentCount - 1];
 					trianPointers2.v2.z[currentCount] = trianPointers2.v2.z[currentCount - 1];
 					trianPointers2.v2.w[currentCount] = trianPointers2.v2.w[currentCount - 1];
 					trianPointers2.v2.color[currentCount] = trianPointers2.v2.color[currentCount - 1];
+					trianPointers2.v2.s[currentCount] = trianPointers2.v2.s[currentCount - 1];
+					trianPointers2.v2.t[currentCount] = trianPointers2.v2.t[currentCount - 1];
 					currentCount++;
 				}
 
