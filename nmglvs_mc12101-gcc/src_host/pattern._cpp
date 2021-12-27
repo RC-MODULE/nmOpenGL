@@ -2,8 +2,8 @@
 #include "math.h"
 #include "stdio.h"
 #include "windows.h"
-#include <iostream>
-#include <fstream>
+//#include <iostream>
+//#include <fstream>
 using namespace std;
 #define PI 3.14159265359
 
@@ -314,7 +314,7 @@ static void fillSide(unsigned char* dst, int x1, int y1, int x2, int y2, unsigne
 		}
 	}
 
-	//остаток изображения
+	//пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	if (deltaX > deltaY) {
 		if (signX / signY < 0 && leftSide == 0) {
 			for (int x = xStart; x < WIDTH_PTRN; x++) {

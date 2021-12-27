@@ -225,18 +225,19 @@ SECTION(".text_nmglvs")
 		//Allocate memory for textures.
 		//Must be in EMI. 
 		//EMI has enough space and does not require address mapping at mc12101
-		setHeap(12);
-		ImageRGB8888* imagesData = myMallocT<ImageRGB8888>(2);
+		ImageRGB8888* imagesData0 = myMallocT<ImageRGB8888>();
 		DepthImage* depthImage = myMallocT<DepthImage>();
+		setHeap(12);
+		ImageRGB8888* imagesData1 = myMallocT<ImageRGB8888>();
 		for (int i = 0; i < WIDTH_IMAGE * HEIGHT_IMAGE; i++) {
-			((int*)&imagesData[0])[i] = 0;
-			((int*)&imagesData[1])[i] = 0;
+			((int*)imagesData0)[i] = 0;
+			((int*)imagesData1)[i] = 0;
 			((int*)depthImage)[i] = ZBUFF_MAX;
 			//((int*)depthImage)[i] = 0;
 		}
 
-		context->defaultFrameBuffer.buffers[0] = imagesData + 0;
-		context->defaultFrameBuffer.buffers[1] = imagesData + 1;
+		context->defaultFrameBuffer.buffers[0] = imagesData0;
+		context->defaultFrameBuffer.buffers[1] = imagesData1;
 		context->defaultFrameBuffer.buffers[2] = depthImage;
 
 #ifdef TEST_NMGL_TEX_FUNC

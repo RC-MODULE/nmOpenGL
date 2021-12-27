@@ -1,5 +1,5 @@
 #include <cerrno>
-#include <iostream>
+//#include <iostream>
 
 #include "nmplv/vSupport.h"
 #include "service.h"

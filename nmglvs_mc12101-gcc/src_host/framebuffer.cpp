@@ -1,7 +1,7 @@
 #include "framebuffer.h"
 #include "hal_host.h"
 #include "hal.h"
-#include <iostream>
+//#include <iostream>
 
 NMGL_FrameBuffer local;
 

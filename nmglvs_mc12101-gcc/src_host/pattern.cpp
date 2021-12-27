@@ -2,9 +2,7 @@
 #define _USE_MATH_DEFINES
 #include "math.h"
 #include "stdio.h"
-#include "windows.h"
-#include <iostream>
-#include <fstream>
+#include <algorithm>
 using namespace std;
 
 #define abs(a) (((a) < 0) ? -(a) : (a))

@@ -13,7 +13,6 @@
 #include "nmpp.h"
 #include "pattern.h"
 #include "ringbuffert.h"
-#include <thread>
 #include "framebuffer.h"
 
 #ifdef STACK_TRACE_ENABLED
