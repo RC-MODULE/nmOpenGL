@@ -26,8 +26,6 @@ extern int addC4DepthTest;
 //extern int addC4DepthTest_15s;
 
 void DepthUpdate(int mask, int func) {
-	printf("mask=%d\n", mask);
-	printf("func=0x%x\n", func);
 	switch (mask)
 	{
 	case NMGL_TRUE:

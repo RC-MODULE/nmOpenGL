@@ -79,13 +79,6 @@ template<class T> T* myMallocT() {
 SECTION(".data_imu0A") NMGL_Context_NM1 nmglContext;
 SECTION(".data_imu0") NMGL_Context_NM1 *NMGL_Context_NM1::context;
 
-SECTION(".data_imu0") NMGL_Context *globalContext;
-
-
-
-NMGL_Context *NMGL_GetCurrentContext(){
-	return globalContext;
-}
 
 SECTION(".text_nmglvs") int nmglvsNm1Init()
 {
@@ -105,7 +98,8 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 		NMGL_Context_NM1::bind(&nmglContext);
 		cntxt = NMGL_Context_NM1::getContext();
 		
-		globalContext = (NMGL_Context*)halSyncAddr(0, 0);
+		NMGL_Context *globalContext = (NMGL_Context*)halSyncAddr(0, 0);
+		NMGL_ContextInit(globalContext);
 
 		NMGLSynchroData* synchroData = (NMGLSynchroData*)halSyncAddr(0, 0);
 		nmglSynchro.init(synchroData);

@@ -61,9 +61,9 @@ INC_DIRS         = -I"$(NMPP)/include" -I$(HAL)/include -I$(ROOT)/include
 SRC_DIRS         = $(ROOT)/nmglvs_mc12101-gcc/src_nmc1 $(ROOT)/src_proc1/common $(ROOT)/src_proc $(ROOT)/src_proc1/nm ../src_target1
 LIB_DIRS         = -L "$(NMC_GCC_TOOLPATH)/nmc4-ide/lib" -L"$(NMPP)/lib" -L"$(HAL)/lib"
 ifdef DEBUG
-TMP_DIR          = Debug
+TMP_DIR          = Debug/nmc0
 else
-TMP_DIR          = Release
+TMP_DIR          = Release/nmc0
 endif
 #-------------- RELEASE/ALL config -------------------
 CC 				 = nmc-g++
