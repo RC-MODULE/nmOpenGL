@@ -15,10 +15,19 @@ SECTION(".text_shared0") int main()
 	//nmprofiler_init();
 	//nmprofiler_disable();
 #endif // __GNUC__
-	
+	int fromHost = halHostSync(0xC0DE0000); // send handshake to host
+	if (fromHost != 0xC0DE0086)
+	{ // get  handshake from host
+		return 1;
+	}
+
+	halSleep(500);
+
+	halSetProcessorNo(0);
 
 	nmglvsNm0Init();
 
+	halHostSyncAddr(&(NMGL_GetCurrentContext()->defaultFrameBuffer));
 
 #ifdef __OPEN_GL__
 
