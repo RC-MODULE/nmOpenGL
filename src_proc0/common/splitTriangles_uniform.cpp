@@ -11,98 +11,109 @@ static  int pushPoints(const nm32f *x, const nm32f *y, const nm32f *z, const nm3
 						const nm32f *s, const nm32f *t, 
 						TrianglePointers *dst, int offset, int n);
 
-static nm32f ones[NMGL_SIZE];
-static nm32f buf[NMGL_SIZE];
-static nm32f buf1[NMGL_SIZE];
-static nm32f buf2[NMGL_SIZE];
 #ifdef PERSPECTIVE_CORRECT
-SECTION(".text") static float oneOverDenominator[NMGL_SIZE];
-SECTION(".text") static float z12[NMGL_SIZE];
-SECTION(".text") static float z02[NMGL_SIZE];
-SECTION(".text") static float z10[NMGL_SIZE];
-SECTION(".text") static float A2_12[NMGL_SIZE];
-SECTION(".text") static float A2_02[NMGL_SIZE];
-SECTION(".text") static float A2_10[NMGL_SIZE];
-SECTION(".text") static float B2_12[NMGL_SIZE];
-SECTION(".text") static float B2_02[NMGL_SIZE];
-SECTION(".text") static float B2_10[NMGL_SIZE];
-SECTION(".text") static float D2_12[NMGL_SIZE];
-SECTION(".text") static float D2_02[NMGL_SIZE];
-SECTION(".text") static float D2_10[NMGL_SIZE];
-SECTION(".text") static float A2[NMGL_SIZE];
-SECTION(".text") static float B2[NMGL_SIZE];
-SECTION(".text") static float D2[NMGL_SIZE];
-SECTION(".text") static float A1_r[NMGL_SIZE];
-SECTION(".text") static float B1_r[NMGL_SIZE];
-SECTION(".text") static float D1_r[NMGL_SIZE];
-SECTION(".text") static float A1_g[NMGL_SIZE];
-SECTION(".text") static float B1_g[NMGL_SIZE];
-SECTION(".text") static float D1_g[NMGL_SIZE];
-SECTION(".text") static float A1_b[NMGL_SIZE];
-SECTION(".text") static float B1_b[NMGL_SIZE];
-SECTION(".text") static float D1_b[NMGL_SIZE];
-SECTION(".text") static float A1_a[NMGL_SIZE];
-SECTION(".text") static float B1_a[NMGL_SIZE];
-SECTION(".text") static float D1_a[NMGL_SIZE];
-SECTION(".text") static float A1_s[NMGL_SIZE];
-SECTION(".text") static float B1_s[NMGL_SIZE];
-SECTION(".text") static float D1_s[NMGL_SIZE];
-SECTION(".text") static float A1_t[NMGL_SIZE];
-SECTION(".text") static float B1_t[NMGL_SIZE];
-SECTION(".text") static float D1_t[NMGL_SIZE];
-SECTION(".text") static float A1_z[NMGL_SIZE];
-SECTION(".text") static float B1_z[NMGL_SIZE];
-SECTION(".text") static float D1_z[NMGL_SIZE];
-SECTION(".text") static float A1_w[NMGL_SIZE];
-SECTION(".text") static float B1_w[NMGL_SIZE];
-SECTION(".text") static float D1_w[NMGL_SIZE];
+SECTION(".data") static float oneOverDenominator[NMGL_SIZE];
+SECTION(".data") static float z12[NMGL_SIZE];
+SECTION(".data") static float z02[NMGL_SIZE];
+SECTION(".data") static float z10[NMGL_SIZE];
+SECTION(".data") static float A2_12[NMGL_SIZE];
+SECTION(".data") static float A2_02[NMGL_SIZE];
+SECTION(".data") static float A2_10[NMGL_SIZE];
+SECTION(".data") static float B2_12[NMGL_SIZE];
+SECTION(".data") static float B2_02[NMGL_SIZE];
+SECTION(".data") static float B2_10[NMGL_SIZE];
+SECTION(".data") static float D2_12[NMGL_SIZE];
+SECTION(".data") static float D2_02[NMGL_SIZE];
+SECTION(".data") static float D2_10[NMGL_SIZE];
+SECTION(".data") static float A2[NMGL_SIZE];
+SECTION(".data") static float B2[NMGL_SIZE];
+SECTION(".data") static float D2[NMGL_SIZE];
+SECTION(".data") static float A1_r[NMGL_SIZE];
+SECTION(".data") static float B1_r[NMGL_SIZE];
+SECTION(".data") static float D1_r[NMGL_SIZE];
+SECTION(".data") static float A1_g[NMGL_SIZE];
+SECTION(".data") static float B1_g[NMGL_SIZE];
+SECTION(".data") static float D1_g[NMGL_SIZE];
+SECTION(".data") static float A1_b[NMGL_SIZE];
+SECTION(".data") static float B1_b[NMGL_SIZE];
+SECTION(".data") static float D1_b[NMGL_SIZE];
+SECTION(".data") static float A1_a[NMGL_SIZE];
+SECTION(".data") static float B1_a[NMGL_SIZE];
+SECTION(".data") static float D1_a[NMGL_SIZE];
+SECTION(".data") static float A1_s[NMGL_SIZE];
+SECTION(".data") static float B1_s[NMGL_SIZE];
+SECTION(".data") static float D1_s[NMGL_SIZE];
+SECTION(".data") static float A1_t[NMGL_SIZE];
+SECTION(".data") static float B1_t[NMGL_SIZE];
+SECTION(".data") static float D1_t[NMGL_SIZE];
+SECTION(".data") static float A1_z[NMGL_SIZE];
+SECTION(".data") static float B1_z[NMGL_SIZE];
+SECTION(".data") static float D1_z[NMGL_SIZE];
+SECTION(".data") static float A1_w[NMGL_SIZE];
+SECTION(".data") static float B1_w[NMGL_SIZE];
+SECTION(".data") static float D1_w[NMGL_SIZE];
 #else // PERSPECTIVE_CORRECT
-SECTION(".text") static float oneOverTriSquare[NMGL_SIZE];
-SECTION(".text") static float A0[NMGL_SIZE];
-SECTION(".text") static float A1[NMGL_SIZE];
-SECTION(".text") static float A2[NMGL_SIZE];
-SECTION(".text") static float B0[NMGL_SIZE];
-SECTION(".text") static float B1[NMGL_SIZE];
-SECTION(".text") static float B2[NMGL_SIZE];
-SECTION(".text") static float D0[NMGL_SIZE];
-SECTION(".text") static float D1[NMGL_SIZE];
-SECTION(".text") static float D2[NMGL_SIZE];
-SECTION(".text") static float A_r[NMGL_SIZE];
-SECTION(".text") static float B_r[NMGL_SIZE];
-SECTION(".text") static float D_r[NMGL_SIZE];
-SECTION(".text") static float A_g[NMGL_SIZE];
-SECTION(".text") static float B_g[NMGL_SIZE];
-SECTION(".text") static float D_g[NMGL_SIZE];
-SECTION(".text") static float A_b[NMGL_SIZE];
-SECTION(".text") static float B_b[NMGL_SIZE];
-SECTION(".text") static float D_b[NMGL_SIZE];
-SECTION(".text") static float A_a[NMGL_SIZE];
-SECTION(".text") static float B_a[NMGL_SIZE];
-SECTION(".text") static float D_a[NMGL_SIZE];
-SECTION(".text") static float A_s[NMGL_SIZE];
-SECTION(".text") static float B_s[NMGL_SIZE];
-SECTION(".text") static float D_s[NMGL_SIZE];
-SECTION(".text") static float A_t[NMGL_SIZE];
-SECTION(".text") static float B_t[NMGL_SIZE];
-SECTION(".text") static float D_t[NMGL_SIZE];
-SECTION(".text") static float A_z[NMGL_SIZE];
-SECTION(".text") static float B_z[NMGL_SIZE];
-SECTION(".text") static float D_z[NMGL_SIZE];
-SECTION(".text") static float A_w[NMGL_SIZE];
-SECTION(".text") static float B_w[NMGL_SIZE];
-SECTION(".text") static float D_w[NMGL_SIZE];
+SECTION(".data") static float oneOverTriSquare[NMGL_SIZE];
+SECTION(".data") static float A0[NMGL_SIZE];
+SECTION(".data") static float A1[NMGL_SIZE];
+SECTION(".data") static float A2[NMGL_SIZE];
+SECTION(".data") static float B0[NMGL_SIZE];
+SECTION(".data") static float B1[NMGL_SIZE];
+SECTION(".data") static float B2[NMGL_SIZE];
+SECTION(".data") static float D0[NMGL_SIZE];
+SECTION(".data") static float D1[NMGL_SIZE];
+SECTION(".data") static float D2[NMGL_SIZE];
+SECTION(".data") static float A_r[NMGL_SIZE];
+SECTION(".data") static float B_r[NMGL_SIZE];
+SECTION(".data") static float D_r[NMGL_SIZE];
+SECTION(".data") static float A_g[NMGL_SIZE];
+SECTION(".data") static float B_g[NMGL_SIZE];
+SECTION(".data") static float D_g[NMGL_SIZE];
+SECTION(".data") static float A_b[NMGL_SIZE];
+SECTION(".data") static float B_b[NMGL_SIZE];
+SECTION(".data") static float D_b[NMGL_SIZE];
+SECTION(".data") static float A_a[NMGL_SIZE];
+SECTION(".data") static float B_a[NMGL_SIZE];
+SECTION(".data") static float D_a[NMGL_SIZE];
+SECTION(".data") static float A_s[NMGL_SIZE];
+SECTION(".data") static float B_s[NMGL_SIZE];
+SECTION(".data") static float D_s[NMGL_SIZE];
+SECTION(".data") static float A_t[NMGL_SIZE];
+SECTION(".data") static float B_t[NMGL_SIZE];
+SECTION(".data") static float D_t[NMGL_SIZE];
+SECTION(".data") static float A_z[NMGL_SIZE];
+SECTION(".data") static float B_z[NMGL_SIZE];
+SECTION(".data") static float D_z[NMGL_SIZE];
+SECTION(".data") static float A_w[NMGL_SIZE];
+SECTION(".data") static float B_w[NMGL_SIZE];
+SECTION(".data") static float D_w[NMGL_SIZE];
 #endif // PERSPECTIVE_CORRECT
 
-SECTION(".text") static nm32f x[16384];
-SECTION(".text") static nm32f y[16384];
-SECTION(".text") static nm32f z[16384];
-SECTION(".text") static nm32f w[16384];
-SECTION(".text") static nm32f r[16384];
-SECTION(".text") static nm32f g[16384];
-SECTION(".text") static nm32f b[16384];
-SECTION(".text") static nm32f a[16384];
-SECTION(".text") static nm32f s[16384];
-SECTION(".text") static nm32f t[16384];
+SECTION(".data") static nm32f x[NMGL_SIZE];
+SECTION(".data") static nm32f y[NMGL_SIZE];
+SECTION(".data") static nm32f z[NMGL_SIZE];
+SECTION(".data") static nm32f w[NMGL_SIZE];
+SECTION(".data") static nm32f r[NMGL_SIZE];
+SECTION(".data") static nm32f g[NMGL_SIZE];
+SECTION(".data") static nm32f b[NMGL_SIZE];
+SECTION(".data") static nm32f a[NMGL_SIZE];
+SECTION(".data") static nm32f s[NMGL_SIZE];
+SECTION(".data") static nm32f t[NMGL_SIZE];
+
+SECTION(".data") static nm32f r0[NMGL_SIZE];
+SECTION(".data") static	nm32f g0[NMGL_SIZE];
+SECTION(".data") static	nm32f b0[NMGL_SIZE];
+SECTION(".data") static	nm32f a0[NMGL_SIZE];
+
+SECTION(".data") static	nm32f r1[NMGL_SIZE];
+SECTION(".data") static	nm32f g1[NMGL_SIZE];
+SECTION(".data") static	nm32f b1[NMGL_SIZE];
+SECTION(".data") static	nm32f a1[NMGL_SIZE];
+
+SECTION(".data") static	nm32f r2[NMGL_SIZE];
+SECTION(".data") static	nm32f g2[NMGL_SIZE];
+SECTION(".data") static	nm32f b2[NMGL_SIZE];
+SECTION(".data") static	nm32f a2[NMGL_SIZE];
 
 int splitTriangles_uniform(TrianglePointers *srcTriangles, 
 			 int srcCount, 
@@ -222,25 +233,14 @@ int splitTriangles_uniform(TrianglePointers *srcTriangles,
 	float *s2 = srcTriangles->v2.s;
 	float *t2 = srcTriangles->v2.t;
 
-	//TODO:R,G,B,A order is used in c0,c1,c2. May be it will be necessary to use B,G,R,A order 
-	float r0[NMGL_SIZE];
-	float g0[NMGL_SIZE];
-	float b0[NMGL_SIZE];
-	float a0[NMGL_SIZE];
-	
-	float r1[NMGL_SIZE];
-	float g1[NMGL_SIZE];
-	float b1[NMGL_SIZE];
-	float a1[NMGL_SIZE];
-	
-	float r2[NMGL_SIZE];
-	float g2[NMGL_SIZE];
-	float b2[NMGL_SIZE];
-	float a2[NMGL_SIZE];
-
 	unpackColors(srcTriangles->v0.color, r0, g0, b0, a0, srcCountEven);
 	unpackColors(srcTriangles->v1.color, r1, g1, b1, a1, srcCountEven);
 	unpackColors(srcTriangles->v2.color, r2, g2, b2, a2, srcCountEven);
+
+	nm32f *ones = cntxt->buffer2 +  8 * NMGL_SIZE;
+	nm32f *buf  = cntxt->buffer2 +  9 * NMGL_SIZE;
+	nm32f *buf1 = cntxt->buffer2 +  10 * NMGL_SIZE;;
+	nm32f *buf2 = cntxt->buffer2 +  11 * NMGL_SIZE;;
 
 #ifdef PERSPECTIVE_CORRECT        
 	// Compute some coefficients to interpolate attribute values.
@@ -415,156 +415,107 @@ int splitTriangles_uniform(TrianglePointers *srcTriangles,
 	//float A0 = y2-y1;
 	//float A1 = y0-y2;
 	//float A2 = y1-y0;
-	nmppsSub_32f(y2, y1, A0, srcCountEven);
-	nmppsSub_32f(y0, y2, A1, srcCountEven);
-	nmppsSub_32f(y1, y0, A2, srcCountEven);
+	nmppsSub_32f(y2, y1, buf,  srcCountEven);
+	nmppsSub_32f(y0, y2, buf1, srcCountEven);
+	nmppsSub_32f(y1, y0, buf2, srcCountEven);
+	nmblas_scopy(srcCountEven, buf,  1, A0, 1);
+	nmblas_scopy(srcCountEven, buf1, 1, A1, 1);
+	nmblas_scopy(srcCountEven, buf2, 1, A2, 1);
 
 	//float B0 = x1-x2;
 	//float B1 = x2-x0;
 	//float B2 = x0-x1;
-	nmppsSub_32f(x1, x2, B0, srcCountEven);
-	nmppsSub_32f(x2, x0, B1, srcCountEven);
-	nmppsSub_32f(x0, x1, B2, srcCountEven);
+	nmppsSub_32f(x1, x2, buf,  srcCountEven);
+	nmppsSub_32f(x2, x0, buf1, srcCountEven);
+	nmppsSub_32f(x0, x1, buf2, srcCountEven);
+	nmblas_scopy(srcCountEven, buf,  1, B0, 1);
+	nmblas_scopy(srcCountEven, buf1, 1, B1, 1);
+	nmblas_scopy(srcCountEven, buf2, 1, B2, 1);
 
 	//float D0 = x2*y1-y2*x1;
 	//float D1 = y2*x0-x2*y0;
 	//float D2 = x1*y0-x0*y1;
-	nmppsMul_Mul_Sub_32f(x2, y1, y2, x1, D0, srcCountEven);	
-	nmppsMul_Mul_Sub_32f(y2, x0, x2, y0, D1, srcCountEven);	
-	nmppsMul_Mul_Sub_32f(x1, y0, x0, y1, D2, srcCountEven);	
+	nmppsMul_Mul_Sub_32f(x2, y1, y2, x1, buf,  srcCountEven);	
+	nmppsMul_Mul_Sub_32f(y2, x0, x2, y0, buf1, srcCountEven);	
+	nmppsMul_Mul_Sub_32f(x1, y0, x0, y1, buf2, srcCountEven);	
+	nmblas_scopy(srcCountEven, buf,  1, D0, 1);
+	nmblas_scopy(srcCountEven, buf1, 1, D1, 1);
+	nmblas_scopy(srcCountEven, buf2, 1, D2, 1);
 
 	//float oneOverTriSquare = 1.0/((x0-x1)*(y2-y1)-(y0-y1)*(x2-x1));
-	nmppsMul_Mul_Sub_32f(B2, A0, A2, B0, buf, srcCountEven);
-	nmppsDiv_32f(ones, buf, oneOverTriSquare, srcCountEven);
-	
-	//float A_r = oneOverTriSquare*(A0*r0 + A1*r1 + A2*r2);
-	nmppsMul_32f(A2, r2, buf, srcCountEven);	
-	nmppsMul_Add_32f(A1, r1, buf, buf1, srcCountEven);
-	nmppsMul_Add_32f(A0, r0, buf1, buf2, srcCountEven);
-	nmppsMul_32f(oneOverTriSquare, buf2, A_r, srcCountEven);
-	//float B_r = oneOverTriSquare*(B0*r0 + B1*r1 + B2*r2);
-	nmppsMul_32f(B2, r2, buf, srcCountEven);	
-	nmppsMul_Add_32f(B1, r1, buf, buf1, srcCountEven);
-	nmppsMul_Add_32f(B0, r0, buf1, buf2, srcCountEven);
-	nmppsMul_32f(oneOverTriSquare, buf2, B_r, srcCountEven);
-	//float D_r = oneOverTriSquare*(D0*r0 + D1*r1 + D2*r2);
-	nmppsMul_32f(D2, r2, buf, srcCountEven);	
-	nmppsMul_Add_32f(D1, r1, buf, buf1, srcCountEven);
-	nmppsMul_Add_32f(D0, r0, buf1, buf2, srcCountEven);
-	nmppsMul_32f(oneOverTriSquare, buf2, D_r, srcCountEven);
+	nm32f *A0_imu  = cntxt->buffer3 + 0 * NMGL_SIZE;
+	nm32f *A2_imu  = cntxt->buffer3 + 1 * NMGL_SIZE;
+	nm32f *B0_imu  = cntxt->buffer3 + 2 * NMGL_SIZE;
+	nm32f *B2_imu  = cntxt->buffer3 + 3 * NMGL_SIZE;
+	nmblas_scopy(srcCountEven, A0, 1, A0_imu, 1);
+	nmblas_scopy(srcCountEven, A2, 1, A2_imu, 1);
+	nmblas_scopy(srcCountEven, B0, 1, B0_imu, 1);
+	nmblas_scopy(srcCountEven, B2, 1, B2_imu, 1);
+	nmppsMul_Mul_Sub_32f(B2_imu, A0_imu, A2_imu, B0_imu, buf, srcCountEven);
+	nmppsDiv_32f(ones, buf, buf1, srcCountEven);
+	nmblas_scopy(srcCountEven, buf1, 1, oneOverTriSquare, 1);
 
-	//float A_g = oneOverTriSquare*(A0*g0 + A1*g1 + A2*g2);
-	nmppsMul_32f(A2, g2, buf, srcCountEven);	
-	nmppsMul_Add_32f(A1, g1, buf, buf1, srcCountEven);
-	nmppsMul_Add_32f(A0, g0, buf1, buf2, srcCountEven);
-	nmppsMul_32f(oneOverTriSquare, buf2, A_g, srcCountEven);
-	//float B_g = oneOverTriSquare*(B0*g0 + B1*g1 + B2*g2);
-	nmppsMul_32f(B2, g2, buf, srcCountEven);	
-	nmppsMul_Add_32f(B1, g1, buf, buf1, srcCountEven);
-	nmppsMul_Add_32f(B0, g0, buf1, buf2, srcCountEven);
-	nmppsMul_32f(oneOverTriSquare, buf2, B_g, srcCountEven);
-	//float D_g = oneOverTriSquare*(D0*g0 + D1*g1 + D2*g2);
-	nmppsMul_32f(D2, g2, buf, srcCountEven);	
-	nmppsMul_Add_32f(D1, g1, buf, buf1, srcCountEven);
-	nmppsMul_Add_32f(D0, g0, buf1, buf2, srcCountEven);
-	nmppsMul_32f(oneOverTriSquare, buf2, D_g, srcCountEven);
+	nm32f *ABD[][3] = {
+		{A0, A1, A2},
+		{B0, B1, B2},
+		{D0, D1, D2},
+	};
 
-	//float A_b = oneOverTriSquare*(A0*b0 + A1*b1 + A2*b2);
-	nmppsMul_32f(A2, b2, buf, srcCountEven);	
-	nmppsMul_Add_32f(A1, b1, buf, buf1, srcCountEven);
-	nmppsMul_Add_32f(A0, b0, buf1, buf2, srcCountEven);
-	nmppsMul_32f(oneOverTriSquare, buf2, A_b, srcCountEven);
-	//float B_b = oneOverTriSquare*(B0*b0 + B1*b1 + B2*b2);
-	nmppsMul_32f(B2, b2, buf, srcCountEven);	
-	nmppsMul_Add_32f(B1, b1, buf, buf1, srcCountEven);
-	nmppsMul_Add_32f(B0, b0, buf1, buf2, srcCountEven);
-	nmppsMul_32f(oneOverTriSquare, buf2, B_b, srcCountEven);
-	//float D_b = oneOverTriSquare*(D0*b0 + D1*b1 + D2*b2);
-	nmppsMul_32f(D2, b2, buf, srcCountEven);	
-	nmppsMul_Add_32f(D1, b1, buf, buf1, srcCountEven);
-	nmppsMul_Add_32f(D0, b0, buf1, buf2, srcCountEven);
-	nmppsMul_32f(oneOverTriSquare, buf2, D_b, srcCountEven);
+	nm32f *ABD_[][3] = {
+		{A_r, B_r, D_r},
+		{A_g, B_g, D_g},
+		{A_b, B_b, D_b},
+		{A_a, B_a, D_a},
+		{A_s, B_s, D_s},
+		{A_t, B_t, D_t},
+		{A_z, B_z, D_z},
+		{A_w, B_w, D_w},
+	};
 
-	//float A_a = oneOverTriSquare*(A0*a0 + A1*a1 + A2*a2);
-	nmppsMul_32f(A2, a2, buf, srcCountEven);	
-	nmppsMul_Add_32f(A1, a1, buf, buf1, srcCountEven);
-	nmppsMul_Add_32f(A0, a0, buf1, buf2, srcCountEven);
-	nmppsMul_32f(oneOverTriSquare, buf2, A_a, srcCountEven);
-	//float B_a = oneOverTriSquare*(B0*a0 + B1*a1 + B2*a2);
-	nmppsMul_32f(B2, a2, buf, srcCountEven);	
-	nmppsMul_Add_32f(B1, a1, buf, buf1, srcCountEven);
-	nmppsMul_Add_32f(B0, a0, buf1, buf2, srcCountEven);
-	nmppsMul_32f(oneOverTriSquare, buf2, B_a, srcCountEven);
-	//float D_a = oneOverTriSquare*(D0*a0 + D1*a1 + D2*a2);
-	nmppsMul_32f(D2, a2, buf, srcCountEven);	
-	nmppsMul_Add_32f(D1, a1, buf, buf1, srcCountEven);
-	nmppsMul_Add_32f(D0, a0, buf1, buf2, srcCountEven);
-	nmppsMul_32f(oneOverTriSquare, buf2, D_a, srcCountEven);
-	
-	//float A_s = oneOverTriSquare*(A0*s0 + A1*s1 + A2*s2);
-	nmppsMul_32f(A2, s2, buf, srcCountEven);	
-	nmppsMul_Add_32f(A1, s1, buf, buf1, srcCountEven);
-	nmppsMul_Add_32f(A0, s0, buf1, buf2, srcCountEven);
-	nmppsMul_32f(oneOverTriSquare, buf2, A_s, srcCountEven);
-	//float B_s = oneOverTriSquare*(B0*s0 + B1*s1 + B2*s2);
-	nmppsMul_32f(B2, s2, buf, srcCountEven);	
-	nmppsMul_Add_32f(B1, s1, buf, buf1, srcCountEven);
-	nmppsMul_Add_32f(B0, s0, buf1, buf2, srcCountEven);
-	nmppsMul_32f(oneOverTriSquare, buf2, B_s, srcCountEven);
-	//float D_s = oneOverTriSquare*(D0*s0 + D1*s1 + D2*s2);
-	nmppsMul_32f(D2, s2, buf, srcCountEven);	
-	nmppsMul_Add_32f(D1, s1, buf, buf1, srcCountEven);
-	nmppsMul_Add_32f(D0, s0, buf1, buf2, srcCountEven);
-	nmppsMul_32f(oneOverTriSquare, buf2, D_s, srcCountEven);
+	nm32f *c[][3] = {
+		{r0, r1, r2},
+		{g0, g1, g2},
+		{b0, b1, b2},
+		{a0, a1, a2},
+		{s0, s1, s2},
+		{t0, t1, t2},
+		{z0, z1, z2},
+		{w0, w1, w2},
+	};
 
-	//float A_t = oneOverTriSquare*(A0*t0 + A1*t1 + A2*t2);
-	nmppsMul_32f(A2, t2, buf, srcCountEven);	
-	nmppsMul_Add_32f(A1, t1, buf, buf1, srcCountEven);
-	nmppsMul_Add_32f(A0, t0, buf1, buf2, srcCountEven);
-	nmppsMul_32f(oneOverTriSquare, buf2, A_t, srcCountEven);
-	//float B_t = oneOverTriSquare*(B0*t0 + B1*t1 + B2*t2);
-	nmppsMul_32f(B2, t2, buf, srcCountEven);	
-	nmppsMul_Add_32f(B1, t1, buf, buf1, srcCountEven);
-	nmppsMul_Add_32f(B0, t0, buf1, buf2, srcCountEven);
-	nmppsMul_32f(oneOverTriSquare, buf2, B_t, srcCountEven);
-	//float D_t = oneOverTriSquare*(D0*t0 + D1*t1 + D2*t2);
-	nmppsMul_32f(D2, t2, buf, srcCountEven);	
-	nmppsMul_Add_32f(D1, t1, buf, buf1, srcCountEven);
-	nmppsMul_Add_32f(D0, t0, buf1, buf2, srcCountEven);
-	nmppsMul_32f(oneOverTriSquare, buf2, D_t, srcCountEven);
+	// For c = [r, g, b, a, s, t, z, w] calc N = [A, B, D]:
+		//float N_c = oneOverTriSquare*(N0*c0 + N1*c1 + N2*c2);
+	// Example for A_r (the same is for others)
+		//float A_r = oneOverTriSquare*(A0*r0 + A1*r1 + A2*r2);
+		//nmppsMul_32f(A2, r2, buf, srcCountEven);	
+		//nmppsMul_Add_32f(A1, r1, buf, buf1, srcCountEven);
+		//nmppsMul_Add_32f(A0, r0, buf1, buf2, srcCountEven);
+		//nmppsMul_32f(oneOverTriSquare, buf2, A_r, srcCountEven);
+	for (int i = 0; i < (sizeof(ABD_) / sizeof(ABD_[0])); ++i){
+		nm32f *c0 = cntxt->buffer3 +  0 * NMGL_SIZE;
+		nm32f *c1 = cntxt->buffer3 +  1 * NMGL_SIZE;;
+		nm32f *c2 = cntxt->buffer3 +  2 * NMGL_SIZE;;
+		nmblas_scopy(srcCountEven, c[i][0], 1, c0, 1);
+		nmblas_scopy(srcCountEven, c[i][1], 1, c1, 1);
+		nmblas_scopy(srcCountEven, c[i][2], 1, c2, 1);
+		for (int j = 0; j < 3; ++j){
+			nm32f *N0  = cntxt->buffer3 +  3 * NMGL_SIZE;
+			nm32f *N1  = cntxt->buffer3 +  4 * NMGL_SIZE;
+			nm32f *N2  = cntxt->buffer3 +  5 * NMGL_SIZE;
+			nm32f *N_c = cntxt->buffer3 +  6 * NMGL_SIZE;
+			nmblas_scopy(srcCountEven, ABD[j][0], 1, N0, 1);
+			nmblas_scopy(srcCountEven, ABD[j][1], 1, N1, 1);
+			nmblas_scopy(srcCountEven, ABD[j][2], 1, N2, 1);
+			nmblas_scopy(srcCountEven, ABD_[i][j], 1, N_c, 1);
 
-	//float A_z = oneOverTriSquare*(A0*z0 + A1*z1 + A2*z2);
-	nmppsMul_32f(A2, z2, buf, srcCountEven);	
-	nmppsMul_Add_32f(A1, z1, buf, buf1, srcCountEven);
-	nmppsMul_Add_32f(A0, z0, buf1, buf2, srcCountEven);
-	nmppsMul_32f(oneOverTriSquare, buf2, A_z, srcCountEven);
-	//float B_z = oneOverTriSquare*(B0*z0 + B1*z1 + B2*z2);
-	nmppsMul_32f(B2, z2, buf, srcCountEven);	
-	nmppsMul_Add_32f(B1, z1, buf, buf1, srcCountEven);
-	nmppsMul_Add_32f(B0, z0, buf1, buf2, srcCountEven);
-	nmppsMul_32f(oneOverTriSquare, buf2, B_z, srcCountEven);
-	//float D_z = oneOverTriSquare*(D0*z0 + D1*z1 + D2*z2);
-	nmppsMul_32f(D2, z2, buf, srcCountEven);	
-	nmppsMul_Add_32f(D1, z1, buf, buf1, srcCountEven);
-	nmppsMul_Add_32f(D0, z0, buf1, buf2, srcCountEven);
-	nmppsMul_32f(oneOverTriSquare, buf2, D_z, srcCountEven);
+			nmppsMul_32f(N2, c2, buf, srcCountEven);	
+			nmppsMul_Add_32f(N1, c1, buf, buf1, srcCountEven);
+			nmppsMul_Add_32f(N0, c0, buf1, buf2, srcCountEven);
+			nmppsMul_32f(oneOverTriSquare, buf2, N_c, srcCountEven);
 
-	//float A_w = oneOverTriSquare*(A0*w0 + A1*w1 + A2*w2);
-	nmppsMul_32f(A2, w2, buf, srcCountEven);	
-	nmppsMul_Add_32f(A1, w1, buf, buf1, srcCountEven);
-	nmppsMul_Add_32f(A0, w0, buf1, buf2, srcCountEven);
-	nmppsMul_32f(oneOverTriSquare, buf2, A_w, srcCountEven);
-	//float B_w = oneOverTriSquare*(B0*w0 + B1*w1 + B2*w2);
-	nmppsMul_32f(B2, w2, buf, srcCountEven);	
-	nmppsMul_Add_32f(B1, w1, buf, buf1, srcCountEven);
-	nmppsMul_Add_32f(B0, w0, buf1, buf2, srcCountEven);
-	nmppsMul_32f(oneOverTriSquare, buf2, B_w, srcCountEven);
-	//float D_w = oneOverTriSquare*(D0*w0 + D1*w1 + D2*w2);
-	nmppsMul_32f(D2, w2, buf, srcCountEven);	
-	nmppsMul_Add_32f(D1, w1, buf, buf1, srcCountEven);
-	nmppsMul_Add_32f(D0, w0, buf1, buf2, srcCountEven);
-	nmppsMul_32f(oneOverTriSquare, buf2, D_w, srcCountEven);
-	
+			nmblas_scopy(srcCountEven, N_c, 1, ABD_[i][j], 1);
+		}
+	}
 #endif //PERSPECTIVE_CORRECT
 
 	// Analyze triangles
@@ -587,8 +538,13 @@ int splitTriangles_uniform(TrianglePointers *srcTriangles,
 				// Calc the first row
 				// x = {Ax + ac_dx * x[0:nf - 1], Cx}
 				// y = {Ay + ac_dy * y[0:nf - 1], Cy}
-				nmppsMulC_AddC_32f(x, ac_dx[i], srcTriangles->v0.x[i], x, k);
-				nmppsMulC_AddC_32f(y, ac_dy[i], srcTriangles->v0.y[i], y, k);
+				nmblas_scopy(k, x, 1, buf, 1);
+				nmppsMulC_AddC_32f(x, ac_dx[i], srcTriangles->v0.x[i], buf1, k);
+				nmblas_scopy(k, buf1, 1, x, 1);
+
+				nmblas_scopy(k, y, 1, buf, 1);
+				nmppsMulC_AddC_32f(y, ac_dy[i], srcTriangles->v0.y[i], buf1, k);
+				nmblas_scopy(k, buf1, 1, y, 1);
 				x[(int)nf[i]] = srcTriangles->v2.x[i];
 				y[(int)nf[i]] = srcTriangles->v2.y[i];
 
@@ -596,14 +552,18 @@ int splitTriangles_uniform(TrianglePointers *srcTriangles,
 				nm32f *src = x;
 				nm32f *dst = src + k;
 				for (int l = 0; l < k - 1; ++l){
-					nmppsAddC_32f(src, dst, ab_dx[i], k);
+					nmblas_scopy(k, src, 1, buf, 1);
+					nmppsAddC_32f(buf, buf1, ab_dx[i], k);
+					nmblas_scopy(k, buf1, 1, dst, 1);
 					src += k;
 					dst += k;
 				}
 				src = y;
 				dst = src + k;
 				for (int l = 0; l < k - 1; ++l){
-					nmppsAddC_32f(src, dst, ab_dy[i], k);
+					nmblas_scopy(k, src, 1, buf, 1);
+					nmppsAddC_32f(buf, buf1, ab_dy[i], k);
+					nmblas_scopy(k, buf1, 1, dst, 1);
 					src += k;
 					dst += k;
 				}
@@ -658,45 +618,43 @@ int splitTriangles_uniform(TrianglePointers *srcTriangles,
 				nmppsMul_AddC_32f(w, oneOverDenominator, 0.0, w, primWidth);
 #else //PERSPECTIVE_CORRECT                    
 				int primWidth = k * k;
+				int startAttr = 4;	// Skip r, g, b, a
 				if (NMGL_SMOOTH == cntxt->shadeModel) {
-					//r = A_r*x + B_r*y + D_r;
-					nmppsMulC_AddC_32f(y, B_r[i], D_r[i], buf, primWidth);
-					nmppsMulC_AddV_32f(x, buf,   r, A_r[i], primWidth);
-
-					//g = A_g*x + B_g*y + D_g;
-					nmppsMulC_AddC_32f(y, B_g[i], D_g[i], buf, primWidth);
-					nmppsMulC_AddV_32f(x, buf,   g, A_g[i], primWidth);
-
-					//b = A_b*x + B_b*y + D_b;
-					nmppsMulC_AddC_32f(y, B_b[i], D_b[i], buf, primWidth);
-					nmppsMulC_AddV_32f(x, buf,   b, A_b[i], primWidth);
-
-					//a = A_a*x + B_a*y + D_a;
-					nmppsMulC_AddC_32f(y, B_a[i], D_a[i], buf, primWidth);
-					nmppsMulC_AddV_32f(x, buf,   a, A_a[i], primWidth);
+					startAttr = 0;	// Start from the beginning (r, g, b, a, ...)
 				}
 				else {
-					nmppsMulC_AddC_32f(buf,0,r2[i],r,primWidth);
-					nmppsMulC_AddC_32f(buf,0,g2[i],g,primWidth);
-					nmppsMulC_AddC_32f(buf,0,b2[i],b,primWidth);
-					nmppsMulC_AddC_32f(buf,0,a2[i],a,primWidth);
+					nmppsMulC_AddC_32f(buf, 0, r2[i], buf1, primWidth);
+					nmblas_scopy(primWidth, buf1, 1, r, 1);
+					
+					nmppsMulC_AddC_32f(buf, 0, g2[i], buf1, primWidth);
+					nmblas_scopy(primWidth, buf1, 1, g, 1);
+
+					nmppsMulC_AddC_32f(buf, 0, b2[i], buf1, primWidth);
+					nmblas_scopy(primWidth, buf1, 1, b, 1);
+
+					nmppsMulC_AddC_32f(buf, 0, a2[i], buf1, primWidth);
+					nmblas_scopy(primWidth, buf1, 1, a, 1);
 				}
-				
-				//s = A_s*x + B_s*y + D_s;
-				nmppsMulC_AddC_32f(y, B_s[i], D_s[i], buf, primWidth);
-				nmppsMulC_AddV_32f(x, buf,   s, A_s[i], primWidth);
 
-				//t = A_t*x + B_t*y + D_t;
-				nmppsMulC_AddC_32f(y, B_t[i], D_t[i], buf, primWidth);
-				nmppsMulC_AddV_32f(x, buf,   t, A_t[i], primWidth);
-
-				//z = A_z*x + B_z*y + D_z;
-				nmppsMulC_AddC_32f(y, B_z[i], D_z[i], buf, primWidth);
-				nmppsMulC_AddV_32f(x, buf,   z, A_z[i], primWidth);
-
-				//w = A_w*x + B_w*y + D_w;
-				nmppsMulC_AddC_32f(y, B_w[i], D_w[i], buf, primWidth);
-				nmppsMulC_AddV_32f(x, buf,   w, A_w[i], primWidth);
+				nm32f *attr[] = {r, g, b, a, s, t, z, w};
+				// Process attributes partially in a loop. 
+				// There may be no space for the full x (y) in a buf1 (buf2)
+				for (int j = startAttr; j < 8; ++j){
+					//attr = A_attr*x + B_attr*y + D_attr;
+					nm32f *A_ = ABD_[j][0];
+					nm32f *B_ = ABD_[j][1];
+					nm32f *D_ = ABD_[j][2];
+					int cnt = 0;
+					while (cnt < primWidth){
+						int kk = ((primWidth - cnt) >= NMGL_SIZE)? NMGL_SIZE: (primWidth - cnt);
+						nmblas_scopy(kk, y + cnt, 1, buf1, 1);	
+						nmblas_scopy(kk, x + cnt, 1, buf2, 1);
+						nmppsMulC_AddC_32f(buf1, B_[i], D_[i], buf, kk);
+						nmppsMulC_AddV_32f(buf2, buf,   buf1, A_[i], kk);
+						nmblas_scopy(kk, buf1, 1, attr[j] + cnt, 1);
+						cnt += kk;
+					}
+				}
 #endif //PERSPECTIVE_CORRECT
 
 				int inc = pushPoints(x, y, z, w, r, g, b, a, s, t, dstTriangles, dstSize, (int) nf[i]);
