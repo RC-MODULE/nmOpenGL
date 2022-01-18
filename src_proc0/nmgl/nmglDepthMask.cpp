@@ -12,7 +12,6 @@ void nmglDepthMask (NMGLboolean flag){
 
 	NM_Command command;
 	if(flag != NMGL_FALSE) flag = NMGL_TRUE;
-	cntxt->depth_write_mask_enabled = flag;
 	context->depth_test.mask = flag;
 	command.instr = NMC1_DEPTH_UPDATE;
 	command.params[0] = CommandArgument(flag);

@@ -1,6 +1,5 @@
 #include "demo3d_nm1.h"
-#include <math.h>
-
+#include "nmpp.h"
 
 void sum(nm8s* src, nm32s* temp, nm32s* accTemp, int nOffSets_X, int sizePtrn)
 {
@@ -17,13 +16,13 @@ void create_tabl_dydx(unsigned char* srcPatterns,int* dydx, int width, int heigh
 	nmppsSet_32s(dydx, 0, 2*width*height + 2 * width);
 
 //---------------dydx--------------------
-	//заполнение 0..31 строки
+	//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ 0..31 пїЅпїЅпїЅпїЅпїЅпїЅ
 	int i;
 	nm32s* accTemp = nmppsMalloc_32s(sizePtrn);
 	nm32s* temp = nmppsMalloc_32s(sizePtrn);	
-//высчитывание и запись в таблицу dydx смещения относительно начала паттернов
-//----------первая-и-вторая-четверть------------------------------------  
-	nmppsSet_32s((nm32s*)accTemp, width - 1,sizePtrn);							//сдвиг смещения паттернов до x0=0
+//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ dydx пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+//----------пїЅпїЅпїЅпїЅпїЅпїЅ-пїЅ-пїЅпїЅпїЅпїЅпїЅпїЅ-пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ------------------------------------  
+	nmppsSet_32s((nm32s*)accTemp, width - 1,sizePtrn);							//пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ x0=0
 	for (i=2;i<nPtrn;i++){
 		nm8s* src = nmppsAddr_8s((nm8s*)srcPatterns,sizePtrn*(i*OFFSETS + width-1));
 		sum(src, temp, accTemp, OFFSETS, sizePtrn);
@@ -34,7 +33,7 @@ void create_tabl_dydx(unsigned char* srcPatterns,int* dydx, int width, int heigh
 			dydx[y*2*width + x] = accTemp[y*width + x];
 	}
 
-	nmppsSet_32s((nm32s*)accTemp, nPtrn*OFFSETS, sizePtrn);							//сдвиг смещения паттернов до x0=0
+	nmppsSet_32s((nm32s*)accTemp, nPtrn*OFFSETS, sizePtrn);							//пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ x0=0
 	for (i = 2; i<nPtrn; i++)
 	{
 		nm8s* src = nmppsAddr_8s((nm8s*)srcPatterns, sizePtrn*((i+ nPtrn)*OFFSETS));
@@ -46,7 +45,7 @@ void create_tabl_dydx(unsigned char* srcPatterns,int* dydx, int width, int heigh
 			dydx[y * 2 * width + (x+ width)] = accTemp[y*width + x];
 	}
 
-	//дублировнаие 31 строки в 32 строку
+	//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ 31 пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ 32 пїЅпїЅпїЅпїЅпїЅпїЅ
 	for (int i = 0; i < 2 * width; i++) {
 		dydx[32 * 2 * width + i] = dydx[31 * 2 * width + i];
 	}

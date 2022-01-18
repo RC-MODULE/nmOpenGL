@@ -20,6 +20,7 @@ SECTIONS
     *(.text_hal);
     *(.text_demo3dExt);
     *(.text_nmprofiler);
+    *(.text_stub);
   } > EMI1
   .init : ALIGN(0x8)
   {
@@ -32,6 +33,7 @@ SECTIONS
   .data_shared1 : ALIGN(0x8)
   {
     *(.data_shared1);
+    *(.data_stub);
   } > EMI1
   .data : ALIGN(0x8)
   {
@@ -44,7 +46,8 @@ SECTIONS
   .bss : ALIGN(0x8)
   {
     *(.bss);
-  } > C1_IMU0
+    *(.bss_stub);
+  } > EMI1
   .stack : ALIGN(0x8)
   {
     *(.stack);

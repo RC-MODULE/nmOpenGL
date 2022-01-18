@@ -86,7 +86,7 @@
 		"editor.parameterHints.enabled": true,
 
 		"C_Cpp.default.includePath": [
-			"${workspaceFolder}/../../include/**",
+			"${workspaceFolder}../../**",
 			"${env:NMPP}/include/**",
 			"${env:HAL}/include/**",
 			"${env:VSHELL}/include/**",
@@ -95,8 +95,11 @@
 		],
 		"C_Cpp.default.cStandard": "c11",
 		"C_Cpp.default.cppStandard": "c++11",
-		"C_Cpp.default.configurationProvider": "ms-vscode.makefile-tools"
-		//"C_Cpp.default.intelliSenseMode": "gcc-x64"
+		"C_Cpp.default.configurationProvider": "ms-vscode.makefile-tools",
+		"C_Cpp.default.browse.path": [
+			"${workspaceFolder}"
+		],
+		"C_Cpp.default.browse.limitSymbolsToIncludedHeaders": true
 	},
 	"launch": {
 		"version": "0.2.0",
@@ -106,15 +109,15 @@
 				"name": "Launch",
 				"configurations": [
 					{
-						"folder": "make_mc12101",
+						"folder": "make_x86",
 						"name": "launch host",
 					},
 					{
-						"folder": "make_mc12101",
+						"folder": "make_x86",
 						"name": "launch nm0"
 					},
 					{
-						"folder": "make_mc12101",
+						"folder": "make_x86",
 						"name": "launch nm1",
 					}
 				],

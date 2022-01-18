@@ -14,13 +14,8 @@
 #include "pattern.h"
 #include "ringbuffert.h"
 #include "framebuffer.h"
-
-#ifdef STACK_TRACE_ENABLED
-#include "stacktrace.h"
-StackTraceConnector stackTraceConnector;
-#endif
-
-
+#include "stdio.h"
+#include "string.h"
 
 using namespace std;
 
@@ -38,7 +33,7 @@ bool gccmap_address2symbol_(char *mapfile, unsigned addr, char *fullname)
 
 	while (!feof(f)) {
 		fgets(str, 1024, f);
-		const char* where_addr = strstr(str, addr_str);
+		const char *where_addr = strstr(str, addr_str);
 		if (where_addr == 0)
 			continue;
 

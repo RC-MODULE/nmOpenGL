@@ -1,14 +1,11 @@
-#include "VShell.h"
+#include "vshell.h"
 #include "hal.h"
 #include "hal_host.h"
 #include "stdio.h"
 #include "hostprofiler.h"
-#include <fstream>
 #include "framebuffer.h"
 
 #include "demo3d_host.h"
-#include "hal.h"
-#include "hal_host.h"
 
 
 int currentImage[WIDTH_IMAGE * HEIGHT_IMAGE];
@@ -23,9 +20,9 @@ void frameBufferIncTail(NMGL_FrameBuffer *remoteAddr);
 
 int main()
 {
-
 	// load programs to nm
 	if (halOpen(PROGRAM, PROGRAM1, NULL))
+	//if (halOpen(".", ".", NULL))
 	{
 		printf("Connection to mc12101 error!\n");
 		return -1;

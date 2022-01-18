@@ -252,26 +252,10 @@ public:
 
 	
 
-
-	NMGLboolean color_write_mask_flags[4];
-	NMGLboolean depth_write_mask_enabled;
-	
-
 	void init(){
 		int i;
 		unpackAlignment=4;
-		packAlignment=4;
-		
-		
-		
-		for(i=0;i<4;i++){
-			color_write_mask_flags[i] = NMGL_TRUE;
-		}
-
-
-		depth_write_mask_enabled = NMGL_TRUE;
-		
-		
+		packAlignment=4;		
 		texState.init();
 		
 	}
@@ -1459,7 +1443,7 @@ void startCalculateColor(v4nm32f* srcVertex, v4nm32f* srcNormal, v4nm32f* srcCol
 void getCalculatedColor(v4nm32f* dstColor, int vertexCount);
 
 
-void printWindowInfo(WindowInfo* info, int mode);
+//void printWindowInfo(WindowInfo* info, int mode);
 void printDataForNmpu1(DataForNmpu1* data, int elementsAmount);
 void printTriangles(Triangles* data, int elementsAmount);
 void printBitMask(BitMask *bitmask, int nSeg, int elementAmount);

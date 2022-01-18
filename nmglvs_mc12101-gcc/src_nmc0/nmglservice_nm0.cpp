@@ -5,9 +5,12 @@
 #include "nmblas.h"
 #include "nmglservice_nm0.h"
 
+extern int contextIsModified;
+
 SECTION(".text_demo3d") void NMGL_SetValue(NM_Command &command){
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
-	cntxt->synchro.pushInstr(&command);
+    contextIsModified = true;
+    cntxt->synchro.pushInstr(&command);
 }
 
 SECTION(".text_demo3d") NM_Command NMGL_GetValue(int mode){

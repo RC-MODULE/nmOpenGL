@@ -3,13 +3,13 @@
     
     "configurations": [
         {
-            "name": "launch pc",
+            "name": "launch host",
             "type": "cppvsdbg",
             "request": "launch",
             "launchCompleteCommand": "exec-run",
-            "cwd": "${workspaceFolder}/make_mc12101",
+            "cwd": "${workspaceFolder}",
             "symbolSearchPath": "${cwd}/bin/x64/Debug/mc12101-host-x64.pdb",
-            "program": "${workspaceFolder}\\make_mc12101\\bin\\x64\\Debug\\mc12101-host-x64.exe",
+            "program": "${workspaceFolder}\\bin\\x64\\Debug\\mc12101-host-x64.exe",
             "console": "integratedTerminal",
             "logging": {
                 "moduleLoad": false,
@@ -22,13 +22,13 @@
         },
         {
             "name": "launch nm0",
-            "cwd": "${workspaceFolder}/make_mc12101",
+            "cwd": "${workspaceFolder}",
             "executable": "main0d.abs",
             "program": "main0d.abs",
-            "request": "launch",
+            "request": "attach",
             "type": "module-debug",
             "servertype": "external",
-            "gdbpath": "d:\\download\\NMC_Mingw\\bin\\nmc-gdb.exe",
+            //"gdbpath": "d:\\download\\NMC_Mingw\\bin\\nmc-gdb.exe",
             "gdbTarget": ":5555",
             "showDevDebugOutput": true, // отображать ли запросы gdb
             "toolchainPrefix": "nmc",
@@ -37,13 +37,13 @@
         },
         {
             "name": "launch nm1",
-            "cwd": "${workspaceFolder}/make_mc12101",
+            "cwd": "${workspaceFolder}",
             "executable": "main1d.abs",
             "program": "main1d.abs",
-            "request": "launch",
+            "request": "attach",
             "type": "module-debug",
             "servertype": "external",
-            "gdbpath": "d:\\download\\NMC_Mingw\\bin\\nmc-gdb.exe",
+            //"gdbpath": "d:\\download\\NMC_Mingw\\bin\\nmc-gdb.exe",
             "gdbTarget": ":5556",
             "showDevDebugOutput": true, // отображать ли запросы gdb
             "toolchainPrefix": "nmc",

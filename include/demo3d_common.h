@@ -182,17 +182,6 @@ struct ImageSegments{
 	int dummy;
 };
 
-
-/*!
- *  \brief Класс с информацией о делении изображения на сегменты
- *  \author Жиленков Иван
- */
-struct WindowInfo {
-	ImageSegments segments;
-	
-	Size imageSize;
-};
-
 struct NMGL_DepthTest{
 	NMGLboolean enabled;
 	NMGLenum func;
@@ -207,6 +196,18 @@ struct NMGL_Viewport{
 	float viewportAddX;
 	float viewportAddY;
 	float viewportAddZ;
+};
+
+struct NMGL_ClearInfo{
+	float color[4];
+	float depth;
+	float stencil;
+};
+
+struct NMGL_ClearInfo_int{
+	int color[4];
+	int depth;
+	int stencil;
 };
 
 struct NMGL_StencilTest{

@@ -54,7 +54,10 @@ SECTION(".text_nmglvs") int nmglvsNm1Step()
 	case NMC1_DEPTH_UPDATE: 
 		NMGL_DepthUpdate(cntxt, command);
 		break;
-		
+	case NMC1_CONTEXT_SYNC:
+		NMGL_ContextSync(cntxt, command);
+		break;
+
 	case NMC1_SET_ACTIVE_TEXTURE: 
 		NMGL_SetActiveTexture(cntxt, command);
 		break;

@@ -6,12 +6,13 @@
 #include "nmglservice_nm0.h"
 
 
-#pragma code_section ".text_nmgl"
+
 
 SECTION(".text_nmgl")
 void nmglEnable(NMGLenum cap) {
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
 	NMGL_Context *context = NMGL_GetCurrentContext();
+	
 
 	NM_Command command;
 	switch (cap) {

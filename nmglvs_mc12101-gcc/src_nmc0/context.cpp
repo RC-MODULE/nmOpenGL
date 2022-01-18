@@ -1,8 +1,12 @@
 #include "context.h"
 #include "demo3d_nm0.h"
 #include "section-hal.h"
+#include "ringbuffert.h"
+#include "framebuffer.h"
 
-INSECTION(".data_imu0") NMGL_Context *globalContext;
+INSECTION(".data_imu0") NMGL_Context *globalContext = 0;
+INSECTION(".data_imu0") int contextIsModified = true;
+INSECTION(".data_imu0") int contextLock = false;
 
 void NMGL_FrameBufferInit(NMGL_FrameBuffer *fb, int width, int height){
 	fb->head = 0;
@@ -13,9 +17,12 @@ void NMGL_FrameBufferInit(NMGL_FrameBuffer *fb, int width, int height){
 	fb->height = height;
 }
 
-void NMGL_ContextInit(NMGL_Context *context)
+NMGL_Context *NMGL_CreateContext(NMGL_ContextConfig *config)
 {
+	setHeap(10);
+	NMGL_Context *context = (NMGL_Context *)halMalloc32(sizeof32(NMGL_Context));
 	globalContext = context;
+
 	NMGL_FrameBufferInit(&context->defaultFrameBuffer, WIDTH_IMAGE, HEIGHT_IMAGE);
 
 	context->isUseTwoSidedMode = NMGL_FALSE;
@@ -109,9 +116,12 @@ void NMGL_ContextInit(NMGL_Context *context)
 	context->blend.enabled = NMGL_FALSE;
 	context->blend.sfactor = NMGL_ONE;
 	context->blend.dfactor = NMGL_ZERO;
+
+	return context;
 }
 
 NMGL_Context *NMGL_GetCurrentContext(){
+	while (contextLock);
 	return globalContext;
 }
 

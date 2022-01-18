@@ -27,7 +27,29 @@ SECTION(".text_demo3d") void NMGL_Clear(NMGL_Context_NM1 *context, NM_Command *c
 
 	int widthImage = cntxt->defaultFrameBuffer.width;
 	int heightImage = cntxt->defaultFrameBuffer.height;
-	//
+
+	// read clear values
+	NMGL_ClearInfo_int *clear_info = (NMGL_ClearInfo_int *)command->params[5].p;
+	long long unsigned mClearValue  = 0;
+	// set clear color dma array
+	mClearValue = clear_info->color[0];
+	mClearValue |= (clear_info->color[1] << 8);
+	mClearValue |= (clear_info->color[2] << 16);
+	mClearValue |= (clear_info->color[3] << 24);
+	mClearValue |= (mClearValue << 32);
+	for (int i = 0; i < 8; i++)
+	{
+		context->colorClearValueTwice[i] = mClearValue;
+	}
+
+	// set clear depth dma array
+	mClearValue = command->params[0].ui;
+	mClearValue |= (mClearValue << 32);
+	for (int i = 0; i < 8; i++)
+	{
+		context->depthClearValueTwice[i] = mClearValue;
+	}
+
 
 	msdWaitDma();
 	clearTasks[0].src = context->colorClearValueTwice;

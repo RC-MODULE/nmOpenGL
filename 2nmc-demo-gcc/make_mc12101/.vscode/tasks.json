@@ -5,7 +5,8 @@
             "label": "Build all",
             "type": "shell",
             "group": "build",
-            "dependsOn": [ "Build nm0", "Build nm1", "Build host" ]
+            "command": "scons",
+            "dependsOn": [ "Build host", "Build nm0", "Build nm1"],
         },
         {
             "label": "Build host",
@@ -15,7 +16,7 @@
                 "isDefault": true,
             },
             "command": "scons",
-            "args": [ "host", "debug=1", "-j4" ],
+            "args": [ "host", "debug=1", "-j4", "${config:errecho}" ],
             "options": {
                 "cwd": "${workspaceFolder}"
             }
@@ -28,7 +29,7 @@
                 "isDefault": true
             },
             "command": "scons",
-            "args": [ "nm0", "debug=1", "-j4" ],
+            "args": [ "nm0", "debug=1", "-j4", "${config:errecho}" ],
             "options": {
                 "cwd": "${workspaceFolder}"
             }
@@ -41,7 +42,7 @@
                 "isDefault": true
             },
             "command": "scons",
-            "args": [ "nm1", "debug=1", "-j4" ],
+            "args": [ "nm1", "debug=1", "-j4", "${config:errecho}" ],
             "options": {
                 "cwd": "${workspaceFolder}"
             }
@@ -58,7 +59,8 @@
             "options": {
                 "cwd": "${workspaceFolder}"
             }
-        },{
+        },
+        {
             "label": "Clean nm1",
             "type": "shell",
             "group": {
@@ -80,6 +82,19 @@
             },
             "command": "scons",
             "args": [ "-c", "-j4" ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },
+        {
+            "label": "Clean host",
+            "type": "shell",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "command": "scons",
+            "args": [ "-c", "-j4", "host" ],
             "options": {
                 "cwd": "${workspaceFolder}"
             }
@@ -118,7 +133,7 @@
                 "Build nm0"
             ],
             "args": [
-                "${workspaceFolder}/make_mc12101/main0d.abs",
+                "${workspaceFolder}/main0d.abs",
                 "-a0"
             ],
             "problemMatcher": {
@@ -142,7 +157,7 @@
             "type": "shell",
             "command": "mc12101run",
             "args": [
-                "${workspaceFolder}/make_mc12101/main1d.abs",
+                "${workspaceFolder}/main1d.abs",
                 "-a1"
             ],
             "group": "test",

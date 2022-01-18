@@ -2,7 +2,7 @@
 #include "nmgl.h"
 
 
-#pragma code_section ".text_nmgl"
+//#pragma code_section ".text_nmgl"
 
 SECTION(".text_nmgl")
 NMGLenum nmglGetError() {

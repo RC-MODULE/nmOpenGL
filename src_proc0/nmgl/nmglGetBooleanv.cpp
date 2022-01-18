@@ -15,12 +15,12 @@ void nmglGetBooleanv (NMGLenum pname, NMGLboolean *params){
     case NMGL_COLOR_WRITEMASK:
         int i;
         for(i=0;i<4;i++){
-            params[i] = cntxt->color_write_mask_flags[i];
+            params[i] = context->color_write_mask_flags[i];
         }
     break;
 
     case NMGL_DEPTH_WRITEMASK:
-        *params = cntxt->depth_write_mask_enabled;
+        *params = context->depth_test.mask;
     break;
 
     case NMGL_VERTEX_ARRAY:

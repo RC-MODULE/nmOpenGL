@@ -1,4 +1,3 @@
-.vscode
 *.bat
 *.log
 # Visual Studio #
@@ -16,6 +15,7 @@
 bin/
 obj/
 .vs/
+.sconsign.dblite
 
 # Compiler files #
 ##################

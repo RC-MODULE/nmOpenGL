@@ -85,8 +85,8 @@ for i in range(2):
 		nmc[i]['MAP'] = f'main{i}d.map'
 
 #		nmc[i]['LIBPATH'] += ['d:/GIT/nm6407_nmc_gdb_server/stub/make']
-#	whole_archives_list[0] += ["-lmc12101_stub_nmc4_float"]
-#	whole_archives_list[1] += ["-lmc12101_stub_nmc4_fixed"]
+#whole_archives_list[0] += ["-lmc12101_stub_nmc4_float"]
+#whole_archives_list[1] += ["-lmc12101_stub_nmc4_fixed"]
 
 nmc[0]['LIBS'] += ['nmpp-nmc4f']
 nmc[1]['LIBS'] += ['nmpp-nmc4']
@@ -107,8 +107,8 @@ host_env['CPPPATH'] = ["$MC12101/include","$HAL/include","$VSHELL/include","$NMP
 host_env['LIBS'] = ["mc12101load.lib","vshell.lib", "nmpp-x64.lib","hal-mc12101-x64.lib"]
 host_env['CXXFLAGS'] = '/MD'
 if DEBUG:
-	host_env['CPPDEFINES'] = ["DEBUG"]
-host_env['PDB'] = 'x64/Debug/mc12101-host.pdb'
+	host_env['CPPDEFINES'] = ["_NDEBUG", "_ITERATOR_DEBUG_LEVEL=0", "DEBUG"]
+host_env['PDB'] = 'bin/x64/Debug/mc12101-host.pdb'
 
 src_nm_dirs = []
 src_nm_dirs.append([f'{ROOT}/nmglvs_mc12101-gcc/src_nmc0', f'{ROOT}/src_proc0/common', f'{ROOT}/src_proc0/nm', f'../src_target0', f'{ROOT}/src_proc0/nmgl'])
@@ -161,7 +161,7 @@ all_c 	= [Glob(path(src_dir)/'*.c', strings = True)   	for src_dir in src_pc_dir
 all_h 	= [Glob(path(src_dir)/'*.h', strings = True)   	for src_dir in src_pc_include_dirs]
 obj_cpp = [host_env.Object(obj_name(str(c)), c) 		for c in sum(all_cpp, [])]
 obj_c 	= [host_env.Object(obj_name(str(c)), c) 	   	for c in sum(all_c, [])]
-host = host_env.Program(f'x64/{Configuration}/mc12101-host.exe',[obj_cpp, obj_c])
+host = host_env.Program(f'bin/x64/{Configuration}/mc12101-host-x64.exe',[obj_cpp, obj_c])
 Alias('host', host)
 Default(host)
 
@@ -171,7 +171,7 @@ all_cpp = [item for sublist in all_cpp for item in sublist]
 all_c = [item for sublist in all_c for item in sublist]
 all_h = [item for sublist in all_h for item in sublist]
 
-projects.append(host_env.MSVSProject(target = 'mc12101-host' + host_env['MSVSPROJECTSUFFIX'],
+projects.append(host_env.MSVSProject(target = 'mc12101-host-x64' + host_env['MSVSPROJECTSUFFIX'],
 	srcs = all_cpp + all_c,
 	incs = all_h,
 	variant = [f"Release|x64", "Debug|x64"],

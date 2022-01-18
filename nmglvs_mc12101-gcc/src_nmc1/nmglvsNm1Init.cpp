@@ -99,7 +99,7 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 		cntxt = NMGL_Context_NM1::getContext();
 		
 		NMGL_Context *globalContext = (NMGL_Context*)halSyncAddr(0, 0);
-		NMGL_ContextInit(globalContext);
+		NMGL_MakeCurrentContext(globalContext);
 
 		NMGLSynchroData* synchroData = (NMGLSynchroData*)halSyncAddr(0, 0);
 		nmglSynchro.init(synchroData);

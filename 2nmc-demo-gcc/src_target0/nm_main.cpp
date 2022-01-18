@@ -84,7 +84,8 @@ SECTION(".text_shared0") int main()
 	halHostSyncAddr(normal_DDR2);
 	ok = halHostSync((int)0x600D600D);
 #endif
-	nmglClearColor(0, 0, 0.4f, 0.0f);
+	float color = 0;
+	nmglClearColor(color, color, color, 0.0f);
 
 	nmglEnable(NMGL_DEPTH_TEST);
 	nmglEnable(NMGL_CULL_FACE);
@@ -119,9 +120,13 @@ SECTION(".text_shared0") int main()
 		nmglEnableClientState(NMGL_VERTEX_ARRAY);
 		nmglEnableClientState(NMGL_NORMAL_ARRAY);
 
-		nmglClear(NMGL_COLOR_BUFFER_BIT | NMGL_DEPTH_BUFFER_BIT);
+		//nmglClear(NMGL_COLOR_BUFFER_BIT | NMGL_DEPTH_BUFFER_BIT);
+		nmglClear(NMGL_COLOR_BUFFER_BIT);
+		color+=0.01f;
+		if(color > 1.0f) color = 0;
+		nmglClearColor(color, color, color, 0.0f);
 
-		nmglVertexPointer(4, NMGL_FLOAT, 0, vertices_DDR);
+		/*nmglVertexPointer(4, NMGL_FLOAT, 0, vertices_DDR);
 		nmglNormalPointer(NMGL_FLOAT, 0, normal_DDR);
 		nmglLoadIdentity();
 		nmglScalef(0.95f, 0.95f, 0.95f);
@@ -159,7 +164,7 @@ SECTION(".text_shared0") int main()
 
 		nmglDisableClientState(NMGL_VERTEX_ARRAY);
 		nmglDisableClientState(NMGL_NORMAL_ARRAY);
-		counter++;
+		counter++;*/
 		nmglvsSwapBuffer();
 	}
 	halFree(vertices_DDR);

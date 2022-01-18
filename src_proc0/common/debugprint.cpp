@@ -64,28 +64,6 @@ void printMatrix(mat4nm32f* matrix) {
 
 }
 
-void printWindowInfo(WindowInfo* info){
-	printf("WindowInfo=%p\n", info);
-	//printf("Segment size={%d, %d}\n", info->segmentWidth, info->segmentHeight);
-	//printf("nColumns=%d, nRows=%d\n", info->nColumns, info->nRows);
-
-	/*printf("v2nm32f\n");
-	for (int y = 0, iSeg = 0; y < info->nRows; y++) {
-		printf("lowerLeft : ");
-		for (int x = 0; x < info->nColumns; x++, iSeg++) {
-			printf("{%3.0f,%3.0f} ", info->lowerLeft[iSeg].v0, info->lowerLeft[iSeg].v1);
-		}
-		printf("\n");
-		
-		iSeg -= info->nColumns;
-		printf("upperRight: ");
-		for (int x = 0; x < info->nColumns; x++, iSeg++) {
-			printf("{%3.0f,%3.0f} ", info->upperRight[iSeg].v0, info->upperRight[iSeg].v1);
-		}
-		printf("\n\n");
-	}*/
-}
-
 void printBitMask(BitMask *bitmask, int nSeg, int elementAmount){
 	printf("BitMasks=%p\n", bitmask);
 	for (int i = 0; i < nSeg; i++) {

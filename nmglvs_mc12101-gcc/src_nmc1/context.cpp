@@ -8,6 +8,7 @@ NMGL_Context *NMGL_GetCurrentContext(){
 	return globalContext;
 }
 
-void NMGL_ContextInit(NMGL_Context *context){
+void NMGL_MakeCurrentContext(NMGL_Context *context)
+{
 	globalContext = context;
 }

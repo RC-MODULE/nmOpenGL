@@ -2,7 +2,6 @@
 #define __NMSYNCHRO_H_INCLUDED__
 
 #include "hal_target.h"
-#include <time.h>
 #include "nmdef.h"
 #include "ringbuffert.h"
 #include "stdio.h"
@@ -40,7 +39,7 @@
 #define NMC1_FAST_INV_SQRT 			0xF1050000
 #define NMC1_CNV_32S_8S 			0xF1070000
 #define NMC1_EXIT 					0xFFFF0000
-#define NMC1_SYNC 					0xFF000000
+#define NMC1_CONTEXT_SYNC 			0xFF000000
 
 #define SYNCHRO_EXIT 1
 

@@ -8,13 +8,12 @@ struct NMGL_Context {
 
 	alignas(8) NMGL_FrameBuffer defaultFrameBuffer;
 
-	int isUseTwoSidedMode;
-	int isCullFace;
-	int cullFaceType;
-	int frontFaceOrientation;
-	int normalizeEnabled;
-	float pointSize;
-
+	NMGLboolean isUseTwoSidedMode;
+	NMGLboolean isCullFace;
+	NMGLenum cullFaceType;
+	NMGLenum frontFaceOrientation;
+	NMGLboolean normalizeEnabled;
+	NMGLfloat pointSize;
 
 	MatrixStack *currentMatrixStack;
 	alignas(8) mat4nm32f modelviewMatrix[16];
@@ -42,9 +41,20 @@ struct NMGL_Context {
 	Line_cntxt_t line;
 	Polygon_cntxt_t polygon;
 	Blend_cntxt_t blend;
+	NMGL_ClearInfo clear;
+
+	NMGLboolean color_write_mask_flags[4];
 
 	int shadeModel;
 };
 
-void NMGL_ContextInit(NMGL_Context *context);
+struct NMGL_ContextConfig
+{
+	int width;
+	int height;
+};
+
+NMGL_Context *NMGL_CreateContext(NMGL_ContextConfig *config);
+void NMGL_DestroyContext(NMGL_Context *context);
 NMGL_Context *NMGL_GetCurrentContext();
+void NMGL_MakeCurrentContext(NMGL_Context *context);

@@ -115,12 +115,11 @@ SECTION(".text_nmglvs")
 		setHeap(7);
 		NMGL_Context_NM0::create();
 		cntxt = NMGL_Context_NM0::getContext();
-		
-		NMGL_Context *globalContext = myMallocT<NMGL_Context>();
-		NMGL_ContextInit(globalContext);
-		NMGL_Context *context = NMGL_GetCurrentContext();
-		
-		halSyncAddr(globalContext, 1);
+
+		NMGL_ContextConfig config;
+		NMGL_Context *context = NMGL_CreateContext(&config);
+
+		halSyncAddr(context, 1);
 
 		setHeap(7);
 		synchroData = myMallocT<NMGLSynchroData>();

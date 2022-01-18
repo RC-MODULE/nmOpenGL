@@ -71,6 +71,8 @@ SECTION(".text_demo3d") void clipSelect(TrianglePointers *src, float* srcColor, 
 
 void printMatrix(mat4nm32f* matrix);
 
+extern int contextIsModified;
+extern int contextLock;
 
 SECTION(".text_nmgl")
 void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
@@ -149,6 +151,15 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 
 	if (context->lightingInfo.isLighting) {
 		context->lightingInfo.update();
+	}
+
+	if(contextIsModified){
+		NM_Command synchroCommand;
+		synchroCommand.instr = NMC1_CONTEXT_SYNC;
+		synchroCommand.params[0] = CommandArgument(context);
+		synchroCommand.params[1] = &contextLock;
+		cntxt->synchro.pushInstr(&synchroCommand);
+		contextIsModified = false;
 	}
 
 	for (int pointer = 0; pointer < count; pointer += maxInnerCount) {
