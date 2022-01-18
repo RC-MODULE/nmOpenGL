@@ -1,0 +1,55 @@
+{
+    "version": "0.2.0",
+    
+    "configurations": [
+        {
+            "name": "launch pc",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "launchCompleteCommand": "exec-run",
+            "cwd": "${workspaceFolder}/make_mc12101",
+            "symbolSearchPath": "${cwd}/bin/x64/Debug/mc12101-host-x64.pdb",
+            "program": "${workspaceFolder}\\make_mc12101\\bin\\x64\\Debug\\mc12101-host-x64.exe",
+            "console": "integratedTerminal",
+            "logging": {
+                "moduleLoad": false,
+                "trace": true
+            },
+            "stopAtEntry": true,
+            "preLaunchTask": "Build host",
+            "miDebuggerArgs": "",
+            "setupCommands": [],
+        },
+        {
+            "name": "launch nm0",
+            "cwd": "${workspaceFolder}/make_mc12101",
+            "executable": "main0d.abs",
+            "program": "main0d.abs",
+            "request": "launch",
+            "type": "module-debug",
+            "servertype": "external",
+            "gdbpath": "d:\\download\\NMC_Mingw\\bin\\nmc-gdb.exe",
+            "gdbTarget": ":5555",
+            "showDevDebugOutput": true, // отображать ли запросы gdb
+            "toolchainPrefix": "nmc",
+            "preLaunchTask": "run monitor",
+            //"runToMain": true
+        },
+        {
+            "name": "launch nm1",
+            "cwd": "${workspaceFolder}/make_mc12101",
+            "executable": "main1d.abs",
+            "program": "main1d.abs",
+            "request": "launch",
+            "type": "module-debug",
+            "servertype": "external",
+            "gdbpath": "d:\\download\\NMC_Mingw\\bin\\nmc-gdb.exe",
+            "gdbTarget": ":5556",
+            "showDevDebugOutput": true, // отображать ли запросы gdb
+            "toolchainPrefix": "nmc",
+            //"preLaunchTask": "run monitor",
+            //"runToMain": true
+        }        
+    ]
+
+}

@@ -1,0 +1,170 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build all",
+            "type": "shell",
+            "group": "build",
+            "dependsOn": [ "Build nm0", "Build nm1", "Build host" ]
+        },
+        {
+            "label": "Build host",
+            "type": "shell",
+            "group": {
+                "kind": "build",
+                "isDefault": true,
+            },
+            "command": "scons",
+            "args": [ "host", "debug=1", "-j4" ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },
+        {
+            "label": "Build nm0",
+            "type": "shell",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "command": "scons",
+            "args": [ "nm0", "debug=1", "-j4" ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },
+        {
+            "label": "Build nm1",
+            "type": "shell",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "command": "scons",
+            "args": [ "nm1", "debug=1", "-j4" ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },
+        {
+            "label": "Clean nm0",
+            "type": "shell",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "command": "scons",
+            "args": [ "-c", "nm0", "-j4" ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },{
+            "label": "Clean nm1",
+            "type": "shell",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "command": "scons",
+            "args": [ "-c", "nm1", "-j4" ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },
+        {
+            "label": "Clean all",
+            "type": "shell",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "command": "scons",
+            "args": [ "-c", "-j4" ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },
+        {
+            "label": "run monitor",
+            "type": "shell",
+            "command": "d:\\GIT\\nm6407_nmc_gdb_server\\nm_gdb_monitor.exe",
+            //"args": [ "-d", "5","-t" ],
+            "group": "test",
+            "isBackground": true,
+            "dependsOn": [ "run nm0", "run nm1" ],
+            "problemMatcher": {
+                "pattern": [
+                    {
+                        "regexp": "^([^\\\\s].*)\\\\((\\\\d+,\\\\d+)\\\\):\\\\s*(.*)$",
+                        "file": 1,
+                        "location": 2,
+                        "message": 3
+                    }
+                ],
+                "background": {
+                    "activeOnStart": true,
+                    "beginsPattern": ".*target",
+                    "endsPattern": ".*server listening on port.*"
+                },
+            },
+        },
+        {
+            "label": "run nm0",
+            "type": "shell",
+            "command": "mc12101run",
+            "group": "test",
+            "isBackground": true,
+            "dependsOn": [
+                "Build nm0"
+            ],
+            "args": [
+                "${workspaceFolder}/make_mc12101/main0d.abs",
+                "-a0"
+            ],
+            "problemMatcher": {
+                "background": {
+                    "activeOnStart": true,
+                    "beginsPattern": "^Batch",
+                    "endsPattern": "^Start"
+                },
+                "pattern": [
+                    {
+                        "regexp": "^([^\\\\s].*)\\\\((\\\\d+,\\\\d+)\\\\):\\\\s*(.*)$",
+                        "file": 1,
+                        "location": 2,
+                        "message": 3
+                    }
+                ]
+            },
+        },
+        {
+            "label": "run nm1",
+            "type": "shell",
+            "command": "mc12101run",
+            "args": [
+                "${workspaceFolder}/make_mc12101/main1d.abs",
+                "-a1"
+            ],
+            "group": "test",
+            "isBackground": true,
+            "dependsOn": [
+                "Build nm1"
+            ],
+            "problemMatcher": {
+                "background": {
+                    "activeOnStart": true,
+                    "beginsPattern": "^Batch",
+                    "endsPattern": "^Start"
+                },
+                "pattern": [
+                    {
+                        "regexp": "^([^\\\\s].*)\\\\((\\\\d+,\\\\d+)\\\\):\\\\s*(.*)$",
+                        "file": 1,
+                        "location": 2,
+                        "message": 3
+                    }
+                ]
+            }
+        },
+    ]
+}
