@@ -31,7 +31,7 @@ SECTION(".data_imu3")	float nmgly1[NMGL_SIZE];
 SECTION(".data_imu3")	float nmglx2[NMGL_SIZE];
 SECTION(".data_imu3")	float nmgly2[NMGL_SIZE];
 SECTION(".data_imu4")	int nmglz_int[NMGL_SIZE];
-SECTION(".data_imu6")	v4nm32s nmgllightsValues[NMGL_SIZE];
+//SECTION(".data_imu6")	v4nm32s nmgllightsValues[NMGL_SIZE];
 //TEXTURING_PART
 SECTION(".data_imu1")	float nmgls0[NMGL_SIZE];
 SECTION(".data_imu2")	float nmglt0[NMGL_SIZE];
@@ -46,10 +46,10 @@ SECTION(".data_imu7")	float nmglw2[NMGL_SIZE];
 
 
 SECTION(".data_imu5")	v4nm32f vertexResult[3 * NMGL_SIZE];
-SECTION(".data_imu6")	v4nm32f colorOrNormal[3 * NMGL_SIZE];
+SECTION(".data_imu6")	v4nm32f normalResult[3 * NMGL_SIZE];
+SECTION(".data_imu2")	v4nm32f colorResult[3 * NMGL_SIZE];
 SECTION(".data_imu6")	v2nm32f texResult[3 * NMGL_SIZE];
 SECTION(".data_imu3")	v4nm32f vertexResult2[3 * NMGL_SIZE];
-SECTION(".data_imu2")	v4nm32f colorOrNormal2[3 * NMGL_SIZE];
 SECTION(".data_imu1")	v2nm32f texResult2[3 * NMGL_SIZE];
 
 SECTION(".data_imu6") int masksBits[36][3 * NMGL_SIZE / 32];
@@ -207,10 +207,12 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 		cntxt->buffer4 = (float*)nmglBuffer4;
 		cntxt->buffer5 = (float*)nmglBuffer5;
 		cntxt->vertexResult = vertexResult;
-		cntxt->colorOrNormal = colorOrNormal;
+		cntxt->colorResult = colorResult;
+		cntxt->normalResult = normalResult;
 		cntxt->texResult = texResult;
 		cntxt->vertexResult2 = vertexResult2;
-		cntxt->colorOrNormal2 = colorOrNormal2;
+		cntxt->colorResult2 = normalResult;
+		cntxt->normalResult2 = colorResult;
 		cntxt->texResult2 = texResult2;
 
 		//Allocate memory for textures.
@@ -263,7 +265,8 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 	cntxt->trianInner.w0 = nmglw0;
 	cntxt->trianInner.w1 = nmglw1;
 	cntxt->trianInner.w2 = nmglw2;
-	cntxt->trianInner.colors = nmgllightsValues;
+	//cntxt->trianInner.colors = nmgllightsValues;
+	cntxt->trianInner.colors = (v4nm32s*)normalResult;
 	cntxt->trianInner.maxSize = NMGL_SIZE;
 	cntxt->trianInner.size = 0;
 
@@ -279,7 +282,8 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 	cntxt->lineInner.t1 = nmglt1;
 	cntxt->lineInner.w0 = nmglw0;
 	cntxt->lineInner.w1 = nmglw1;
-	cntxt->lineInner.colors = nmgllightsValues;
+	//cntxt->lineInner.colors = nmgllightsValues;
+	cntxt->lineInner.colors = (v4nm32s*)normalResult;
 	cntxt->lineInner.maxSize = NMGL_SIZE;
 	cntxt->lineInner.size = 0;
 
@@ -289,7 +293,8 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 	cntxt->pointInner.s = nmgls0;
 	cntxt->pointInner.t = nmglt0;
 	cntxt->pointInner.w = nmglw0;
-	cntxt->pointInner.colors = nmgllightsValues;
+	//cntxt->pointInner.colors = nmgllightsValues;
+	cntxt->pointInner.colors = (v4nm32s*)normalResult;
 	cntxt->pointInner.maxSize = NMGL_SIZE;
 	cntxt->pointInner.size = 0;
 	
