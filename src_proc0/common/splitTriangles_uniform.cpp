@@ -631,7 +631,7 @@ int splitTriangles_uniform(TrianglePointers *srcTriangles,
 					nmppsMulC_AddV_32f(x, buf,   g, A_g[i], primWidth);
 =======*/
 				int startAttr = 4;	// Skip r, g, b, a
-				if (NMGL_SMOOTH == cntxt->shadeModel) {
+				if (NMGL_SMOOTH == context->shadeModel) {
 					startAttr = 0;	// Start from the beginning (r, g, b, a, ...)
 				}
 				else {

@@ -221,10 +221,10 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 		//}
 
 		//
-		if (cntxt->colorArray.enabled) {
+		if (context->colorArray.enabled) {
 			colorAM.pop(cntxt->colorResult);
-			if (cntxt->colorArray.type == NMGL_UNSIGNED_BYTE) {
-				nmppsConvert_32s32f((int*)cntxt->colorResult, cntxt->buffer0, cntxt->colorArray.size * localSize);
+			if (context->colorArray.type == NMGL_UNSIGNED_BYTE) {
+				nmppsConvert_32s32f((int *)cntxt->colorResult, cntxt->buffer0, cntxt->colorArray.size * localSize);
 				nmppsMulC_32f(cntxt->buffer0, (float*)cntxt->colorResult, 1.0 / 255.0, cntxt->colorArray.size * localSize);
 			}
 		} else{

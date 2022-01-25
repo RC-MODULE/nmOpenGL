@@ -188,6 +188,7 @@ int splitTriangles(TrianglePointers *srcVertex,
 	Buffer buf = initBuf((void *) dstVertex, maxDstSize);
 
     NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
+	NMGL_Context *context = NMGL_GetCurrentContext();
 
 	int i = *srcTreatedCount; // make this iterator local to assign it later to srcTreatedCount
 	for (i = *srcTreatedCount; i < srcCount; ++i) {
@@ -205,7 +206,7 @@ int splitTriangles(TrianglePointers *srcVertex,
 		c.x = srcVertex->v2.x[i];
 		c.y = srcVertex->v2.y[i];
 		c.z = srcVertex->v2.z[i];
-		if (NMGL_SMOOTH == cntxt->shadeModel) {
+		if (NMGL_SMOOTH == context->shadeModel) {
 			a.color = srcVertex->v0.color[i];
 			b.color = srcVertex->v1.color[i];
 			c.color = srcVertex->v2.color[i];
@@ -633,6 +634,7 @@ int checkAndSplitLargestEdge(	const Triangle& tr,
 {
 
     NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
+	NMGL_Context *context = NMGL_GetCurrentContext();
 
 	// If the largest edge is too large then division is necessary 
 	edgeProjection edge0Projection = tr.edgeGetProjection(0);
@@ -671,7 +673,7 @@ int checkAndSplitLargestEdge(	const Triangle& tr,
 		float oneOverW = 1.0 / (oneOverWa + oneOverWb);
 #endif //PERSPECTIVE_CORRECT_TRIANGULATION
 
-		if (NMGL_FLAT == cntxt->shadeModel) {
+		if (NMGL_FLAT == context->shadeModel) {
 			d.color.vec[0] = a.color.vec[0];
 			d.color.vec[1] = a.color.vec[1];
 			d.color.vec[2] = a.color.vec[2];
