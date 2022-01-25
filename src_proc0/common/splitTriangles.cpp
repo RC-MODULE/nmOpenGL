@@ -187,6 +187,8 @@ int splitTriangles(TrianglePointers *srcVertex,
 
 	Buffer buf = initBuf((void *) dstVertex, maxDstSize);
 
+    NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
+
 	int i = *srcTreatedCount; // make this iterator local to assign it later to srcTreatedCount
 	for (i = *srcTreatedCount; i < srcCount; ++i) {
 		// Get the triangle from the source
@@ -203,9 +205,16 @@ int splitTriangles(TrianglePointers *srcVertex,
 		c.x = srcVertex->v2.x[i];
 		c.y = srcVertex->v2.y[i];
 		c.z = srcVertex->v2.z[i];
-		a.color = srcVertex->v0.color[i];
-		b.color = srcVertex->v1.color[i];
-		c.color = srcVertex->v2.color[i];
+		if (NMGL_SMOOTH == cntxt->shadeModel) {
+			a.color = srcVertex->v0.color[i];
+			b.color = srcVertex->v1.color[i];
+			c.color = srcVertex->v2.color[i];
+		}
+		else {
+			a.color = srcVertex->v2.color[i];
+			b.color = srcVertex->v2.color[i];
+			c.color = srcVertex->v2.color[i];
+		}
 		//TEXTURING_PART
 		a.w = srcVertex->v0.w[i];
 		b.w = srcVertex->v1.w[i];
@@ -622,6 +631,9 @@ int checkAndSplitLargestEdge(	const Triangle& tr,
 								Triangle &trOut1, 
 								Triangle& trOut2)
 {
+
+    NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
+
 	// If the largest edge is too large then division is necessary 
 	edgeProjection edge0Projection = tr.edgeGetProjection(0);
 	edgeProjection edge1Projection = tr.edgeGetProjection(1);
@@ -652,24 +664,31 @@ int checkAndSplitLargestEdge(	const Triangle& tr,
 		d.y = (a.y + b.y) / 2;
 		d.z = (a.z + b.z) / 2;
 
-//TEXTURING_PART
-#if defined (PERSPECTIVE_CORRECT_TRIANGULATION)
+#ifdef PERSPECTIVE_CORRECT_TRIANGULATION
 		//XXX: Warning. Potential division by zero
 		float oneOverWa = 1.0 / a.w;
 		float oneOverWb = 1.0 / b.w;
 		float oneOverW = 1.0 / (oneOverWa + oneOverWb);
-
-		d.color.vec[0] = (a.color.vec[0] * oneOverWa + b.color.vec[0] * oneOverWb) * oneOverW;
-		d.color.vec[1] = (a.color.vec[1] * oneOverWa + b.color.vec[1] * oneOverWb) * oneOverW;
-		d.color.vec[2] = (a.color.vec[2] * oneOverWa + b.color.vec[2] * oneOverWb) * oneOverW;
-		d.color.vec[3] = (a.color.vec[3] * oneOverWa + b.color.vec[3] * oneOverWb) * oneOverW;
-#else //PERSPECTIVE_CORRECT_TRIANGULATION
-		d.color.vec[0] = (a.color.vec[0] + b.color.vec[0]) * 0.5;
-		d.color.vec[1] = (a.color.vec[1] + b.color.vec[1]) * 0.5;
-		d.color.vec[2] = (a.color.vec[2] + b.color.vec[2]) * 0.5;
-		d.color.vec[3] = (a.color.vec[3] + b.color.vec[3]) * 0.5;
 #endif //PERSPECTIVE_CORRECT_TRIANGULATION
 
+		if (NMGL_FLAT == cntxt->shadeModel) {
+			d.color.vec[0] = a.color.vec[0];
+			d.color.vec[1] = a.color.vec[1];
+			d.color.vec[2] = a.color.vec[2];
+			d.color.vec[3] = a.color.vec[3];
+		} else {
+#ifdef PERSPECTIVE_CORRECT_TRIANGULATION
+			d.color.vec[0] = (a.color.vec[0] * oneOverWa + b.color.vec[0] * oneOverWb) * oneOverW;
+			d.color.vec[1] = (a.color.vec[1] * oneOverWa + b.color.vec[1] * oneOverWb) * oneOverW;
+			d.color.vec[2] = (a.color.vec[2] * oneOverWa + b.color.vec[2] * oneOverWb) * oneOverW;
+			d.color.vec[3] = (a.color.vec[3] * oneOverWa + b.color.vec[3] * oneOverWb) * oneOverW;
+#else //PERSPECTIVE_CORRECT_TRIANGULATION
+			d.color.vec[0] = (a.color.vec[0] + b.color.vec[0]) * 0.5;
+			d.color.vec[1] = (a.color.vec[1] + b.color.vec[1]) * 0.5;
+			d.color.vec[2] = (a.color.vec[2] + b.color.vec[2]) * 0.5;
+			d.color.vec[3] = (a.color.vec[3] + b.color.vec[3]) * 0.5;
+#endif //PERSPECTIVE_CORRECT_TRIANGULATION
+		}
 //TEXTURING_PART
 #ifdef PERSPECTIVE_CORRECT_TRIANGULATION
 		d.w = (a.w * oneOverWa + b.w * oneOverWb) * oneOverW;

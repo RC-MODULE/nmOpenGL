@@ -26,7 +26,7 @@ void fillPtrnsInit(unsigned int* dst, int* table_dydx, unsigned int color) {
 		dst[i] = 0;
 	}
 
-	int r = max(WIDTH_PTRN, HEIGHT_PTRN);
+	int r = 2 * max(WIDTH_PTRN, HEIGHT_PTRN);
 	float stepA = M_PI / AMOUNT_ANGLES;
 	for (float angle = 0; angle < AMOUNT_ANGLES/4; angle++) {
 		for (int off = 0; off < OFFSETS; off++, cntRight++, cntLeft++) {

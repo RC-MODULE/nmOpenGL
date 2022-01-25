@@ -12,7 +12,8 @@
 SECTION(".text_demo3d")
 void pushToTriangles(const TrianglePointers &srcTriangles, Triangles& dstTriangles, int countVertex){
 
-	nmppsConvert_32f32s_rounding((nm32f*)srcTriangles.v0.color, (int*)dstTriangles.colors, 0, 4 * countVertex);
+	//v2 color is used to implement NMGL_FLAT mode for triangles
+	nmppsConvert_32f32s_rounding((nm32f*)srcTriangles.v2.color, (int*)dstTriangles.colors, 0, 4 * countVertex);
 	
 	nmblas_scopy(countVertex, srcTriangles.v0.x, 1, dstTriangles.x0, 1);
 	nmblas_scopy(countVertex, srcTriangles.v0.y, 1, dstTriangles.y0, 1);

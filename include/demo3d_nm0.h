@@ -224,10 +224,12 @@ public:
 	BitMask segmentMasks[36];
 
 	v4nm32f *vertexResult;
-	v4nm32f *colorOrNormal;
+	v4nm32f *colorResult;
+	v4nm32f *normalResult;
 	v2nm32f *texResult;
 	v4nm32f *vertexResult2;
-	v4nm32f *colorOrNormal2;
+	v4nm32f *colorResult2;
+	v4nm32f *normalResult2;
 	v2nm32f *texResult2;
 
 	ImageSegments *currentSegments;
@@ -1436,7 +1438,7 @@ void updatePolygonsP(DataForNmpu1* data, Points* points, int count, v2nm32f lowe
  *  \details Функция использует контекст NMGL_Context_NM0 и находящиеся в нем массивы buffer0, buffer1, buffer2, buffer3
  */
 //! \{
-void light(v4nm32f* vertex, v4nm32f* srcNormal_dstColor, int size);
+void light(v4nm32f* vertex, v4nm32f* srcNormal, v4nm32f* src_dstColor, int size);
 //! \}
 
 void startCalculateColor(v4nm32f* srcVertex, v4nm32f* srcNormal, v4nm32f* srcColor, int vertexCount);

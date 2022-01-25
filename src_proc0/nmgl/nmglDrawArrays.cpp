@@ -213,9 +213,28 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 				nmblas_scopy(4 * localSize, (float*)cntxt->colorOrNormal, 1, cntxt->buffer2, 1);
 				dotV_v4nm32f(cntxt->colorOrNormal, (v4nm32f*)cntxt->buffer2, (v2nm32f*)cntxt->buffer0, localSize);
 				fastInvSqrt(cntxt->buffer0, cntxt->buffer1, 2 * localSize);
-				dotMulV_v4nm32f((v2nm32f*)cntxt->buffer1, (v4nm32f*)cntxt->buffer2, cntxt->colorOrNormal, localSize);
+				dotMulV_v4nm32f((v2nm32f*)cntxt->buffer1, (v4nm32f*)cntxt->buffer2, cntxt->normalResult, localSize);
 			}
 		}
+		//else {
+		//	set_v4nm32f(cntxt->normalResult, cntxt->currentNormal, localSize);
+		//}
+
+		//
+		if (cntxt->colorArray.enabled) {
+			colorAM.pop(cntxt->colorResult);
+			if (cntxt->colorArray.type == NMGL_UNSIGNED_BYTE) {
+				nmppsConvert_32s32f((int*)cntxt->colorResult, cntxt->buffer0, cntxt->colorArray.size * localSize);
+				nmppsMulC_32f(cntxt->buffer0, (float*)cntxt->colorResult, 1.0 / 255.0, cntxt->colorArray.size * localSize);
+			}
+		} else{
+			cntxt->tmp.vec[0] = 1;
+			cntxt->tmp.vec[1] = 1;
+			cntxt->tmp.vec[2] = 1;
+			cntxt->tmp.vec[3] = 1;
+			set_v4nm32f(cntxt->colorResult, &cntxt->tmp, localSize);
+		}
+
 
 		//vertex in vertexResult
 		//normal in colorOrNormal
@@ -223,31 +242,26 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 		//nmprofiler_enable();
 		if (context->lightingInfo.isLighting) {
 			PROFILER_SIZE(localSize);
-			light(cntxt->vertexResult, cntxt->colorOrNormal, localSize);
-		}
-		else {
-			cntxt->tmp.vec[0] = 1;
-			cntxt->tmp.vec[1] = 1;
-			cntxt->tmp.vec[2] = 1;
-			cntxt->tmp.vec[3] = 1;
-			set_v4nm32f(cntxt->colorOrNormal, &cntxt->tmp, localSize);
+			light(cntxt->vertexResult, cntxt->normalResult, cntxt->colorResult, localSize);
 		}
 		//nmprofiler_disable();
 		//color
-		if (context->colorArray.enabled) {
+		/*if (context->colorArray.enabled) {
 			colorAM.pop(cntxt->colorOrNormal);
 			if (context->colorArray.type == NMGL_UNSIGNED_BYTE) {
 				nmppsConvert_32s32f((int*)cntxt->colorOrNormal, cntxt->buffer0, context->colorArray.size * localSize);
 				nmppsMulC_32f(cntxt->buffer0, (float*)cntxt->colorOrNormal, 1.0 / 255.0, context->colorArray.size * localSize);
 			}
 		}
-		clamp_32f((float*)cntxt->colorOrNormal, 0, 1, (float*)cntxt->buffer3, 4 * localSize);
+		clamp_32f((float*)cntxt->colorOrNormal, 0, 1, (float*)cntxt->buffer3, 4 * localSize);*/
+		
+		clamp_32f((float*)cntxt->colorResult, 0, 1, (float*)cntxt->buffer3, 4 * localSize);
 		cntxt->tmp.vec[0] = RED_COEFF;
 		cntxt->tmp.vec[1] = GREEN_COEFF;
 		cntxt->tmp.vec[2] = BLUE_COEFF;
 		cntxt->tmp.vec[3] = ALPHA_COEFF;
 
-		mulC_v4nm32f((v4nm32f*)cntxt->buffer3, &cntxt->tmp, cntxt->colorOrNormal, localSize);
+		mulC_v4nm32f((v4nm32f*)cntxt->buffer3, &cntxt->tmp, cntxt->colorResult, localSize);
 
 		//умножение на матрицу проекции (Projection matrix)
 		mul_mat4nm32f_v4nm32f(context->projectionMatrixStack.top(), cntxt->vertexResult, (v4nm32f*)cntxt->vertexResult, localSize);
@@ -278,9 +292,9 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 				trianPointers.v1.w = (float*)cntxt->vertexResult2 + 10 * NMGL_SIZE;
 				trianPointers.v2.w = (float*)cntxt->vertexResult2 + 11 * NMGL_SIZE;
 
-				trianPointers.v0.color = (cntxt->colorOrNormal2 + 0 * NMGL_SIZE);
-				trianPointers.v1.color = (cntxt->colorOrNormal2 + 1 * NMGL_SIZE);
-				trianPointers.v2.color = (cntxt->colorOrNormal2 + 2 * NMGL_SIZE);
+				trianPointers.v0.color = (cntxt->colorResult2 + 0 * NMGL_SIZE);
+				trianPointers.v1.color = (cntxt->colorResult2 + 1 * NMGL_SIZE);
+				trianPointers.v2.color = (cntxt->colorResult2 + 2 * NMGL_SIZE);
 
 				trianPointers.v0.s = (float*)cntxt->texResult2 + 0 * NMGL_SIZE;
 				trianPointers.v0.t = (float*)cntxt->texResult2 + 1 * NMGL_SIZE;
@@ -303,9 +317,9 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 				trianPointers2.v1.w = (float*)cntxt->vertexResult + 10 * NMGL_SIZE;
 				trianPointers2.v2.w = (float*)cntxt->vertexResult + 11 * NMGL_SIZE;
 
-				trianPointers2.v0.color = (cntxt->colorOrNormal + 0 * NMGL_SIZE);
-				trianPointers2.v1.color = (cntxt->colorOrNormal + 1 * NMGL_SIZE);
-				trianPointers2.v2.color = (cntxt->colorOrNormal + 2 * NMGL_SIZE);
+				trianPointers2.v0.color = (cntxt->colorResult + 0 * NMGL_SIZE);
+				trianPointers2.v1.color = (cntxt->colorResult + 1 * NMGL_SIZE);
+				trianPointers2.v2.color = (cntxt->colorResult + 2 * NMGL_SIZE);
 
 				trianPointers2.v0.s = (float*)cntxt->texResult + 0 * NMGL_SIZE;
 				trianPointers2.v0.t = (float*)cntxt->texResult + 1 * NMGL_SIZE;
@@ -318,13 +332,13 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			int primCount = 0;
 			switch (mode) {
 			case NMGL_TRIANGLES:
-				primCount = repackToPrimitives_t((v4nm32f*)cntxt->vertexResult, (v4nm32f*)cntxt->colorOrNormal, (v2nm32f*)cntxt->texResult, &trianPointers, localSize);
+				primCount = repackToPrimitives_t((v4nm32f*)cntxt->vertexResult, (v4nm32f*)cntxt->colorResult, (v2nm32f*)cntxt->texResult, &trianPointers, localSize);
 				break;
 			case NMGL_TRIANGLE_FAN:
-				primCount = repackToPrimitives_tf((v4nm32f*)cntxt->vertexResult, (v4nm32f*)cntxt->colorOrNormal, (v2nm32f*)cntxt->texResult, &trianPointers, localSize);
+				primCount = repackToPrimitives_tf((v4nm32f*)cntxt->vertexResult, (v4nm32f*)cntxt->colorResult, (v2nm32f*)cntxt->texResult, &trianPointers, localSize);
 				break;
 			case NMGL_TRIANGLE_STRIP:
-				primCount = repackToPrimitives_ts((v4nm32f*)cntxt->vertexResult, (v4nm32f*)cntxt->colorOrNormal, (v2nm32f*)cntxt->texResult, &trianPointers, localSize);
+				primCount = repackToPrimitives_ts((v4nm32f*)cntxt->vertexResult, (v4nm32f*)cntxt->colorResult, (v2nm32f*)cntxt->texResult, &trianPointers, localSize);
 				break;
 			}
 			//------------clipping-------------------
@@ -354,16 +368,22 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 					trianPointers2.v0.z[currentCount] = trianPointers2.v0.z[currentCount - 1];
 					trianPointers2.v0.w[currentCount] = trianPointers2.v0.w[currentCount - 1];
 					trianPointers2.v0.color[currentCount] = trianPointers2.v0.color[currentCount - 1];
+					trianPointers2.v0.s[currentCount] = trianPointers2.v0.s[currentCount - 1];
+					trianPointers2.v0.t[currentCount] = trianPointers2.v0.t[currentCount - 1];
 					trianPointers2.v1.x[currentCount] = trianPointers2.v1.x[currentCount - 1];
 					trianPointers2.v1.y[currentCount] = trianPointers2.v1.y[currentCount - 1];
 					trianPointers2.v1.z[currentCount] = trianPointers2.v1.z[currentCount - 1];
 					trianPointers2.v1.w[currentCount] = trianPointers2.v1.w[currentCount - 1];
 					trianPointers2.v1.color[currentCount] = trianPointers2.v1.color[currentCount - 1];
+					trianPointers2.v1.s[currentCount] = trianPointers2.v1.s[currentCount - 1];
+					trianPointers2.v1.t[currentCount] = trianPointers2.v1.t[currentCount - 1];
 					trianPointers2.v2.x[currentCount] = trianPointers2.v2.x[currentCount - 1];
 					trianPointers2.v2.y[currentCount] = trianPointers2.v2.y[currentCount - 1];
 					trianPointers2.v2.z[currentCount] = trianPointers2.v2.z[currentCount - 1];
 					trianPointers2.v2.w[currentCount] = trianPointers2.v2.w[currentCount - 1];
 					trianPointers2.v2.color[currentCount] = trianPointers2.v2.color[currentCount - 1];
+					trianPointers2.v2.s[currentCount] = trianPointers2.v2.s[currentCount - 1];
+					trianPointers2.v2.t[currentCount] = trianPointers2.v2.t[currentCount - 1];
 					currentCount++;
 				}
 
@@ -436,13 +456,13 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 //TEXTURING_PART
 			switch (mode) {
 			case NMGL_LINES:
-				primCount = repackToPrimitives_l(cntxt->vertexResult, cntxt->colorOrNormal, cntxt->texResult, &linePointers, localSize);
+				primCount = repackToPrimitives_l(cntxt->vertexResult, cntxt->colorResult, cntxt->texResult, &linePointers, localSize);
 				break;
 			case NMGL_LINE_LOOP:
-				primCount = repackToPrimitives_ll(cntxt->vertexResult, cntxt->colorOrNormal, cntxt->texResult, &linePointers, localSize);
+				primCount = repackToPrimitives_ll(cntxt->vertexResult, cntxt->colorResult, cntxt->texResult, &linePointers, localSize);
 				break;
 			case NMGL_LINE_STRIP:
-				primCount = repackToPrimitives_ls(cntxt->vertexResult, cntxt->colorOrNormal, cntxt->texResult, &linePointers, localSize);
+				primCount = repackToPrimitives_ls(cntxt->vertexResult, cntxt->colorResult, cntxt->texResult, &linePointers, localSize);
 				break;
 			}
 			
@@ -490,7 +510,7 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			perpectiveDivView(pointers, context->viewport, cntxt->buffer0, localSize);
 
 			nmppsConvert_32f32s_rounding(cntxt->buffer0, cntxt->pointInner.z, 0, localSize);
-			nmppsConvert_32f32s_rounding((float*)cntxt->colorOrNormal, (int*)cntxt->pointInner.colors, 0, 4 * localSize);
+			nmppsConvert_32f32s_rounding((float*)cntxt->colorResult, (int*)cntxt->pointInner.colors, 0, 4 * localSize);
 
 			nmppsSubC_32f(cntxt->pointInner.x, cntxt->buffer0, context->pointSize / 2, localSize);
 			nmppsSubC_32f(cntxt->pointInner.y, cntxt->buffer1, context->pointSize / 2, localSize);
