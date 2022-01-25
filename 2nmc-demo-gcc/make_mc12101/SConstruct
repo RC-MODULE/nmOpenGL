@@ -4,12 +4,17 @@ from pathlib import Path as path
 
 
 
-DEBUG = int(ARGUMENTS.get('debug', 1))
+debug = int(ARGUMENTS.get('debug', 1))
+map_enabled = int(ARGUMENTS.get('map', 0))
+dump_enabled = int(ARGUMENTS.get('dump', 0))
 
-if DEBUG != 0:
+
+if debug != 0:
 	Configuration = 'Debug'
+	TARGETS = ['main0d', 'main1d']
 else:
 	Configuration = 'Release'
+	TARGETS = ['main0', 'main1']
 
 
 if COMMAND_LINE_TARGETS:
@@ -18,16 +23,8 @@ else:
 	targets = DEFAULT_TARGETS
 
 
-# Builder for assembler
-bld = Builder(action = '$AS -o $TARGET $ASFLAGS $SOURCE',
-              suffix = '.o',
-              prefix = '$OBJPREFIX',
-              single_source = 1,
-              src_suffix = '.asm')
-
 # get environment and set variables
-nmc_mc12101 = Environment(tools=['g++','gnulink', 'msvs'], BUILDERS= {'NM_Asm':bld})
-
+nmc_mc12101 = Environment(tools=['g++','gnulink', 'as', 'msvs'])
 host_env = Environment(tools = ['msvc', 'msvs', 'mslink'], TARGET_ARCH = 'x86_64')
 
 # common properties both nm-cores
@@ -35,10 +32,16 @@ nmc_mc12101['ENV']['PATH'] = os.environ['PATH']
 
 ROOT = '../..'
 NMC_GCC_TOOLPATH = os.environ['NMC_GCC_TOOLPATH']
+HAL = os.environ['HAL']
+NMPP = os.environ['NMPP']
+VSHELL = os.environ['VSHELL']
+MC12101 = os.environ['MC12101']
+
 nmc_mc12101['ROOT'] = ROOT
 nmc_mc12101['NMC_GCC_TOOLPATH'] = NMC_GCC_TOOLPATH
-nmc_mc12101['HAL'] = os.environ['HAL']
-nmc_mc12101['NMPP'] = os.environ['NMPP']
+nmc_mc12101['HAL'] = HAL
+nmc_mc12101['NMPP'] = NMPP
+
 
 gcc_exec_prefix = f"/cygdrive/{NMC_GCC_TOOLPATH}/nmc4-ide/lib/gcc/".replace(":","")
 gcc_exec_prefix = gcc_exec_prefix.replace("\\","/")
@@ -46,23 +49,27 @@ nmc_mc12101['ENV']['GCC_EXEC_PREFIX'] = gcc_exec_prefix
 nmc_mc12101.PrependENVPath('PATH', f'{NMC_GCC_TOOLPATH}/nmc4-ide/bin')
 nmc_mc12101.PrependENVPath('PATH', f'{NMC_GCC_TOOLPATH}/nmc4-ide/lib')
 
+
 host_env['ROOT'] = ROOT
 host_env['NMC_GCC_TOOLPATH'] = NMC_GCC_TOOLPATH
-NMPP = os.environ['NMPP']
 host_env['NMPP'] = NMPP
-HAL = os.environ['HAL']
 host_env['HAL'] = HAL
-VSHELL = os.environ['VSHELL']
 host_env['VSHELL'] = VSHELL
-MC12101 = os.environ['MC12101']
 host_env['MC12101'] = MC12101
+
+src_nm_dirs = []
+src_nm_dirs.append([f'{ROOT}/nmglvs_mc12101-gcc/src_nmc0', f'{ROOT}/src_proc0/common', f'{ROOT}/src_proc0/nm', f'../src_target0', f'{ROOT}/src_proc0/nmgl'])
+src_nm_dirs.append([f'{ROOT}/nmglvs_mc12101-gcc/src_nmc1', f'{ROOT}/src_proc1/common', f'{ROOT}/src_proc1/nm', f'../src_target1'])
+src_nm_include_dirs = [f"{MC12101}/include",f"{HAL}/include",f"{VSHELL}/include",f"{NMPP}/include",f"{ROOT}/include"]
+
+src_pc_dirs = ["../src_host", f"{ROOT}/nmglvs_mc12101-gcc/src_host"]
+src_pc_include_dirs = [f"{MC12101}/lib",f"{VSHELL}/lib",f"{NMPP}/lib",f"{HAL}/lib", f"{ROOT}/lib"]
 
 
 
 # config compiler and linker
 nmc_mc12101['AS'] = 'nmc-gcc'
 nmc_mc12101['ASFLAGS'] = Split('-c -mmas -x assembler')
-nmc_mc12101['ASCOM'] = '$AS -o $TARGET $ASFLAGS $SOURCES'
 
 nmc_mc12101['CC'] = 'nmc-gcc'
 nmc_mc12101['CXX'] = 'nmc-g++'
@@ -78,12 +85,10 @@ nmc = [nmc_mc12101.Clone(), nmc_mc12101.Clone()]
 whole_archives_list = [["-lmc12101"],["-lmc12101"]]
 for i in range(2):
 	nmc[i]['CFG'] = f'ldscript-nmc{i}.ld'
-	nmc[i]['MAP'] = f'main{i}.map'
-	if DEBUG:
+	if debug:
 		nmc[i]['CPPDEFINES'] = ["DEBUG"]
 		nmc[i]['CCFLAGS'] += ["-g"]
-		nmc[i]['MAP'] = f'main{i}d.map'
-
+	nmc[i]['MAP'] = [TARGETS[i] + '.map']
 #		nmc[i]['LIBPATH'] += ['d:/GIT/nm6407_nmc_gdb_server/stub/make']
 #whole_archives_list[0] += ["-lmc12101_stub_nmc4_float"]
 #whole_archives_list[1] += ["-lmc12101_stub_nmc4_fixed"]
@@ -106,18 +111,10 @@ host_env['LIBPATH'] =  ["$MC12101/lib","$VSHELL/lib","$NMPP/lib","$HAL/lib"]
 host_env['CPPPATH'] = ["$MC12101/include","$HAL/include","$VSHELL/include","$NMPP/include","$ROOT/include"]
 host_env['LIBS'] = ["mc12101load.lib","vshell.lib", "nmpp-x64.lib","hal-mc12101-x64.lib"]
 host_env['CXXFLAGS'] = '/MD'
-if DEBUG:
-	host_env['CPPDEFINES'] = ["_NDEBUG", "_ITERATOR_DEBUG_LEVEL=0", "DEBUG"]
+host_env['CPPDEFINES'] = ["_NDEBUG", "_ITERATOR_DEBUG_LEVEL=0", "DEBUG"]
 host_env['PDB'] = 'bin/x64/Debug/mc12101-host.pdb'
 
-src_nm_dirs = []
-src_nm_dirs.append([f'{ROOT}/nmglvs_mc12101-gcc/src_nmc0', f'{ROOT}/src_proc0/common', f'{ROOT}/src_proc0/nm', f'../src_target0', f'{ROOT}/src_proc0/nmgl'])
-src_nm_dirs.append([f'{ROOT}/nmglvs_mc12101-gcc/src_nmc1', f'{ROOT}/src_proc1/common', f'{ROOT}/src_proc1/nm', f'../src_target1'])
-src_nm_include_dirs = [f"{MC12101}/include",f"{HAL}/include",f"{VSHELL}/include",f"{NMPP}/include",f"{ROOT}/include"]
 
-
-src_pc_dirs = ["../src_host", f"{ROOT}/nmglvs_mc12101-gcc/src_host"]
-src_pc_include_dirs = [f"{MC12101}/lib",f"{VSHELL}/lib",f"{NMPP}/lib",f"{HAL}/lib", f"{ROOT}/lib"]
 
 
 projects = []
@@ -128,12 +125,14 @@ for i in range(2):
 	all_h 	= [Glob(path(src_dir)/'*.h', strings = True) 	for src_dir in src_nm_include_dirs]
 
 
+	# compile nmc sources
 	def obj_name (src): return str(f'obj/{Configuration}/nmc{i}/' + path(src).stem)
 	obj_cpp = [nmc[i].Object(obj_name(str(c)), c) for c in sum(all_cpp, [])]
 	obj_c   = [nmc[i].Object(obj_name(str(c)), c) for c in sum(all_c  , [])]
-	obj_asm = [nmc[i].NM_Asm(obj_name(str(s)), s) for s in sum(all_asm, [])]
+	obj_asm = [nmc[i].Object(obj_name(str(s)), s) for s in sum(all_asm, [])]
 
-	prog = nmc[i].Program(f'main{i}d.abs', [obj_cpp, obj_asm])
+	# link target
+	prog = nmc[i].Program(TARGETS[i], [obj_cpp, obj_asm, all_c])
 	Alias(f'nm{i}', prog)
 	Default(prog)
 
@@ -143,9 +142,7 @@ for i in range(2):
 	all_asm = [item for sublist in all_asm for item in sublist]
 	all_h = [item for sublist in all_h for item in sublist]
 
-	#print(all_cpp)
-
-	
+	# create visual studio project	
 	projects.append(nmc[i].MSVSProject(target = f'mc12101-nm{i}' + nmc[i]['MSVSPROJECTSUFFIX'],
 		srcs = all_cpp + all_c + all_asm,
 		incs = all_h,
@@ -154,13 +151,14 @@ for i in range(2):
 
 
 
-
+# compile host 
 def obj_name (src): return str(f'obj/{Configuration}/host/' + path(src).stem)
 all_cpp = [Glob(path(src_dir)/'*.cpp', strings = True) 	for src_dir in src_pc_dirs]
 all_c 	= [Glob(path(src_dir)/'*.c', strings = True)   	for src_dir in src_pc_dirs]
 all_h 	= [Glob(path(src_dir)/'*.h', strings = True)   	for src_dir in src_pc_include_dirs]
 obj_cpp = [host_env.Object(obj_name(str(c)), c) 		for c in sum(all_cpp, [])]
 obj_c 	= [host_env.Object(obj_name(str(c)), c) 	   	for c in sum(all_c, [])]
+# link host 
 host = host_env.Program(f'bin/x64/{Configuration}/mc12101-host-x64.exe',[obj_cpp, obj_c])
 Alias('host', host)
 Default(host)
@@ -171,11 +169,14 @@ all_cpp = [item for sublist in all_cpp for item in sublist]
 all_c = [item for sublist in all_c for item in sublist]
 all_h = [item for sublist in all_h for item in sublist]
 
+# create visual studio project
 projects.append(host_env.MSVSProject(target = 'mc12101-host-x64' + host_env['MSVSPROJECTSUFFIX'],
 	srcs = all_cpp + all_c,
 	incs = all_h,
 	variant = [f"Release|x64", "Debug|x64"],
 	auto_build_solution = 0))
+
+# create visual studio solution
 solution = host_env.MSVSSolution(
 	target = 'mc12101' + host_env['MSVSSOLUTIONSUFFIX'],
 	projects=[p for p in projects],

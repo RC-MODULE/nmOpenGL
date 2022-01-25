@@ -2,9 +2,9 @@
 #include "nmgl.h"
 #include "nmglservice_nm0.h"
 
+
 template <typename T>
-static T *getStaticObject()
-{
+static T *getStaticObject(){
 #ifdef __GNUC__
 	SECTION(".data_shmem0") static T obj;
 	return &obj;

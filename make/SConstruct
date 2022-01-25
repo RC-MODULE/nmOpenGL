@@ -1,0 +1,100 @@
+import os
+import re
+from pathlib import Path as path
+
+
+
+debug = int(ARGUMENTS.get('debug', 1))
+
+TARGETS = ['nmopengl-nmc4f', 'nmopengl-nmc4']
+
+
+if debug != 0:
+	Configuration = 'Debug'
+else:
+	Configuration = 'Release'
+
+
+if COMMAND_LINE_TARGETS:
+	targets = COMMAND_LINE_TARGETS
+else:
+	targets = DEFAULT_TARGETS
+
+
+# get environment and set variables
+nmc_mc12101 = Environment(tools=['g++', 'ar', 'as'])
+
+# common properties both nm-cores
+nmc_mc12101['ENV']['PATH'] = os.environ['PATH']
+
+ROOT = '..'
+NMC_GCC_TOOLPATH = os.environ['NMC_GCC_TOOLPATH']
+HAL = os.environ['HAL']
+NMPP = os.environ['NMPP']
+MC12101 = os.environ['MC12101']
+
+nmc_mc12101['ROOT'] = ROOT
+nmc_mc12101['NMC_GCC_TOOLPATH'] = NMC_GCC_TOOLPATH
+nmc_mc12101['HAL'] = HAL
+nmc_mc12101['NMPP'] = NMPP
+nmc_mc12101['MC12101'] = MC12101
+
+
+gcc_exec_prefix = f"/cygdrive/{NMC_GCC_TOOLPATH}/nmc4-ide/lib/gcc/".replace(":","")
+gcc_exec_prefix = gcc_exec_prefix.replace("\\","/")
+nmc_mc12101['ENV']['GCC_EXEC_PREFIX'] = gcc_exec_prefix
+nmc_mc12101.PrependENVPath('PATH', f'{NMC_GCC_TOOLPATH}/nmc4-ide/bin')
+nmc_mc12101.PrependENVPath('PATH', f'{NMC_GCC_TOOLPATH}/nmc4-ide/lib')
+
+
+
+src_nm_dirs = []
+src_nm_dirs.append([f'{ROOT}/nmglvs_mc12101-gcc/src_nmc0', f'{ROOT}/src_proc0/common', f'{ROOT}/src_proc0/nm', f'{ROOT}/src_proc0/nmgl'])
+src_nm_dirs.append([f'{ROOT}/nmglvs_mc12101-gcc/src_nmc1', f'{ROOT}/src_proc1/common', f'{ROOT}/src_proc1/nm' ])
+
+
+
+
+# config compiler and linker
+nmc_mc12101['AS'] = 'nmc-gcc'
+nmc_mc12101['ASFLAGS'] = Split('-c -mmas -x assembler')
+
+nmc_mc12101['CC'] = 'nmc-gcc'
+nmc_mc12101['CXX'] = 'nmc-g++'
+nmc_mc12101['CCFLAGS'] = Split('-fno-builtin-printf -std=c++11')
+nmc_mc12101['CPPPATH'] = Split(f'$NMPP/include $HAL/include $ROOT/include' )
+
+nmc_mc12101['AR'] = 'nmc-ar'
+nmc_mc12101['ARFLAGS'] = ['rcs']
+
+# NeuroMatrix compiler setting
+nmc = [nmc_mc12101.Clone(), nmc_mc12101.Clone()]
+for i in range(2):
+	if debug:
+		nmc[i]['CPPDEFINES'] = ["DEBUG"]
+		nmc[i]['CCFLAGS'] += ["-g"]
+
+nmc[0]['ASFLAGS'] += Split('-mnmc4-float')
+nmc[1]['ASFLAGS'] += Split('-Wa,-split_sir -mnmc4-fixed')
+nmc[0]['CCFLAGS'] += ["-mnmc4-float", "-O0"]
+nmc[1]['CCFLAGS'] += ["-mnmc4-fixed", "-O2"]
+
+
+object_folders = [f'obj/{Configuration}/float/', f'obj/{Configuration}/fixed/']
+for i in range(2):
+	all_cpp = [Glob(path(src_dir)/'*.cpp', strings = True) 	for src_dir in src_nm_dirs[i]]
+	all_c   = [Glob(path(src_dir)/'*.c', strings = True) 	for src_dir in src_nm_dirs[i]]
+	all_asm = [Glob(path(src_dir)/'*.asm', strings = True) 	for src_dir in src_nm_dirs[i]]
+
+
+	def obj_name (src): return str(object_folders[i] + path(src).stem)
+	obj_cpp = [nmc[i].Object(obj_name(str(c)), c) for c in sum(all_cpp, [])]
+	obj_c   = [nmc[i].Object(obj_name(str(c)), c) for c in sum(all_c  , [])]
+	obj_asm = [nmc[i].Object(obj_name(str(s)), s) for s in sum(all_asm, [])]
+
+	# compile nmc target 
+	prog = nmc[i].Library(TARGETS[i], [obj_cpp, obj_asm, all_c])
+	#nmc[i].Copy(prog, '../lib')
+	Alias(f'nm{i}', prog)
+	Clean(prog, [object_folders[i]])
+	Default(prog)
