@@ -208,10 +208,10 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			else {
 				normalAM.pop(cntxt->buffer1);
 			}
-			mul_v4nm32f_mat4nm32f((v4nm32f *)cntxt->buffer1, &context->normalMatrix, cntxt->colorOrNormal, localSize);
+			mul_v4nm32f_mat4nm32f((v4nm32f *)cntxt->buffer1, &context->normalMatrix, cntxt->normalResult, localSize);
 			if (context->normalizeEnabled) {
-				nmblas_scopy(4 * localSize, (float*)cntxt->colorOrNormal, 1, cntxt->buffer2, 1);
-				dotV_v4nm32f(cntxt->colorOrNormal, (v4nm32f*)cntxt->buffer2, (v2nm32f*)cntxt->buffer0, localSize);
+				nmblas_scopy(4 * localSize, (float*)cntxt->normalResult, 1, cntxt->buffer2, 1);
+				dotV_v4nm32f(cntxt->normalResult, (v4nm32f*)cntxt->buffer2, (v2nm32f*)cntxt->buffer0, localSize);
 				fastInvSqrt(cntxt->buffer0, cntxt->buffer1, 2 * localSize);
 				dotMulV_v4nm32f((v2nm32f*)cntxt->buffer1, (v4nm32f*)cntxt->buffer2, cntxt->normalResult, localSize);
 			}
@@ -224,8 +224,8 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 		if (context->colorArray.enabled) {
 			colorAM.pop(cntxt->colorResult);
 			if (context->colorArray.type == NMGL_UNSIGNED_BYTE) {
-				nmppsConvert_32s32f((int *)cntxt->colorResult, cntxt->buffer0, cntxt->colorArray.size * localSize);
-				nmppsMulC_32f(cntxt->buffer0, (float*)cntxt->colorResult, 1.0 / 255.0, cntxt->colorArray.size * localSize);
+				nmppsConvert_32s32f((int *)cntxt->colorResult, cntxt->buffer0, context->colorArray.size * localSize);
+				nmppsMulC_32f(cntxt->buffer0, (float*)cntxt->colorResult, 1.0 / 255.0, context->colorArray.size * localSize);
 			}
 		} else{
 			cntxt->tmp.vec[0] = 1;

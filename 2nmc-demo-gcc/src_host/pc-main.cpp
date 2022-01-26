@@ -20,6 +20,8 @@ void frameBufferIncTail(NMGL_FrameBuffer *remoteAddr);
 
 int main()
 {
+	//printf(PROGRAM + "\n");
+	//printf(PROGRAM1 + "\n");
 	// load programs to nm
 	if (halOpen(PROGRAM, PROGRAM1, NULL))
 	//if (halOpen(".", ".", NULL))
