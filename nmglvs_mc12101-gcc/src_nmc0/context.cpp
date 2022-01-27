@@ -4,9 +4,9 @@
 #include "ringbuffert.h"
 #include "framebuffer.h"
 
-INSECTION(".data_imu0") NMGL_Context *globalContext = 0;
-INSECTION(".data_imu0") int contextIsModified = true;
-INSECTION(".data_imu0") int contextLock = false;
+INSECTION(".data_imu0") HalRingBufferConnector<NMGL_Context, 2> contextConnector;
+INSECTION(".data_imu0") int id = 0;
+
 
 void NMGL_FrameBufferInit(NMGL_FrameBuffer *fb, int width, int height){
 	fb->head = 0;
@@ -17,13 +17,13 @@ void NMGL_FrameBufferInit(NMGL_FrameBuffer *fb, int width, int height){
 	fb->height = height;
 }
 
-NMGL_Context *NMGL_CreateContext(NMGL_ContextConfig *config)
+int NMGL_CreateContext(NMGL_ContextConfig *config)
 {
 	setHeap(10);
-	NMGL_Context *context = (NMGL_Context *)halMalloc32(sizeof32(NMGL_Context));
-	globalContext = context;
+	contextConnector.init(config->contextData);
+	NMGL_Context *context = contextConnector.ptrHead();
 
-	NMGL_FrameBufferInit(&context->defaultFrameBuffer, WIDTH_IMAGE, HEIGHT_IMAGE);
+	NMGL_FrameBufferInit(&context->defaultFrameBuffer, config->width, config->height);
 
 	context->isUseTwoSidedMode = NMGL_FALSE;
 	context->isCullFace = NMGL_FALSE;
@@ -117,12 +117,13 @@ NMGL_Context *NMGL_CreateContext(NMGL_ContextConfig *config)
 	context->blend.sfactor = NMGL_ONE;
 	context->blend.dfactor = NMGL_ZERO;
 
-	return context;
+	//return context;
+	return id;
 }
 
 NMGL_Context *NMGL_GetCurrentContext(){
-	while (contextLock);
-	return globalContext;
+	while(contextConnector.isFull());
+	return contextConnector.ptrHead();
 }
 
 

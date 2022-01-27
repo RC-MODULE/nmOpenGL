@@ -48,13 +48,16 @@ struct NMGL_Context {
 	int shadeModel;
 };
 
+
 struct NMGL_ContextConfig
 {
 	int width;
 	int height;
+	HalRingBufferData<NMGL_Context, 2> *contextData;
 };
 
-NMGL_Context *NMGL_CreateContext(NMGL_ContextConfig *config);
-void NMGL_DestroyContext(NMGL_Context *context);
+int NMGL_CreateContext(NMGL_ContextConfig *config);
+int NMGL_ConnectContext(NMGL_ContextConfig *config);
+//void NMGL_DestroyContext(NMGL_Context *context);
 NMGL_Context *NMGL_GetCurrentContext();
-void NMGL_MakeCurrentContext(NMGL_Context *context);
+//void NMGL_MakeCurrentContext(NMGL_Context *context);

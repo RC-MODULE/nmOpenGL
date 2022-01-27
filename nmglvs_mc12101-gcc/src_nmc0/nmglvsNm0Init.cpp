@@ -116,10 +116,14 @@ SECTION(".text_nmglvs")
 		NMGL_Context_NM0::create();
 		cntxt = NMGL_Context_NM0::getContext();
 
-		NMGL_ContextConfig config;
-		NMGL_Context *context = NMGL_CreateContext(&config);
+		NMGL_ContextConfig *config = (NMGL_ContextConfig *)halMalloc32(sizeof32(NMGL_ContextConfig));
+		config->width = WIDTH_IMAGE;
+		config->height = WIDTH_IMAGE;
+		config->contextData = myMallocT<HalRingBufferData<NMGL_Context, 2>>();
+		NMGL_CreateContext(config);
+		NMGL_Context *context = NMGL_GetCurrentContext();
 
-		halSyncAddr(context, 1);
+		halSyncAddr(config, 1);
 
 		setHeap(7);
 		synchroData = myMallocT<NMGLSynchroData>();

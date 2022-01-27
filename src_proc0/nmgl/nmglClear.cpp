@@ -35,7 +35,6 @@ SECTION(".text_nmgl") void nmglClear(NMGLbitfield mask)
 	NM_Command command;
 	command.instr = NMC1_CLEAR;
 	command.params[0] = CommandArgument(mask);
-	command.params[5] = CommandArgument(clear_info);
 	if (context->scissorTest.isEnabled) {
 		command.params[1] = CommandArgument(context->scissorTest.origin.x);
 		command.params[2] = CommandArgument(context->scissorTest.origin.y);

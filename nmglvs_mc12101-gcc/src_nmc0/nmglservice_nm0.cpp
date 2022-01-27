@@ -9,7 +9,6 @@ extern int contextIsModified;
 
 SECTION(".text_demo3d") void NMGL_SetValue(NM_Command &command){
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
-    contextIsModified = true;
     cntxt->synchro.pushInstr(&command);
 }
 

@@ -153,14 +153,7 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 		context->lightingInfo.update();
 	}
 
-	if(contextIsModified){
-		NM_Command synchroCommand;
-		synchroCommand.instr = NMC1_CONTEXT_SYNC;
-		synchroCommand.params[0] = CommandArgument(context);
-		synchroCommand.params[1] = &contextLock;
-		cntxt->synchro.pushInstr(&synchroCommand);
-		contextIsModified = false;
-	}
+	
 
 	for (int pointer = 0; pointer < count; pointer += maxInnerCount) {
 		int localSize = MIN(count - pointer, maxInnerCount);

@@ -126,7 +126,7 @@ SECTION(".text_shared0") int main()
 		if(color > 1.0f) color = 0;
 		nmglClearColor(color, color, color, 0.0f);
 
-		/*nmglVertexPointer(4, NMGL_FLOAT, 0, vertices_DDR);
+		nmglVertexPointer(4, NMGL_FLOAT, 0, vertices_DDR);
 		nmglNormalPointer(NMGL_FLOAT, 0, normal_DDR);
 		nmglLoadIdentity();
 		nmglScalef(0.95f, 0.95f, 0.95f);
@@ -139,9 +139,9 @@ SECTION(".text_shared0") int main()
 		materialSpec[2] = 0.6;
 		nmglMaterialfv(NMGL_FRONT_AND_BACK, NMGL_SPECULAR, materialSpec);
 		PROFILER_SIZE(amountPolygons);
-		nmglDrawArrays(NMGL_TRIANGLES, 0, 3 * amountPolygons);
+		//nmglDrawArrays(NMGL_TRIANGLES, 0, 3 * amountPolygons);
 
-		nmglVertexPointer(4, NMGL_FLOAT, 0, vertices_DDR2);
+		/*nmglVertexPointer(4, NMGL_FLOAT, 0, vertices_DDR2);
 		nmglNormalPointer(NMGL_FLOAT, 0, normal_DDR2);
 		nmglLoadIdentity();
 		nmglScalef(0.95f, 0.95f, 0.95f);
