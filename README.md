@@ -17,7 +17,9 @@ TODO
 - Собирать в папке 2nmc-demo-gcc,
 - Собрать цель target: `scons target`
 - Создать решение для Visual Studio: `scons vs2015`
-- Очистить сборку target: `scons target -c
+- Очистить сборку target: `scons target -c`
+
+Можно так же использовать ключ -j4
 
 ### Сборка
 
