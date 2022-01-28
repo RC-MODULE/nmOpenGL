@@ -79,6 +79,8 @@ void*  readMem0(const void* src, void* dst, unsigned int size32) {
 
 int nmglvsHostInit()
 {
+	printf("nmc0 program: %s\n", PROGRAM);
+	printf("nmc1 program: %s\n", PROGRAM1);
 	if (halOpen(PROGRAM, PROGRAM1, NULL)){
 		printf("Connection to mc12101 error!\n");
 		return -1;

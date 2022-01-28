@@ -58,8 +58,8 @@ endif
 OUT_DIR          = .
 TARGET           = $(OUT_DIR)/$(PROJECT).abs
 INC_DIRS         = -I"$(NMPP)/include" -I$(HAL)/include -I$(ROOT)/include
-SRC_DIRS         = $(ROOT)/nmglvs_mc12101-gcc/src_nmc0 $(ROOT)/src_proc0/common $(ROOT)/src_proc0/nm $(ROOT)/src_proc0/nmgl ../src_target0
-LIB_DIRS         = -L"$(NMC_GCC_TOOLPATH)/nmc4-ide/lib" -L"$(NMPP)/lib" -L"$(HAL)/lib"
+SRC_DIRS         = $(ROOT)/nmglvs_mc12101-gcc/src_nmc0 ../src_target0
+LIB_DIRS         = -L"$(NMC_GCC_TOOLPATH)/nmc4-ide/lib" -L"$(NMPP)/lib" -L"$(HAL)/lib" -L"$(ROOT)/lib"
 ifdef DEBUG
 TMP_DIR          = Debug
 else
@@ -70,7 +70,7 @@ CC 				 = nmc-g++
 CC_FLAGS	 	 = -O2 -fno-builtin-printf -std=c++11 -mnmc4-float
 AS               = nmc-gcc 				 
 AS_FLAGS    	 = -c -mmas -x assembler -mnmc4-float
-LIBS             = -lnmpp-nmc4f -lhal-mc12101
+LIBS             = -lnmopengl-nmc4f -lnmpp-nmc4f -lhal-mc12101 
 MAP		         = $(PROJECT).map
 CFG				 = ldscript-nmc0.ld
 LINKER_FLAGS     = -Xlinker -Map=$(MAP) $(LIB_DIRS) "-Wl,-T$(CFG)" -Wl,--whole-archive -lmc12101 -Wl,--no-whole-archive -o$(TARGET)
@@ -110,11 +110,15 @@ default: $(TARGET)
 $(TMP_DIR):
 	-mkdir "$(@)"
 
-$(TARGET): $(TMP_DIR) $(OBJECTS) $(ALL_H) $(CFG) nmc4vars_win.mk Makefile
+$(TARGET): $(TMP_DIR) $(OBJECTS) $(ALL_H) $(CFG) nmc4vars_win.mk Makefile nmopengl-nmc4f
 	$(CC) $(CC_FLAGS) $(LINKER_FLAGS) $(OBJECTS) $(LIBS)
+	@echo nm0 done
 
 nmc4vars_win.mk:
 	copy "$(NMC_GCC_TOOLPATH)\nmc4-ide\include\nmc4vars_win.mk" nmc4vars_win.mk
+
+nmopengl-nmc4f:
+	$(MAKE) -C $(ROOT)/make/nmopengl-nmc4f
 
 $(OUT_DIR):
 	-mkdir "$(@)"

@@ -132,7 +132,7 @@ for i in range(2):
 	obj_asm = [nmc[i].Object(obj_name(str(s)), s) for s in sum(all_asm, [])]
 
 	# link target
-	prog = nmc[i].Program(TARGETS[i], [obj_cpp, obj_asm, all_c])
+	prog = nmc[i].Program(TARGETS[i] + ".abs", [obj_cpp, obj_asm, all_c])
 	Alias(f'nm{i}', prog)
 	Default(prog)
 
