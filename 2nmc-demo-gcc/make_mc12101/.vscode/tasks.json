@@ -102,7 +102,7 @@
         {
             "label": "run monitor",
             "type": "shell",
-            "command": "d:\\GIT\\nm6407_nmc_gdb_server\\nm_gdb_monitor.exe",
+            "command": "nm_gdb_monitor.exe",
             //"args": [ "-d", "5","-t" ],
             "group": "test",
             "isBackground": true,

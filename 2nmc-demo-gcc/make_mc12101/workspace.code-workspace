@@ -87,6 +87,7 @@
 
 		"C_Cpp.default.includePath": [
 			"${workspaceFolder}/../../include/**",
+			"d:\\GIT\\nmOpenGL\\include/**",
 			"${env:NMPP}/include/**",
 			"${env:HAL}/include/**",
 			"${env:VSHELL}/include/**",

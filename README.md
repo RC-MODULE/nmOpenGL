@@ -16,7 +16,6 @@ TODO
 - Для работы надо установить [Scons 4.0.1](https://www.scons.org/doc/production/HTML/scons-user.html#chap-build-install): `pip install scons==4.0.1`
 - Собирать в папке 2nmc-demo-gcc,
 - Собрать цель target: `scons target`
-- Создать решение для Visual Studio: `scons vs2015`
 - Очистить сборку target: `scons target -c`
 
 Можно так же использовать ключ -j4
@@ -27,7 +26,7 @@ TODO
 - nm0 - собирает программу для процессора с плавающей точкой NeuroMatrix
 - nm1 - собирает программу для целочисленного процессора NeuroMatrix
 - host - собирает хостовую часть
-- vs2015 - собирает решение для Visual Studio
+- vsproject - собирает решение для Visual Studio (версию Visual Studio можно выбрать задав аргумент vs, например `scons project vs=14.0`)
 
 
 
