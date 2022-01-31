@@ -34,3 +34,6 @@ ldscript
 test/
 rod*.cpp
 rod*.h
+
+# Scons
+.sconsign.dblite

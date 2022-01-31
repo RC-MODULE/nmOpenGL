@@ -1,5 +1,4 @@
 import os
-import re
 from pathlib import Path as path
 
 
@@ -7,6 +6,8 @@ from pathlib import Path as path
 debug = int(ARGUMENTS.get('debug', 1))
 map_enabled = int(ARGUMENTS.get('map', 0))
 dump_enabled = int(ARGUMENTS.get('dump', 0))
+
+vs = ARGUMENTS.get('vs', 'latest')
 
 
 if debug != 0:
@@ -17,15 +18,14 @@ else:
 	TARGETS = ['main0', 'main1']
 
 
-if COMMAND_LINE_TARGETS:
-	targets = COMMAND_LINE_TARGETS
-else:
-	targets = DEFAULT_TARGETS
-
 
 # get environment and set variables
 nmc_mc12101 = Environment(tools=['g++','gnulink', 'as', 'msvs'])
-host_env = Environment(tools = ['msvc', 'msvs', 'mslink'], TARGET_ARCH = 'x86_64')
+if vs == 'latest':
+	host_env = Environment(tools = ['msvc', 'msvs', 'mslink'], TARGET_ARCH = 'x86_64')
+else:
+	host_env = Environment(tools = ['msvc', 'msvs', 'mslink'], TARGET_ARCH = 'x86_64', MSVC_VERSION = vs)
+
 
 # common properties both nm-cores
 nmc_mc12101['ENV']['PATH'] = os.environ['PATH']
@@ -41,7 +41,6 @@ nmc_mc12101['ROOT'] = ROOT
 nmc_mc12101['NMC_GCC_TOOLPATH'] = NMC_GCC_TOOLPATH
 nmc_mc12101['HAL'] = HAL
 nmc_mc12101['NMPP'] = NMPP
-nmc_mc12101['MC12101_GDB'] = os.environ['MC12101_GDB']
 
 
 gcc_exec_prefix = f"/cygdrive/{NMC_GCC_TOOLPATH}/nmc4-ide/lib/gcc/".replace(":","")
@@ -90,9 +89,9 @@ for i in range(2):
 		nmc[i]['CPPDEFINES'] = ["DEBUG"]
 		nmc[i]['CCFLAGS'] += ["-g"]
 	nmc[i]['MAP'] = [TARGETS[i] + '.map']
-	nmc[i]['LIBPATH'] += ['$MC12101_GDB']
-whole_archives_list[0] += ["-lmc12101_stub_nmc4_float"]
-whole_archives_list[1] += ["-lmc12101_stub_nmc4_fixed"]
+#		nmc[i]['LIBPATH'] += ['d:/GIT/nm6407_nmc_gdb_server/stub/make']
+#whole_archives_list[0] += ["-lmc12101_stub_nmc4_float"]
+#whole_archives_list[1] += ["-lmc12101_stub_nmc4_fixed"]
 
 nmc[0]['LIBS'] += ['nmpp-nmc4f']
 nmc[1]['LIBS'] += ['nmpp-nmc4']
@@ -185,4 +184,4 @@ solution = host_env.MSVSSolution(
 
 
 
-Alias('vs2015', projects + solution)
+Alias('project', projects + solution + DEFAULT_TARGETS)

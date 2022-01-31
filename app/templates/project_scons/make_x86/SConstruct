@@ -1,0 +1,115 @@
+import os
+from pathlib import Path as path
+
+
+
+debug = int(ARGUMENTS.get('debug', 1))
+vs = ARGUMENTS.get('vs', 'latest')
+
+
+if debug != 0:
+	Configuration = 'Debug'
+else:
+	Configuration = 'Release'
+
+
+
+# get environment and set variables
+if vs == 'latest':
+	common_env = Environment(tools = ['msvc', 'msvs', 'mslink'], TARGET_ARCH = 'x86_64')
+else:
+	common_env = Environment(tools = ['msvc', 'msvs', 'mslink'], TARGET_ARCH = 'x86_64', MSVC_VERSION = vs)
+
+ROOT = '../..'
+NMC_GCC_TOOLPATH = os.environ['NMC_GCC_TOOLPATH']
+MC12101 = os.environ['MC12101']
+HAL = os.environ['HAL']
+NMPP = os.environ['NMPP']
+VSHELL = os.environ['VSHELL']
+common_env['ROOT'] = ROOT
+common_env['MC12101'] = MC12101
+common_env['NMC_GCC_TOOLPATH'] = NMC_GCC_TOOLPATH
+common_env['HAL'] = HAL
+common_env['NMPP'] = NMPP
+common_env['VSHELL'] = VSHELL
+
+
+common_env['LIBPATH'] =  ["$NMPP/lib", "$HAL/lib", "$MC12101/lib",]
+common_env['CXXFLAGS'] = '/MDd'
+common_env['CPPPATH'] = ["$NMPP/include", "$HAL/include", "$ROOT/include"]
+common_env['LIBS'] = ['nmpp-x64', "hal-virtual-x64d"]
+common_env['CPPDEFINES'] = ['_ITERATOR_DEBUG_LEVEL=0']
+#if DEBUG:
+#	common_env['CPPDEFINES'] += ["_DEBUG"]
+
+#print(common_env.Dump())
+
+nmc = [common_env.Clone(), common_env.Clone()]
+host_env = common_env.Clone()
+
+for i in range(2):
+	nmc[i]['PDB'] = f'bin/x64/{Configuration}/mc12101-nm{i}-x64.pdb'
+host_env['PDB'] = f'bin/x64/{Configuration}/mc12101-host-x64.pdb'
+host_env['LIBPATH'] += ["$VSHELL/lib"] 
+host_env['CPPPATH'] += ["$VSHELL/include"]
+host_env['LIBS'] += ["vshell"]
+
+src_nm_dirs = []
+src_nm_dirs.append([f'{ROOT}/nmglvs_mc12101-gcc/src_nmc0', f'{ROOT}/src_proc0/common', f'{ROOT}/src_proc0/pc', f'../src_target0', f'{ROOT}/src_proc0/nmgl'])
+src_nm_dirs.append([f'{ROOT}/nmglvs_mc12101-gcc/src_nmc1', f'{ROOT}/src_proc1/common', f'{ROOT}/src_proc1/pc', f'../src_target1'])
+src_nm_include_dirs = [f"{MC12101}/include",f"{HAL}/include", f"{NMPP}/include",f"{ROOT}/include"]
+
+
+src_pc_dirs = ["../src_host", f"{ROOT}/nmglvs_mc12101-gcc/src_host"]
+src_pc_include_dirs = [f"{MC12101}/lib",f"{VSHELL}/lib",f"{NMPP}/lib",f"{HAL}/lib", f"{ROOT}/lib"]
+
+projects = []
+for i in range(2):
+	all_cpp = [Glob(path(src_dir)/'*.cpp', strings = True) 	for src_dir in src_nm_dirs[i]]
+	all_c   = [Glob(path(src_dir)/'*.c', strings = True) 	for src_dir in src_nm_dirs[i]]
+	all_h 	= [Glob(path(src_dir)/'*.h', strings = True) 	for src_dir in src_nm_include_dirs]
+
+
+	def obj_name (src): return str(f'obj/{Configuration}/nmc{i}/' + path(src).stem)
+	obj_cpp = [nmc[i].Object(obj_name(str(c)), c) for c in sum(all_cpp, [])]
+	obj_c   = [nmc[i].Object(obj_name(str(c)), c) for c in sum(all_c  , [])]
+
+	prog = nmc[i].Program(f'bin/x64/{Configuration}/mc12101-nm{i}-x64', [obj_cpp, obj_c])
+	Alias(f'nm{i}', prog)
+	Default(prog)
+
+	# convert list of lists to simple list
+	all_cpp = [item for sublist in all_cpp for item in sublist]
+	all_c = [item for sublist in all_c for item in sublist]
+	all_h = [item for sublist in all_h for item in sublist]
+
+	projects.append(nmc[i].MSVSProject(target = f'mc12101-nm{i}' + nmc[i]['MSVSPROJECTSUFFIX'],
+		srcs = all_cpp + all_c,
+		incs = all_h,
+		variant = [f"Release|x64", "Debug|x64"]))
+
+
+
+
+def obj_name (src): return str(f'obj/{Configuration}/host/' + path(src).stem)
+all_cpp = [Glob(path(src_dir)/'*.cpp', strings = True) for src_dir in src_pc_dirs]
+all_c 	= [Glob(path(src_dir)/'*.c', strings = True)   for src_dir in src_pc_dirs]
+all_h 	= [Glob(path(src_dir)/'*.h', strings = True)   for src_dir in src_pc_include_dirs]
+obj_cpp = [host_env.Object(obj_name(str(c)), c) for c in sum(all_cpp, [])]
+obj_c 	= [host_env.Object(obj_name(str(c)), c) for c in sum(all_c, [])]
+host = host_env.Program(f'bin/x64/{Configuration}/mc12101-host-x64.exe',[obj_cpp, obj_c])
+Alias('host', host)
+Default(host)
+
+
+# convert list of lists to simple list
+all_cpp = [item for sublist in all_cpp for item in sublist]
+all_c = [item for sublist in all_c for item in sublist]
+all_h = [item for sublist in all_h for item in sublist]
+
+projects.append(host_env.MSVSProject(target = 'mc12101-host-x64' + host_env['MSVSPROJECTSUFFIX'],
+	srcs = all_cpp + all_c,
+	incs = all_h,
+	variant = [f"Release|x64", "Debug|x64"]))
+
+Alias('project', projects + DEFAULT_TARGETS)
