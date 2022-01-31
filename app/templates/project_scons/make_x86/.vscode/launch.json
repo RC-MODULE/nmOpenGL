@@ -1,0 +1,61 @@
+{
+    "version": "0.2.0",
+    
+    "configurations": [
+        {
+            "name": "launch host",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "launchCompleteCommand": "exec-run",
+            "cwd": "${workspaceFolder}",
+            "symbolSearchPath": "${cwd}/bin/x64/Debug/mc12101-host-x64.pdb",
+            "program": "${workspaceFolder}\\bin\\x64\\Debug\\mc12101-host-x64.exe",
+            "console": "integratedTerminal",
+            "logging": {
+                "moduleLoad": false,
+                "trace": true
+            },
+            //"stopAtEntry": true,
+            "preLaunchTask": "Build host",
+            "miDebuggerArgs": "",
+            "setupCommands": [],
+        },
+        {
+            "name": "launch nm0",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "launchCompleteCommand": "exec-run",
+            "cwd": "${workspaceFolder}",
+            "symbolSearchPath": "${cwd}/bin/x64/Debug/mc12101-nm0-x64.pdb",
+            "program": "${workspaceFolder}\\bin\\x64\\Debug\\mc12101-nm0-x64.exe",
+            "console": "integratedTerminal",
+            "logging": {
+                "moduleLoad": false,
+                "trace": true
+            },
+            //"stopAtEntry": true,
+            "preLaunchTask": "Build nm0",
+            "miDebuggerArgs": "",
+            "setupCommands": [],
+        },
+        {
+            "name": "launch nm1",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "launchCompleteCommand": "exec-run",
+            "cwd": "${workspaceFolder}",
+            "symbolSearchPath": "${cwd}/bin/x64/Debug/mc12101-nm1-x64.pdb",
+            "program": "${workspaceFolder}\\bin\\x64\\Debug\\mc12101-nm1-x64.exe",
+            "console": "integratedTerminal",
+            "logging": {
+                "moduleLoad": false,
+                "trace": true
+            },
+            //"stopAtEntry": true,
+            "preLaunchTask": "Build nm1",
+            "miDebuggerArgs": "",
+            "setupCommands": [],
+        },        
+    ]
+
+}

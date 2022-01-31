@@ -1,0 +1,90 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build all",
+            "type": "shell",
+            "group": "build",
+            "command": "scons",
+            "dependsOn": [ "Build host", "Build nm0", "Build nm1"]
+            //"args": [ "debug=1", "-j4", "${config:errecho}" ],
+        },
+        {
+            "label": "Build host",
+            "type": "shell",
+            "group": {
+                "kind": "build",
+                "isDefault": true,
+            },
+            "command": "scons",
+            "args": [ "host", "debug=1", "-j4", "${config:errecho}" ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },
+        {
+            "label": "Build nm0",
+            "type": "shell",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "command": "scons",
+            "args": [ "nm0", "debug=1", "-j4", "${config:errecho}" ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },
+        {
+            "label": "Build nm1",
+            "type": "shell",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "command": "scons",
+            "args": [ "nm1", "debug=1", "-j4", "${config:errecho}" ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },
+        {
+            "label": "Clean nm0",
+            "type": "shell",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "command": "scons",
+            "args": [ "-c", "nm0", "-j4" ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },{
+            "label": "Clean nm1",
+            "type": "shell",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "command": "scons",
+            "args": [ "-c", "nm1", "-j4" ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },
+        {
+            "label": "Clean all",
+            "type": "shell",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "command": "scons",
+            "args": [ "-c", "-j4" ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },
+    ]
+}
