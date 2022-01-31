@@ -3,7 +3,8 @@
 #include "nmprofiler.h"
 
 int main()
-{ 
+{
+	printf("nm1 start\n");
 #if defined(__GNUC__) && defined(DEBUG)
 	//nmprofiler_init();
 	//nmprofiler_disable();

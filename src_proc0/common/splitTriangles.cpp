@@ -1,4 +1,4 @@
-#include <cmath> // pow for NMC-SDK
+//#include <cmath> // pow for NMC-SDK
 #include "nmpp.h"
 #include "nmblas.h"
 #include "service.h"

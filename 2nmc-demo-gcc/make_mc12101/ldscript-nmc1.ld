@@ -15,6 +15,7 @@ SECTIONS
   .text : ALIGN(0x8)
   {
     *(.text);
+    *libmc12101_stub_nmc4_fixed.a:*(.text)
   } > EMI1
   .text_hal_libc : ALIGN(0x8)
   {
@@ -51,6 +52,7 @@ SECTIONS
   .data_shared1 : ALIGN(0x8)
   {
     *(.data_shared1);
+    *libmc12101_stub_nmc4_fixed.a:*(.data)
   } > EMI1
   .data : ALIGN(0x8)
   {
@@ -63,6 +65,7 @@ SECTIONS
   .bss : ALIGN(0x8)
   {
     *(.bss);
+    *(.bss_stub);
   } > C1_IMU0
   .stack : ALIGN(0x8)
   {

@@ -59,8 +59,8 @@ LIB_DIRS         = -L "$(NMC_GCC_TOOLPATH)/nmc4-ide/lib" -L"$(NMPP)/lib" -L"$(HA
 TMP_DIR          = Release
 #-------------- RELEASE/ALL config -------------------
 CC 				 = nmc-g++
-AS               = nmc-gcc 				 
-AS_FLAGS    	 = -c -mmas -x assembler -Wa,-split_sir -mnmc4-fixed
+AS               = nmc-as 				 
+AS_FLAGS    	 = -q -split_sir -nmc4_fixed
 CC_FLAGS		 = -std=c++11 -fno-builtin-printf
 LIBS             = -lnmopengl-nmc4 -lnmpp-nmc4 -lhal-mc12101 
 LINKER_FLAGS     =   -Xlinker -Map=.main1.map $(LIB_DIRS) "-Wl,-Tldscript-nmc1.ld"  -Wl,--whole-archive -lmc12101 -Wl,--no-whole-archive -o$(TARGET)

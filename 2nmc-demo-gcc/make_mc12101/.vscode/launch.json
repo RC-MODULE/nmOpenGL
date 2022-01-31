@@ -17,7 +17,6 @@
             },
             "stopAtEntry": true,
             "preLaunchTask": "Build host",
-            "miDebuggerArgs": "",
             "setupCommands": [],
         },
         {
@@ -25,10 +24,10 @@
             "cwd": "${workspaceFolder}",
             "executable": "main0d.abs",
             "program": "main0d.abs",
-            "request": "attach",
+            "request": "launch",
             "type": "module-debug",
             "servertype": "external",
-            //"gdbpath": "d:\\download\\NMC_Mingw\\bin\\nmc-gdb.exe",
+            "gdbpath": "nmc-gdb.exe",
             "gdbTarget": ":5555",
             "showDevDebugOutput": true, // отображать ли запросы gdb
             "toolchainPrefix": "nmc",
@@ -40,10 +39,10 @@
             "cwd": "${workspaceFolder}",
             "executable": "main1d.abs",
             "program": "main1d.abs",
-            "request": "attach",
+            "request": "launch",
             "type": "module-debug",
             "servertype": "external",
-            //"gdbpath": "d:\\download\\NMC_Mingw\\bin\\nmc-gdb.exe",
+            "gdbpath": "d:\\download\\NMC_Mingw\\bin\\nmc-gdb.exe",
             "gdbTarget": ":5556",
             "showDevDebugOutput": true, // отображать ли запросы gdb
             "toolchainPrefix": "nmc",

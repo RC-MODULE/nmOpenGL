@@ -19,23 +19,18 @@ SECTIONS
   .text : ALIGN(0x8)
   {
     *(.text);
+    *(.text_stub)
   } > EMI0
-  .text_int : ALIGN(0x8)
+  .text_imu0 : ALIGN(0x8)
   {
     *(.text_int);
-  } > C0_IMU0
-  .text_nmblas : ALIGN(0x8)
-  {
     *(.text_nmblas);
+    *(.text_nmplv);
   } > C0_IMU0
   .text_nmgl : ALIGN(0x8)
   {
     *(.text_nmgl);
   } > EMI0
-  .text_nmplv : ALIGN(0x8)
-  {
-    *(.text_nmplv);
-  } > C0_IMU0
   .text_demo3d : ALIGN(0x8)
   {
     *(.text_demo3d);
@@ -75,6 +70,7 @@ SECTIONS
   .data : ALIGN(0x8)
   {
     *(.data);
+    *(.data_stub)
   } > EMI0
   .data_imu0 : ALIGN(0x8)
   {

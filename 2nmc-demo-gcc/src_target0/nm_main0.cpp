@@ -11,6 +11,7 @@
 
 SECTION(".text_shared0") int main()
 {
+	printf("nm0 start\n");
 #if defined(__GNUC__) && defined(DEBUG)
 	//nmprofiler_init();
 	//nmprofiler_disable();
@@ -59,7 +60,7 @@ SECTION(".text_shared0") int main()
 	int ok;
 	int amountPolygons = halHostSync(0);
 
-	//Массив цветов полигонов (по 4 компоненты на вершину)
+	//пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅ 4 пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ)
 	//sync1
 	halHostSyncAddr(vertices_DDR);
 

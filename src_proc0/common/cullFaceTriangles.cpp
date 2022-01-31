@@ -6,7 +6,7 @@
 #include "demo3d_common.h"
 #include "demo3d_nm0.h"
 
-#include <nmpp.h>
+#include "nmpp.h"
 
 inline void copyVertex(CombinePointers &vertex, int iSrc, int iDst) {
 	vertex.x[iDst] = vertex.x[iSrc];

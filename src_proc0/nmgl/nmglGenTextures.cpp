@@ -1,6 +1,6 @@
 #include "demo3d_nm0.h"
 #include "nmgl.h"
-#include <iostream>
+//#include <iostream>
 
 #pragma code_section ".text_nmgl"
 

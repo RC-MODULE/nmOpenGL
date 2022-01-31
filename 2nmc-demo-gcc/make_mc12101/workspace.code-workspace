@@ -26,6 +26,80 @@
 		}
 	],
 
+	"tasks": {
+		"version": "2.0.0",
+		"tasks": [
+			{
+				"label": "run nm",
+				"type": "shell",
+				"dependsOn": [
+					"run nm0",
+					"run nm1"
+				]
+			},
+			{
+				"label": "run nm0",
+				"type": "shell",
+				"command": "mc12101run",
+				"group": "test",
+				"isBackground": true,
+				"dependsOn": [
+					"Build nm0"
+				],
+				"args": [
+					"${workspaceFolder}/main0d.abs",
+					"-a0",
+					"-p"
+				],
+				"problemMatcher": {
+					"background": {
+						"activeOnStart": true,
+						"beginsPattern": "^Batch",
+						"endsPattern": "^Start"
+					},
+					"pattern": [
+						{
+							"regexp": "^([^\\\\s].*)\\\\((\\\\d+,\\\\d+)\\\\):\\\\s*(.*)$",
+							"file": 1,
+							"location": 2,
+							"message": 3
+						}
+					]
+				},
+			},
+			{
+				"label": "run nm1",
+				"type": "shell",
+				"command": "mc12101run",
+				"args": [
+					"${workspaceFolder}/main1d.abs",
+					"-a1",
+					"-p"
+				],
+				"group": "test",
+				"isBackground": true,
+				"dependsOn": [
+					"Build nm1"
+				],
+				"problemMatcher": {
+					"background": {
+						"activeOnStart": true,
+						"beginsPattern": "^Batch",
+						"endsPattern": "^Start"
+					},
+					"pattern": [
+						{
+							"regexp": "^([^\\\\s].*)\\\\((\\\\d+,\\\\d+)\\\\):\\\\s*(.*)$",
+							"file": 1,
+							"location": 2,
+							"message": 3
+						}
+					]
+				}
+			},
+		]
+	},
+
 	"extensions": {
 		"recommendations": [
 			"ms-vscode.cpptools",
@@ -33,7 +107,7 @@
 	},
 
 	"settings": {
-		"errecho": "2>&1|errecho",
+		"errecho": "2>&1|cerrecho",
 		"files.exclude": {
 			"**/.git": true,
 			"**/.svn": true,
@@ -126,6 +200,22 @@
 					"order": 1
 				}
 				//"preLaunchTask": "run monitor",
+			},
+			{
+				"name": "Launch only host",
+				"configurations": [
+					{
+						"folder": "make_mc12101",
+						"name": "launch host",
+					}
+				],
+				"preLaunchTask": "run nm",
+				"stopAll": true,
+				"presentation": {
+					"hidden": false,
+					"group": "",
+					"order": 1
+				}
 			}
 		]
 	}

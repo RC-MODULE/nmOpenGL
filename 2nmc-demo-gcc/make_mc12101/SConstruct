@@ -6,7 +6,7 @@ from pathlib import Path as path
 debug = int(ARGUMENTS.get('debug', 1))
 map_enabled = int(ARGUMENTS.get('map', 0))
 dump_enabled = int(ARGUMENTS.get('dump', 0))
-vs = ARGUMENTS.get('vs', latest)
+vs = ARGUMENTS.get('vs', 'latest')
 
 
 
@@ -28,7 +28,7 @@ else:
 
 
 # common properties both nm-cores
-nmc_mc12101['ENV']['PATH'] = os.environ['PATH']
+#nmc_mc12101['ENV']['PATH'] = os.environ['PATH']
 
 ROOT = '../..'
 NMC_GCC_TOOLPATH = os.environ['NMC_GCC_TOOLPATH']
@@ -41,7 +41,7 @@ nmc_mc12101['ROOT'] = ROOT
 nmc_mc12101['NMC_GCC_TOOLPATH'] = NMC_GCC_TOOLPATH
 nmc_mc12101['HAL'] = HAL
 nmc_mc12101['NMPP'] = NMPP
-#nmc_mc12101['MC12101_GDB'] = os.environ['MC12101_GDB']
+nmc_mc12101['MC12101_GDB'] = os.environ['MC12101_GDB']
 
 
 gcc_exec_prefix = f"/cygdrive/{NMC_GCC_TOOLPATH}/nmc4-ide/lib/gcc/".replace(":","")
@@ -135,6 +135,7 @@ for i in range(2):
 	prog = nmc[i].Program(TARGETS[i] + ".abs", [obj_cpp, obj_asm, all_c])
 	Alias(f'nm{i}', prog)
 	Default(prog)
+	Depends(prog, f'ldscript-nmc{i}.ld')
 
 	# convert list of lists to simple list
 	all_cpp = [item for sublist in all_cpp for item in sublist]
