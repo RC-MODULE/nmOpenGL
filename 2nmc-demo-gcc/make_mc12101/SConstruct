@@ -41,7 +41,7 @@ nmc_mc12101['ROOT'] = ROOT
 nmc_mc12101['NMC_GCC_TOOLPATH'] = NMC_GCC_TOOLPATH
 nmc_mc12101['HAL'] = HAL
 nmc_mc12101['NMPP'] = NMPP
-nmc_mc12101['MC12101_GDB'] = os.environ['MC12101_GDB']
+#nmc_mc12101['MC12101_GDB'] = os.environ['MC12101_GDB']
 
 
 gcc_exec_prefix = f"/cygdrive/{NMC_GCC_TOOLPATH}/nmc4-ide/lib/gcc/".replace(":","")
