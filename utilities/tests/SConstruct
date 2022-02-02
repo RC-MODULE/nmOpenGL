@@ -1,0 +1,5 @@
+
+
+SConscript(['common/SConscript', 
+			'fixed/SConscript', 
+			'float/SConscript'])

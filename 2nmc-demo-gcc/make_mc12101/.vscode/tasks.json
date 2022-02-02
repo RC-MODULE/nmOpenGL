@@ -188,5 +188,51 @@
                 ]
             }
         },
+        {
+            "label": "run nm0-qemu",
+            "type": "shell",
+            "command": "d:\\download\\NMC_Mingw\\bin\\nmc-qemu.exe",
+            "group": "test",
+            "isBackground": false,
+            "dependsOn": [
+                "Build nm0"
+            ],
+            "args": [
+                "-g",
+                "10000",
+                "${workspaceFolder}/main0d.abs"
+            ]
+        },
+        {
+            "label": "run nm1-qemu",
+            "type": "shell",
+            "command": "nmc-qemu.exe",
+            "args": [
+                "-g",
+                "10001",
+                "${workspaceFolder}/main1d.abs",
+                "&"
+            ],
+            "group": "test",
+            "isBackground": true,
+            "dependsOn": [
+                "Build nm1"
+            ],
+            "problemMatcher": {
+                "background": {
+                    "activeOnStart": true,
+                    "beginsPattern": "^Batch",
+                    "endsPattern": "^Start"
+                },
+                "pattern": [
+                    {
+                        "regexp": "^([^\\\\s].*)\\\\((\\\\d+,\\\\d+)\\\\):\\\\s*(.*)$",
+                        "file": 1,
+                        "location": 2,
+                        "message": 3
+                    }
+                ]
+            }
+        }
     ]
 }

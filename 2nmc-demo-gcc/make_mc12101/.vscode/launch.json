@@ -48,7 +48,38 @@
             "toolchainPrefix": "nmc",
             //"preLaunchTask": "run monitor",
             //"runToMain": true
-        }        
+        },
+        {
+            "name": "launch nm0-qemu",
+            "cwd": "${workspaceFolder}",
+            "executable": "main0d.abs",
+            "program": "main0d.abs",
+            "request": "launch",
+            "type": "module-debug",
+            "servertype": "external",
+            "gdbpath": "nmc-gdb",
+            "gdbTarget": ":10000",
+            "showDevDebugOutput": true, // отображать ли запросы gdb
+            "toolchainPrefix": "nmc",
+            "preLaunchTask": "run nm0-qemu"
+            //"runToMain": true
+        },
+        {
+            "name": "launch nm1-qemu",
+            "cwd": "${workspaceFolder}",
+            "executable": "main1d.abs",
+            "program": "main1d.abs",
+            "request": "launch",
+            "type": "module-debug",
+            "servertype": "external",
+            "gdbpath": "nmc-gdb",
+            "gdbTarget": ":10001",
+            "showDevDebugOutput": true, // отображать ли запросы gdb
+            "toolchainPrefix": "nmc",
+            "preLaunchTask": "run nm1-qemu"
+            //"runToMain": true
+        }
+
     ]
 
 }

@@ -202,6 +202,30 @@
 				//"preLaunchTask": "run monitor",
 			},
 			{
+				"name": "Launch qemu",
+				"configurations": [
+					{
+						"folder": "make_mc12101",
+						"name": "launch host",
+					},
+					{
+						"folder": "make_mc12101",
+						"name": "launch nm0-qemu"
+					},
+					{
+						"folder": "make_mc12101",
+						"name": "launch nm1-qemu",
+					}
+				],
+				"stopAll": true,
+				"presentation": {
+					"hidden": false,
+					"group": "",
+					"order": 1
+				}
+				//"preLaunchTask": "run monitor",
+			},
+			{
 				"name": "Launch only host",
 				"configurations": [
 					{

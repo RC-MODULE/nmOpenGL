@@ -91,7 +91,7 @@ SECTION(".data_imu0") NMGL_Context_NM0 *NMGL_Context_NM0::context;
 
 SECTION(".text_nmglvs") int nmglvsNm0Init()
 {
-	halSleep(500);
+	//halSleep(500);
 
 	halSetProcessorNo(0);
 

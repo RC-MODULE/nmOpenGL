@@ -73,7 +73,7 @@ nmc_mc12101['AS'] = 'nmc-as'
 
 nmc_mc12101['CC'] = 'nmc-gcc'
 nmc_mc12101['CXX'] = 'nmc-g++'
-nmc_mc12101['CCFLAGS'] = Split('-fno-builtin-printf -std=c++11')
+nmc_mc12101['CCFLAGS'] = Split('-fno-builtin-printf -std=c++11 -g')
 nmc_mc12101['CPPPATH'] = Split(f'$NMPP/include $HAL/include $ROOT/include' )
 
 nmc_mc12101['LINK'] = 'nmc-g++'
@@ -87,7 +87,6 @@ for i in range(2):
 	nmc[i]['CFG'] = f'ldscript-nmc{i}.ld'
 	if debug:
 		nmc[i]['CPPDEFINES'] = ["DEBUG"]
-		nmc[i]['CCFLAGS'] += ["-g"]
 	nmc[i]['MAP'] = [TARGETS[i] + '.map']
 #	nmc[i]['LIBPATH'] += ['$MC12101_GDB']
 #whole_archives_list[0] += ["-lmc12101_stub_nmc4_float"]
