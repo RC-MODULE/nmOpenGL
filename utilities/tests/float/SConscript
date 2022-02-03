@@ -6,7 +6,7 @@ ROOT = "../.."
 
 
 use_gdb = int(ARGUMENTS.get('gdb', 0))
-legacy = int(ARGUMENTS.get('legacy', 0))
+legacy = int(ARGUMENTS.get('legacy', 1))
 #cross_compile = options.get('NMC_CROSS_COMPILE') or 'nmc-')
 
 # get environment and set variables
