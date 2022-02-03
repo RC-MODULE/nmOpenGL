@@ -12,8 +12,9 @@
 ## Тестирование
 
 ### Scons
+
 Для сборки тестов необходимо установить [Scons 4.0.1](https://www.scons.org/doc/production/HTML/scons-user.html#chap-build-install): `pip install scons==4.0.1`
------
+
 
 ### Сборка
 Иерархия тестов аналогична иерархии исходников. Сборка тестов происходит с помощью `scons`, вызываемым без целей. 
