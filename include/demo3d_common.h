@@ -8,7 +8,7 @@
 #include "nmgltype.h"
 #include "ringbuffert.h"
 #include "pattern.h"
-#include "nmglmath.h"
+#include "utility.h"
 
 #ifdef __GNUC__
 	#define setHeap(n) nmc_malloc_set_heap(n) 

@@ -1,5 +1,5 @@
 #pragma once
-#include "nmglmath.h"
+#include "utility.h"
 
 #define MAX_SIDE_POLYGON				32
 #define HEIGHT_PTRN						MAX_SIDE_POLYGON
