@@ -176,10 +176,9 @@ Alias('host', host)
 Default(host)
 
 #print(host)
-#run_host = host_env.Command(source = host, target = None, action=f'bin\\x64\\{Configuration}\\mc12101-host-x64.exe')
-Alias('run', host, host[0].abspath)
-AlwaysBuild('run')
-#Depends(run_host, host)
+run_host = host_env.Command(source = None, target = None, action=f'./bin/x64/{Configuration}/mc12101-host-x64.exe')
+Depends(run_host, host)
+Alias('run', run_host)
 
 
 # convert list of lists to simple list

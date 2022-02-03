@@ -3,7 +3,7 @@ from pathlib import Path as path
 
 ROOT = "../.."
 
-
+#targets = ['fixed', 'float', 'qemu']
 
 use_gdb = int(ARGUMENTS.get('gdb', 0))
 legacy = int(ARGUMENTS.get('legacy', 1))
@@ -64,13 +64,7 @@ nmc_float['LINKFLAGS'] = ["-Wl,-T$LINKSCRIPT"]
 nmc_fixed['LIBS'] += ['nmpp-nmc4']
 nmc_float['LIBS'] += ['nmpp-nmc4f']
 
-
-#qemu_env = nmc_mc12101.Clone()
-board_env = nmc_mc12101.Clone()
-#if gdb:
-#	qemu_env.Command(source = main, target = None, action='nmc-qemu $SOURCE -fixed')
-#else:
-#	qemu_env.Command(source = main, target = None, action='nmc-qemu $SOURCE -fixed')
+qemu_env = nmc_fixed.Clone()
 
 if use_gdb:
 	print("stub lib is used")
@@ -98,16 +92,21 @@ obj_c   = [nmc_mc12101.Object(c) for c in all_c]
 obj_asm = [nmc_mc12101.Object(s) for s in all_asm]
 obj_s   = [nmc_mc12101.Object(s) for s in all_s]
 
-board_runs = []
+fixed_run_list = []
+float_run_list = []
+qemu_run_list = []
+fixed_build_list = []
+float_build_list = []
+qemu_build_list = []
 for test in os.listdir("."):
 	if os.path.isdir(test) and test != 'obj':
 		obj_main = nmc_mc12101.Object(str(path(test)/'main.cpp'))
-		fixed_main = nmc_fixed.Program(str(path(test)/'main_fixed.abs'), [obj_main, str(path(src_dir)/f'{test}.o')])
-		float_main = nmc_float.Program(str(path(test)/'main_float.abs'), [obj_main, str(path(src_dir)/f'{test}.o')])
+		fixed_main = nmc_fixed.Program(str(path(test)/'fixed/main.abs'), [obj_main, str(path(src_dir)/f'{test}.o')])
+		float_main = nmc_float.Program(str(path(test)/'float/main.abs'), [obj_main, str(path(src_dir)/f'{test}.o')])
 		nmc_fixed.Depends(fixed_main, '$LINKSCRIPT')
 		nmc_float.Depends(float_main, '$LINKSCRIPT')
-		nmc_fixed.Default(fixed_main)
-		nmc_float.Default(float_main)
+		fixed_build_list.append(fixed_main)
+		float_build_list.append(float_main)
 
 		if legacy:
 			board_fixed_run = nmc_fixed.Command(source = fixed_main, target = None, action='mc12101run $SOURCE -p')
@@ -117,13 +116,30 @@ for test in os.listdir("."):
 			board_float_run = nmc_float.Command(source = float_main, target = None, action='mc12101run $SOURCE -a0 -p')
 		Depends(board_fixed_run, fixed_main)
 		Depends(board_float_run, float_main)
-		board_runs.append(board_fixed_run)
-		board_runs.append(board_float_run)
+		fixed_run_list.append(board_fixed_run)
+		float_run_list.append(board_float_run)
 		Alias(test+'-run-fixed', board_fixed_run)
 		Alias(test+'-run-float', board_float_run)
 
-		#board_run(main)
-		#board_target = board_env.Program(str(path(test)/'main-board.abs'), [obj_main, obj_asm])
-		#qemu_target = qemu_env.Program(str(path(test)/'main-qemu.abs'), [obj_main, obj_asm])
-Alias('run', board_runs)
-Alias('run-board', board_runs)
+
+		qemu_target = qemu_env.Program(str(path(test)/'qemu/main.abs'), [obj_main, obj_asm])
+		qemu_env.Depends(qemu_target, '$LINKSCRIPT')
+		Alias(test+'-qemu', qemu_target)
+		qemu_build_list.append(qemu_target)
+
+		if use_gdb:
+			qemu_run = nmc_mc12101.Command(source = qemu_target, target = None, action='nmc-qemu -g 10000 $SOURCE')
+		else:
+			qemu_run = nmc_mc12101.Command(source = qemu_target, target = None, action='nmc-qemu $SOURCE')
+		Depends(qemu_run, qemu_target)
+		qemu_run_list.append(qemu_run)
+		Alias(test+'-run-qemu', qemu_run)
+
+board_build_list = fixed_build_list + float_build_list
+board_run_list = fixed_run_list + float_run_list
+Default(board_build_list)
+Alias('qemu', qemu_build_list)
+Alias('build', board_build_list)
+Alias('build-qemu', qemu_build_list)
+Alias('run', board_run_list)
+Alias('run-qemu', qemu_run_list)

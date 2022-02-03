@@ -17,7 +17,7 @@ void testSize(){
 		dst[i] = 0xCDCDCDCD;
 	}
 	for(int size = 0; size < MAX_SIZE; size+=STEP){
-		abs_32f(src, dst, size);
+		absIfNegElse0_32f(src, dst, size);
 		if(dst[size] != 0xCDCDCDCD){
 			printf("Error!!\n");
 			printf("Overflow error: size=%d\n", size);
@@ -38,8 +38,8 @@ void testValues(){
 	src[1] = -3;
 	src[2] = 4;
 	src[3] = -1;
-	float ref_values[4] = {0, 3, 4, 1};
-	abs_32f(src, dst, 4);
+	float ref_values[4] = {0, 3, 0, 1};
+	absIfNegElse0_32f(src, dst, 4);
 	for(int i = 0; i < 4; i++){
 		if(dst[i] != ref_values[i]){
 			printf("Error!!\n");

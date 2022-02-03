@@ -10,6 +10,8 @@
 
 #include "stdio.h"
 #include "math.h"
+#include "utility_float.h"
+
 
 //функция рассчета освещени€
 //n - нормаль

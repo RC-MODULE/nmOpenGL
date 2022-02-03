@@ -58,12 +58,7 @@ nmc_mc12101['LINKSCRIPT'] = [File(f'ldscript-{CORE}.ld')]
 nmc_mc12101['LINKFLAGS'] = ["-Wl,-T$LINKSCRIPT"]
 
 
-#qemu_env = nmc_mc12101.Clone()
-board_env = nmc_mc12101.Clone()
-#if gdb:
-#	qemu_env.Command(source = main, target = None, action='nmc-qemu $SOURCE -fixed')
-#else:
-#	qemu_env.Command(source = main, target = None, action='nmc-qemu $SOURCE -fixed')
+qemu_env = nmc_mc12101.Clone()
 
 if use_gdb:
 	print("stub lib is used")
@@ -88,25 +83,42 @@ obj_c   = [nmc_mc12101.Object(c) for c in all_c]
 obj_asm = [nmc_mc12101.Object(s) for s in all_asm]
 obj_s   = [nmc_mc12101.Object(s) for s in all_s]
 
-board_runs = []
+board_run_list = []
+qemu_run_list = []
+board_build_list = []
+qemu_build_list = []
 for test in os.listdir("."):
 	if os.path.isdir(test) and test != 'obj':
 		obj_main = nmc_mc12101.Object(str(path(test)/'main.cpp'))
-		main = nmc_mc12101.Program(str(path(test)/'main.abs'), [obj_main, str(path(src_dir)/f'{test}.o')])
-		nmc_mc12101.Depends(main, '$LINKSCRIPT')
-		nmc_mc12101.Default(main)
+		target = nmc_mc12101.Program(str(path(test)/'board/main.abs'), [obj_main, str(path(src_dir)/f'{test}.o')])
+		nmc_mc12101.Depends(target, '$LINKSCRIPT')
+		board_build_list.append(target)
+
+		qemu_target = qemu_env.Program(str(path(test)/'qemu/main.abs'), [obj_main, obj_asm])
+		qemu_env.Depends(qemu_target, '$LINKSCRIPT')
+		Alias(test+'-qemu', qemu_target)
+		qemu_build_list.append(qemu_target)
+
 
 		if legacy:
-			board_run = nmc_mc12101.Command(source = main, target = None, action='mc12101run $SOURCE -p')
+			board_run = nmc_mc12101.Command(source = target, target = None, action='mc12101run $SOURCE -p')
 		else:
-			board_run = nmc_mc12101.Command(source = main, target = None, action='mc12101run $SOURCE -a1 -p')
-		Depends(board_run, main)
-		board_runs.append(board_run)
-		Alias(test+'-run-board', board_run)
+			board_run = nmc_mc12101.Command(source = target, target = None, action='mc12101run $SOURCE -a1 -p')
+		Depends(board_run, target)
+		board_run_list.append(board_run)
 		Alias(test+'-run', board_run)
 
-		#board_run(main)
-		#board_target = board_env.Program(str(path(test)/'main-board.abs'), [obj_main, obj_asm])
-		#qemu_target = qemu_env.Program(str(path(test)/'main-qemu.abs'), [obj_main, obj_asm])
-Alias('run', board_runs)
-Alias('run-board', board_runs)
+		if use_gdb:
+			qemu_run = nmc_mc12101.Command(source = qemu_target, target = None, action='nmc-qemu -g 10001 -fixed $SOURCE')
+		else:
+			qemu_run = nmc_mc12101.Command(source = qemu_target, target = None, action='nmc-qemu -fixed $SOURCE')
+		Depends(qemu_run, qemu_target)
+		qemu_run_list.append(qemu_run)
+		Alias(test+'-run-qemu', qemu_run)
+
+Default(board_build_list)
+Alias('qemu', qemu_build_list)
+Alias('build', board_build_list)
+Alias('build-qemu', qemu_build_list)
+Alias('run', board_run_list)
+Alias('run-qemu', qemu_run_list)

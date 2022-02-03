@@ -6,6 +6,7 @@
 #include "demo3d_nm0.h"
 
 #include "nmblas.h"
+#include "utility_float.h"
 
 
 SECTION(".text_demo3d")
