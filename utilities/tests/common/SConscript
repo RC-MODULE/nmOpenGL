@@ -7,6 +7,7 @@ ROOT = "../.."
 
 use_gdb = int(ARGUMENTS.get('gdb', 0))
 legacy = int(ARGUMENTS.get('legacy', 1))
+debug_lvl = int(ARGUMENTS.get('debug_lvl', 0))
 #cross_compile = options.get('NMC_CROSS_COMPILE') or 'nmc-')
 
 # get environment and set variables
@@ -43,6 +44,7 @@ nmc_mc12101['CC'] = 'nmc-gcc'
 nmc_mc12101['CXX'] = 'nmc-g++'
 nmc_mc12101['CCFLAGS'] = Split('-fno-builtin-printf -std=c++11 -m$ARCH -O0 -g')
 nmc_mc12101['CPPPATH'] = Split(f'$NMPP/include {ROOT}/include $MC12101/include $HAL/include' )
+nmc_mc12101['CPPDEFINES'] = [f'DEBUG_LEVEL={debug_lvl}']
 
 # linker
 #whole_archives = ["-lmc12101load_nm", "-lnm_io" ]

@@ -4,6 +4,7 @@
 #define MAX_SIZE 1024
 #define STEP 2
 
+#define PRINT_DEBUG(message, level) if(DEBUG_LEVEL > level) printf(message);
 
 
 v2nm32f minXY[MAX_SIZE];
@@ -13,7 +14,7 @@ v2nm32f lower = {-1, -1};
 int dst[MAX_SIZE + STEP];
 
 void testSize(){
-	/*printf("Test size.....");
+	if(DEBUG_LEVEL > 0) printf("Test size.....\n");
 	for(int i = 0; i < MAX_SIZE; i++){
 		minXY[i].v0 = 0;
 		minXY[i].v1 = 0;
@@ -29,46 +30,58 @@ void testSize(){
 
 		checkRectanglesOverlaps(minXY, maxXY, &upper, &lower, dst, size);
 
-		size /= 32;
-		
-		if(dst[size + 1] != 0xCDCDCDCD){
-			printf("Error!!\n");
-			printf("Overflow error: size=%d\n", size);
+		int maskSize = (size + 31) / 32;
+
+		if(dst[maskSize] != 0xCDCDCDCD){
+			if(DEBUG_LEVEL > 0) printf("Error!!\n");
+			if(DEBUG_LEVEL > 1) printf("Overflow error: size=%d\n", maskSize);
 			return;
 		}
-		if(size == 0) continue;
-		if (dst[size] == 0xCDCDCDCD){
-			printf("Error!!\n");
-			printf("error: size=%d\n", size);
+		if(maskSize == 0) continue;
+		if (dst[maskSize - 1] == 0xCDCDCDCD){
+			if(DEBUG_LEVEL > 0) printf("Error!!\n");
+			if(DEBUG_LEVEL > 1) printf("error: size=%d\n", maskSize);
 			return;
 		}
-	}*/
-	printf("OK\n");
+	}
+	if(DEBUG_LEVEL > 0) printf("OK\n");
 }
 
 void testValues(){
-	printf("Test values.....");
-	/*minXY[0] = {1, 1};
-	minXY[1] = {-1, -1};
-	minXY[2] = {1, 1};
-	minXY[1] = {-1, -1};
-	srcC = {1, 2, 3, 4};
-	v4nm32f ref_values = {1, -1, 7, 3};
+	if(DEBUG_LEVEL > 0) printf("Test values.....\n");
+	// true
+	int size = 0;
+	minXY[size] = {-0.5, -0.5}; 	maxXY[size] = {0.5, 0.5};		
+	size++;
+	// 9 position overlap
+	for(float y = -1.5; y < 1; y += 1){
+		for(float x = -1.5; x < 1; x+= 1){
+			minXY[size] = {x, y};
+			maxXY[size] = {x + 1, y + 1};			
+			size++;
+		}
+	}
+	for(int i=0; i < size; i++){
+		if(DEBUG_LEVEL > 2) printf("%2d: minXY={%+2.2f, %+2.2f}, maxXY={%+2.2f, %+2.2f}\n", i, minXY[i].v0, minXY[i].v1, maxXY[i].v0, maxXY[i].v1);
+	}
+	
+	int dst_ref = 0x3FF;
+	checkRectanglesOverlaps(minXY, maxXY, &upper, &lower, dst, size);
 
-	addC_v4nm32f(src, &srcC, dst, 1);
-
-	for(int i = 0; i < 4; i++){
-		if(dst[0].vec[i] != ref_values.vec[i]){
-			printf("Error!!\n");
-			printf("%d!=%d\n", dst[0].vec[i], ref_values.vec[i]);
+	int size32 = (size + 31) / 32;
+	for(int i = 0; i < size32; i++){
+		if(DEBUG_LEVEL > 2) printf("%d: dst=0x%x\n", i, dst[i]);
+		if(dst[i] != dst_ref){
+			if(DEBUG_LEVEL > 0) printf("Error!!\n");
+			if(DEBUG_LEVEL > 0) printf("0x%x!=0x%x\n", dst[i], dst_ref);
 			return;
 		}
-	}*/
-	printf("OK\n");
+	}
+	if(DEBUG_LEVEL > 0) printf("OK\n");
 }
 
 int main(){
-	testSize();
 	testValues();
+	testSize();
 	return 0;
 }
