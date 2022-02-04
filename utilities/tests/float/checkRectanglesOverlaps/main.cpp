@@ -14,7 +14,6 @@ v2nm32f lower = {-1, -1};
 int dst[MAX_SIZE + STEP];
 
 void testSize(){
-	if(DEBUG_LEVEL > 0) printf("Test size.....\n");
 	for(int i = 0; i < MAX_SIZE; i++){
 		minXY[i].v0 = 0;
 		minXY[i].v1 = 0;
@@ -33,22 +32,19 @@ void testSize(){
 		int maskSize = (size + 31) / 32;
 
 		if(dst[maskSize] != 0xCDCDCDCD){
-			if(DEBUG_LEVEL > 0) printf("Error!!\n");
-			if(DEBUG_LEVEL > 1) printf("Overflow error: size=%d\n", maskSize);
+			DEBUG_PLOG_ERROR("overflow (size=%d)\n", size);
 			return;
 		}
 		if(maskSize == 0) continue;
 		if (dst[maskSize - 1] == 0xCDCDCDCD){
-			if(DEBUG_LEVEL > 0) printf("Error!!\n");
-			if(DEBUG_LEVEL > 1) printf("error: size=%d\n", maskSize);
+			DEBUG_PLOG_ERROR("overflow (size=%d)\n", size);
 			return;
 		}
 	}
-	if(DEBUG_LEVEL > 0) printf("OK\n");
+	DEBUG_PLOG_LEVEL_0("Test size OK\n");
 }
 
 void testValues(){
-	if(DEBUG_LEVEL > 0) printf("Test values.....\n");
 	// true
 	int size = 0;
 	minXY[size] = {-0.5, -0.5}; 	maxXY[size] = {0.5, 0.5};		
@@ -62,7 +58,7 @@ void testValues(){
 		}
 	}
 	for(int i=0; i < size; i++){
-		if(DEBUG_LEVEL > 2) printf("%2d: minXY={%+2.2f, %+2.2f}, maxXY={%+2.2f, %+2.2f}\n", i, minXY[i].v0, minXY[i].v1, maxXY[i].v0, maxXY[i].v1);
+		DEBUG_PLOG_LEVEL_2("%2d: minXY={%+2.2f, %+2.2f}, maxXY={%+2.2f, %+2.2f}\n", i, minXY[i].v0, minXY[i].v1, maxXY[i].v0, maxXY[i].v1);
 	}
 	
 	int dst_ref = 0x3FF;
@@ -70,14 +66,13 @@ void testValues(){
 
 	int size32 = (size + 31) / 32;
 	for(int i = 0; i < size32; i++){
-		if(DEBUG_LEVEL > 2) printf("%d: dst=0x%x\n", i, dst[i]);
+		DEBUG_PLOG_LEVEL_2("%d: dst=0x%x\n", i, dst[i]);
 		if(dst[i] != dst_ref){
-			if(DEBUG_LEVEL > 0) printf("Error!!\n");
-			if(DEBUG_LEVEL > 0) printf("0x%x!=0x%x\n", dst[i], dst_ref);
+			DEBUG_PLOG_ERROR("0x%x!=0x%x\n", dst[i], dst_ref);
 			return;
 		}
 	}
-	if(DEBUG_LEVEL > 0) printf("OK\n");
+	DEBUG_PLOG_LEVEL_0("Test values OK\n");
 }
 
 int main(){

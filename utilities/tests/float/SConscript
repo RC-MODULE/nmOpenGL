@@ -7,7 +7,7 @@ ROOT = "../.."
 
 use_gdb = int(ARGUMENTS.get('gdb', 0))
 legacy = int(ARGUMENTS.get('legacy', 1))
-debug_lvl = int(ARGUMENTS.get('debug_lvl', 0))
+debug_lvl = int(ARGUMENTS.get('debug_lvl', 1))
 #cross_compile = options.get('NMC_CROSS_COMPILE') or 'nmc-')
 
 # get environment and set variables
@@ -94,17 +94,18 @@ for test in os.listdir("."):
 		obj_main = nmc_mc12101.Object(str(path(test)/'main.cpp'))
 		target = nmc_mc12101.Program(str(path(test)/'board/main.abs'), [obj_main, str(path(src_dir)/f'{test}.o')])
 		nmc_mc12101.Depends(target, '$LINKSCRIPT')
+		Alias(test, target)
 		board_build_list.append(target)
 
 		qemu_target = qemu_env.Program(str(path(test)/'qemu/main.abs'), [obj_main, obj_asm])
 		qemu_env.Depends(qemu_target, '$LINKSCRIPT')
 		Alias(test+'-qemu', qemu_target)
-		qemu_build_list.append(qemu_target)		
+		qemu_build_list.append(qemu_target)
 
 		if legacy:
-			board_run = nmc_mc12101.Command(source = target, target = None, action='mc12101run $SOURCE')
+			board_run = nmc_mc12101.Command(source = target, target = None, action='mc12101run $SOURCE -q')
 		else:
-			board_run = nmc_mc12101.Command(source = target, target = None, action='mc12101run $SOURCE -a0 -p')
+			board_run = nmc_mc12101.Command(source = target, target = None, action='mc12101run $SOURCE -a0 -p -q')
 		Depends(board_run, target)
 		board_run_list.append(board_run)
 		Alias(test+'-run', board_run)

@@ -7,7 +7,7 @@ ROOT = "../.."
 
 use_gdb = int(ARGUMENTS.get('gdb', 0))
 legacy = int(ARGUMENTS.get('legacy', 1))
-debug_lvl = int(ARGUMENTS.get('debug_lvl', 0))
+debug_lvl = int(ARGUMENTS.get('debug_lvl', 1))
 #cross_compile = options.get('NMC_CROSS_COMPILE') or 'nmc-')
 
 # get environment and set variables
@@ -111,11 +111,11 @@ for test in os.listdir("."):
 		float_build_list.append(float_main)
 
 		if legacy:
-			board_fixed_run = nmc_fixed.Command(source = fixed_main, target = None, action='mc12101run $SOURCE -p')
-			board_float_run = nmc_float.Command(source = float_main, target = None, action='mc12101run $SOURCE')
+			board_fixed_run = nmc_fixed.Command(source = fixed_main, target = None, action='mc12101run $SOURCE -p -q')
+			board_float_run = nmc_float.Command(source = float_main, target = None, action='mc12101run $SOURCE -q')
 		else:
-			board_fixed_run = nmc_fixed.Command(source = fixed_main, target = None, action='mc12101run $SOURCE -a1 -p')
-			board_float_run = nmc_float.Command(source = float_main, target = None, action='mc12101run $SOURCE -a0 -p')
+			board_fixed_run = nmc_fixed.Command(source = fixed_main, target = None, action='mc12101run $SOURCE -a1 -p -q')
+			board_float_run = nmc_float.Command(source = float_main, target = None, action='mc12101run $SOURCE -a0 -p -q')
 		Depends(board_fixed_run, fixed_main)
 		Depends(board_float_run, float_main)
 		fixed_run_list.append(board_fixed_run)

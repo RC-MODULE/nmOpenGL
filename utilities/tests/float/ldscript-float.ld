@@ -133,11 +133,11 @@ SECTIONS
   } > EMI1
   .rpc_services : ALIGN(0x8)
   {
-    *(.rpc_services);
+    KEEP(*(.rpc_services))
   } > EMI1
   .rpc_services.bss : ALIGN(0x8)
   {
-    *(.rpc_services.bss);
+    KEEP(*(.rpc_services.bss))
   } > EMI1
   .heap (NOLOAD): ALIGN(0x8)
   {

@@ -1,6 +1,6 @@
 #pragma once
 #include "nmtype.h"
-
+#include "debugprint.h"
 
 struct Vector2 {
 	int x;
