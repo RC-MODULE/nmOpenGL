@@ -1,5 +1,4 @@
 #include "utility_float.h"
-#include "stdio.h"
 
 #define MAX_SIZE 1024
 #define STEP 2

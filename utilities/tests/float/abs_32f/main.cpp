@@ -1,5 +1,4 @@
 #include "utility_float.h"
-#include "stdio.h"
 #include "debugprint.h"
 
 #define MAX_SIZE 1024
@@ -48,6 +47,7 @@ void testValues(){
 }
 
 int main(){
+	printf("asdasdasd");
 	testSize();
 	testValues();
 	return 0;

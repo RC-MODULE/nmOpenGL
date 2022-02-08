@@ -3,6 +3,19 @@
 
 #include "stdio.h"
 
+/*#ifdef __QEMU_TEST
+#include "stdio.h"
+#else
+
+#ifdef __cplusplus
+extern "C"{
+#include "nm_printf.h"
+}
+#else
+#include "nm_printf.h"
+#endif
+
+#endif //*/
 
 
 #define DEBUG_PLOG_ERROR(...)    printf("%s:%d: error: ", __FILE__, __LINE__); printf(__VA_ARGS__);
