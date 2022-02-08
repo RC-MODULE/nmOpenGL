@@ -79,7 +79,6 @@ SECTIONS
 	{
 		*(.data);
 		*(SORT(.data._*))
-		*(SORT(.debug*))
 		*(SORT(.rodata.*))
 	} > EMI
 

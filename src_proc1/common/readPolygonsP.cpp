@@ -5,6 +5,7 @@
 #include "stdio.h"
 #include "service.h"
 #include "imagebuffer.h"
+#include "utility_fixed.h"
 
 //SECTION(".text_demo3d") void readPolygonsL(DataForNmpu1* data){
 SECTION(".text_demo3d") int getAddrPtrnsP(DataForNmpu1* data) {

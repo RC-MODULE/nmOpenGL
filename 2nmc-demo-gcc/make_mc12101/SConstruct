@@ -20,7 +20,7 @@ else:
 
 
 # get environment and set variables
-nmc_mc12101 = Environment(tools=['g++','gnulink', 'as', 'msvs'])
+nmc_mc12101 = Environment(tools=['g++','gcc', 'gnulink', 'as', 'msvs'])
 if vs == 'latest':
 	host_env = Environment(tools = ['msvc', 'msvs', 'mslink'], TARGET_ARCH = 'x86_64')
 else:
@@ -81,7 +81,7 @@ src_pc_include_dirs = [f"{MC12101}/include",f"{VSHELL}/include",f"{NMPP}/include
 
 
 # config compiler and linker
-nmc_mc12101['AS'] = 'nmc-as'
+nmc_mc12101['AS'] = 'nmc-gcc'
 
 nmc_mc12101['CC'] = 'nmc-gcc'
 nmc_mc12101['CXX'] = 'nmc-g++'
@@ -107,8 +107,8 @@ for i in range(2):
 
 nmc[0]['LIBS'] += ['nmpp-nmc4f']
 nmc[1]['LIBS'] += ['nmpp-nmc4']
-nmc[0]['ASFLAGS'] += Split('-q -split_sir -nmc4_float')
-nmc[1]['ASFLAGS'] += Split('-q -split_sir -nmc4_fixed')
+nmc[0]['ASFLAGS'] += Split('-c -mnmc4-float -g')
+nmc[1]['ASFLAGS'] += Split('-c -mnmc4-fixed -g')
 nmc[0]['CCFLAGS'] += ["-mnmc4-float", "-O0"]
 nmc[1]['CCFLAGS'] += ["-mnmc4-fixed", "-O2"]
 
@@ -134,6 +134,7 @@ for i in range(2):
 	all_cpp = [Glob(path(src_dir)/'*.cpp', strings = True) 	for src_dir in src_nm_dirs[i]]
 	all_c   = [Glob(path(src_dir)/'*.c', strings = True) 	for src_dir in src_nm_dirs[i]]
 	all_asm = [Glob(path(src_dir)/'*.asm', strings = True) 	for src_dir in src_nm_dirs[i]]
+	all_s   = [Glob(path(src_dir)/'*.s', strings = True) 	for src_dir in src_nm_dirs[i]]
 	all_h 	= [Glob(path(src_dir)/'*.h', strings = True) 	for src_dir in src_nm_include_dirs]
 
 
@@ -141,7 +142,8 @@ for i in range(2):
 	def obj_name (src): return str(f'obj/{Configuration}/nmc{i}/' + path(src).stem)
 	obj_cpp = [nmc[i].Object(obj_name(str(c)), c) for c in sum(all_cpp, [])]
 	obj_c   = [nmc[i].Object(obj_name(str(c)), c) for c in sum(all_c  , [])]
-	obj_asm = [nmc[i].Object(obj_name(str(s)), s) for s in sum(all_asm, [])]
+	obj_asm = [nmc[i].Object(obj_name(str(s)), s, ASFLAGS = nmc[i]['ASFLAGS'] + ['-mmas', '-Wa,-split_sir']) for s in sum(all_asm, [])]
+	obj_asm+= [nmc[i].Object(obj_name(str(s)), s, ASFLAGS = nmc[i]['ASFLAGS'] + ['-mgas']) for s in sum(all_s, [])]
 
 	# link target
 	prog = nmc[i].Program(TARGETS[i] + ".abs", [obj_cpp, obj_asm, all_c])

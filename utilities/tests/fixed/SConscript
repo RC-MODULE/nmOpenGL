@@ -13,8 +13,10 @@ debug_lvl = int(ARGUMENTS.get('debug_lvl', 1))
 # get environment and set variables
 nmc_mc12101 = Environment(tools=['g++', 'gcc','gnulink', 'as'])
 
-nmc_mc12101['ENV']['PATH'] = os.environ['PATH']
+#nmc_mc12101['ENV']['PATH'] = os.environ['PATH']
+#NMC_GCC_TOOLPATH = 'd:\\download\\NMC_Mingw'
 NMC_GCC_TOOLPATH = os.environ['NMC_GCC_TOOLPATH']
+MC12101 = os.environ['MC12101']
 NMPP = os.environ['NMPP']
 HAL = os.environ['HAL']
 ARCH = 'nmc4'
@@ -24,8 +26,7 @@ nmc_mc12101['ROOT'] = ROOT
 nmc_mc12101['NMC_GCC_TOOLPATH'] = NMC_GCC_TOOLPATH
 nmc_mc12101['NMPP'] = NMPP
 nmc_mc12101['HAL'] = HAL
-nmc_mc12101['MC12101'] = os.environ['MC12101']
-nmc_mc12101['ENV']['PATH'] += "$MC12101/bin"
+nmc_mc12101['MC12101'] = MC12101
 nmc_mc12101['ARCH'] = ARCH
 nmc_mc12101['CORE'] = CORE
 
@@ -34,13 +35,15 @@ gcc_exec_prefix = gcc_exec_prefix.replace("\\","/")
 nmc_mc12101['ENV']['GCC_EXEC_PREFIX'] = gcc_exec_prefix
 nmc_mc12101.PrependENVPath('PATH', f'{NMC_GCC_TOOLPATH}/nmc4-ide/bin')
 nmc_mc12101.PrependENVPath('PATH', f'{NMC_GCC_TOOLPATH}/nmc4-ide/lib')
+nmc_mc12101.PrependENVPath('PATH', f'{MC12101}/bin')
+nmc_mc12101.PrependENVPath('PATH', f'{NMC_GCC_TOOLPATH}/nmc4-ide/bin')
 
 
 # assembler
 #nmc_mc12101['AS'] = 'nmc-as'
 #nmc_mc12101['ASFLAGS'] = ['-q', '-split_sir', f'-{ARCH}_{CORE}', '-ga']
 nmc_mc12101['AS'] = 'nmc-gcc'
-nmc_mc12101['ASFLAGS'] = ['-c', f'-m{ARCH}-{CORE}', '-g']
+nmc_mc12101['ASFLAGS'] = ['-c', f'-m{ARCH}-{CORE}', '-g' ]
 
 # compiler
 nmc_mc12101['CC'] = 'nmc-gcc'
@@ -66,7 +69,8 @@ obj_s   = [nmc_mc12101.Object(s, ASFLAGS = nmc_mc12101['ASFLAGS'] + ['-mgas']) f
 
 # linker
 #nmc_mc12101['WHOLELIBS'] = ["-lmc12101load_nm", "-lnm_io"]
-nmc_mc12101['WHOLELIBS'] = ["-lmc12101"]
+nmc_mc12101['WHOLELIBS'] = ["-lmc12101load_nm"]
+#nmc_mc12101['WHOLELIBS'] = ["-lmc12101"]
 nmc_mc12101['LINK'] = 'nmc-gcc'
 nmc_mc12101['LIBPATH'] = ['$MC12101/lib', '$NMC_GCC_TOOLPATH/nmc4-ide/lib', '$NMPP/lib' ]
 nmc_mc12101['LIBS'] = ['nmpp-nmc4' ]
@@ -97,12 +101,12 @@ qemu_build_list = []
 for test in os.listdir("."):
 	if os.path.isdir(test) and test != 'obj':
 		obj_main = nmc_mc12101.Object(Glob(path(test)/'main.c*'))
-		target = nmc_mc12101.Program(str(path(test)/'board/main.abs'), [obj_main, str(path(src_dir)/f'{test}.o')])
+		target = nmc_mc12101.Program(str(path(test)/'board/main.abs'), [obj_main, obj_cpp, obj_c, obj_s, obj_asm])
 		nmc_mc12101.Depends(target, '$LINKSCRIPT')
 		Alias(test, target)
 		board_build_list.append(target)
 
-		qemu_target = qemu_env.Program(str(path(test)/'qemu/main.abs'), [obj_main, obj_asm])
+		qemu_target = qemu_env.Program(str(path(test)/'qemu/main.abs'), [obj_main, obj_cpp, obj_c, obj_s, obj_asm])
 		qemu_env.Depends(qemu_target, '$LINKSCRIPT')
 		Alias(test+'-emu', qemu_target)
 		qemu_build_list.append(qemu_target)

@@ -4,6 +4,7 @@
 #include "nmgldef.h"
 #include "stdio.h"
 #include "service.h"
+#include "utility_fixed.h"
 #include "imagebuffer.h"
 
 
