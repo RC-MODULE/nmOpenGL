@@ -18,7 +18,7 @@ extern "C"{
 #endif //*/
 
 
-#define DEBUG_PLOG_ERROR(...)    printf("%s:%d: error: ", __FILE__, __LINE__); printf(__VA_ARGS__);
+#define DEBUG_PLOG_ERROR(...)    { printf("%s:%d: error: ", __FILE__, __LINE__); printf(__VA_ARGS__); }
 #define DEBUG_PLOG_LEVEL_0(...)  if(DEBUG_LEVEL > 0) { printf("%s:%d: ", __FILE__, __LINE__); printf(__VA_ARGS__); }
 #define DEBUG_PLOG_LEVEL_1(...)  if(DEBUG_LEVEL > 1) { printf("%s:%d: ", __FILE__, __LINE__); printf(__VA_ARGS__); }
 #define DEBUG_PLOG_LEVEL_2(...)  if(DEBUG_LEVEL > 2) { printf("%s:%d: ", __FILE__, __LINE__); printf(__VA_ARGS__); }

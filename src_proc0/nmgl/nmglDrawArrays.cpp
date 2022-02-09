@@ -9,6 +9,7 @@
 #include "stdio.h"
 #include "imagebuffer.h"
 #include "service.h"
+#include "utility_float.h"
 
 #include "nmprofiler.h"
 

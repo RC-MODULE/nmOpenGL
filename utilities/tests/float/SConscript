@@ -10,8 +10,12 @@ legacy = int(ARGUMENTS.get('legacy', 1))
 debug_lvl = int(ARGUMENTS.get('debug_lvl', 1))
 #cross_compile = options.get('NMC_CROSS_COMPILE') or 'nmc-')
 
+dump_builder = Builder(action = 'nmc-objdump -d -s -x -l $SOURCE > $TARGET', suffix = '.dump', src_suffix = '.o')
+
 # get environment and set variables
 nmc_mc12101 = Environment(tools=['g++', 'gcc','gnulink', 'as'])
+nmc_mc12101['BUILDERS']['Dump'] = dump_builder
+#nmc_mc12101.Clean(dump_builder)
 
 #nmc_mc12101['ENV']['PATH'] = os.environ['PATH']
 #NMC_GCC_TOOLPATH = 'd:\\download\\NMC_Mingw'
@@ -30,13 +34,15 @@ nmc_mc12101['MC12101'] = MC12101
 nmc_mc12101['ARCH'] = ARCH
 nmc_mc12101['CORE'] = CORE
 
-gcc_exec_prefix = f"/cygdrive/{NMC_GCC_TOOLPATH}/nmc4-ide/lib/gcc/".replace(":","")
-gcc_exec_prefix = gcc_exec_prefix.replace("\\","/")
-nmc_mc12101['ENV']['GCC_EXEC_PREFIX'] = gcc_exec_prefix
-nmc_mc12101.PrependENVPath('PATH', f'{NMC_GCC_TOOLPATH}/nmc4-ide/bin')
-nmc_mc12101.PrependENVPath('PATH', f'{NMC_GCC_TOOLPATH}/nmc4-ide/lib')
 nmc_mc12101.PrependENVPath('PATH', f'{MC12101}/bin')
-nmc_mc12101.PrependENVPath('PATH', f'{NMC_GCC_TOOLPATH}/nmc4-ide/bin')
+
+if nmc_mc12101['PLATFORM'] == 'win32':
+	gcc_exec_prefix = f"/cygdrive/{NMC_GCC_TOOLPATH}/nmc4-ide/lib/gcc/".replace(":","")
+	gcc_exec_prefix = gcc_exec_prefix.replace("\\","/")
+	nmc_mc12101['ENV']['GCC_EXEC_PREFIX'] = gcc_exec_prefix
+	nmc_mc12101.PrependENVPath('PATH', f'{NMC_GCC_TOOLPATH}/nmc4-ide/bin')
+	nmc_mc12101.PrependENVPath('PATH', f'{NMC_GCC_TOOLPATH}/nmc4-ide/lib')	
+	nmc_mc12101.PrependENVPath('PATH', f'{NMC_GCC_TOOLPATH}/nmc4-ide/bin')
 
 
 # assembler
@@ -66,6 +72,15 @@ obj_cpp = [nmc_mc12101.Object(c) for c in all_cpp]
 obj_c   = [nmc_mc12101.Object(c) for c in all_c]
 obj_asm = [nmc_mc12101.Object(s, ASFLAGS = nmc_mc12101['ASFLAGS'] + ['-mmas']) for s in all_asm]
 obj_s   = [nmc_mc12101.Object(s, ASFLAGS = nmc_mc12101['ASFLAGS'] + ['-mgas']) for s in all_s]
+dump_list =[]
+for objects in [obj_cpp, obj_s, obj_asm, obj_s]:
+	for obj in objects:
+		dump = nmc_mc12101.Dump(obj)
+		dump_list.append(dump)
+		#Alias(obj + '-dump', dump)
+Alias('dump', dump_list)
+Clean('dump', dump_list)
+
 
 # linker
 #nmc_mc12101['WHOLELIBS'] = ["-lmc12101load_nm", "-lnm_io"]

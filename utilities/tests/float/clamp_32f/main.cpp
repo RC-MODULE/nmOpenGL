@@ -16,7 +16,7 @@ void testSize(){
 		dst[i] = 0xCDCDCDCD;
 	}
 	for(int size = 0; size < MAX_SIZE; size+=STEP){
-		abs_32f(src, dst, size);
+		clamp_32f(src, -1, 1, dst, size);
 		if(dst[size] != 0xCDCDCDCD){
 			DEBUG_PLOG_ERROR("overflow (size=%d)\n", size);
 			return;
@@ -32,12 +32,16 @@ void testSize(){
 
 void testValues(){
 	src[0] = 0;
-	src[1] = -3;
-	src[2] = 4;
+	src[1] = 0.5;
+	src[2] = -0.75;
 	src[3] = -1;
-	float ref_values[4] = {0, 3, 4, 1};
-	abs_32f(src, dst, 4);
-	for(int i = 0; i < 4; i++){
+	src[4] = 1;
+	src[5] = -2;
+	src[6] = 3;
+	src[7] = -1000;
+	float ref_values[8] = {0, 0.5, -0.75, -1, 1, -1, 1, -1};
+	clamp_32f(src, -1, 1, dst, 8);
+	for(int i = 0; i < 8; i++){
 		if(dst[i] != ref_values[i]){
 			DEBUG_PLOG_ERROR("%f!=%f\n", dst[i], ref_values[i]);
 			return;

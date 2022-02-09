@@ -7,6 +7,7 @@
 #include <math.h>
 #include <float.h> //TODO: only FLT_EPSILON is used from float.h
 #include "filter.h"
+#include "utility_float.h"
 
 #define TEXTURE_TRIANGLE_SECTION ".text"
 

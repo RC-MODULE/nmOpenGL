@@ -5,6 +5,7 @@
 #include "imagebuffer.h"
 #include "cache.h"
 #include "nmprofiler.h"
+#include "utility_fixed.h"
 
 int totalSum(nm32s* pVec, int size);
 
