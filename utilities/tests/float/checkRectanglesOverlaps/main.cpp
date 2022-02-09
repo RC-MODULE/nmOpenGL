@@ -1,4 +1,5 @@
 #include "utility_float.h"
+#include "debugprint.h"
 
 
 #define MAX_SIZE 1024
@@ -76,6 +77,7 @@ void testValues(){
 }
 
 int main(){
+	DEBUG_PLOG_FILE();
 	testValues();
 	testSize();
 	return 0;

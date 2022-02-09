@@ -1,6 +1,6 @@
-#pragma once
+#ifndef __UTILITY_H__
+#define __UTILITY_H__
 #include "nmtype.h"
-#include "debugprint.h"
 
 struct Vector2 {
 	int x;
@@ -125,3 +125,7 @@ extern "C"{
 #ifdef __cplusplus
 }
 #endif //__cplusplus
+
+
+
+#endif //__UTILITY_H__

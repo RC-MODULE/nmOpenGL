@@ -4,13 +4,13 @@
  */
  //void cnv32f_v3v4(nm32f* src_v3nm32f, float value4, nm32f* dst_v4nm32f, int size) 
 
-global _cnv32f_v3v4: label;
+.global _cnv32f_v3v4
 
 
 //a0,a1,a2,b0,b1,b2 -> c0,c1,c2,v, d0,d1,d2, v
-begin ".text_demo3d"
-<_cnv32f_v3v4>
-	ar5 = sp - 2;
+.section .text_demo3d,"ax",@progbits
+_cnv32f_v3v4:
+	ar5 = ar7 - 2;
 	push ar0, gr0;
 	push ar1, gr1;
 	push ar2, gr2;
@@ -42,7 +42,7 @@ begin ".text_demo3d"
 	if =0 delayed goto AfterRep32	with gr1 >>= 27;
 		ar2 = ar0;
 		gr2 = ar6;
-<NextRep32>
+NextRep32:
 	//a0,a1 -> c1,c2
 	ar1 = ar2;
 	ar4 = gr2;
@@ -77,7 +77,7 @@ begin ".text_demo3d"
 	if > delayed goto NextRep32;
 		fpu 2 .packer = (vreg2,vreg3) with .float <= .double;
 		fpu rep 32 [ar6++gr6] = .packer;
-<AfterRep32>	
+AfterRep32:
 	gr1--;
 	if < delayed goto EndProgram;
 		vlen = gr1;
@@ -88,6 +88,7 @@ begin ".text_demo3d"
 	ar4 = gr2;
 	ar0 = ar1;
 	ar6 = ar4;
+	//a0, a1 -> c0, c1
 	fpu 0 rep vlen vreg0 = [ar0++gr0];
 	fpu 0 rep vlen [ar6++gr6] = vreg0;	
 	//a2, b0 -> double
@@ -114,7 +115,7 @@ begin ".text_demo3d"
 	fpu 2 vreg2 = fpu 2 vreg1;
 	fpu 2 .packer = (vreg2,vreg3) with .float <= .double;
 	fpu rep vlen [ar6++gr6] = .packer;
-<EndProgram>	
+EndProgram:	
 //последний элемент, если размер нечетный
 	gr4;
 	if =0 delayed goto EndEnd;
@@ -129,7 +130,7 @@ begin ".text_demo3d"
 	gr7 = [ar0++];
 	[ar6++] = gr7;
 	[ar6++] = gr1;
-<EndEnd>
+EndEnd:
 	
 	pop ar6, gr6;
 	pop ar5, gr5;
@@ -138,4 +139,3 @@ begin ".text_demo3d"
 	pop ar1, gr1;
 	pop ar0, gr0;
 	return;
-end ".text_demo3d";

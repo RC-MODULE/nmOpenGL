@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __UTILITY_FLOAT_H__
+#define __UTILITY_FLOAT_H__
 #include "utility.h"
 
 #ifdef __cplusplus
@@ -163,8 +164,6 @@ extern "C"{
 	 //! \{
 	void cnv32f_v3v4(const nm32f* srcVec, nm32f* dstVec, float value4, int size);
 	 //! \}
-
-
 
 	/*!
 	 *  \ingroup service_api
@@ -925,3 +924,6 @@ extern "C"{
 #ifdef __cplusplus
 }
 #endif //_cplusplus
+
+
+#endif //__UTILITY_FLOAT_H__

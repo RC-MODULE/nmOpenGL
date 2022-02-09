@@ -51,6 +51,7 @@ void testValues(){
 }
 
 int main(){
+	DEBUG_PLOG_FILE();
 	testSize();
 	testValues();
 	return 0;

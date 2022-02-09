@@ -1,7 +1,7 @@
-
+#include "asdasd"
 //void copyPacket_32s(nm32s** pSrc, nm32s** pDst, int* size, int count);
 
-.macro copy_repN N
+.macro copy_repN N, asdadssdasdsdas
 	if > delayed goto Next;
 		rep \N data=[ar0++]	with data;
 		rep \N [ar6++] = afifo;
@@ -20,7 +20,6 @@ _copyPacket_32u:
 	push ar1,gr1;
 	push ar2,gr2;
 	push ar6,gr6;
-//	startCopy: label;
 	
 	ar1 = [--ar5];
 	ar2 = [--ar5];
