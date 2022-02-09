@@ -6,6 +6,7 @@
 #include "nmpp.h"
 #include "nmblas.h"
 #include "demo3d_nm0.h"
+#include "utility_float.h"
 
 
 

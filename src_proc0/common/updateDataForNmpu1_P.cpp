@@ -4,6 +4,7 @@
  */
 #include "demo3d_nm0.h"
 #include "nmpp.h"
+#include "utility_float.h"
 
 
 #include "stdio.h"

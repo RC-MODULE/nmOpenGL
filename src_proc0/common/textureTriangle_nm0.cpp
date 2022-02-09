@@ -970,7 +970,7 @@ void textureTriangle(TrianglesInfo* triangles, nm32s* pDstTriangle, int count)
 #ifdef DEBUG
         if (primWidth > 32) 
             printf ("%s: Warning: primWidth is greater than 32 but some functions (getPixelLinearVec) in that function can work only for primWidth <= 32\n\r");
-#endif DEBUG
+#endif //DEBUG
 
 #ifdef PERSPECTIVE_CORRECT        
         // Compute some coefficients.

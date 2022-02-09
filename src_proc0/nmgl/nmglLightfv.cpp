@@ -1,6 +1,7 @@
 #include "demo3d_nm0.h"
 #include "nmgl.h"
 #include "lighting.h"
+#include "utility_float.h"
 
 
 #pragma code_section ".text_nmgl"

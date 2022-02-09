@@ -10,6 +10,7 @@
 #include "stdio.h"
 #include "nmblas.h"
 #include "assert.h"
+#include "utility_float.h"
 
 
 

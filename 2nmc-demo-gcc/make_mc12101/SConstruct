@@ -180,7 +180,7 @@ Alias('host', host)
 Default(host)
 
 #print(host)
-run_host = host_env.Command(source = host, target = None, action=host)
+run_host = host_env.Command(source = host, target = None, action='$SOURCE')
 Depends(run_host, [host, nmc_programs])
 Alias('run', run_host)
 
