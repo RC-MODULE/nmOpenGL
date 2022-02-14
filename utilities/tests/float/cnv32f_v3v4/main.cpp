@@ -1,5 +1,6 @@
 #include "utility_float.h"
 #include "debugprint.h"
+#include "uassert.h"
 
 #define MAX_SIZE 1024
 #define INIT_DST_VALUE -1
@@ -38,10 +39,11 @@ void testValue(){
 
 	cnv32f_v3v4(src, dst, 2, 4);
 	for(int i = 0; i < 12; i++){
-		if (dst[i] != dst_ref[i]){
-			DEBUG_PLOG_ERROR("%f!=%f\n", dst[i], dst_ref[i]);
-			return;
-		}
+		uassert(dst[i] == dst_ref[i]);
+		// if (dst[i] != dst_ref[i]){
+		// 	DEBUG_PLOG_ERROR("%f!=%f\n", dst[i], dst_ref[i]);
+		// 	return;
+		// }
 	}
 	DEBUG_PLOG_LEVEL_0("Test value OK\n");
 }
@@ -53,16 +55,18 @@ void testSize(){
 	}
 	for(int size = 0; size < MAX_SIZE; size += STEP){
 		cnv32f_v3v4(src, dst, 4, size);
-		if (dst[4 * size] != INIT_DST_VALUE){
-			DEBUG_PLOG_ERROR("overflow (size=%d)\n", size);
-			DEBUG_PLOG_LEVEL_1("dst[%4d]: {%f, %f, %f, %f}\n", size, dst[4 * size + 0], dst[4 * size + 1], dst[4 * size + 2], dst[4 * size + 3]);
-			return;
-		}
+		uassert(dst[4 * size] == INIT_DST_VALUE);
+		// if (dst[4 * size] != INIT_DST_VALUE){
+		// 	DEBUG_PLOG_ERROR("overflow (size=%d)\n", size);
+		// 	DEBUG_PLOG_LEVEL_1("dst[%4d]: {%f, %f, %f, %f}\n", size, dst[4 * size + 0], dst[4 * size + 1], dst[4 * size + 2], dst[4 * size + 3]);
+		// 	return;
+		// }
 		if (size == 0) continue;
-		if (dst[4 * size - 1] == INIT_DST_VALUE){
-			DEBUG_PLOG_ERROR("underflow (size=%d)\n", size);
-			return;
-		}
+		uassert(dst[4 * size - 1] != INIT_DST_VALUE);
+		// if (dst[4 * size - 1] == INIT_DST_VALUE){
+		// 	DEBUG_PLOG_ERROR("underflow (size=%d)\n", size);
+		// 	return;
+		// }
 	}
 	DEBUG_PLOG_LEVEL_0("Test size OK\n");
 }

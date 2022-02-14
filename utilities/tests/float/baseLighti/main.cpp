@@ -2,6 +2,7 @@
 #include "debugprint.h"
 #include "section-hal.h"
 #include "utility_float.h"
+#include "uassert.h"
 
 
 #define SIZE 1024
@@ -34,11 +35,12 @@ void testValue(){
 
 	v4nm32f dst_ref = {13, 10, 7, 4};
 	for(int i=0; i < 4; i++){
-		if (dst[0].vec[i] != dst_ref.vec[i]) { 
-			DEBUG_PLOG_ERROR("%f!=%f\n", dst[0].vec[i], dst_ref.vec[i]); 	
-			DEBUG_PLOG_LEVEL_1("dst={%f,%f,%f,%f}\n", dst[0].vec[0], dst[0].vec[1], dst[0].vec[2], dst[0].vec[3]);
-			return;
-		}
+		uassert(dst[0].vec[i] == dst_ref.vec[i]);
+		// if (dst[0].vec[i] != dst_ref.vec[i]) { 
+		// 	DEBUG_PLOG_ERROR("%f!=%f\n", dst[0].vec[i], dst_ref.vec[i]); 	
+		// 	DEBUG_PLOG_LEVEL_1("dst={%f,%f,%f,%f}\n", dst[0].vec[0], dst[0].vec[1], dst[0].vec[2], dst[0].vec[3]);
+		// 	return;
+		// }
 	}
 	DEBUG_PLOG_LEVEL_0("testValue OK\n");
 }

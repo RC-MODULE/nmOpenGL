@@ -1,5 +1,6 @@
 #include "utility_float.h"
 #include "debugprint.h"
+#include "uassert.h"
 
 
 #define MAX_SIZE 1024
@@ -32,15 +33,17 @@ void testSize(){
 
 		int maskSize = (size + 31) / 32;
 
-		if(dst[maskSize] != 0xCDCDCDCD){
-			DEBUG_PLOG_ERROR("overflow (size=%d)\n", size);
-			return;
-		}
+		uassert(dst[maskSize] == 0xCDCDCDCD);
+		// if(dst[maskSize] != 0xCDCDCDCD){
+		// 	DEBUG_PLOG_ERROR("overflow (size=%d)\n", size);
+		// 	return;
+		// }
 		if(maskSize == 0) continue;
-		if (dst[maskSize - 1] == 0xCDCDCDCD){
-			DEBUG_PLOG_ERROR("overflow (size=%d)\n", size);
-			return;
-		}
+		uassert(dst[maskSize - 1] != 0xCDCDCDCD);
+		// if (dst[maskSize - 1] == 0xCDCDCDCD){
+		// 	DEBUG_PLOG_ERROR("overflow (size=%d)\n", size);
+		// 	return;
+		// }
 	}
 	DEBUG_PLOG_LEVEL_0("Test size OK\n");
 }
@@ -68,10 +71,12 @@ void testValues(){
 	int size32 = (size + 31) / 32;
 	for(int i = 0; i < size32; i++){
 		DEBUG_PLOG_LEVEL_2("%d: dst=0x%x\n", i, dst[i]);
-		if(dst[i] != dst_ref){
-			DEBUG_PLOG_ERROR("0x%x!=0x%x\n", dst[i], dst_ref);
-			return;
-		}
+
+		uassert(dst[i] == dst_ref);
+		// if(dst[i] != dst_ref){
+		// 	DEBUG_PLOG_ERROR("0x%x!=0x%x\n", dst[i], dst_ref);
+		// 	return;
+		// }
 	}
 	DEBUG_PLOG_LEVEL_0("Test values OK\n");
 }

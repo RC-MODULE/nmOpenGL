@@ -82,11 +82,14 @@ Clean('dump', dump_list)
 
 
 # linker
-#nmc_mc12101['WHOLELIBS'] = ["-lmc12101load_nm", "-lnm_io"]
-#nmc_mc12101['WHOLELIBS'] = ["-lmc12101load_nm"]
-nmc_mc12101['WHOLELIBS'] = ["-lmc12101"]
 nmc_mc12101['LINK'] = 'nmc-gcc'
-nmc_mc12101['LIBPATH'] = ['$MC12101/lib', '$NMC_GCC_TOOLPATH/nmc4-ide/lib', '$NMPP/lib' ]
+if legacy:
+	nmc_mc12101['WHOLELIBS'] = ["-lmc12101"]
+	nmc_mc12101['LIBPATH'] = ['$MC12101/lib', '$NMC_GCC_TOOLPATH/nmc4-ide/lib', '$NMPP/lib' ]
+else:
+	#nmc_mc12101['WHOLELIBS'] = ["-lmc12101load_nm", "-lnm_io"]
+	nmc_mc12101['WHOLELIBS'] = ["-lmc12101load_nm"]
+	nmc_mc12101['LIBPATH'] = ['$MC12101/lib', '$NMPP/lib' ]
 nmc_mc12101['LIBS'] = ['nmpp-nmc4f' ]
 nmc_mc12101['LINKSCRIPT'] = [File(f'ldscript-{CORE}.ld')]
 nmc_mc12101['LINKFLAGS'] = ["-Wl,-T$LINKSCRIPT"]

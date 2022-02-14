@@ -3,11 +3,11 @@
  *  \author Zhilenkov Ivan
  */
 //void dotMulC_Add_v4nm32f(v2nm32f* n_dot_VP, v4nm32f* srcDiffuse, v4nm32f* addVec, v4nm32f* dst, int size);
-global _dotMulC_Add_v4nm32f: label;
+.global _dotMulC_Add_v4nm32f
 
-begin ".text_demo3d"
-<_dotMulC_Add_v4nm32f>
-	ar5 = ar7-2	;
+.section .text_demo3d,"ax",@progbits
+_dotMulC_Add_v4nm32f:
+	ar5 = ar7 - 2;
 	push ar0,gr0	with gr7 = false;
 	push ar1,gr1	with gr7++;
 	push ar2,gr2;
@@ -31,7 +31,7 @@ begin ".text_demo3d"
 	if =0 delayed goto AfterRep32;	
 		
 		gr7--;
-<NextRep32>
+NextRep32:
 	fpu 0 rep 32 vreg0 = [ar0++];
 	fpu 1 rep 32 vreg2 = [ar4++gr4];
 	fpu 0 rep 32 vreg2 = [ar3++gr3];
@@ -41,7 +41,7 @@ begin ".text_demo3d"
 	if > delayed goto NextRep32	with gr7--;
 		fpu 0 rep 32 [ar6++gr6] = vreg6;
 		fpu 1 rep 32 [ar5++gr5] = vreg6;
-<AfterRep32>	
+AfterRep32:
 	gr0;
 	if < delayed goto EndProgram;
 		nul;
@@ -57,7 +57,7 @@ begin ".text_demo3d"
 	fpu 1 .float vreg6 = vreg0*vreg1 + vreg2;
 	fpu 0 rep vlen [ar6++gr6] = vreg6;
 	fpu 1 rep vlen [ar5++gr5] = vreg6;
-<EndProgram>	
+EndProgram:
 	pop ar6,gr6;
 	pop ar5,gr5;
 	pop ar4,gr4;
@@ -66,4 +66,3 @@ begin ".text_demo3d"
 	pop ar1,gr1;
 	pop ar0,gr0;
 	return;
-end ".text_demo3d";

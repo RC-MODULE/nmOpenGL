@@ -1,5 +1,6 @@
 #include "utility_float.h"
 #include "debugprint.h"
+#include "uassert.h"
 
 #define MAX_SIZE 1024
 #define STEP 2
@@ -36,21 +37,15 @@ void testSize(){
 
 		for (int i = 0; i < 4; i++)
 		{
-			if(dst[size].vec[i] != INIT_DST_VALUE){
-				DEBUG_PLOG_ERROR("overflow(size=%d)\n", size);
-				return;
-			}
+			uassert(dst[size].vec[i] == INIT_DST_VALUE);
 		}
 
 		if(size == 0) continue;
 		for (int i = 0; i < 4; i++){
-			if (dst[size - 1].vec[i] == INIT_DST_VALUE){
-				DEBUG_PLOG_ERROR("underflow (size=%d)\n", size);
-				return;
-			}
+			uassert(dst[size - 1].vec[i] != INIT_DST_VALUE);
 		}
 	}
-	DEBUG_PLOG_LEVEL_0("testSize OK\n");
+	DEBUG_PLOG_LEVEL_0("Size test OK\n");
 }
 
 void testValues(){
@@ -61,10 +56,7 @@ void testValues(){
 	addC_v4nm32f(src, &srcC, dst, 1);
 
 	for(int i = 0; i < 4; i++){
-		if(dst[0].vec[i] != ref_values.vec[i]){
-			DEBUG_PLOG_ERROR("%d!=%d\n", dst[0].vec[i], ref_values.vec[i]);
-			return;
-		}
+		uassert(dst[0].vec[i] == ref_values.vec[i]);
 	}
 	DEBUG_PLOG_LEVEL_0("Test values OK\n");
 }
