@@ -82,8 +82,8 @@ Clean('dump', dump_list)
 
 # linker
 #nmc_mc12101['WHOLELIBS'] = ["-lmc12101load_nm", "-lnm_io"]
-nmc_mc12101['WHOLELIBS'] = ["-lmc12101load_nm"]
-#nmc_mc12101['WHOLELIBS'] = ["-lmc12101"]
+#nmc_mc12101['WHOLELIBS'] = ["-lmc12101load_nm"]
+nmc_mc12101['WHOLELIBS'] = ["-lmc12101"]
 nmc_mc12101['LINK'] = 'nmc-gcc'
 nmc_mc12101['LINKCOM'] += ' -Wl,--whole-archive $WHOLELIBS -Wl,--no-whole-archive'
 nmc_mc12101['LIBPATH'] = ['$NMC_GCC_TOOLPATH/nmc4-ide/lib', '$NMPP/lib', '$MC12101/lib']
@@ -106,12 +106,15 @@ qemu_env = nmc_fixed.Clone()
 
 if use_gdb:
 	print("stub lib is used")
-	nmc_fixed['MC12101_GDB'] = os.environ['MC12101_GDB']
-	nmc_float['MC12101_GDB'] = os.environ['MC12101_GDB']
-	nmc_fixed['LIBPATH'] += ['$MC12101_GDB']
-	nmc_float['LIBPATH'] += ['$MC12101_GDB']
-	nmc_fixed['WHOLELIBS'] += [f'-lmc12101_stub_nmc4_fixed']
-	nmc_float['WHOLELIBS'] += [f'-lmc12101_stub_nmc4_float']
+	if 'MC12101_GDB' in os.environ:
+		nmc_fixed['MC12101_GDB'] = os.environ['MC12101_GDB']
+		nmc_float['MC12101_GDB'] = os.environ['MC12101_GDB']
+		nmc_fixed['LIBPATH'] += ['$MC12101_GDB']
+		nmc_float['LIBPATH'] += ['$MC12101_GDB']
+		nmc_fixed['WHOLELIBS'] += [f'-lmc12101_stub_nmc4_fixed']
+		nmc_float['WHOLELIBS'] += [f'-lmc12101_stub_nmc4_float']
+	else:
+		print("Warning: value MC12101_GDB not found")
 else: 
 	print("stub lib is not used")
 

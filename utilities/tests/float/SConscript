@@ -83,8 +83,8 @@ Clean('dump', dump_list)
 
 # linker
 #nmc_mc12101['WHOLELIBS'] = ["-lmc12101load_nm", "-lnm_io"]
-nmc_mc12101['WHOLELIBS'] = ["-lmc12101load_nm"]
-#nmc_mc12101['WHOLELIBS'] = ["-lmc12101"]
+#nmc_mc12101['WHOLELIBS'] = ["-lmc12101load_nm"]
+nmc_mc12101['WHOLELIBS'] = ["-lmc12101"]
 nmc_mc12101['LINK'] = 'nmc-gcc'
 nmc_mc12101['LIBPATH'] = ['$MC12101/lib', '$NMC_GCC_TOOLPATH/nmc4-ide/lib', '$NMPP/lib' ]
 nmc_mc12101['LIBS'] = ['nmpp-nmc4f' ]
