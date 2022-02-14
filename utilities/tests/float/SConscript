@@ -4,7 +4,6 @@ from pathlib import Path as path
 ROOT = "../.."
 
 
-
 use_gdb = int(ARGUMENTS.get('gdb', 0))
 legacy = int(ARGUMENTS.get('legacy', 1))
 debug_lvl = int(ARGUMENTS.get('debug_lvl', 1))
@@ -102,9 +101,12 @@ nmc_mc12101['LIBS'] += ['hal-mc12101']
 
 if use_gdb:
 	print("stub lib is used")
-	nmc_mc12101['MC12101_GDB'] = os.environ['MC12101_GDB']
-	nmc_mc12101['LIBPATH'] += ['$MC12101_GDB']
-	nmc_mc12101['WHOLELIBS'] += [f'-lmc12101_stub_{ARCH}_{CORE}']
+	if 'MC12101_GDB' in os.environ:
+		nmc_mc12101['MC12101_GDB'] = os.environ['MC12101_GDB']
+		nmc_mc12101['LIBPATH'] += ['$MC12101_GDB']
+		nmc_mc12101['WHOLELIBS'] += [f'-lmc12101_stub_{ARCH}_{CORE}']
+	else:
+		print("Warning: value MC12101_GDB not found")
 else: 
 	print("stub lib is not used")
 

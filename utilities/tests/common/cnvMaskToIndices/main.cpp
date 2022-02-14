@@ -1,5 +1,6 @@
 #include "utility.h"
 #include "stdio.h"
+#include "debugprint.h"
 #include "section-hal.h"
 
 #define MAX_SIZE 1024

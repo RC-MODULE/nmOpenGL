@@ -1,5 +1,6 @@
 #include "utility_float.h"
 #include "debugprint.h"
+#include "uassert.h"
 
 #define MAX_SIZE 1024
 #define STEP 2
@@ -27,15 +28,12 @@ void testSize(){
 
 	for(int size = 0; size < MAX_SIZE; size+=STEP){
 		absIfNegElse0_32f(src, dst, size);
-		if(dst[size] != INIT_DST_VALUE){
-			DEBUG_PLOG_ERROR("overflow (size=%d)\n", size);
-			return;
-		}
+
+		m_uassert(dst[size] == INIT_DST_VALUE, "overflow: size=%d\n", size);
+
 		if(size == 0) continue;
-		if(dst[size - 1] == INIT_DST_VALUE){
-			DEBUG_PLOG_ERROR("underflow (size=%d)\n", size);
-			return;
-		}
+
+		m_uassert(dst[size - 1] != INIT_DST_VALUE, "underflow: size=%d\n", size);
 	}
 	DEBUG_PLOG_LEVEL_0("Test size OK\n");
 }
@@ -47,17 +45,14 @@ void testValues(){
 	src[1] = -3;
 	src[2] = 4;
 	src[3] = -1;
-	float ref_values[4] = {0, 3, 0, 1};
+	float expected[4] = {0, 3, 0, 1};
 
 
 	absIfNegElse0_32f(src, dst, 4);
 
 
 	for(int i = 0; i < 4; i++){
-		if(dst[i] != ref_values[i]){
-			DEBUG_PLOG_ERROR("%f!=%f\n", dst[i], ref_values[i]);
-			return;
-		}
+		uassert(dst[i] == expected[i]);
 	}
 	DEBUG_PLOG_LEVEL_0("Test values OK\n");
 }

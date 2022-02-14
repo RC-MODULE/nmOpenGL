@@ -1,5 +1,6 @@
 #include "utility_fixed.h"
 #include "section-hal.h"
+#include "debugprint.h"
 
 #define MAX_SIZE 1024
 #define STEP 2
