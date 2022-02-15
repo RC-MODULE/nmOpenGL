@@ -52,8 +52,8 @@ include 		 nmc4vars_win.mk
 PROJECT          = main0
 OUT_DIR          = .
 TARGET           = $(OUT_DIR)/$(PROJECT).abs
-INC_DIRS         = -I"$(NMPP)/include" -I$(HAL)/include -I$(ROOT)/include
-SRC_DIRS 	 = ../../../../src_proc0/nm ..
+INC_DIRS         = -I"$(NMPP)/include" -I$(HAL)/include -I$(ROOT)/include -I$(ROOT)/utilities/include
+SRC_DIRS 	     = ../../../../src_proc0/nm ../../../../utilities/src/float ..
 LIB_DIRS         = -L "$(NMC_GCC_TOOLPATH)/nmc4-ide/lib" -L"$(NMPP)/lib" -L"$(HAL)/lib" -L "../../../../lib"
 TMP_DIR          = Release
 #-------------- RELEASE/ALL config -------------------
