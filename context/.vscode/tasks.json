@@ -1,0 +1,51 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build all",
+            "type": "shell",
+            "command": "scons",
+            "args": [
+                "-j4",
+                "legacy=0"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/tests/"
+            },
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "Clean all",
+            "type": "shell",
+            "command": "scons",
+            "args": [
+                "-j4",
+                "legacy=0"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/tests/float"
+            },
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "Run all tests on board",
+            "type": "shell",
+            "command": "scons",
+            "args": [
+                "run",
+                "legacy=0"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/tests/float"
+            },
+            "group": "test",
+            "dependsOn": "Build all",
+            "problemMatcher": [
+
+            ]
+        },
+        
+    ]
+}

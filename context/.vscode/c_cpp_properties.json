@@ -1,0 +1,20 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "${workspaceFolder}/include/**",
+                "${workspaceFolder}/../utilities/include/**",
+                "${env:MC12101}/include/**",
+                "${env:NMPP}/include/**",
+                "${env:HAL}/include/**"
+            ],
+            "defines": ["DEBUG_LEVEL=1"],
+            "compilerPath": "/usr/bin/clang",
+            "cStandard": "c11",
+            "cppStandard": "c++14",
+            "intelliSenseMode": "linux-gcc-x64"
+        }
+    ],
+    "version": 4
+}

@@ -1,4 +1,4 @@
-ROOT = ../..
+ROOT = ..
 include $(ROOT)/global.mk
 #-include ../local.mk
 

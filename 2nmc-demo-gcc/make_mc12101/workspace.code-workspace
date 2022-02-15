@@ -4,25 +4,25 @@
 			"path": "."
 		},
 		{
-			"path": "..\\src_host"
+			"path": "../src_host"
 		},
 		{
-			"path": "..\\src_target0"
+			"path": "../src_target0"
 		},
 		{
-			"path": "..\\src_target1"
+			"path": "../src_target1"
 		},
 		{
-			"path": "..\\..\\include"
+			"path": "../../include"
 		},
 		{
-			"path": "..\\..\\src_proc0"
+			"path": "../../src_proc0"
 		},
 		{
-			"path": "..\\..\\src_proc1"
+			"path": "../../src_proc1"
 		},
 		{
-			"path": "..\\..\\nmglvs_mc12101-gcc"
+			"path": "../../nmglvs_mc12101-gcc"
 		}
 	],
 

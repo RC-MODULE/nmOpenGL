@@ -7,13 +7,19 @@ solution "nmopengl-x86"
 
 	project "nmopengl"
       kind "StaticLib"
-      files { 	"../../src_proc0/common/*.*",
-				"../../src_proc0/pc/*.*",
-				"../../src_proc0/nmgl/*.*",
-				"../../src_proc1/common/*.*",
-				"../../src_proc1/pc/*.*",}
-	  includedirs { "../../include", "$(NMPP)/include", "$(HAL)/include"}
-	  targetdir ("../../lib")
+      files { 	"../src_proc0/common/*.*",
+				"../src_proc0/pc/*.*",
+				"../src_proc0/nmgl/*.*",
+				"../src_proc1/common/*.*",
+				"../src_proc1/pc/*.*",
+				"../utilities/common/*.c*",
+				"../utilities/common/pc/*.c*",
+				"../utilities/fixed/*.c*",
+				"../utilities/fixed/pc/*.c*",
+				"../utilities/float/*.c*",
+				"../utilities/float/pc/*.c*",}
+	  includedirs { "../include", "$(NMPP)/include", "$(HAL)/include", "../utilities/include"}
+	  targetdir ("../lib")
 	  
 	  configuration {"Debug","x86"}
 			targetsuffix ("-x86d")

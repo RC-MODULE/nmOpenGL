@@ -24,12 +24,14 @@ NMPP = os.environ['NMPP']
 HAL = os.environ['HAL']
 ARCH = 'nmc4'
 CORE = 'float'
+UTILITY = f'{ROOT}/../utilities'
 
 nmc_mc12101['ROOT'] = ROOT
 nmc_mc12101['NMC_GCC_TOOLPATH'] = NMC_GCC_TOOLPATH
 nmc_mc12101['NMPP'] = NMPP
 nmc_mc12101['HAL'] = HAL
 nmc_mc12101['MC12101'] = MC12101
+nmc_mc12101['UTILITY'] = UTILITY
 nmc_mc12101['ARCH'] = ARCH
 nmc_mc12101['CORE'] = CORE
 
@@ -41,6 +43,7 @@ if nmc_mc12101['PLATFORM'] == 'win32':
 	nmc_mc12101['ENV']['GCC_EXEC_PREFIX'] = gcc_exec_prefix
 	nmc_mc12101.PrependENVPath('PATH', f'{NMC_GCC_TOOLPATH}/nmc4-ide/bin')
 	nmc_mc12101.PrependENVPath('PATH', f'{NMC_GCC_TOOLPATH}/nmc4-ide/lib')	
+	nmc_mc12101.PrependENVPath('PATH', f'{NMC_GCC_TOOLPATH}/nmc4-ide/bin')
 
 
 # assembler
@@ -56,15 +59,21 @@ nmc_mc12101['CFLAGS'] = Split('-std=c99')
 nmc_mc12101['CXXFLAGS'] = Split('-std=c++11')
 nmc_mc12101['CCFLAGS'] = Split('-m$ARCH-$CORE -O0 -g')
 nmc_mc12101['CPPPATH'] = Split(f'$MC12101/include $NMPP/include $ROOT/include' )
-nmc_mc12101['CPPDEFINES'] = [f'DEBUG_LEVEL={debug_lvl}']
+nmc_mc12101['CPPPATH'] += [ '$UTILITY/include' ]
 nmc_mc12101['CPPPATH'] += [ '$HAL/include']
+nmc_mc12101['CPPDEFINES'] = [f'DEBUG_LEVEL={debug_lvl}']
 
-src_dir = f"{ROOT}/src/{CORE}"
+src_dirs = [ f"{UTILITY}/src/{CORE}", f"{ROOT}/src/{CORE}", f"{ROOT}/src/common"]
 
-all_cpp = Glob(path(src_dir)/'*.cpp')
-all_c   = Glob(path(src_dir)/'*.c')
-all_asm = Glob(path(src_dir)/'*.asm')
-all_s = Glob(path(src_dir)/'*.s')
+all_cpp = []
+all_c   = []
+all_asm = []
+all_s   = []
+for src_dir in src_dirs:
+	all_cpp += Glob(path(src_dir)/'*.cpp')
+	all_c   += Glob(path(src_dir)/'*.c')
+	all_asm += Glob(path(src_dir)/'*.asm')
+	all_s 	+= Glob(path(src_dir)/'*.s')
 
 obj_cpp = [nmc_mc12101.Object(c) for c in all_cpp]
 obj_c   = [nmc_mc12101.Object(c) for c in all_c]
@@ -90,7 +99,7 @@ else:
 	nmc_mc12101['WHOLELIBS'] = ["-lmc12101load_nm"]
 	nmc_mc12101['LIBPATH'] = ['$MC12101/lib', '$NMPP/lib' ]
 nmc_mc12101['LIBS'] = ['nmpp-nmc4f' ]
-nmc_mc12101['LINKSCRIPT'] = [File(f'ldscript-{CORE}.ld')]
+nmc_mc12101['LINKSCRIPT'] = [File(f'{ROOT}/lds/ldscript-{CORE}.ld')]
 nmc_mc12101['LINKFLAGS'] = ["-Wl,-T$LINKSCRIPT"]
 if 'WHOLELIBS' in nmc_mc12101:
 	nmc_mc12101['LINKCOM'] += ' -Wl,--whole-archive $WHOLELIBS -Wl,--no-whole-archive'

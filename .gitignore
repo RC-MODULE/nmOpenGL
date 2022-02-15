@@ -29,6 +29,7 @@ ldscript
 *.a
 *.lib
 *.dll
+*.d
 
 *.dasm
 test/

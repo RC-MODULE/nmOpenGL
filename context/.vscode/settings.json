@@ -1,0 +1,20 @@
+{
+    "files.exclude": {
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/CVS": true,
+        "**/.DS_Store": true,
+        "**/Thumbs.db": true,
+        "**/*.o": true,
+        "**/*.abs": true,
+        "**/.sconsign.dblite": true,
+        "**/board": true,
+        "**/qemu": true,
+    },
+    "files.associations": {
+        "context.h": "c",
+        "utility.h": "c",
+        "nmtype.h": "c"
+    }
+}
