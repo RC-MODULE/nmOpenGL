@@ -98,6 +98,20 @@ int splitTriangles_uniform(TrianglePointers *srcTriangles,
 		// Do nothing here and continue;
 	}
 
+	// Triangle's width (height) must be less then or equal to maxWidth 
+	// (maxHeight) which is a maximum triangle's width (height) in pixels. 
+	// Input coords are in pixels so the triangle's width (W) and height (H) are:
+	// W = xMax - xMin + 1
+	// H = yMax - yMin + 1
+	// Then:
+	// maxWidth  => xMax - xMin + 1    ->    maxWidth  - 1 => xMax - xMin
+	// maxHeight => yMax - yMin + 1    ->    maxHeight - 1 => xMax - xMin
+	// So decrease maxWidth and maxHeight first and calc W and H as:
+	// W = xMax - xMin
+	// H = yMax - yMin
+	maxWidth--;
+	maxHeight--;
+
 	NMGL_Context_NM0 *cntxt 	= NMGL_Context_NM0::getContext();
 	// Use these arrays when masks are used to decide if the triangles needs 
 	// division

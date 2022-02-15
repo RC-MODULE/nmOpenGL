@@ -13,14 +13,15 @@ nm32f Triangle::edgeSize(int i) const
 	return size;
 }
 
+// Returns the projections of triangle's edge in pixels
 edgeProjection Triangle::edgeGetProjection(int i) const
 {
 	Point p1 = points[edges[i].p1];
 	Point p2 = points[edges[i].p2];
 	struct edgeProjection res;
 
-	res.dx = fabs(p1.x - p2.x);
-	res.dy = fabs(p1.y - p2.y);
+	res.dx = fabs(p1.x - p2.x) + 1;
+	res.dy = fabs(p1.y - p2.y) + 1;
 
 	return res;
 }
