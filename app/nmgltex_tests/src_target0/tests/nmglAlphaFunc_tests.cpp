@@ -82,17 +82,17 @@ int nmglAlphaFunc_setRef_setContextCorrect(){
     cntxt->alpha_test.ref = 0.0;
 
     nmglAlphaFunc(NMGL_ALWAYS, -0.1);
-    TEST_ASSERT(equalf(cntxt->alpha_test.ref, 0.0));
+    TEST_ASSERT_EQUALF(cntxt->alpha_test.ref, 0.0);
     nmglAlphaFunc(NMGL_ALWAYS, 1.5);
-    TEST_ASSERT(equalf(cntxt->alpha_test.ref, 1.0));
+    TEST_ASSERT_EQUALF(cntxt->alpha_test.ref, 1.0);
     nmglAlphaFunc(NMGL_ALWAYS, 0.9);
     DEBUG_PRINT(("cntxt->alpha_test.ref = %.2f",cntxt->alpha_test.ref));
-    TEST_ASSERT(equalf(cntxt->alpha_test.ref, 0.9));
+    TEST_ASSERT_EQUALF(cntxt->alpha_test.ref, 0.9);
     
     nmglAlphaFunc(NMGL_ALWAYS, 0.1);
-    TEST_ASSERT(equalf(cntxt->alpha_test.ref, 0.1));
+    TEST_ASSERT_EQUALF(cntxt->alpha_test.ref, 0.1);
     nmglAlphaFunc(NMGL_ALWAYS, 0.0);
-    TEST_ASSERT(equalf(cntxt->alpha_test.ref, 0.0));
+    TEST_ASSERT_EQUALF(cntxt->alpha_test.ref, 0.0);
    return 0;
  
 }
