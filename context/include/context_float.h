@@ -4,12 +4,12 @@
 #include "utility.h"
 #include "context.h"
 
+#define POOLS_COUNT 6
+#define POOL_SIZE 0x4000
 
 typedef struct{
 
-	PoolPointer *pools;
-	int poolsCount;
-	int poolSize32;
+	PoolPointer pools[POOLS_COUNT];
 
 	v4nm32f temp;
 
@@ -21,6 +21,8 @@ extern "C"{
 #endif //__cplusplus
 
 	NMGL_CoreContextFloat *getCoreContextFloat(void);
+
+	void context_float_init(void);
 
 #ifdef __cplusplus
 }

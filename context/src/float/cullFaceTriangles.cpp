@@ -36,12 +36,12 @@ __attribute__((section(".text_demo3d")))
 int cullFaceSortTriangles(NMGL_CullFace *cullface, TrianglePointers &triangles, int count){
 	NMGL_CoreContextFloat *context = getCoreContextFloat();
 
-	float* walkDirection = context->pools[2].f + 6 * context->poolSize32;
+	float* walkDirection = context->pools[2].f + 6 * 1024;
 	float* temp0 = context->pools[2].f;
 	int* temp0i = context->pools[2].i;
 	float* temp1 = context->pools[3].f;
-	int* evenMaskVec = context->pools[2].i + context->poolSize32;
-	int* oddMaskVec= context->pools[3].i + context->poolSize32;
+	int* evenMaskVec = context->pools[2].i + 1024;
+	int* oddMaskVec= context->pools[3].i + 1024;
 
 	nmppsMul_Mul_Sub_32f(triangles.v0.x, triangles.v1.y, triangles.v1.x, triangles.v0.y, walkDirection, count);
 	nmppsMul_Mul_Sub_32f(triangles.v1.x, triangles.v2.y, triangles.v2.x, triangles.v1.y, temp1, count);
