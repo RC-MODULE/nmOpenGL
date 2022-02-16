@@ -9,7 +9,8 @@ nmc4vars_win.mk:
 -include 		 nmc4vars_win.mk
 SHELL 			 = cmd
 endif
-ERRECHO			 = 2>&1|cerrecho
+#ERRECHO			 = 2>&1|cerrecho
+ERRECHO			 = 
 
 
 ARCH             ?=nmc4
