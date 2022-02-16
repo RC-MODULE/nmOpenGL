@@ -63,7 +63,7 @@ nmc_mc12101['CPPPATH'] += [ '$UTILITY/include' ]
 nmc_mc12101['CPPPATH'] += [ '$HAL/include']
 nmc_mc12101['CPPDEFINES'] = [f'DEBUG_LEVEL={debug_lvl}']
 
-src_dirs = [ f"{UTILITY}/src/{CORE}", f"{ROOT}/src/{CORE}", f"{ROOT}/src/common"]
+src_dirs = [ f"{UTILITY}/src/{CORE}", f"{ROOT}/src/{CORE}", f"{ROOT}/src/common", f"{UTILITY}/src/common"]
 
 all_cpp = []
 all_c   = []

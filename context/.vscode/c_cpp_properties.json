@@ -10,7 +10,7 @@
                 "${env:HAL}/include/**"
             ],
             "defines": ["DEBUG_LEVEL=1"],
-            "compilerPath": "/usr/bin/clang",
+            //"compilerPath": "gcc",
             "cStandard": "c11",
             "cppStandard": "c++14",
             "intelliSenseMode": "linux-gcc-x64"

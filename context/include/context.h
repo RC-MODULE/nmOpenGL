@@ -1,3 +1,6 @@
+#ifndef __CONTEXT_H__
+#define __CONTEXT_H__
+
 #include "nmtype.h"
 #include "utility.h"
 
@@ -50,3 +53,4 @@ typedef struct {
 }  LinePointers;
 
 
+#endif //__CONTEXT_H__
