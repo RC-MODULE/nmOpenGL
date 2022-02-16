@@ -1,4 +1,6 @@
 #include "nmgltype.h"
+#ifndef __PERFRAGMENT_H__ 
+#define __PERFRAGMENT_H__ 
 
 typedef struct{
 	NMGLboolean enabled;
@@ -25,3 +27,5 @@ typedef struct{
 	int isEnabled;
 	int dummy;
 }  NMGL_ScissorTest ;
+
+#endif //__PERFRAGMENT_H__ 

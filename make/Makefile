@@ -24,7 +24,7 @@ PROJECT          = libnmopengl_nmc4.a
 endif
 OUT_DIR          = $(ROOT)/lib
 TARGET           = $(OUT_DIR)/$(PROJECT)
-INC_DIRS         = -I$(ROOT)/include -I$(NMPP)/include -I$(HAL)/include -I$(ROOT)/utilities/include 
+INC_DIRS         = -I$(ROOT)/include -I$(NMPP)/include -I$(HAL)/include -I$(ROOT)/utilities/include -I$(ROOT)/context/include
 TMP_DIR			 = $(CONFIGURATION)/$(ARCH)
 
 
@@ -36,11 +36,11 @@ AR               = nmc-ar
 AR_FLAGS         = rcs $(TARGET)
 
 ifeq ($(ARCH),nmc4_float)
-SRC_DIRS         = $(ROOT)/src_proc0/nm $(ROOT)/src_proc0/common $(ROOT)/src_proc0/nmgl $(ROOT)/utilities/src/float $(ROOT)/utilities/src/common
+SRC_DIRS         = $(ROOT)/src_proc0/nm $(ROOT)/src_proc0/common $(ROOT)/src_proc0/nmgl $(ROOT)/utilities/src/float $(ROOT)/utilities/src/common $(ROOT)/context/src/float
 CC_FLAGS 	     = -mnmc4-float $(INC_DIRS) -O0
 AS_FLAGS         = -mnmc4-float
 else ifeq ($(ARCH),nmc4_fixed)
-SRC_DIRS         = $(ROOT)/src_proc1/nm $(ROOT)/src_proc1/common $(ROOT)/utilities/src/fixed $(ROOT)/utilities/src/common
+SRC_DIRS         = $(ROOT)/src_proc1/nm $(ROOT)/src_proc1/common $(ROOT)/utilities/src/fixed $(ROOT)/utilities/src/common $(ROOT)/context/src/fixed
 CC_FLAGS 	     = -mnmc4-fixed $(INC_DIRS) -O2
 AS_FLAGS         = -mnmc4-fixed
 endif

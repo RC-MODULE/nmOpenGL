@@ -5,6 +5,7 @@
 #include "demo3d_nm0.h"
 #include "cache.h"
 #include "ringbuffer.h"
+#include "context_float.h"
 
 #ifdef STACK_TRACE_ENABLED
 #include "stacktrace.h"
@@ -17,12 +18,6 @@
 #ifdef TEST_NMGL_TEX_FUNC
 SECTION(".data_imu0") void* cntxtAddr_nm1;
 #endif
-SECTION(".data_imu1")	float nmglBuffer0[12 * NMGL_SIZE];
-SECTION(".data_imu2")	float nmglBuffer1[12 * NMGL_SIZE];
-SECTION(".data_imu3")	float nmglBuffer2[12 * NMGL_SIZE];
-SECTION(".data_imu4")	float nmglBuffer3[12 * NMGL_SIZE];
-SECTION(".data_imu5")	float nmglBuffer4[12 * NMGL_SIZE];
-SECTION(".data_imu7")	float nmglBuffer5[12 * NMGL_SIZE];
 
 SECTION(".data_imu2")	float nmglx0[NMGL_SIZE];
 SECTION(".data_imu2")	float nmgly0[NMGL_SIZE];
@@ -148,7 +143,7 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
     	}
     	catch(int& e)
     	{
-    	    printf("Error! Cant allocate PolygonsStipplePattern memory!");
+    	    printf("Error! Cant allocate PolygonsStipplePattern memory!\n");
     	    return -1;
     	}
 		halSyncAddr(PolygonsStipplePattern_p, 1);
@@ -200,12 +195,13 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 		cntxt->beginEndInfo.inBeginEnd = false;
 		cntxt->beginEndInfo.maxSize = BIG_NMGL_SIZE;
 
-		cntxt->buffer0 = (float*)nmglBuffer0;
-		cntxt->buffer1 = (float*)nmglBuffer1;
-		cntxt->buffer2 = (float*)nmglBuffer2;
-		cntxt->buffer3 = (float*)nmglBuffer3;
-		cntxt->buffer4 = (float*)nmglBuffer4;
-		cntxt->buffer5 = (float*)nmglBuffer5;
+		auto core_context = getCoreContextFloat();
+		cntxt->buffer0 = core_context->pools[0].f;
+		cntxt->buffer1 = core_context->pools[1].f;
+		cntxt->buffer2 = core_context->pools[2].f;
+		cntxt->buffer3 = core_context->pools[3].f;
+		cntxt->buffer4 = core_context->pools[4].f;
+		cntxt->buffer5 = core_context->pools[5].f;
 		cntxt->vertexResult = vertexResult;
 		cntxt->colorResult = colorResult;
 		cntxt->normalResult = normalResult;

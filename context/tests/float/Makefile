@@ -1,80 +1,84 @@
-ROOT=../..
-include $(ROOT)/global.mk
-# TEST-MAKEFILE
-# This Makefile is for testing purpose
-# It builds and runs two applications built from common cpp-source but for different platforms and compares their exit codes
-# It also generates makefile for given platform using $(TEMPLATES)\make_$(platform) template
+#########################################################################
+#                                                                       #
+# This Makefile recursivly allows to :                                  #
+# configurate,build,run or test given tests or examples                 #
+# from currect folder                                                   #
+#                                                                       #
+# S.Mushkaev  (RC)Module 2015                                           #
+#                                                                       #
+#                                                                       #
+#########################################################################
 # USAGE:
-# make                    : generates projects and builds apps for all (from $(PLATFORMS)) platforms
-# make mc5103             : generates project and builds test app for mc5103 or any other from $(PLATFORMS)
-# make test-win32-mc5103  : run applications under win32 and mc5103 platforms or any pair from $(PLATFORMS) and compare thier exit codes
-# make clean              : clean up in all make_$(PLATFORMS)
-# make delete             : delete all make_$(PLATFORMS) folder
 #
-# Used global variables: TOP_LEVEL,TEMPLATES,PLATFORMS should be exported from parent Makefile or set manualy in global.mk (for local usage)
-# TOP_LEVEL :points to root directory of NMPP
-# TEMPLATES :points to automake template folder
-# PLATFORMS :set of available platforms: win32 mc5103 mb7707 emu ...
+# /> make configure PLATFORMS="mc5103 emu6405 mc12101"
+#  Recursively generates Makefiles for all tests/axamples for mc5103,emu6405,mc12101 platforms 
+#
+# /> make configure 
+#  Recursively generates Makefiles for all tests/axamples for default platform list defined by $(PLATFORMS) in global.mk
+#
+# /> make 
+#  Recursivly makes(builds) all Makefiles  from current folder 
+#
+# /> make run PLATFORMS="mc5103 emu6405"
+#  Recursivly runs all tests/examples from current folder on mc5103 board and emulator
+#
+# /> make run 
+#  Recursivly runs all tests/examples from current folder on all platforms from $(PLATFORMS) list defined in global.mk 
+#
+# /> make test TARGET1=mc5103 TARGET2=vs8
+#  Recursivly builds and runs all tests from current folder  
+#  Then two exitcodes fo $(TARGET1) and $(TARGET2) platforms are compared
+#  if exitcodes are identical - test is passed
+#
+# /> make test 
+#  Recursively builds and runs all tests from current folder with default $(TARGET1) and $(TARGET2) defined in global.mk 
+#
+# /> make clean 
+#  Recursive cleanup (Remove all builds in /make_* folders)
+#
+# /> make kill
+#  Recursive clean with Makefile removal of all /make_* folders
 
+
+ROOT = ../..
+
+include $(ROOT)/../global.mk
+# get list of all sub-foldfers
+WORK_DIRS=$(subst /,,$(wildcard */))
+
+# override all sub-foldfers by custom list in local.mk
 -include local.mk
+WORK_DIRS := $(filter-out $(SKIP_DIRS),$(WORK_DIRS))
 
-
-#all: $(addsuffix /Makefile,$(addprefix make_,$(PLATFORMS))) $(addprefix build_,$(PLATFORMS))
-#	$(foreach platform,$(PLATFORMS), -$(MAKE) -C./make_$(platform) 					$(newline))
-all: configure
-	$(foreach platform,$(PLATFORMS), -$(MAKE) -C./make_$(platform) 					$(newline))
-
-configure: $(addsuffix /Makefile,$(addprefix make_,$(PLATFORMS)))
-
-clean:
-	$(foreach make_platform,$(wildcard make_*), -$(MAKE) -C./$(make_platform) clean 	$(newline))
-
-#	$(foreach platform,$(PLATFORMS), -$(MAKE) -C./make_$(platform) clean 			$(newline))
-
-run:	all
-	$(foreach platform,$(PLATFORMS), -$(MAKE) -C./make_$(platform) run 				$(newline))
-
-kill:
-	-$(OS_RD) $(wildcard make_*)
-
-
-test: make_$(TARGET1)/Makefile make_$(TARGET2)/Makefile
-	$(MAKE) -C./make_$(TARGET1) test
-	$(MAKE) -C./make_$(TARGET2) test
-#	@echo $(CURDIR)>> $(ROOT)/app/test/diff-$(TARGET1)-$(TARGET2).txt
-	$(OS_DIFF) make_$(TARGET1)/.exitcode make_$(TARGET2)/.exitcode
-	@echo TEST-OK!
-#	@echo OK>> $(ROOT)/app/test/diff-$(TARGET1)-$(TARGET2).txt
-
-
-########### Produces automake rule for all platforms like ############################
-#
-# mc5103: make_mc5103
-# make_mc5103:
-#   mkdir make_mc5103
-#	cp $(TEMPLATES)/make_mc5103/*.* ./make_mc5103
-#
-# build_mc5103:
-#	$(MAKE) -C./make_mc5103
-#
-define automake_platform
-$(1):make_$(1)/Makefile
-
-make_$(1)/Makefile: make_$(1)
-	-$(OS_CP) $(ROOT)/app/templates/sometest/make_$(1)/* make_$(1)
-	-rm make_$(1)/Makefile
-	echo ROOT=../$(ROOT)| $(OS_CAT) - $(ROOT)/app/templates/sometest/make_$(1)/Makefile > make_$(1)/Makefile
-
-
-make_$(1):
-	-mkdir make_$(1)
-
+# for each sub-folder try to start Makefile with (build/test/run/clean targets) 
+#.default 
+test run clean: 
+	@echo ***** build *************
+	$(foreach dir,$(WORK_DIRS), $(MAKE) -C $(dir) $(MAKECMDGOALS) 	$(newline))
+	@echo Command '$(MAKECMDGOALS)' completed!
+	
+# for each sub-folder try to create Makefile
+configure: $(addsuffix /Makefile,$(WORK_DIRS))
+	@echo ***** configure **********
+	$(foreach dir,$(WORK_DIRS), $(MAKE) -C ./$(dir) $(MAKECMDGOALS) $(newline))
+	
+	
+#recursive delete all sub-makefiles
+kill: 
+	$(foreach mak,$(wildcard */Makefile), $(MAKE) -C $(dir $(mak)) kill				$(newline))
+	$(foreach mak,$(wildcard */Makefile), -rm   $(mak) 								$(newline))
+	@echo Command 'kill' completed!
+	
+define configure_makefile
+$(1)/Makefile:
+	-$(OS_FIND) $(1)/*.cpp || echo ROOT=../../$(ROOT)| $(OS_CAT) - "$(ROOT)/templates/Makefile" > $(1)/Makefile
 endef
+#	-$(OS_FIND) $(1)/*.cpp && echo ROOT=../../$(ROOT)| $(OS_CAT) - "$(ROOT)/templates/sometest/Makefile" > $(1)/Makefile
+	
+$(foreach dir,$(WORK_DIRS), $(eval $(call configure_makefile,$(dir))) )	
 
-$(foreach platform, $(PLATFORMS),$(eval $(call automake_platform,$(platform))))
-#######################################################################################
 
 define newline
 
 
-endef
+endef	

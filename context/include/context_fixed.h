@@ -4,8 +4,8 @@
 #include "context.h"
 #include "utility.h"
 
-#define POOLS_COUNT 3
-#define POOL_SIZE 12 * 1024
+#define POOLS_COUNT 5
+#define POOL_SIZE 0x4000
 
 typedef struct{
     PoolPointer pools[POOLS_COUNT];

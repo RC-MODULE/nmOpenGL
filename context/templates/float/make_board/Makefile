@@ -1,7 +1,7 @@
 
 
-ROOT    = ../../..
-#CORE	= float
+ROOT    = ../../../..
+CORE	= float
 
 ifeq ($(CORE),float)
 CORE_SUFFIX = f
@@ -32,7 +32,7 @@ OUT_DIR			?= .
 TARGET			 = $(OUT_DIR)/main.abs
 INC_DIRS         = -I$(ROOT)/include -I$(NMPP)/include -I$(HAL)/include -I$(ROOT)/../utilities/include
 TMP_DIR			 = obj
-SRC_DIRS         = $(ROOT)/src/float $(ROOT)/../utilities/src/float $(ROOT)/../utilities/src/common .
+SRC_DIRS         = $(ROOT)/src/float $(ROOT)/../utilities/src/float $(ROOT)/../utilities/src/common ..
 
 #------------------------------------------------
 # assembler
@@ -107,10 +107,10 @@ $(TMP_DIR)/%.o: %.s Makefile $(TMP_DIR)
 	
 
 #========================== run ===================
-run-legacy:
+run-legacy: $(TARGET)
 	mc12101run $(TARGET) -q
 
-run:
+run: $(TARGET)
 ifeq ($(LEGACY),1)
 	mc12101run $(TARGET) -q
 else

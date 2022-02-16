@@ -8,7 +8,7 @@
 #include "nmgl.h"
 #include "nmgl.h"
 #include "perfragment.h"
-#include "raster.h"
+#include "raster_float.h"
 
 inline void copyVertex(CombinePointers &vertex, int iSrc, int iDst) {
 	vertex.x[iDst] = vertex.x[iSrc];
@@ -33,7 +33,7 @@ extern "C" int cnvDividedMaskToIndices(nm1* maskEven, nm1* maskOdd, int* indices
 
 __attribute__((section(".text_demo3d")))
 
-int cullFaceSortTriangles(NMGL_CullFace *cullface, TrianglePointers &triangles, int count){
+int cullFaceSortTriangles(NMGL_CullFace &cullface, TrianglePointers &triangles, int count){
 	NMGL_CoreContextFloat *context = getCoreContextFloat();
 
 	float* walkDirection = context->pools[2].f + 6 * 1024;
@@ -50,12 +50,12 @@ int cullFaceSortTriangles(NMGL_CullFace *cullface, TrianglePointers &triangles, 
 	nmppsAdd_32f(temp0, temp1, walkDirection, count);
 
 	
-	if (cullface->frontface == NMGL_CW) {
+	if (cullface.frontface == NMGL_CW) {
 		nmppsSubCRev_32f(walkDirection, walkDirection, 0, count);
 	}
 
 	context->temp.vec[0] = context->temp.vec[1] = 0;
-	if (cullface->type == NMGL_BACK) {
+	if (cullface.type == NMGL_BACK) {
 		nmppsCmpLtC_v2nm32f((v2nm32f*)walkDirection, (v2nm32f*)&context->temp, evenMaskVec, oddMaskVec, 1, count / 2);
 	}
 	else {

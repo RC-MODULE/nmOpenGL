@@ -21,7 +21,7 @@ PROJECT 		 = main$(CORE_NUM)d
 endif
 OUT_DIR          = .
 TARGET           = $(OUT_DIR)/$(PROJECT).abs
-INC_DIRS         = -I"$(NMPP)/include" -I$(HAL)/include -I$(ROOT)/include -I$(ROOT)/utilities/include
+INC_DIRS         = -I"$(NMPP)/include" -I$(HAL)/include -I$(ROOT)/include -I$(ROOT)/utilities/include -I$(ROOT)/context/include
 SRC_DIRS         = $(ROOT)/nmglvs_mc12101-gcc/src_nmc$(CORE_NUM) ../src_target$(CORE_NUM)
 LIB_DIRS         = -L"$(NMC_GCC_TOOLPATH)/nmc4-ide/lib" -L"$(NMPP)/lib" -L"$(HAL)/lib" -L"$(ROOT)/lib"
 ifdef DEBUG
@@ -103,14 +103,14 @@ lib:
 $(OUT_DIR):
 	-mkdir "$(@)"
 	
-$(TMP_DIR)/%.o: %.asm
+$(TMP_DIR)/%.o: %.asm Makefile
 	$(AS) $(AS_FLAGS) $(<) -o$(@) $(INC_DIRS)
 	
-$(TMP_DIR)/%.o: %.cpp
-	$(CC) $(CC_FLAGS) -c $(<) -o$(@) $(INC_DIRS)
+$(TMP_DIR)/%.o: %.cpp Makefile
+	$(CC) -MMD $(CC_FLAGS) -c $(<) -o$(@) $(INC_DIRS)
 
-$(TMP_DIR)/%.o: %.c
-	$(CC) $(CC_FLAGS) -c $(<) -o$(@) $(INC_DIRS)
+$(TMP_DIR)/%.o: %.c Makefile
+	$(CC) -MMD $(CC_FLAGS) -c $(<) -o$(@) $(INC_DIRS)
 	
 	
 $(PROFILE):

@@ -13,6 +13,8 @@
 
 #include "nmprofiler.h"
 
+#include "raster_float.h"
+
 
 SECTION(".data_imu6")	ArrayManager<float> vertexAM;
 SECTION(".data_imu6")	ArrayManager<float> normalAM;
@@ -328,8 +330,11 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			perpectiveDivView(trianPointers.v1, cntxt->windowInfo, cntxt->buffer3, primCount);
 			perpectiveDivView(trianPointers.v2, cntxt->windowInfo, cntxt->buffer3, primCount);
 
+			NMGL_CullFace cullface;
+			cullface.type = cntxt->cullFaceType;
+			cullface.frontface = cntxt->frontFaceOrientation;
 			if (cntxt->isCullFace) {
-				primCount = cullFaceSortTriangles(trianPointers, primCount);
+				primCount = cullFaceSortTriangles(cullface, trianPointers, primCount);
 				if (primCount == 0) {
 					break;
 				}

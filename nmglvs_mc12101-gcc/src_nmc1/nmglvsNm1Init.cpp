@@ -8,17 +8,18 @@
 #include "cache.h"
 #include "link.h"
 #include "pattern.h"
+#include "context_fixed.h"
 
 #include "nmgl.h"
 
-SECTION(".data_imu1")	int pool0[SIZE_BUFFER_NM1];
+//SECTION(".data_imu1")	int pool0[SIZE_BUFFER_NM1];
 SECTION(".data_imu1")	Pattern patternsPack[POLYGONS_SIZE];
 SECTION(".data_imu0")	Pattern* ppPatternsPack[POLYGONS_SIZE];
-SECTION(".data_imu2")	int pool1[SIZE_BUFFER_NM1];
-SECTION(".data_imu3")	int pool2[SIZE_BUFFER_NM1];
+//SECTION(".data_imu2")	int pool1[SIZE_BUFFER_NM1];
+//SECTION(".data_imu3")	int pool2[SIZE_BUFFER_NM1];
 
-SECTION(".data_imu3")	int segImage[WIDTH_SEG * HEIGHT_SEG];
-SECTION(".data_imu2")	int segZBuff[WIDTH_SEG * HEIGHT_SEG];
+//SECTION(".data_imu3")	int segImage[WIDTH_SEG * HEIGHT_SEG];
+//SECTION(".data_imu2")	int segZBuff[WIDTH_SEG * HEIGHT_SEG];
 
 SECTION(".data_imu0") Vector2 ptrnInnPoints[POLYGONS_SIZE];
 SECTION(".data_imu0") Size ptrnSizes[POLYGONS_SIZE];
@@ -65,7 +66,7 @@ template<class T> T* myMallocT() {
 	return result;
 }
 
-SECTION(".data_imu0A") NMGL_Context_NM1 nmglContext;
+SECTION(".data_imu0") NMGL_Context_NM1 nmglContext;
 SECTION(".data_imu0") NMGL_Context_NM1 *NMGL_Context_NM1::context;
 
 
@@ -130,18 +131,20 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 	halInstrCacheEnable();
 #endif // __GNUC__
 	msdInit();
-	cntxt->smallColorBuff.init(segImage, WIDTH_SEG, HEIGHT_SEG);
-	cntxt->smallDepthBuff.init(segZBuff, WIDTH_SEG, HEIGHT_SEG);
+	auto core_context = getCoreContextFixed();
+
+	cntxt->smallColorBuff.init(core_context->pools[3].i, WIDTH_SEG, HEIGHT_SEG);
+	cntxt->smallDepthBuff.init(core_context->pools[4].i, WIDTH_SEG, HEIGHT_SEG);
 
 	//cntxt->smallClearColorBuff.init(colorClearBuff, WIDTH_SEG, HEIGHT_SEG);
 	//cntxt->smallClearDepthBuff.init(depthClearBuff, WIDTH_SEG, HEIGHT_SEG);
 	
-	cntxt->buffer0 = pool0;
-	cntxt->buffer1 = pool1;
-	cntxt->buffer2 = pool2;
-	cntxt->buffers[0].init(pool0, SIZE_BUFFER_NM1);
-	cntxt->buffers[1].init(pool1, SIZE_BUFFER_NM1);
-	cntxt->buffers[2].init(pool2, SIZE_BUFFER_NM1);
+	cntxt->buffer0 = core_context->pools[0].i;
+	cntxt->buffer1 = core_context->pools[1].i;
+	cntxt->buffer2 = core_context->pools[2].i;
+	cntxt->buffers[0].init(cntxt->buffer0, SIZE_BUFFER_NM1);
+	cntxt->buffers[1].init(cntxt->buffer1, SIZE_BUFFER_NM1);
+	cntxt->buffers[2].init(cntxt->buffer2, SIZE_BUFFER_NM1);
 
 	cntxt->patternPack.patterns = patternsPack;
 	cntxt->patternPack.origins = ptrnInnPoints;

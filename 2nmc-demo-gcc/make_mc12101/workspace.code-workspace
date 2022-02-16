@@ -23,6 +23,12 @@
 		},
 		{
 			"path": "../../nmglvs_mc12101-gcc"
+		},
+		{
+			"path": "../../context"
+		},
+		{
+			"path": "../../utilities"
 		}
 	],
 
@@ -133,7 +139,9 @@
 			"**/*.xml": true,
 			"**/*.xsl": true,
 			"**/.sconsign.dblite": true,
-			"**/x64": true
+			"**/x64": true,
+			"**/tests": true,
+			"**/template": true
 		},
 		"editor.quickSuggestions": {
 			"other": true,
@@ -161,7 +169,7 @@
 
 		"C_Cpp.default.includePath": [
 			"${workspaceFolder}/../../include/**",
-			"d:\\GIT\\nmOpenGL\\include/**",
+			"d:\\GIT\\nmOpenGL\\**",
 			"${env:NMPP}/include/**",
 			"${env:HAL}/include/**",
 			"${env:VSHELL}/include/**",

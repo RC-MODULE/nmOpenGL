@@ -5,7 +5,7 @@
 #include "context.h"
 
 #define POOLS_COUNT 6
-#define POOL_SIZE 0x4000
+#define POOL_SIZE 12 * 1024
 
 typedef struct{
 

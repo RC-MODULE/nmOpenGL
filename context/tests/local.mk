@@ -1,0 +1,6 @@
+
+PLATFORMS = x86 board emu
+
+TARGET1=board
+TARGET2=emu
+TARGET2=x86

@@ -1,7 +1,5 @@
 #include "context_float.h"
 
-#define POOL_SIZE 1024
-
 __attribute__((section(".data_imu0"))) static NMGL_CoreContextFloat context;
 __attribute__((section(".data_imu1"))) static float mem_imu0[POOL_SIZE];
 __attribute__((section(".data_imu2"))) static float mem_imu1[POOL_SIZE];

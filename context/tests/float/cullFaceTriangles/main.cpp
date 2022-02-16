@@ -1,4 +1,4 @@
-#include "raster.h"
+#include "raster_float.h"
 #include "stdio.h"
 
 float x0[1024];
@@ -19,8 +19,9 @@ int main(){
 	pointers.v2.x = x2;
 	pointers.v2.y = y2;
 	
+
 	
-	cullFaceSortTriangles(&cullface, pointers, 2);
+	cullFaceSortTriangles(cullface, pointers, 2);
 	printf("asdasd\n");
 	return 0;
 }

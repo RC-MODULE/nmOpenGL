@@ -71,13 +71,13 @@ public:
 	static void free() {
 		//halFree(context);
 	}
-	long long unsigned colorClearValueTwice[8];
-	long long unsigned depthClearValueTwice[8];
-	PatternPack patternPack;
+	alignas(64) long long unsigned colorClearValueTwice[8];
+	alignas(64) long long unsigned depthClearValueTwice[8];
+	alignas(64) PatternPack patternPack;
 	
 	PatternsArray* patterns;			///< Указатель на массив всевозможных двухбитных паттернов
-	int dummy;
-	int fillInnerTable[SIZE_TABLE];
+	
+	alignas(8) int fillInnerTable[SIZE_TABLE];
 	ImageConnector imageConnector;				///< Коннектор к кольцевому буферу изображений
 	int* imageOffsets;
 
@@ -98,7 +98,7 @@ public:
 	nm32s** zBuffPoints;				///
 	nm32s** imagePoints;
 
-	nm32s minusOne[SMALL_SIZE];				///< массив со значения -1
+	alignas(8) nm32s minusOne[SMALL_SIZE];				///< массив со значения -1
 	
 	int* valuesZ;
 	int* valuesC;

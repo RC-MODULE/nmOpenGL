@@ -8,6 +8,7 @@
 #include "imagebuffer.h"
 #include "nmsynchro.h"
 #include "lighting.h"
+#include "primitive.h"
 
 #define BIG_NMGL_SIZE (64 * NMGL_SIZE)
 
@@ -80,44 +81,6 @@ public:
 		}
 	}
 };
-
-/*!
- *  \brief Структура, хранящая указатели на геометрические координаты, текстурные координаты и цвет вершины
- *  \author Жиленков Иван
- */
-struct CombinePointers {
-	float *x;
-	float *y;
-	float *z;
-	float *w;
-	// TEXTURING PART
-	float *s;
-	float *t;
-	// TEXTURING PART
-	v4nm32f* color;
-	int dummy;
-};
-
-
-/*!
- *  \brief Структура, хранящая три вершины треугольника. Каждая вершина описывается структурой CombinePointers
- *  \author Жиленков Иван
- */
-struct TrianglePointers {
-	CombinePointers v0;
-	CombinePointers v1;
-	CombinePointers v2;
-};
-
-/*!
- *  \brief Структура, хранящая две вершины линии. Каждая вершина описывается структурой CombinePointers
- *  \author Жиленков Иван
- */
-struct LinePointers {
-	CombinePointers v0;
-	CombinePointers v1;
-};
-
 
 struct Lines{
 	float* x0;
@@ -285,14 +248,14 @@ public:
 	Lines lineInner;
 	Points pointInner;
 	NmglBeginEndInfo beginEndInfo;
-	v4nm32f currentColor;
-	v4nm32f currentNormal;
+	alignas(8) v4nm32f currentColor;
+	alignas(8) v4nm32f currentNormal;
 
-	mat4nm32f modelviewMatrix[16];
-	mat4nm32f projectionMatrix[2];
-	mat4nm32f normalMatrix;
-	MatrixStack modelviewMatrixStack;
-	MatrixStack projectionMatrixStack;
+	alignas(8) mat4nm32f modelviewMatrix[16];
+	alignas(8) mat4nm32f projectionMatrix[2];
+	alignas(8) mat4nm32f normalMatrix;
+	alignas(8) MatrixStack modelviewMatrixStack;
+	alignas(8) MatrixStack projectionMatrixStack;
 
 	Array vertexArray;					///< Класс для работы со значением координат вершинам в nmglDrawArrays
 	Array normalArray;					///< Класс для работы с нормалями в nmglDrawArrays

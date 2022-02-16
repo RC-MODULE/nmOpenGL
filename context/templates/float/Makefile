@@ -1,4 +1,5 @@
-
+ROOT=../../..
+include $(ROOT)/../global.mk
 # TEST-MAKEFILE
 # This Makefile is for testing purpose
 # It builds and runs two applications built from common cpp-source but for different platforms and compares their exit codes
@@ -15,7 +16,7 @@
 # TEMPLATES :points to automake template folder
 # PLATFORMS :set of available platforms: win32 mc5103 mb7707 emu ...
 
-include ../../local.mk
+-include local.mk
 
 
 #all: $(addsuffix /Makefile,$(addprefix make_,$(PLATFORMS))) $(addprefix build_,$(PLATFORMS))
