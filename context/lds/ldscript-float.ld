@@ -30,11 +30,6 @@ SECTIONS
 		*(.fini);
 	} > C0_IMU0
 
-	.bss : ALIGN(0x8)
-	{
-		*(.bss);
-		*(SORT(.bss.*))
-	} > C0_IMU0
 
 	.data_imu0 : ALIGN(0x8)
 	{
@@ -52,45 +47,81 @@ SECTIONS
 	{
 		*(.data_imu1);
 	} > C0_IMU1
+	.bss.data_imu1 (NOLOAD): ALIGN(0x8)
+	{
+		*(.bss.data_imu1);
+	} > C0_IMU1
 
 	.data_imu2 : ALIGN(0x8)
 	{
 		*(.data_imu2);
+	} > C0_IMU2
+	.bss.data_imu2 (NOLOAD): ALIGN(0x8)
+	{
+		*(.bss.data_imu2);
 	} > C0_IMU2
 
 	.data_imu3 : ALIGN(0x8)
 	{
 		*(.data_imu3);
 	} > C0_IMU3
+	.bss.data_imu3 (NOLOAD): ALIGN(0x8)
+	{
+		*(.bss.data_imu3);
+	} > C0_IMU3
 
 	.data_imu4 : ALIGN(0x8)
 	{
 		*(.data_imu4);
+	} > C0_IMU4
+	.bss.data_imu4 (NOLOAD): ALIGN(0x8)
+	{
+		*(.bss.data_imu4);
 	} > C0_IMU4
 
 	.data_imu5 : ALIGN(0x8)
 	{
 		*(.data_imu5);
 	} > C0_IMU5
+	.bss.data_imu5 (NOLOAD): ALIGN(0x8)
+	{
+		*(.bss.data_imu5);
+	} > C0_IMU5
 
 	.data_imu6 : ALIGN(0x8)
 	{
 		*(.data_imu6);
+	} > C0_IMU6
+	.bss.data_imu6 (NOLOAD): ALIGN(0x8)
+	{
+		*(.bss.data_imu6);
 	} > C0_IMU6
 
 	.data_imu7 : ALIGN(0x8)
 	{
 		*(.data_imu7);
 	} > C0_IMU7
+	.bss.data_imu7 (NOLOAD): ALIGN(0x8)
+	{
+		*(.bss.data_imu7);
+	} > C0_IMU7
 
 	.data_shmem0 : ALIGN(0x8)
 	{
 		*(.data_shmem0);
 	} > SHMEM0
+	.bss.data_shmem0 (NOLOAD): ALIGN(0x8)
+	{
+		*(.bss.data_shmem0);
+	} > SHMEM0
 
 	.data_shmem1 : ALIGN(0x8)
 	{
 		*(.data_shmem1);
+	} > SHMEM1
+	.bss.data_shmem1 (NOLOAD): ALIGN(0x8)
+	{
+		*(.bss.data_shmem1);
 	} > SHMEM1
 
 	.text : ALIGN(0x8)
@@ -110,6 +141,12 @@ SECTIONS
 	.data_emi : ALIGN(0x8)
 	{
 		*(.data_emi);
+	} > EMI
+	
+	.bss : ALIGN(0x8)
+	{
+		*(.bss);
+		*(SORT(.bss.*))
 	} > EMI
 
 

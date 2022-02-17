@@ -4,8 +4,9 @@
 #include "utility.h"
 #include "context.h"
 
+#define NMGL_SIZE 1024
 #define POOLS_COUNT 6
-#define POOL_SIZE 12 * 1024
+#define POOL_SIZE 12 * NMGL_SIZE
 
 typedef struct{
 

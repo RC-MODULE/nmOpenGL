@@ -330,11 +330,8 @@ void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
 			perpectiveDivView(trianPointers.v1, cntxt->windowInfo, cntxt->buffer3, primCount);
 			perpectiveDivView(trianPointers.v2, cntxt->windowInfo, cntxt->buffer3, primCount);
 
-			NMGL_CullFace cullface;
-			cullface.type = cntxt->cullFaceType;
-			cullface.frontface = cntxt->frontFaceOrientation;
 			if (cntxt->isCullFace) {
-				primCount = cullFaceSortTriangles(cullface, trianPointers, primCount);
+				primCount = cullFaceSortTriangles(trianPointers, primCount, cntxt->frontFaceOrientation, cntxt->cullFaceType);
 				if (primCount == 0) {
 					break;
 				}

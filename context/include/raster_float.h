@@ -3,10 +3,5 @@
 #include "primitive.h"
 
 
-struct NMGL_CullFace{
-	NMGLenum type;
-	NMGLenum frontface;
-};
 
-
-int cullFaceSortTriangles(NMGL_CullFace &cullface, TrianglePointers &triangles, int count);
+int cullFaceSortTriangles(TrianglePointers &triangles, int count, NMGLenum frontface, NMGLenum cullface);

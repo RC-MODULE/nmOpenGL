@@ -15,6 +15,8 @@
 
 
 extern ImageConnector hostImageRB;
+static int imageTemp[WIDTH_IMAGE * HEIGHT_IMAGE];
+
 
 #ifdef STACK_TRACE_ENABLED
 extern StackTraceConnector stackTraceConnector;
@@ -64,7 +66,12 @@ int nmglvsHostReadImage(int* dstImage)
 				#endif //STACK_TRACE_ENABLED
 			}
 		}
-		hostImageRB.pop((NMGL_IMAGE*)dstImage, 1);
+		hostImageRB.pop((NMGL_IMAGE*)imageTemp, 1);
+		for(int y = 0; y < HEIGHT_IMAGE; y++){
+			for(int x = 0; x < WIDTH_IMAGE; x++){
+				dstImage[y * WIDTH_IMAGE + x] = imageTemp[(HEIGHT_IMAGE - y - 1) * WIDTH_IMAGE + x];
+			}
+		}
 	}
 	else {
 		while (hostImageRB.isEmpty()) {

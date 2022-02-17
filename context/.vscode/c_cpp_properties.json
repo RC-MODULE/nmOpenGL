@@ -5,6 +5,7 @@
             "includePath": [
                 "${workspaceFolder}/include/**",
                 "${workspaceFolder}/../utilities/include/**",
+                "d:/GIT/nmOpenGL/utilities/include/**",
                 "${env:MC12101}/include/**",
                 "${env:NMPP}/include/**",
                 "${env:HAL}/include/**"

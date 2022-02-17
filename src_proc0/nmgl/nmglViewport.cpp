@@ -18,7 +18,7 @@ void nmglViewport(NMGLint x, NMGLint y, NMGLsizei width, NMGLsizei height) {
 	}	
 	cntxt->windowInfo.viewportMulX = width / 2;
 	cntxt->windowInfo.viewportAddX = x + width / 2;
-	cntxt->windowInfo.viewportMulY = -height / 2;
+	cntxt->windowInfo.viewportMulY = height / 2;
 	cntxt->windowInfo.viewportAddY = y - height / 2 + HEIGHT_IMAGE;
 	int endX = x + width;
 	int endY = y + height;
