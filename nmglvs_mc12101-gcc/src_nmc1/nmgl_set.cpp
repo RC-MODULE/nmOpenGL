@@ -53,4 +53,22 @@ SECTION(".text_demo3d") void NMGL_PolygonOffsetFill(NMGL_Context_NM1 *context, N
 	context->polygon.offset_fill_enabled = command->params[0].b;
 }
 
+SECTION(".text_demo3d") void NMGL_SetHint(NMGL_Context_NM1 *context, NM_Command *command){
+
+	NMGLenum target = command->params[0].ui;
+	NMGLenum mode = command->params[1].ui;
+
+	switch (target){
+	case NMGL_PERSPECTIVE_CORRECTION_HINT: 
+										context->perspectiveCorrectionHint = mode;
+										break;
+	case NMGL_LINE_SMOOTH_HINT:
+										context->lineSmoothHint = mode;
+										break;
+	case NMGL_POINT_SMOOTH_HINT:
+										context->pointSmoothHint = mode;
+										break;
+	}
+}
+
 

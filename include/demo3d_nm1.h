@@ -56,6 +56,10 @@ public:
 		blend.sfactor = NMGL_ONE;
 		blend.dfactor = NMGL_ZERO;
 
+		perspectiveCorrectionHint = NMGL_DONT_CARE;
+		lineSmoothHint            = NMGL_DONT_CARE;
+		pointSmoothHint           = NMGL_DONT_CARE;
+
 
 	}
 	
@@ -138,9 +142,9 @@ public:
 
 	NMGL_StencilTest stencil_test;
 
-	
-
-
+	NMGLenum perspectiveCorrectionHint;
+	NMGLenum lineSmoothHint;
+	NMGLenum pointSmoothHint;
 };
 
 

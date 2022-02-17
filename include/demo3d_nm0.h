@@ -328,7 +328,10 @@ public:
 
 	NMGLboolean color_write_mask_flags[4];
 	NMGLboolean depth_write_mask_enabled;
-	
+
+	NMGLenum perspectiveCorrectionHint;
+	NMGLenum lineSmoothHint;
+	NMGLenum pointSmoothHint;
 
 	void init(){
 		int i;
@@ -381,6 +384,10 @@ public:
 		blend.enabled = NMGL_FALSE;
 		blend.sfactor = NMGL_ONE;
 		blend.dfactor = NMGL_ZERO;
+
+		perspectiveCorrectionHint = NMGL_DONT_CARE;
+		lineSmoothHint            = NMGL_DONT_CARE;
+		pointSmoothHint           = NMGL_DONT_CARE;
 
 
 		lightingInfo.init();

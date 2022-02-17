@@ -44,5 +44,6 @@ void NMGL_LineSmoothSet(NMGL_Context_NM1 *context, NM_Command *command);
 void NMGL_PointSmoothSet(NMGL_Context_NM1 *context, NM_Command *command);
 void NMGL_LineStippleSet(NMGL_Context_NM1 *context, NM_Command *command);
 void NMGL_PolygonStippleSet(NMGL_Context_NM1 *context, NM_Command *command);
+void NMGL_SetHint(NMGL_Context_NM1 *context, NM_Command *command);
 
 #endif //COMMAND_NM1_H 
