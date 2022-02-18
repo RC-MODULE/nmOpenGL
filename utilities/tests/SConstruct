@@ -1,0 +1,5 @@
+
+
+SConscript(['float/SConscript', 'float/SConscript_x86',
+			'fixed/SConscript', 'fixed/SConscript_x86',
+			'common/SConscript', 'common/SConscript_x86'])

@@ -73,7 +73,7 @@ void testValues(){
 		}
 		DEBUG_PLOG_LEVEL_1("}\n");
 
-		dotMulC_Add_v4nm32f(src, &mulC, &addC, dst, size);
+		dotMulC_AddC_v4nm32f(src, &mulC, &addC, dst, size);
 
 		for(int i = 0; i < size; i++){
 			DEBUG_PLOG_LEVEL_1("src: {%.2f, %.2f}, srcC{%.2f, %.2f, %.2f, %.2f }, addC={%.2f, %.2f, %.2f, %.2f }\n", 

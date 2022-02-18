@@ -52,15 +52,18 @@ for test in os.listdir("."):
 		obj_main = env.Object(str(path(test)/'x86/main'), Glob(path(test)/'main.c*'))
 		target = env.Program(str(path(test)/'x86/main'),[obj_main, obj_cpp, obj_c])
 		list_targets.append(target)
-		Alias(test + 'x86', target)
+		Alias(test + '-x86', target)
 
 		#print(target)
-		x86_run = env.Command(source = target, target = None, action='$SOURCE &')
+		if env['PLATFORM'] == 'win32':
+			x86_run = env.Command(source = target, target = None, action='$SOURCE &')
+		elif env['PLATFORM'] == 'posix':
+			x86_run = env.Command(source = target, target = None, action='./$SOURCE')
 		#print(x86_run)
 		Depends( x86_run, target )
 		AlwaysBuild( x86_run )
 		run_targets.append(x86_run) 
-		Alias(test + 'x86run', x86_run)
+		Alias(test + '-x86run', x86_run)
 
 Alias('x86', list_targets)
 Alias('x86run', run_targets)

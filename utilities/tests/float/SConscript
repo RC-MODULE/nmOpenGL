@@ -118,7 +118,7 @@ qemu_run_list = []
 board_build_list = []
 qemu_build_list = []
 for test in os.listdir("."):
-	if os.path.isdir(test) and test != 'obj':
+	if os.path.isdir(test) and test != 'obj_x86':
 		obj_main = nmc_mc12101.Object(Glob(path(test)/'main.c*'))
 		target = nmc_mc12101.Program(str(path(test)/'board/main.abs'), [obj_main, obj_cpp, obj_c, obj_s, obj_asm])
 		nmc_mc12101.Depends(target, '$LINKSCRIPT')
