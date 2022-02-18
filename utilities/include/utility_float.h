@@ -921,6 +921,422 @@ extern "C"{
 	 */
 	void tripleMulC_32f(float* src1, float* src2, float* src3, float C, float* dst1, float* dst2, float* dst3, int size);
 
+/*
+ * Init function for performance test
+ */
+static void cmpSrcInit(float* src, int count)
+{
+
+  for (int i=0; i<count; i++) {
+    src[i] = 1.0;
+  }
+
+}
+
+  /*!
+   *  \defgroup cmpGtC_f cmpGtC_f  
+   *  \ingroup filter_api 
+   *  \brief Функция выполняет сравнение элементов входного массива с константой по признаку 'Больше'
+   *  \author 
+   *  \param src [in] Входной массив элементов для сравнения
+   *  \param С[in] Константа для сравнения
+   *  \param dstMaskEven [out] Выходная битовая маска. Результат сравнения чётных элементов входного массива с константой
+   *  \param dstMaskOdd [out] Выходная битовая маска. Результат сравнения нечётных элементов входного массива с константой
+   *  \param size [in] Число элементов входного массива для сравнения
+   *  
+   *  \par
+   *  \xmlonly
+   *      <testperf>
+   *          <param name="src"> im00 im10 im20 im30 im40 im50 im60 im70 </param>
+   *          <param name="C"> 0.0 </param>
+   *          <param name="dstMaskEven"> im01 im11 im21 im31 im41 im51 im61 im71 </param>
+   *          <param name="dstMaskOdd"> im02 im12 im22 im32 im42 im52 im62 im72 </param>
+   *          <param name="size"> 128 256 512 1024 </param>
+   *          <init>
+   *            cmpSrcInit(src, size);
+   *          </init>
+   *          <size> size </size>
+   *      </testperf>
+   *
+   *  \endxmlonly
+   */
+  //! \{
+  //
+  void cmpGtC_f(float* src, float C, nm1* dstMaskEven, nm1* dstMaskOdd, int size); 
+  //! \}
+
+
+  /*!
+   *  \defgroup cmpLtC_f cmpLtC_f  
+   *  \ingroup filter_api 
+   *  \brief Функция выполняет сравнение элементов входного массива с константой по признаку 'Меньше'
+   *  \author 
+   *  \param src [in] Входной массив элементов для сравнения
+   *  \param С[in] Константа для сравнения
+   *  \param dstMaskEven [out] Выходная битовая маска. Результат сравнения чётных элементов входного массива с константой
+   *  \param dstMaskOdd [out] Выходная битовая маска. Результат сравнения нечётных элементов входного массива с константой
+   *  \param size [in] Число элементов входного массива для сравнения
+   *  
+   *  \par
+   *  \xmlonly
+   *      <testperf>
+   *          <param name="src"> im00 im10 im20 im30 im40 im50 im60 im70 </param>
+   *          <param name="C"> 2.0 </param>
+   *          <param name="dstMaskEven"> im01 im11 im21 im31 im41 im51 im61 im71 </param>
+   *          <param name="dstMaskOdd"> im02 im12 im22 im32 im42 im52 im62 im72 </param>
+   *          <param name="size"> 128 256 512 1024 </param>
+   *          <init>
+   *            cmpSrcInit(src, size);
+   *          </init>
+   *          <size> size </size>
+   *      </testperf>
+   *
+   *  \endxmlonly
+   */
+  //! \{
+  //
+  void cmpLtC_f(float* src, float C, nm1* dstMaskEven, nm1* dstMaskOdd, int size); 
+  //! \}
+
+
+  /*!
+   *  \defgroup cmpGteC_f cmpGteC_f  
+   *  \ingroup filter_api 
+   *  \brief Функция выполняет сравнение элементов входного массива с константой по признаку 'Больше или равно'
+   *  \author 
+   *  \param src [in] Входной массив элементов для сравнения
+   *  \param С[in] Константа для сравнения
+   *  \param dstMaskEven [out] Выходная битовая маска. Результат сравнения чётных элементов входного массива с константой
+   *  \param dstMaskOdd [out] Выходная битовая маска. Результат сравнения нечётных элементов входного массива с константой
+   *  \param size [in] Число элементов входного массива для сравнения
+   *  
+   *  \par
+   *  \xmlonly
+   *      <testperf>
+   *          <param name="src"> im00 im10 im20 im30 im40 im50 im60 im70 </param>
+   *          <param name="C"> 0.0 </param>
+   *          <param name="dstMaskEven"> im01 im11 im21 im31 im41 im51 im61 im71 </param>
+   *          <param name="dstMaskOdd"> im02 im12 im22 im32 im42 im52 im62 im72 </param>
+   *          <param name="size"> 128 256 512 1024 </param>
+   *          <init>
+   *            cmpSrcInit(src, size);
+   *          </init>
+   *          <size> size </size>
+   *      </testperf>
+   *
+   *  \endxmlonly
+   */
+  //! \{
+  //
+  void cmpGteC_f(float* src, float C, nm1* dstMaskEven, nm1* dstMaskOdd, int size); 
+  //! \}
+
+
+  /*!
+   *  \defgroup cmpLteC_f cmpLteC_f  
+   *  \ingroup filter_api 
+   *  \brief Функция выполняет сравнение элементов входного массива с константой по признаку 'Меньше или равно'
+   *  \author 
+   *  \param src [in] Входной массив элементов для сравнения
+   *  \param С[in] Константа для сравнения
+   *  \param dstMaskEven [out] Выходная битовая маска. Результат сравнения чётных элементов входного массива с константой
+   *  \param dstMaskOdd [out] Выходная битовая маска. Результат сравнения нечётных элементов входного массива с константой
+   *  \param size [in] Число элементов входного массива для сравнения
+   *  
+   *  \par
+   *  \xmlonly
+   *      <testperf>
+   *          <param name="src"> im00 im10 im20 im30 im40 im50 im60 im70 </param>
+   *          <param name="C"> 2.0 </param>
+   *          <param name="dstMaskEven"> im01 im11 im21 im31 im41 im51 im61 im71 </param>
+   *          <param name="dstMaskOdd"> im02 im12 im22 im32 im42 im52 im62 im72 </param>
+   *          <param name="size"> 128 256 512 1024 </param>
+   *          <init>
+   *            cmpSrcInit(src, size);
+   *          </init>
+   *          <size> size </size>
+   *      </testperf>
+   *
+   *  \endxmlonly
+   */
+  //! \{
+  //
+  void cmpLteC_f(float* src, float C, nm1* dstMaskEven, nm1* dstMaskOdd, int size); 
+  //! \}
+
+  /*!
+   *  \defgroup cmpEqC_f cmpEqC_f  
+   *  \ingroup filter_api 
+   *  \brief Функция выполняет сравнение элементов входного массива с константой по признаку 'Равно'
+   *  \author 
+   *  \param src [in] Входной массив элементов для сравнения
+   *  \param С[in] Константа для сравнения
+   *  \param dstMaskEven [out] Выходная битовая маска. Результат сравнения чётных элементов входного массива с константой
+   *  \param dstMaskOdd [out] Выходная битовая маска. Результат сравнения нечётных элементов входного массива с константой
+   *  \param size [in] Число элементов входного массива для сравнения
+   *  
+   *  \par
+   *  \xmlonly
+   *      <testperf>
+   *          <param name="src"> im00 im10 im20 im30 im40 im50 im60 im70 </param>
+   *          <param name="C"> 1.0 </param>
+   *          <param name="dstMaskEven"> im01 im11 im21 im31 im41 im51 im61 im71 </param>
+   *          <param name="dstMaskOdd"> im02 im12 im22 im32 im42 im52 im62 im72 </param>
+   *          <param name="size"> 128 256 512 1024 </param>
+   *          <init>
+   *            cmpSrcInit(src, size);
+   *          </init>
+   *          <size> size </size>
+   *      </testperf>
+   *
+   *  \endxmlonly
+   */
+  //! \{
+  //
+  void cmpEqC_f(float* src, float C, nm1* dstMaskEven, nm1* dstMaskOdd, int size); 
+  //! \}
+
+  /*!
+   *  \defgroup cmpNeC_f cmpNeC_f  
+   *  \ingroup filter_api 
+   *  \brief Функция выполняет сравнение элементов входного массива с константой по признаку 'Не равно'
+   *  \author 
+   *  \param src [in] Входной массив элементов для сравнения
+   *  \param С[in] Константа для сравнения
+   *  \param dstMaskEven [out] Выходная битовая маска. Результат сравнения чётных элементов входного массива с константой
+   *  \param dstMaskOdd [out] Выходная битовая маска. Результат сравнения нечётных элементов входного массива с константой
+   *  \param size [in] Число элементов входного массива для сравнения
+   *  
+   *  \par
+   *  \xmlonly
+   *      <testperf>
+   *          <param name="src"> im00 im10 im20 im30 im40 im50 im60 im70 </param>
+   *          <param name="C"> 0.0 </param>
+   *          <param name="dstMaskEven"> im01 im11 im21 im31 im41 im51 im61 im71 </param>
+   *          <param name="dstMaskOdd"> im02 im12 im22 im32 im42 im52 im62 im72 </param>
+   *          <param name="size"> 128 256 512 1024 </param>
+   *          <init>
+   *            cmpSrcInit(src, size);
+   *          </init>
+   *          <size> size </size>
+   *      </testperf>
+   *
+   *  \endxmlonly
+   */
+  //! \{
+  //
+  void cmpNeC_f(float* src, float C, nm1* dstMaskEven, nm1* dstMaskOdd, int size); 
+  //! \}
+ 
+  /*!
+   *  \defgroup cmpGtV_f cmpGtV_f  
+   *  \ingroup filter_api 
+   *  \brief Функция выполняет поэлементное сравнение двух массивов по признаку 'Больше'
+   *  \author 
+   *  \param src1 [in] Входной массив 1 для сравнения
+   *  \param src2 [in] Входной массив 2 для сравнения
+   *  \param dstMaskEven [out] Выходная битовая маска. Результат сравнения чётных элементов массивов
+   *  \param dstMaskOdd [out] Выходная битовая маска. Результат сравнения нечётных элементов массивов
+   *  \param size [in] Количество сравниваемых элементов 
+   *  
+   *  \par
+   *  \xmlonly
+   *      <testperf>
+   *          <param name="src1"> im00 im10 im20 im30 im40 im50 im60 im70 </param>
+   *          <param name="src2"> im01 im11 im21 im31 im41 im51 im61 im71 </param>
+   *          <param name="dstMaskEven"> im02 im12 im22 im32 im42 im52 im62 im72 </param>
+   *          <param name="dstMaskOdd"> im03 im13 im23 im33 im43 im53 im63 im73 </param>
+   *          <param name="size"> 128 256 512 1024 </param>
+   *          <size> size </size>
+   *      </testperf>
+   *
+   *  \endxmlonly
+   */
+  //! \{
+  //
+  void cmpGtV_f(float* src1, float* src2, nm1* dstMaskEven, nm1* dstMaskOdd, int size); 
+  //! \}
+
+  /*!
+   *  \defgroup cmpGteV_f cmpGteV_f  
+   *  \ingroup filter_api 
+   *  \brief Функция выполняет поэлементное сравнение двух массивов по признаку 'Больше или равно'
+   *  \author 
+   *  \param src1 [in] Входной массив 1 для сравнения
+   *  \param src2 [in] Входной массив 2 для сравнения
+   *  \param dstMaskEven [out] Выходная битовая маска. Результат сравнения чётных элементов массивов
+   *  \param dstMaskOdd [out] Выходная битовая маска. Результат сравнения нечётных элементов массивов
+   *  \param size [in] Количество сравниваемых элементов 
+   *  
+   *  \par
+   *  \xmlonly
+   *      <testperf>
+   *          <param name="src1"> im00 im10 im30 im30 im40 im50 im60 im70 </param>
+   *          <param name="src2"> im01 im11 im21 im31 im41 im51 im61 im71 </param>
+   *          <param name="dstMaskEven"> im02 im12 im22 im32 im42 im52 im62 im72 </param>
+   *          <param name="dstMaskOdd"> im03 im13 im23 im33 im43 im53 im63 im73 </param>
+   *          <param name="size"> 128 256 512 1024 </param>
+   *          <size> size </size>
+   *      </testperf>
+   *
+   *  \endxmlonly
+   */
+  //! \{
+  //
+  void cmpGteV_f(float* src1, float* src2, nm1* dstMaskEven, nm1* dstMaskOdd, int size); 
+  //! \}
+
+  /*!
+   *  \defgroup cmpLtV_f cmpLtV_f  
+   *  \ingroup filter_api 
+   *  \brief Функция выполняет поэлементное сравнение двух массивов по признаку 'Меньше'
+   *  \author 
+   *  \param src1 [in] Входной массив 1 для сравнения
+   *  \param src2 [in] Входной массив 2 для сравнения
+   *  \param dstMaskEven [out] Выходная битовая маска. Результат сравнения чётных элементов массивов
+   *  \param dstMaskOdd [out] Выходная битовая маска. Результат сравнения нечётных элементов массивов
+   *  \param size [in] Количество сравниваемых элементов 
+   *  
+   *  \par
+   *  \xmlonly
+   *      <testperf>
+   *          <param name="src1"> im00 im10 im20 im30 im40 im50 im60 im70 </param>
+   *          <param name="src2"> im01 im11 im21 im31 im41 im51 im61 im71 </param>
+   *          <param name="dstMaskEven"> im02 im12 im22 im32 im42 im52 im62 im72 </param>
+   *          <param name="dstMaskOdd"> im03 im13 im23 im33 im43 im53 im63 im73 </param>
+   *          <param name="size"> 128 256 512 1024 </param>
+   *          <size> size </size>
+   *      </testperf>
+   *
+   *  \endxmlonly
+   */
+  //! \{
+  //
+  void cmpLtV_f(float* src1, float* src2, nm1* dstMaskEven, nm1* dstMaskOdd, int size); 
+  //! \}
+
+  /*!
+   *  \defgroup cmpLteV_f cmpLteV_f  
+   *  \ingroup filter_api 
+   *  \brief Функция выполняет поэлементное сравнение двух массивов по признаку 'Меньше или равно'
+   *  \author 
+   *  \param src1 [in] Входной массив 1 для сравнения
+   *  \param src2 [in] Входной массив 2 для сравнения
+   *  \param dstMaskEven [out] Выходная битовая маска. Результат сравнения чётных элементов массивов
+   *  \param dstMaskOdd [out] Выходная битовая маска. Результат сравнения нечётных элементов массивов
+   *  \param size [in] Количество сравниваемых элементов 
+   *  
+   *  \par
+   *  \xmlonly
+   *      <testperf>
+   *          <param name="src1"> im00 im10 im20 im30 im40 im50 im60 im70 </param>
+   *          <param name="src2"> im01 im11 im21 im31 im41 im51 im61 im71 </param>
+   *          <param name="dstMaskEven"> im02 im12 im22 im32 im42 im52 im62 im72 </param>
+   *          <param name="dstMaskOdd"> im03 im13 im23 im33 im43 im53 im63 im73 </param>
+   *          <param name="size"> 128 256 512 1024 </param>
+   *          <size> size </size>
+   *      </testperf>
+   *
+   *  \endxmlonly
+   */
+  //! \{
+  //
+  void cmpLteV_f(float* src1, float* src2, nm1* dstMaskEven, nm1* dstMaskOdd, int size); 
+  //! \}
+
+
+  /*!
+   *  \defgroup cmpEqV_f cmpEqV_f  
+   *  \ingroup filter_api 
+   *  \brief Функция выполняет поэлементное сравнение двух массивов по признаку 'Равно'
+   *  \author 
+   *  \param src1 [in] Входной массив 1 для сравнения
+   *  \param src2 [in] Входной массив 2 для сравнения
+   *  \param dstMaskEven [out] Выходная битовая маска. Результат сравнения чётных элементов массивов
+   *  \param dstMaskOdd [out] Выходная битовая маска. Результат сравнения нечётных элементов массивов
+   *  \param size [in] Количество сравниваемых элементов 
+   *  
+   *  \par
+   *  \xmlonly
+   *      <testperf>
+   *          <param name="src1"> im00 im10 im20 im30 im40 im50 im60 im70 </param>
+   *          <param name="src2"> im01 im11 im21 im31 im41 im51 im61 im71 </param>
+   *          <param name="dstMaskEven"> im02 im12 im22 im32 im42 im52 im62 im72 </param>
+   *          <param name="dstMaskOdd"> im03 im13 im23 im33 im43 im53 im63 im73 </param>
+   *          <param name="size"> 128 256 512 1024 </param>
+   *          <size> size </size>
+   *      </testperf>
+   *
+   *  \endxmlonly
+   */
+  //! \{
+  //
+  void cmpEqV_f(float* src1, float* src2, nm1* dstMaskEven, nm1* dstMaskOdd, int size); 
+  //! \}
+
+
+  /*!
+   *  \defgroup cmpNeV_f cmpNeV_f  
+   *  \ingroup filter_api 
+   *  \brief Функция выполняет поэлементное сравнение двух массивов по признаку 'Не равно'
+   *  \author 
+   *  \param src1 [in] Входной массив 1 для сравнения
+   *  \param src2 [in] Входной массив 2 для сравнения
+   *  \param dstMaskEven [out] Выходная битовая маска. Результат сравнения чётных элементов массивов
+   *  \param dstMaskOdd [out] Выходная битовая маска. Результат сравнения нечётных элементов массивов
+   *  \param size [in] Количество сравниваемых элементов 
+   *  
+   *  \par
+   *  \xmlonly
+   *      <testperf>
+   *          <param name="src1"> im00 im10 im20 im30 im40 im50 im60 im70 </param>
+   *          <param name="src2"> im01 im11 im21 im31 im41 im51 im61 im71 </param>
+   *          <param name="dstMaskEven"> im02 im12 im22 im32 im42 im52 im62 im72 </param>
+   *          <param name="dstMaskOdd"> im03 im13 im23 im33 im43 im53 im63 im73 </param>
+   *          <param name="size"> 128 256 512 1024 </param>
+   *          <size> size </size>
+   *      </testperf>
+   *
+   *  \endxmlonly
+   */
+  //! \{
+  //
+  void cmpNeV_f(float* src1, float* src2, nm1* dstMaskEven, nm1* dstMaskOdd, int size); 
+  //! \}
+  
+  /*!
+   *  \defgroup cmpLtCSelVC_f cmpLtCSelVC_f
+   *  \ingroup filter_api 
+   *  \brief Функция реализует тернарную операцию 'dst[i] = src[i]<C ? val1[i]:val2'.
+   *  \author 
+   *  \param src [in] Входной массив элементов для сравнения с константой.
+   *  \param С [in] Константа для сравнения.
+   *  \param val1 [in] Входной массив значений, помещаемых в выходной массив при выполнении условия сравнения.
+   *  \param val2 [in] Входная константа, помещаемая в выходной массив при невыполнении условия сравнения. 
+   *  \param dst [out] Выходной массив значений.
+   *  \param size [in] Число элементов входного массива для сравнения. Должно быть неотрицательным целым числом.
+   *  
+   *  \par
+   *  \xmlonly
+   *      <testperf>
+   *          <param name="src"> im00 im10 im20 im30 im40 im50 im60 im70 </param>
+   *          <param name="C"> 2.0 </param>
+   *          <param name="val1"> im01 im11 im21 im31 im41 im51 im61 im71 </param>
+   *          <param name="val2"> 123 </param>
+   *          <param name="dst"> im02 im12 im22 im32 im42 im52 im62 im72 </param>
+   *          <param name="size"> 16 32 64 128 256 512 1024 </param>
+   *          <init>
+   *            cmpSrcInit(src, size);
+   *          </init>
+   *          <size> size </size>
+   *      </testperf>
+   *
+   *  \endxmlonly
+   */
+  //! \{
+  void cmpLtCSelVC_f(float* src, float C, int* val1, int val2, int* dst, int size);
+  //! \}
+
 #ifdef __cplusplus
 }
 #endif //_cplusplus
