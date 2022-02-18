@@ -52,8 +52,8 @@ include 		 nmc4vars_win.mk
 PROJECT          = main0
 OUT_DIR          = .
 TARGET           = $(OUT_DIR)/$(PROJECT).abs
-INC_DIRS         = -I"$(NMPP)/include" -I$(HAL)/include -I$(ROOT)/include -I$(ROOT)/utilities/include
-SRC_DIRS 	     = ../../../../src_proc0/nm ../../../../utilities/src/float ..
+INC_DIRS         = -I"$(NMPP)/include" -I$(HAL)/include -I$(ROOT)/include -I$(ROOT)/utilities/include -I$(ROOT)/context/include
+SRC_DIRS 	     = ../../../../src_proc0/nm ..
 LIB_DIRS         = -L "$(NMC_GCC_TOOLPATH)/nmc4-ide/lib" -L"$(NMPP)/lib" -L"$(HAL)/lib" -L "../../../../lib"
 TMP_DIR          = Release
 #-------------- RELEASE/ALL config -------------------
@@ -61,7 +61,7 @@ CC 				 = nmc-g++
 AS               = nmc-as 				 
 AS_FLAGS    	 = -split_sir -nmc4_float
 CC_FLAGS	 	 = -std=c++11 -fno-builtin-printf -mnmc4-float
-LIBS             = -lnmopengl-nmc4f -lnmpp-nmc4f -lhal-mc12101 
+LIBS             = -lnmopengl_nmc4f -lnmpp-nmc4f -lhal-mc12101 
 LINKER_FLAGS     =   -Xlinker -Map=.main0.map $(LIB_DIRS) "-Wl,-Tldscript-nmc0.ld"  -Wl,--whole-archive -lmc12101 -Wl,--no-whole-archive -o$(TARGET)
 #=================== SOURCE & OBJECTS COLLECTION ===========================
 
@@ -82,7 +82,7 @@ OBJECTS_C   = $(notdir $(patsubst %.c,%.o,$(ALL_C)))
 OBJECTS     = $(addprefix $(TMP_DIR)/, $(OBJECTS_C) $(OBJECTS_CPP)  $(OBJECTS_ASM))
 
 #======================== BUILD RULES ====================================
-.PHONY:all  clean skip
+.PHONY:all  clean skip lib
 
 .DEFAULT_GOAL=default
 default: $(TARGET) 
@@ -100,11 +100,14 @@ run: $(TARGET)
 $(TMP_DIR):
 	-mkdir "$(@)"
 
-$(TARGET): $(TMP_DIR) $(OBJECTS) nmc4vars_win.mk Makefile
+$(TARGET): $(TMP_DIR) $(OBJECTS) nmc4vars_win.mk Makefile lib
 	$(CC) $(CC_FLAGS) $(LINKER_FLAGS) $(OBJECTS) $(LIBS)
 
 nmc4vars_win.mk:
 	copy "$(NMC_GCC_TOOLPATH)\nmc4-ide\include\nmc4vars_win.mk" nmc4vars_win.mk
+
+lib:
+	$(MAKE) -C $(ROOT)/make float 
 
 $(OUT_DIR): 
 	-mkdir "$(@)"
