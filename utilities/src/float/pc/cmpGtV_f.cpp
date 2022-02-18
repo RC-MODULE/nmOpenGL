@@ -1,5 +1,4 @@
 #include "nmtype.h"
-#include "demo3d_common.h"
 #include "stdio.h"
 #include "nmpp.h"
 

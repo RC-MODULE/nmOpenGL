@@ -16,6 +16,8 @@
 bin/
 obj/
 .vs/
+obj_x86/
+x86/
 
 # Compiler files #
 ##################
@@ -31,6 +33,9 @@ ldscript
 *.dll
 *.d
 
+# Execute files
+*.exe
+*.out
 *.dasm
 test/
 rod*.cpp

@@ -85,7 +85,7 @@ void testValues(){
 					excepted[i].vec[0], excepted[i].vec[1], excepted[i].vec[2], excepted[i].vec[3] );
 			DEBUG_PLOG_LEVEL_1("size=%d, i=%d\n", size, i);
 			for(int j = 0; j < 4; j++){
-				uassert((dst[i].vec[j] - excepted[i].vec[j]) < 0.01);
+				uassert(fabs(dst[i].vec[j] - excepted[i].vec[j]) < 0.01);
 			}
 			
 			// if(dst[i] != dst_ref[i]){

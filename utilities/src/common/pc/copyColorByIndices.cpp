@@ -1,8 +1,4 @@
-#include "nmgl.h"
-#include "demo3d_common.h"
-#include "demo3d_nm0.h"
-
-#include <nmpp.h>
+#include "nmtype.h"
 
 
 extern "C" {

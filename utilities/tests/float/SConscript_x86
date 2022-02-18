@@ -1,0 +1,69 @@
+import os
+from pathlib import Path as path
+
+ROOT = "../.."
+
+
+vs = ARGUMENTS.get('vs', 'latest')
+debug_lvl = int(ARGUMENTS.get('debug_lvl', 1))
+
+
+# get environment and set variables
+env = Environment()
+#if vs == 'latest':
+#	env = Environment(tools = ['msvc', 'msvs', 'mslink'], TARGET_ARCH = 'x86_64')
+#else:
+#	env = Environment(tools = ['msvc', 'msvs', 'mslink'], TARGET_ARCH = 'x86_64', MSVC_VERSION = vs)
+
+ROOT = '../..'
+NMC_GCC_TOOLPATH = os.environ['NMC_GCC_TOOLPATH']
+HAL = os.environ['HAL']
+NMPP = os.environ['NMPP']
+env['ROOT'] = ROOT
+env['NMC_GCC_TOOLPATH'] = NMC_GCC_TOOLPATH
+env['NMPP'] = NMPP
+env['HAL'] = HAL
+env['LIBPATH'] =  ["$NMPP/lib","$HAL/lib"]
+env['CPPPATH'] = ["$HAL/include","$NMPP/include","$ROOT/include" ]
+env['LIBS'] = [ "nmpp-x64.lib","hal-mc12101-x64.lib"]
+#env['CXXFLAGS'] = '/MD'
+env['CPPDEFINES'] = [ f"DEBUG_LEVEL={debug_lvl}" ]
+#env['PDB'] = 'bin/x64/Debug/mc12101-host.pdb'
+	
+src_dirs = [	f"{ROOT}/src/float", 
+				f"{ROOT}/src/float/pc" ]
+src_include_dirs = [f"{NMPP}/include",f"{HAL}/include", f"{ROOT}/include"]
+
+all_cpp = []
+all_c   = []
+
+for src_dir in src_dirs:
+	all_cpp += Glob(path(src_dir)/'*.cpp')
+	all_c   += Glob(path(src_dir)/'*.c')
+def obj_name (src): return str(f'obj_x86/' + path(src).stem)
+obj_cpp = [env.Object(obj_name(str(c)), c) for c in all_cpp]
+obj_c   = [env.Object(obj_name(str(c)), c) for c in all_c]
+
+list_targets = []
+run_targets = []
+for test in os.listdir("."):
+	if os.path.isdir(test) and test != 'obj_x86':
+		
+		obj_main = env.Object(str(path(test)/'x86/main'), Glob(path(test)/'main.c*'))
+		target = env.Program(str(path(test)/'x86/main'),[obj_main, obj_cpp, obj_c])
+		list_targets.append(target)
+		Alias(test + 'x86', target)
+
+		#print(target)
+		x86_run = env.Command(source = target, target = None, action='$SOURCE &')
+		#print(x86_run)
+		Depends( x86_run, target )
+		AlwaysBuild( x86_run )
+		run_targets.append(x86_run) 
+		Alias(test + 'x86run', x86_run)
+
+Alias('x86', list_targets)
+Alias('x86run', run_targets)
+
+
+

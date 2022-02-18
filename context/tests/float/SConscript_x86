@@ -1,0 +1,60 @@
+import os
+from pathlib import Path as path
+
+ROOT = "../.."
+
+vs = ARGUMENTS.get('vs', 'latest')
+
+
+
+# get environment and set variables
+if vs == 'latest':
+	env = Environment(tools = ['msvc', 'msvs', 'mslink'], TARGET_ARCH = 'x86_64')
+else:
+	env = Environment(tools = ['msvc', 'msvs', 'mslink'], TARGET_ARCH = 'x86_64', MSVC_VERSION = vs)
+
+ROOT = '../..'
+NMC_GCC_TOOLPATH = os.environ['NMC_GCC_TOOLPATH']
+HAL = os.environ['HAL']
+NMPP = os.environ['NMPP']
+env['ROOT'] = ROOT
+env['NMC_GCC_TOOLPATH'] = NMC_GCC_TOOLPATH
+env['NMPP'] = NMPP
+env['HAL'] = HAL
+env['LIBPATH'] =  ["$NMPP/lib","$HAL/lib"]
+env['CPPPATH'] = ["$HAL/include","$NMPP/include","$ROOT/include", "$ROOT/../utilities/include"]
+env['LIBS'] = [ "nmpp-x64.lib","hal-mc12101-x64.lib"]
+env['CXXFLAGS'] = '/MD'
+env['CPPDEFINES'] = ["_NDEBUG", "_ITERATOR_DEBUG_LEVEL=0", "DEBUG"]
+#env['PDB'] = 'bin/x64/Debug/mc12101-host.pdb'
+	
+src_dirs = [	f"{ROOT}/src/float", 
+				f"{ROOT}/../utilities/src/float", 
+				f"{ROOT}/../utilities/src/float/pc", 
+				f"{ROOT}/../utilities/src/common", 
+				f"{ROOT}/../utilities/src/common/pc"]
+src_include_dirs = [f"{NMPP}/include",f"{HAL}/include", f"{ROOT}/include"]
+
+all_cpp = []
+all_c   = []
+
+for src_dir in src_dirs:
+	all_cpp += Glob(path(src_dir)/'*.cpp')
+	all_c   += Glob(path(src_dir)/'*.c')
+def obj_name (src): return str(f'obj_x86/' + path(src).stem)
+obj_cpp = [env.Object(obj_name(str(c)), c) for c in all_cpp]
+obj_c   = [env.Object(obj_name(str(c)), c) for c in all_c]
+
+list_targets = []
+for test in os.listdir("."):
+	if os.path.isdir(test) and test != 'obj':
+		
+		obj_main = env.Object(Glob(path(test)/'main.c*'))
+		target = env.Program([obj_main, obj_cpp, obj_c])
+		list_targets.append(target)
+		Alias(test + 'x86', target)
+
+Alias('x86', list_targets)
+
+
+

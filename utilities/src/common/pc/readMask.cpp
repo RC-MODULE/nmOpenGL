@@ -1,6 +1,4 @@
 #include "nmtype.h"
-#include "demo3d_common.h"
-#include "stdio.h"
 
 extern "C"{
 

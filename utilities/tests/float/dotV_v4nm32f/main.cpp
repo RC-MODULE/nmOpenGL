@@ -6,11 +6,19 @@
 
 #define MAX_SIZE 1024
 
+#ifdef __GNUC__
 __attribute__((section(".data_imu0"))) v4nm32f src0[MAX_SIZE];
 __attribute__((section(".data_imu0"))) v4nm32f src1[MAX_SIZE];
 __attribute__((section(".data_imu0"))) v2nm32f dst[MAX_SIZE + 1];
 
 __attribute__((section(".data_imu0"))) v2nm32f expected[MAX_SIZE + 1];
+#else
+v4nm32f src0[MAX_SIZE];
+v4nm32f src1[MAX_SIZE];
+v2nm32f dst[MAX_SIZE + 1];
+
+v2nm32f expected[MAX_SIZE + 1];
+#endif
 
 
 

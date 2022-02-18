@@ -2,7 +2,6 @@
 #include "section-hal.h"
 
 extern "C" 
-INSECTION(".text_demo3d")
 int cnvMaskToIndices(nm1* mask, int* indices, int size){
   int result = 0;
 	int i = 0;

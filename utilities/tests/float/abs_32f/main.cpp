@@ -32,7 +32,7 @@ void logicTest(){
 	abs_32f(src, dst, MAX_SIZE);
 
 	for(int i = 0; i < MAX_SIZE; i++){
-		DEBUG_PLOG_LEVEL_1("i=%d\n", i);
+		DEBUG_PLOG_LEVEL_1("%d: dst=%f, expected=%f\n", i, dst[i], expected[i]);
 		uassert(dst[i] == expected[i]);
 	}
 	DEBUG_PLOG_LEVEL_0("Value test OK\n");

@@ -31,8 +31,9 @@ inline void copyTriangleInPlace(TrianglePointers &triangles, int iSrc, int iDst)
 }
 extern "C" int cnvDividedMaskToIndices(nm1* maskEven, nm1* maskOdd, int* indices, int size);
 
+#ifdef __GNUC__
 __attribute__((section(".text_demo3d")))
-
+#endif
 int cullFaceSortTriangles(TrianglePointers &triangles, int count, NMGLenum frontface, NMGLenum cullface){
 	NMGL_CoreContextFloat *context = getCoreContextFloat();
 

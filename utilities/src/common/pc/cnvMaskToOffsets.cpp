@@ -1,8 +1,6 @@
 #include "nmtype.h"
-#include "demo3d_common.h"
 
 extern "C" 
-SECTION(".text_demo3d")
 int cnvMaskToOffsets(nm1* mask, int* offsets, int size){
   int result = 0;
 	int i = 0;
