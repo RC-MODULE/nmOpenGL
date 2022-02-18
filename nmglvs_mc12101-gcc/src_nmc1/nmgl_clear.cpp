@@ -68,7 +68,7 @@ SECTION(".text_demo3d") void NMGL_Clear(NMGL_Context_NM1 *context, NM_Command *c
 			bufferClearCounters[0] = x0 + y0 * widthImage;
 			bufferClearStep[0] = widthImage;
 			for (int y = 0; y < height; y++) {
-				clearTasks[0].dst = context->colorBuffer.setCursor(x0, heightImage - (y + y0));
+				clearTasks[0].dst = context->colorBuffer.setCursor(x0, y + y0);
 				clearTasks[0].size = width;
 				msdAdd(clearTasks[0], 2);
 			}
@@ -92,7 +92,7 @@ SECTION(".text_demo3d") void NMGL_Clear(NMGL_Context_NM1 *context, NM_Command *c
 			bufferClearCounters[1] = x0 + y0 * widthImage;
 			bufferClearStep[1] = widthImage;
 			for (int y = 0; y < height; y++) {
-				clearTasks[1].dst = context->depthBuffer.setCursor(x0, heightImage - (y + y0));
+				clearTasks[1].dst = context->depthBuffer.setCursor(x0, y + y0);
 				clearTasks[1].size = width;
 				msdAdd(clearTasks[1], 2);
 			}
@@ -123,9 +123,9 @@ SECTION(".text_demo3d") void NMGL_Clear(NMGL_Context_NM1 *context, NM_Command *c
 			bufferClearStep[0] = widthImage;
 			bufferClearStep[1] = widthImage;
 			for (int y = 0; y < height; y++) {
-				clearTasks[0].dst = context->colorBuffer.setCursor(x0, heightImage - (y + y0));
+				clearTasks[0].dst = context->colorBuffer.setCursor(x0, y + y0);
 				clearTasks[0].size = width;
-				clearTasks[1].dst = context->depthBuffer.setCursor(x0, heightImage - (y + y0));
+				clearTasks[1].dst = context->depthBuffer.setCursor(x0, y + y0);
 				clearTasks[1].size = width;
 				msdAdd(clearTasks[0], 2);
 				msdAdd(clearTasks[1], 2);

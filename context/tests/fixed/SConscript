@@ -3,7 +3,6 @@ from pathlib import Path as path
 
 ROOT = "../.."
 
-#targets = ['fixed', 'float', 'qemu']
 
 use_gdb = int(ARGUMENTS.get('gdb', 0))
 legacy = int(ARGUMENTS.get('legacy', 1))
@@ -24,13 +23,17 @@ MC12101 = os.environ['MC12101']
 NMPP = os.environ['NMPP']
 HAL = os.environ['HAL']
 ARCH = 'nmc4'
+CORE = 'fixed'
+UTILITY = f'{ROOT}/../utilities'
 
 nmc_mc12101['ROOT'] = ROOT
 nmc_mc12101['NMC_GCC_TOOLPATH'] = NMC_GCC_TOOLPATH
 nmc_mc12101['NMPP'] = NMPP
 nmc_mc12101['HAL'] = HAL
 nmc_mc12101['MC12101'] = MC12101
+nmc_mc12101['UTILITY'] = UTILITY
 nmc_mc12101['ARCH'] = ARCH
+nmc_mc12101['CORE'] = CORE
 
 nmc_mc12101.PrependENVPath('PATH', f'{MC12101}/bin')
 
@@ -40,31 +43,36 @@ if nmc_mc12101['PLATFORM'] == 'win32':
 	nmc_mc12101['ENV']['GCC_EXEC_PREFIX'] = gcc_exec_prefix
 	nmc_mc12101.PrependENVPath('PATH', f'{NMC_GCC_TOOLPATH}/nmc4-ide/bin')
 	nmc_mc12101.PrependENVPath('PATH', f'{NMC_GCC_TOOLPATH}/nmc4-ide/lib')	
-	nmc_mc12101.PrependENVPath('PATH', f'{NMC_GCC_TOOLPATH}/nmc4-ide/bin')
 
 
 # assembler
 #nmc_mc12101['AS'] = 'nmc-as'
 #nmc_mc12101['ASFLAGS'] = ['-q', '-split_sir', f'-{ARCH}_{CORE}', '-ga']
 nmc_mc12101['AS'] = 'nmc-gcc'
-nmc_mc12101['ASFLAGS'] = ['-c', '-mmas', '-m$ARCH', '-g']
+nmc_mc12101['ASFLAGS'] = ['-c', f'-m{ARCH}-{CORE}', '-g' ]
 
 # compiler
 nmc_mc12101['CC'] = 'nmc-gcc'
 nmc_mc12101['CXX'] = 'nmc-g++'
 nmc_mc12101['CFLAGS'] = Split('-std=c99')
 nmc_mc12101['CXXFLAGS'] = Split('-std=c++11')
-nmc_mc12101['CCFLAGS'] = Split('-m$ARCH -O0 -g')
+nmc_mc12101['CCFLAGS'] = Split('-m$ARCH-$CORE -O0 -g')
 nmc_mc12101['CPPPATH'] = Split(f'$MC12101/include $NMPP/include $ROOT/include' )
+nmc_mc12101['CPPPATH'] += [ '$UTILITY/include' ]
+nmc_mc12101['CPPPATH'] += [ '$HAL/include']
 nmc_mc12101['CPPDEFINES'] = [f'DEBUG_LEVEL={debug_lvl}']
-nmc_mc12101['CPPPATH'] += [f'$HAL/include']
 
-src_dir = f"{ROOT}/src/common"
+src_dirs = [ f"{UTILITY}/src/{CORE}", f"{ROOT}/src/{CORE}", f"{ROOT}/src/common", f"{UTILITY}/src/common"]
 
-all_cpp = Glob(path(src_dir)/'*.cpp')
-all_c   = Glob(path(src_dir)/'*.c')
-all_asm = Glob(path(src_dir)/'*.asm')
-all_s = Glob(path(src_dir)/'*.s')
+all_cpp = []
+all_c   = []
+all_asm = []
+all_s   = []
+for src_dir in src_dirs:
+	all_cpp += Glob(path(src_dir)/'*.cpp')
+	all_c   += Glob(path(src_dir)/'*.c')
+	all_asm += Glob(path(src_dir)/'*.asm')
+	all_s 	+= Glob(path(src_dir)/'*.s')
 
 obj_cpp = [nmc_mc12101.Object(c) for c in all_cpp]
 obj_c   = [nmc_mc12101.Object(c) for c in all_c]
@@ -83,91 +91,70 @@ Clean('dump', dump_list)
 # linker
 nmc_mc12101['LINK'] = 'nmc-gcc'
 if legacy:
-	nmc_mc12101['LIBPATH'] = ['$MC12101/lib', '$NMC_GCC_TOOLPATH/nmc4-ide/lib', '$NMPP/lib' ]
 	nmc_mc12101['WHOLELIBS'] = ["-lmc12101"]
+	nmc_mc12101['LIBPATH'] = ['$MC12101/lib', '$NMC_GCC_TOOLPATH/nmc4-ide/lib', '$NMPP/lib' ]
 else:
-	nmc_mc12101['LIBPATH'] = ['$MC12101/lib', '$NMPP/lib' ]
 	#nmc_mc12101['WHOLELIBS'] = ["-lmc12101load_nm", "-lnm_io"]
 	nmc_mc12101['WHOLELIBS'] = ["-lmc12101load_nm"]
-nmc_mc12101['LINKCOM'] += ' -Wl,--whole-archive $WHOLELIBS -Wl,--no-whole-archive'
+	nmc_mc12101['LIBPATH'] = ['$MC12101/lib', '$NMPP/lib' ]
+nmc_mc12101['LIBS'] = ['nmpp-nmc4f' ]
+nmc_mc12101['LINKSCRIPT'] = [File(f'{ROOT}/lds/ldscript-{CORE}.ld')]
+nmc_mc12101['LINKFLAGS'] = ["-Wl,-T$LINKSCRIPT"]
+if 'WHOLELIBS' in nmc_mc12101:
+	nmc_mc12101['LINKCOM'] += ' -Wl,--whole-archive $WHOLELIBS -Wl,--no-whole-archive'
+
+
+qemu_env = nmc_mc12101.Clone()
 nmc_mc12101['LIBPATH'] += ['$HAL/lib']
-nmc_mc12101['LIBS'] = ['hal-mc12101']
+nmc_mc12101['LIBS'] += ['hal-mc12101']
 
-
-nmc_fixed = nmc_mc12101.Clone()
-nmc_float = nmc_mc12101.Clone()
-
-nmc_fixed['LINKSCRIPT'] = File('ldscript-fixed.ld')
-nmc_float['LINKSCRIPT'] = File('ldscript-float.ld')
-nmc_fixed['LINKFLAGS'] = ["-Wl,-T$LINKSCRIPT"]
-nmc_float['LINKFLAGS'] = ["-Wl,-T$LINKSCRIPT"]
-nmc_fixed['LIBS'] += ['nmpp-nmc4']
-nmc_float['LIBS'] += ['nmpp-nmc4f']
-
-
-qemu_env = nmc_fixed.Clone()
 
 if use_gdb:
 	print("stub lib is used")
 	if 'MC12101_GDB' in os.environ:
-		nmc_fixed['MC12101_GDB'] = os.environ['MC12101_GDB']
-		nmc_float['MC12101_GDB'] = os.environ['MC12101_GDB']
-		nmc_fixed['LIBPATH'] += ['$MC12101_GDB']
-		nmc_float['LIBPATH'] += ['$MC12101_GDB']
-		nmc_fixed['WHOLELIBS'] += [f'-lmc12101_stub_nmc4_fixed']
-		nmc_float['WHOLELIBS'] += [f'-lmc12101_stub_nmc4_float']
+		nmc_mc12101['MC12101_GDB'] = os.environ['MC12101_GDB']
+		nmc_mc12101['LIBPATH'] += ['$MC12101_GDB']
+		nmc_mc12101['WHOLELIBS'] += [f'-lmc12101_stub_{ARCH}_{CORE}']
 	else:
 		print("Warning: value MC12101_GDB not found")
 else: 
 	print("stub lib is not used")
 
 
-
-fixed_run_list = []
-float_run_list = []
+board_run_list = []
 qemu_run_list = []
-fixed_build_list = []
-float_build_list = []
+board_build_list = []
 qemu_build_list = []
 for test in os.listdir("."):
 	if os.path.isdir(test) and test != 'obj_x86':
-		obj_main = nmc_mc12101.Object(str(path(test)/'main.cpp'))
-		fixed_main = nmc_fixed.Program(str(path(test)/'fixed/main.abs'), [obj_main, obj_s, obj_asm, obj_cpp, obj_c])
-		float_main = nmc_float.Program(str(path(test)/'float/main.abs'), [obj_main, obj_s, obj_asm, obj_cpp, obj_c])
-		nmc_fixed.Depends(fixed_main, '$LINKSCRIPT')
-		nmc_float.Depends(float_main, '$LINKSCRIPT')
-		fixed_build_list.append(fixed_main)
-		float_build_list.append(float_main)
+		obj_main = nmc_mc12101.Object(Glob(path(test)/'main.c*'))
+		target = nmc_mc12101.Program(str(path(test)/'board/main.abs'), [obj_main, obj_cpp, obj_c, obj_s, obj_asm])
+		nmc_mc12101.Depends(target, '$LINKSCRIPT')
+		Alias(test, target)
+		board_build_list.append(target)
 
-		if legacy:
-			board_fixed_run = nmc_fixed.Command(source = fixed_main, target = None, action='mc12101run $SOURCE -p -q')
-			board_float_run = nmc_float.Command(source = float_main, target = None, action='mc12101run $SOURCE -q')
-		else:
-			board_fixed_run = nmc_fixed.Command(source = fixed_main, target = None, action='mc12101run $SOURCE -a1 -p -q')
-			board_float_run = nmc_float.Command(source = float_main, target = None, action='mc12101run $SOURCE -a0 -p -q')
-		Depends(board_fixed_run, fixed_main)
-		Depends(board_float_run, float_main)
-		fixed_run_list.append(board_fixed_run)
-		float_run_list.append(board_float_run)
-		Alias(test+'-run-fixed', board_fixed_run)
-		Alias(test+'-run-float', board_float_run)
-
-
-		qemu_target = qemu_env.Program(str(path(test)/'qemu/main.abs'), [obj_main, obj_asm])
+		qemu_target = qemu_env.Program(str(path(test)/'qemu/main.abs'), [obj_main, obj_cpp, obj_c, obj_s, obj_asm])
 		qemu_env.Depends(qemu_target, '$LINKSCRIPT')
 		Alias(test+'-emu', qemu_target)
 		qemu_build_list.append(qemu_target)
 
-		if use_gdb:
-			qemu_run = nmc_mc12101.Command(source = qemu_target, target = None, action='nmc-qemu -g 10000 $SOURCE')
+
+		if legacy:
+			board_run = nmc_mc12101.Command(source = target, target = None, action='mc12101run $SOURCE -q')
 		else:
-			qemu_run = nmc_mc12101.Command(source = qemu_target, target = None, action='nmc-qemu $SOURCE')
+			board_run = nmc_mc12101.Command(source = target, target = None, action='mc12101run $SOURCE -a0 -p -q')
+		Depends(board_run, target)
+		board_run_list.append(board_run)
+		Alias(test+'-run', board_run)
+
+		if use_gdb:
+			qemu_run = nmc_mc12101.Command(source = qemu_target, target = None, action='nmc-qemu -g 10000 -floating $SOURCE')
+		else:
+			qemu_run = nmc_mc12101.Command(source = qemu_target, target = None, action='nmc-qemu -floating $SOURCE')
 		Depends(qemu_run, qemu_target)
 		qemu_run_list.append(qemu_run)
 		Alias(test+'-emurun', qemu_run)
 
-board_build_list = fixed_build_list + float_build_list
-board_run_list = fixed_run_list + float_run_list
 Default(board_build_list)
 Alias('emu', qemu_build_list)
 Alias('build', board_build_list)

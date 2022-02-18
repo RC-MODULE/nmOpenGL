@@ -9,7 +9,6 @@ debug_lvl = int(ARGUMENTS.get('debug_lvl', 1))
 
 # get environment and set variables
 env = Environment()
-#print(env.Dump(0))
 #if vs == 'latest':
 #	env = Environment(tools = ['msvc', 'msvs', 'mslink'], TARGET_ARCH = 'x86_64')
 #else:
@@ -27,19 +26,12 @@ env['LIBPATH'] =  ["$NMPP/lib","$HAL/lib"]
 env['CPPPATH'] = ["$HAL/include","$NMPP/include","$ROOT/include", "$ROOT/../utilities/include"]
 env['LIBS'] = [ "nmpp-x64.lib","hal-mc12101-x64.lib"]
 #env['CXXFLAGS'] = '/MD'
-if env['CC'] == 'cl':
-	env['CFLAGS'] = '/std:c11'
-	env['CXXFLAGS'] = '/std:c++11'
-elif env['PLATFORM'] == 'posix':
-	env['CFLAGS'] = '-std=c99'
-	env['CXXFLAGS'] = '-std=c++11'
-
 env['CPPDEFINES'] = [ f"DEBUG_LEVEL={debug_lvl}" ]
 #env['PDB'] = 'bin/x64/Debug/mc12101-host.pdb'
 	
 src_dirs = [	f"{ROOT}/src/float", 
-				f"{ROOT}/../utilities/src/float", 
-				f"{ROOT}/../utilities/src/float/pc", 
+				f"{ROOT}/../utilities/src/fixed", 
+				f"{ROOT}/../utilities/src/fixed/pc", 
 				f"{ROOT}/../utilities/src/common", 
 				f"{ROOT}/../utilities/src/common/pc"]
 src_include_dirs = [f"{NMPP}/include",f"{HAL}/include", f"{ROOT}/include"]

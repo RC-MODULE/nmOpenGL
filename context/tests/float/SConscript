@@ -43,7 +43,6 @@ if nmc_mc12101['PLATFORM'] == 'win32':
 	nmc_mc12101['ENV']['GCC_EXEC_PREFIX'] = gcc_exec_prefix
 	nmc_mc12101.PrependENVPath('PATH', f'{NMC_GCC_TOOLPATH}/nmc4-ide/bin')
 	nmc_mc12101.PrependENVPath('PATH', f'{NMC_GCC_TOOLPATH}/nmc4-ide/lib')	
-	nmc_mc12101.PrependENVPath('PATH', f'{NMC_GCC_TOOLPATH}/nmc4-ide/bin')
 
 
 # assembler
@@ -127,7 +126,7 @@ qemu_run_list = []
 board_build_list = []
 qemu_build_list = []
 for test in os.listdir("."):
-	if os.path.isdir(test) and test != 'obj':
+	if os.path.isdir(test) and test != 'obj_x86':
 		obj_main = nmc_mc12101.Object(Glob(path(test)/'main.c*'))
 		target = nmc_mc12101.Program(str(path(test)/'board/main.abs'), [obj_main, obj_cpp, obj_c, obj_s, obj_asm])
 		nmc_mc12101.Depends(target, '$LINKSCRIPT')

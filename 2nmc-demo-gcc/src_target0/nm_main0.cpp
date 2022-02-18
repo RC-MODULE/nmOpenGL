@@ -85,8 +85,8 @@ SECTION(".text_shared0") int main()
 	nmglOrthof(-384, 384, -384, 384, -384, 384);	
 	//nmglViewport(128, 128, 384, 384);
 	//nmglViewport(0, 0, 256, 256);
-	//nmglEnable(NMGL_SCISSOR_TEST);
-	//nmglScissor(128, 128, 384, 384);
+	nmglEnable(NMGL_SCISSOR_TEST);
+	nmglScissor(128, 128, 384, 384);
 	//nmglOrthof(-384, 384, -384, 384, -100, 100);
 	//nmglFrustumf(-384, 384, -384, 384, 0, 100);
 	nmglMatrixMode(NMGL_MODELVIEW);

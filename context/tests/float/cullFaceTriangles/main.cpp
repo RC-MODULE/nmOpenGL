@@ -107,6 +107,66 @@ void testValues(TrianglePointers &pointers, NMGLenum frontface, NMGLenum cullfac
 	DEBUG_PLOG_LEVEL_0("%s test OK\n", name);
 }
 
+void testValuesFaB(TrianglePointers &pointers, v2nm32f *triangle_ccw, v2nm32f *triangle_cw){
+	for(int size = 0; size < MAX_TEST_SIZE; size+=2){
+		DEBUG_PLOG_LEVEL_2("size=%d\n", size);
+		{
+			for(int i = 0; i < size; i++){
+				setValue(pointers, i, triangle_ccw);
+			}
+			int count = cullFaceSortTriangles(pointers, size, NMGL_CCW, NMGL_FRONT_AND_BACK);	
+			uassert(count == 0);
+		}
+		{
+			for(int i = 0; i < size; i++){
+				setValue(pointers, i, triangle_ccw);
+			}
+			int count = cullFaceSortTriangles(pointers, size, NMGL_CW, NMGL_FRONT_AND_BACK);	
+			uassert(count == 0);
+		}
+		
+		{
+			for(int i = 0; i < size; i++){
+				setValue(pointers, i, triangle_cw);
+			}
+			int count = cullFaceSortTriangles(pointers, size, NMGL_CCW, NMGL_FRONT_AND_BACK);	
+			uassert(count == 0);
+		}
+		{
+			for(int i = 0; i < size; i++){
+				setValue(pointers, i, triangle_cw);
+			}
+			int count = cullFaceSortTriangles(pointers, size, NMGL_CW, NMGL_FRONT_AND_BACK);	
+			uassert(count == 0);
+		}
+		
+		{
+			for(int i = 0; i < size; i++){
+				if(i % 2){
+					setValue(pointers, i, triangle_ccw);
+				}else{
+					setValue(pointers, i, triangle_cw);	
+				}
+			}
+			int count = cullFaceSortTriangles(pointers, size, NMGL_CCW, NMGL_FRONT_AND_BACK);	
+			uassert(count == 0);
+		}
+		{
+			for(int i = 0; i < size; i++){
+				if(i % 2){
+					setValue(pointers, i, triangle_ccw);
+				}else{
+					setValue(pointers, i, triangle_cw);	
+				}
+			}
+			int count = cullFaceSortTriangles(pointers, size, NMGL_CW, NMGL_FRONT_AND_BACK);	
+			uassert(count == 0);
+		}
+	}
+
+	DEBUG_PLOG_LEVEL_0("Front and Bask test test OK\n");
+}
+
 int main(){
 	
 	DEBUG_PLOG_LEVEL_0("Cullface test\n");
@@ -145,6 +205,7 @@ int main(){
 	testValues(pointers, NMGL_CW  , NMGL_BACK , triangle_cw, triangle_ccw, "CW Back");
 	testValues(pointers, NMGL_CCW , NMGL_FRONT, triangle_cw, triangle_ccw, "CCW Front");
 	testValues(pointers, NMGL_CW  , NMGL_FRONT, triangle_ccw, triangle_cw, "CW Front");
+	//testValuesFaB(pointers, triangle_ccw, triangle_cw);
 	
 	return 0;
 }

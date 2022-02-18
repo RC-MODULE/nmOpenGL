@@ -9,6 +9,7 @@
 #include "ringbuffert.h"
 #include "pattern.h"
 #include "utility.h"
+#include "segment.h"
 
 #ifdef __GNUC__
 	#define setHeap(n) nmc_malloc_set_heap(n) 
@@ -151,14 +152,6 @@ struct Array {
 	NMGLenum type;
 	NMGLboolean enabled;
 	int offset;
-};
-
-struct ImageSegments{
-	Rectangle rectangles[40];
-	v2nm32f lowerLeft[40];
-	v2nm32f upperRight[40];
-	int count;
-	int dummy;
 };
 
 

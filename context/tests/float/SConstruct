@@ -2,4 +2,4 @@
 
 SConscript('SConscript')
 
-#SConscript('SConscript_x86')
+SConscript('SConscript_x86')

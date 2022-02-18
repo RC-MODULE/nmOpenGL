@@ -12,9 +12,11 @@
             ],
             "defines": ["DEBUG_LEVEL=1"],
             //"compilerPath": "gcc",
+            "compilerPath": "d:\\download\\NMC_Mingw\\bin\\nmc-gcc.exe",
             "cStandard": "c11",
             "cppStandard": "c++14",
-            "intelliSenseMode": "linux-gcc-x64"
+            "intelliSenseMode": "gcc-x64"
+            //"intelliSenseMode": "windows-msvc-arm64"
         }
     ],
     "version": 4

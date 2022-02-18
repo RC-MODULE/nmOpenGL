@@ -2,6 +2,12 @@
 #define __UTILITY_H__
 #include "nmtype.h"
 
+#ifdef __cplusplus
+#include "utility_cpp.h"
+#endif //__cplusplus
+
+
+
 struct Vector2 {
 	int x;
 	int y;
@@ -28,6 +34,8 @@ typedef struct s_v3nm32f {
 	float v1;
 	float v2;
 } v3nm32f;
+
+
 
 #ifdef __cplusplus
 extern "C"{
