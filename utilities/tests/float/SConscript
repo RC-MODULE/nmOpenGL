@@ -55,7 +55,7 @@ nmc_mc12101['CXX'] = 'nmc-g++'
 nmc_mc12101['CFLAGS'] = Split('-std=c99')
 nmc_mc12101['CXXFLAGS'] = Split('-std=c++11')
 nmc_mc12101['CCFLAGS'] = Split('-m$ARCH-$CORE -O0 -g')
-nmc_mc12101['CPPPATH'] = Split(f'$MC12101/include $NMPP/include $ROOT/include' )
+nmc_mc12101['CPPPATH'] = Split(f'$MC12101/include $NMPP/include $ROOT/include $ROOT/../include' )
 nmc_mc12101['CPPDEFINES'] = [f'DEBUG_LEVEL={debug_lvl}']
 nmc_mc12101['CPPPATH'] += [ '$HAL/include']
 

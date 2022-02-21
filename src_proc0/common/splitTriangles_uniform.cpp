@@ -1,7 +1,6 @@
 #include "demo3d_nm0.h"
 #include "nmblas.h"
 #include "service.h"
-#include "filter.h"
 #include "utility_float.h"
 
 #define PERSPECTIVE_CORRECT
