@@ -9,7 +9,7 @@
       files { "../*.cpp", "../../../../src_proc0/pc/*.cpp","../../../../src_proc0/pc/*.c","../../../../src_proc1/pc/*.cpp", "../../../../src_proc1/pc/*.c" }
 	  links { "nmopengl-x86.lib", "nmpp-x86.lib", "hal-virtual-x86.lib", "tinyxml.lib" }
 	  libdirs { "$(NMPP)/lib", "$(HAL)/lib", "$(TINYXML)", "../../../../lib"}
-	  includedirs { "../../../../include", "$(NMPP)/include", "$(HAL)/include", "$(TINYXML)"}
+	  includedirs { "../../../../include", "$(NMPP)/include", "$(HAL)/include", "$(TINYXML)", "../../../../utilities/include", "../../../../context/include"}
 
       configuration "Debug"
          defines { "DEBUG" }

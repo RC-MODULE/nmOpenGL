@@ -22,13 +22,14 @@ AS       = nmc-gcc
 CC_FLAGS = -std=c++11 -O2 -Wall -mnmc4-float
 PROJECT  = main
 TARGET   =$(PROJECT)
-INC_DIRS = -I"$(NMPP)/include" -I"$(HAL)/include" -I$(ROOT)/include
+INC_DIRS = -I"$(NMPP)/include" -I"$(HAL)/include" -I$(ROOT)/include -I$(ROOT)/utilities/include -I$(ROOT)/context/include
 LIB_DIRS = -L"$(NMCGCC)/lib" -L"$(NMCGCC)/nmc/lib/nmc4" -L"$(NMPP)/lib" -L"$(HAL)/lib" -L$(ROOT)/lib
-LIBS     = -lnmopengl-nmc4f -lnmpp-nmc4f -lhal-mc12101
-
+LIBS     = -lnmopengl_nmc4f -lnmpp-nmc4f -lhal-mc12101
 CFG      =  "-Wl,-Tmc12101board-nmpu0.ld"
 
-$(TARGET): $(SRC_CPP) Makefile
+.PHONY: lib 
+
+$(TARGET): $(SRC_CPP) Makefile lib
 	$(CC) $(CC_FLAGS) main.cpp $(INC_DIRS) $(LIB_DIRS) $(LIBS) -lc $(CFG) -Wl,--whole-archive -lmc12101 -Wl,--no-whole-archive -o $(TARGET) $(ERRECHO)
 
 PATH:=$(MC12101)/bin;$(PATH)
@@ -48,4 +49,6 @@ reset:
 	
 nmc4vars_win.mk:
 	copy "$(NMC_GCC_TOOLPATH)\nmc4-ide\include\nmc4vars_win.mk" nmc4vars_win.mk
-	
+
+lib:
+	$(MAKE) -C $(ROOT)/make float

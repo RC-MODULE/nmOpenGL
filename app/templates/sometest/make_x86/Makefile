@@ -6,7 +6,9 @@ PROJECT = test-x86
 #TARGET  = $(call OSX,bin/Release/$(PROJECT))
 TARGET  = bin/Release/$(PROJECT)
 
-vs2015:    	$(PROJECT).vcxproj
+.PHONY: lib
+
+vs2015:    	$(PROJECT).vcxproj lib
 #	"$(VS140COMNTOOLS)vsvars32" && msbuild $(PROJECT).vcxproj
 	"$(VS140COMNTOOLS)vsvars32" && msbuild $(PROJECT).vcxproj /p:Configuration=Release
 
@@ -35,5 +37,8 @@ $(PROJECT).vcxproj :	premake5.lua
 	
 $(PROJECT).vcproj :	premake5.lua 
 	premake5 vs2005
+
+lib:
+	make -C $(ROOT)/make x86
 
 include $(ROOT)/clean.mk	

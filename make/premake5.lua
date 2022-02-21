@@ -12,13 +12,13 @@ solution "nmopengl-x86"
 				"../src_proc0/nmgl/*.*",
 				"../src_proc1/common/*.*",
 				"../src_proc1/pc/*.*",
-				"../utilities/common/*.c*",
-				"../utilities/common/pc/*.c*",
-				"../utilities/fixed/*.c*",
-				"../utilities/fixed/pc/*.c*",
-				"../utilities/float/*.c*",
-				"../utilities/float/pc/*.c*",}
-	  includedirs { "../include", "$(NMPP)/include", "$(HAL)/include", "../utilities/include"}
+				"../utilities/src/common/*.c*",
+				"../utilities/src/common/pc/*.c*",
+				"../utilities/src/fixed/*.c*",
+				"../utilities/src/fixed/pc/*.c*",
+				"../utilities/src/float/*.c*",
+				"../utilities/src/float/pc/*.c*",}
+	  includedirs { "../include", "$(NMPP)/include", "$(HAL)/include", "../utilities/include", "../context/include"}
 	  targetdir ("../lib")
 	  
 	  configuration {"Debug","x86"}
