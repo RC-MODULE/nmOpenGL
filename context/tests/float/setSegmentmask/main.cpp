@@ -11,6 +11,7 @@ ImageSegments segments;
 DATA_IMU0 v2nm32f minXY[SIZE];
 DATA_IMU1 v2nm32f maxXY[SIZE];
 BitMask masks[MAX_SEGMENTS_COUNT];
+int bit_masks[MAX_SEGMENTS_COUNT][ SIZE / 32 ];
 
 void initSegmentsTest(){
 	{
@@ -66,6 +67,7 @@ void valueTest(){
 	}
 
 	{
+		DEBUG_PLOG_LEVEL_1("Test 1\n");
 		for(int i = 0; i < SIZE; i++){
 			minXY[i] = {-256, -256};
 			maxXY[i] = { -128, -128};
@@ -77,6 +79,7 @@ void valueTest(){
 	}
 	
 	{
+		DEBUG_PLOG_LEVEL_1("Test 2\n");
 		for(int i = 0; i < SIZE; i++){
 			minXY[i] = { 128, -256};
 			maxXY[i] = { 256, -128};
@@ -88,6 +91,7 @@ void valueTest(){
 	}
 
 	{
+		DEBUG_PLOG_LEVEL_1("Test 3\n");
 		for(int i = 0; i < SIZE; i++){
 			minXY[i] = { 256, 256};
 			maxXY[i] = { 270, 270};
@@ -111,6 +115,9 @@ void valueTest(){
 int main(){
 	DEBUG_PLOG_LEVEL_0("Segment tests\n");
 
+	for(int i = 0; i < MAX_SEGMENTS_COUNT; i++){
+		masks[i].bits = bit_masks[i];
+	}
 	initSegmentsTest();
 	valueTest();
 	

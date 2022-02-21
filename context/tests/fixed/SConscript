@@ -49,20 +49,22 @@ if nmc_mc12101['PLATFORM'] == 'win32':
 #nmc_mc12101['AS'] = 'nmc-as'
 #nmc_mc12101['ASFLAGS'] = ['-q', '-split_sir', f'-{ARCH}_{CORE}', '-ga']
 nmc_mc12101['AS'] = 'nmc-gcc'
-nmc_mc12101['ASFLAGS'] = ['-c', f'-m{ARCH}-{CORE}', '-g' ]
+nmc_mc12101['ASFLAGS'] = ['-c', '-g' ]
 
 # compiler
 nmc_mc12101['CC'] = 'nmc-gcc'
 nmc_mc12101['CXX'] = 'nmc-g++'
 nmc_mc12101['CFLAGS'] = Split('-std=c99')
 nmc_mc12101['CXXFLAGS'] = Split('-std=c++11')
-nmc_mc12101['CCFLAGS'] = Split('-m$ARCH-$CORE -O0 -g')
+nmc_mc12101['CCFLAGS'] = Split('-O0 -g')
 nmc_mc12101['CPPPATH'] = Split(f'$MC12101/include $NMPP/include $ROOT/include' )
 nmc_mc12101['CPPPATH'] += [ '$UTILITY/include' ]
 nmc_mc12101['CPPPATH'] += [ '$HAL/include']
 nmc_mc12101['CPPDEFINES'] = [f'DEBUG_LEVEL={debug_lvl}']
+#nmc_mc12101['CCFLAGS'] += ['-m$ARCH-$CORE']
 
-src_dirs = [ f"{UTILITY}/src/{CORE}", f"{ROOT}/src/{CORE}", f"{ROOT}/src/common", f"{UTILITY}/src/common"]
+src_dirs = [ f"{UTILITY}/src/{CORE}", f"{ROOT}/src/{CORE}"]
+src_common_dirs = [f"{UTILITY}/src/common"]
 
 all_cpp = []
 all_c   = []
@@ -74,10 +76,26 @@ for src_dir in src_dirs:
 	all_asm += Glob(path(src_dir)/'*.asm')
 	all_s 	+= Glob(path(src_dir)/'*.s')
 
-obj_cpp = [nmc_mc12101.Object(c) for c in all_cpp]
-obj_c   = [nmc_mc12101.Object(c) for c in all_c]
-obj_asm = [nmc_mc12101.Object(s, ASFLAGS = nmc_mc12101['ASFLAGS'] + ['-mmas']) for s in all_asm]
-obj_s   = [nmc_mc12101.Object(s, ASFLAGS = nmc_mc12101['ASFLAGS'] + ['-mgas']) for s in all_s]
+obj_cpp = [nmc_mc12101.Object(c, CCFLAGS = nmc_mc12101['CCFLAGS'] + ['-m$ARCH-$CORE']) for c in all_cpp]
+obj_c   = [nmc_mc12101.Object(c, CCFLAGS = nmc_mc12101['CCFLAGS'] + ['-m$ARCH-$CORE']) for c in all_c]
+obj_asm = [nmc_mc12101.Object(s, ASFLAGS = nmc_mc12101['ASFLAGS'] + ['-mmas','-m$ARCH-$CORE']) for s in all_asm]
+obj_s   = [nmc_mc12101.Object(s, ASFLAGS = nmc_mc12101['ASFLAGS'] + ['-mgas','-m$ARCH-$CORE']) for s in all_s]
+
+all_cpp.clear()
+all_c.clear()
+all_asm.clear()
+all_s.clear()
+for src_dir in src_common_dirs:
+	all_cpp += Glob(path(src_dir)/'*.cpp')
+	all_c   += Glob(path(src_dir)/'*.c')
+	all_asm += Glob(path(src_dir)/'*.asm')
+	all_s 	+= Glob(path(src_dir)/'*.s')
+
+obj_cpp += [nmc_mc12101.Object(c, CCFLAGS = nmc_mc12101['CCFLAGS'] + ['-m$ARCH']) for c in all_cpp]
+obj_c   += [nmc_mc12101.Object(c, CCFLAGS = nmc_mc12101['CCFLAGS'] + ['-m$ARCH']) for c in all_c]
+obj_asm += [nmc_mc12101.Object(s, ASFLAGS = nmc_mc12101['ASFLAGS'] + ['-mmas', '-m$ARCH']) for s in all_asm]
+obj_s   += [nmc_mc12101.Object(s, ASFLAGS = nmc_mc12101['ASFLAGS'] + ['-mgas', '-m$ARCH']) for s in all_s]
+
 dump_list =[]
 for objects in [obj_cpp, obj_s, obj_asm, obj_s]:
 	for obj in objects:
@@ -97,7 +115,7 @@ else:
 	#nmc_mc12101['WHOLELIBS'] = ["-lmc12101load_nm", "-lnm_io"]
 	nmc_mc12101['WHOLELIBS'] = ["-lmc12101load_nm"]
 	nmc_mc12101['LIBPATH'] = ['$MC12101/lib', '$NMPP/lib' ]
-nmc_mc12101['LIBS'] = ['nmpp-nmc4f' ]
+nmc_mc12101['LIBS'] = ['nmpp-nmc4' ]
 nmc_mc12101['LINKSCRIPT'] = [File(f'{ROOT}/lds/ldscript-{CORE}.ld')]
 nmc_mc12101['LINKFLAGS'] = ["-Wl,-T$LINKSCRIPT"]
 if 'WHOLELIBS' in nmc_mc12101:
