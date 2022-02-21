@@ -104,13 +104,13 @@ $(OUT_DIR):
 	-mkdir "$(@)"
 	
 $(TMP_DIR)/%.o: %.asm Makefile
-	$(AS) $(AS_FLAGS) $(<) -o$(@) $(INC_DIRS)
+	$(AS) -c $(AS_FLAGS) $(<) -o$(@) $(INC_DIRS)
 	
 $(TMP_DIR)/%.o: %.cpp Makefile
-	$(CC) -MMD $(CC_FLAGS) -c $(<) -o$(@) $(INC_DIRS)
+	$(CC) -MMD -c $(CC_FLAGS) $(<) -o$(@) $(INC_DIRS)
 
 $(TMP_DIR)/%.o: %.c Makefile
-	$(CC) -MMD $(CC_FLAGS) -c $(<) -o$(@) $(INC_DIRS)
+	$(CC) -MMD -c $(CC_FLAGS) $(<) -o$(@) $(INC_DIRS)
 	
 	
 $(PROFILE):
