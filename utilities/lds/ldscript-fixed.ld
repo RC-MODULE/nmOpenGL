@@ -1,63 +1,63 @@
 MEMORY
 {
-	C0_IMU0 : ORIGIN = 0x00000200<<2, LENGTH = 0x00007E00<<2
-  	C0_IMU1 : ORIGIN = 0x00008000<<2, LENGTH = 0x00008000<<2
-  	C0_IMU2 : ORIGIN = 0x00010000<<2, LENGTH = 0x00008000<<2
-  	C0_IMU3 : ORIGIN = 0x00018000<<2, LENGTH = 0x00008000<<2
+	C1_IMU0 : ORIGIN = 0x00000200<<2, LENGTH = 0x00007E00<<2
+  	C1_IMU1 : ORIGIN = 0x00008000<<2, LENGTH = 0x00008000<<2
+  	C1_IMU2 : ORIGIN = 0x00010000<<2, LENGTH = 0x00008000<<2
+  	C1_IMU3 : ORIGIN = 0x00018000<<2, LENGTH = 0x00008000<<2
 	SHMEM0  : ORIGIN = 0x000A8000<<2, LENGTH = 0x00008000<<2
   	SHMEM1  : ORIGIN = 0x000B0000<<2, LENGTH = 0x00010000<<2
-	EMI 	: ORIGIN = 0x80000000, LENGTH = 0x20000000
+	EMI 	: ORIGIN = 0x20000000<<2, LENGTH = 0x20000000<<2
 }
 
 SECTIONS
 {
 	.text_imu0 : ALIGN(0x8){
 		*(.text_demo3d);
-	} > C0_IMU0
+	} > C1_IMU0
 
 	.init : ALIGN(0x8)
 	{
 		*(.init);
 		*(.bsst);
-	} > C0_IMU0
+	} > C1_IMU0
 
 	.fini : ALIGN(0x8)
 	{
 		*(.fini);
-	} > C0_IMU0
+	} > C1_IMU0
 
 	.bss : ALIGN(0x8)
 	{
 		*(.bss);
 		*(SORT(.bss.*))
-	} > C0_IMU0
+	} > C1_IMU0
 
 	.data_imu0 : ALIGN(0x8)
 	{
 		*(.data_imu0);
 		*(.data_demo3d);
 		*(.data_asm);
-	} > C0_IMU0
+	} > C1_IMU0
 
 	.stack : ALIGN(0x8)
 	{
 		*(.stack);
-	} > C0_IMU1
+	} > C1_IMU1
 
 	.data_imu1 : ALIGN(0x8)
 	{
 		*(.data_imu1);
-	} > C0_IMU1
+	} > C1_IMU1
 
 	.data_imu2 : ALIGN(0x8)
 	{
 		*(.data_imu2);
-	} > C0_IMU2
+	} > C1_IMU2
 
 	.data_imu3 : ALIGN(0x8)
 	{
 		*(.data_imu3);
-	} > C0_IMU3
+	} > C1_IMU3
 
 	.data_shmem0 : ALIGN(0x8)
 	{

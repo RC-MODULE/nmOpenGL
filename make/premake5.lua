@@ -17,7 +17,11 @@ solution "nmopengl-x86"
 				"../utilities/src/fixed/*.c*",
 				"../utilities/src/fixed/pc/*.c*",
 				"../utilities/src/float/*.c*",
-				"../utilities/src/float/pc/*.c*",}
+				"../utilities/src/float/pc/*.c*",
+				"../context/src/fixed/*.c*",
+				"../context/src/fixed/pc/*.c*",
+				"../context/src/float/*.c*",
+				"../context/src/float/pc/*.c*"}
 	  includedirs { "../include", "$(NMPP)/include", "$(HAL)/include", "../utilities/include", "../context/include"}
 	  targetdir ("../lib")
 	  
