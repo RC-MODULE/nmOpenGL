@@ -54,7 +54,7 @@ void initSegmentsTest(){
 		uassert(ok == -3);
 	}
 
-	DEBUG_PLOG_LEVEL_0("Segments Init OK\n");
+	DEBUG_TEST_OK();
 }
 void valueTest(){
 	Vector2 origin = {128, 128};
@@ -109,11 +109,11 @@ void valueTest(){
 	}
 
 	
-	DEBUG_PLOG_LEVEL_0("Test value OK\n");
+	DEBUG_TEST_OK();
 }
 
 int main(){
-	DEBUG_PLOG_LEVEL_0("Segment tests\n");
+	DEBUG_PLOG_FILE();
 
 	for(int i = 0; i < MAX_SEGMENTS_COUNT; i++){
 		masks[i].bits = bit_masks[i];

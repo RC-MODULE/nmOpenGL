@@ -33,7 +33,7 @@ void testSize(){
 			return;
 		}
 	}
-	DEBUG_PLOG_LEVEL_0("Test size OK\n");
+	DEBUG_TEST_OK();
 }
 
 void testValues(){
@@ -53,7 +53,7 @@ void testValues(){
 			return;
 		}
 	}
-	DEBUG_PLOG_LEVEL_0("Test values OK\n");
+	DEBUG_TEST_OK();
 }
 
 int main(){

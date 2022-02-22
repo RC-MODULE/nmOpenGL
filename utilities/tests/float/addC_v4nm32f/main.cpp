@@ -45,7 +45,7 @@ void testSize(){
 			uassert(dst[size - 1].vec[i] != INIT_DST_VALUE);
 		}
 	}
-	DEBUG_PLOG_LEVEL_0("Size test OK\n");
+	DEBUG_TEST_OK();
 }
 
 void testValues(){
@@ -58,7 +58,7 @@ void testValues(){
 	for(int i = 0; i < 4; i++){
 		uassert(dst[0].vec[i] == ref_values.vec[i]);
 	}
-	DEBUG_PLOG_LEVEL_0("Test values OK\n");
+	DEBUG_TEST_OK();
 }
 
 int main(){

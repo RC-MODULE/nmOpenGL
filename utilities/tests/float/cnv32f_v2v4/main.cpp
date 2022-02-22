@@ -38,7 +38,7 @@ void testValue(){
 			// }
 		}
 	}
-	DEBUG_PLOG_LEVEL_0("Test value OK\n");
+	DEBUG_TEST_OK();
 }
 
 void testSize(){
@@ -61,7 +61,7 @@ void testSize(){
 		// 	return;
 		// }
 	}
-	DEBUG_PLOG_LEVEL_0("Test size OK\n");
+	DEBUG_TEST_OK();
 }
 
 

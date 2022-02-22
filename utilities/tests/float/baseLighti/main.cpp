@@ -42,7 +42,7 @@ void testValue(){
 		// 	return;
 		// }
 	}
-	DEBUG_PLOG_LEVEL_0("testValue OK\n");
+	DEBUG_TEST_OK();
 }
 
 

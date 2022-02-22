@@ -104,7 +104,7 @@ void testValues(TrianglePointers &pointers, NMGLenum frontface, NMGLenum cullfac
 		}
 	}
 	
-	DEBUG_PLOG_LEVEL_0("%s test OK\n", name);
+	DEBUG_TEST_OK();
 }
 
 void testValuesFaB(TrianglePointers &pointers, v2nm32f *triangle_ccw, v2nm32f *triangle_cw){
@@ -164,12 +164,12 @@ void testValuesFaB(TrianglePointers &pointers, v2nm32f *triangle_ccw, v2nm32f *t
 		}
 	}
 
-	DEBUG_PLOG_LEVEL_0("Front and Bask test test OK\n");
+	DEBUG_TEST_OK();
 }
 
 int main(){
 	
-	DEBUG_PLOG_LEVEL_0("Cullface test\n");
+	DEBUG_PLOG_FILE();
 	
 	TrianglePointers pointers;
 	

@@ -18,18 +18,12 @@ extern "C"{
 #endif //*/
 
 
-#define DEBUG_PLOG_ERROR(...)    { printf("%s:%d: error: ", __FILE__, __LINE__); printf(__VA_ARGS__); }
+#define DEBUG_PLOG_ERROR(...)    { printf("FAIL %s:%d: error: ", __FILE__, __LINE__); printf(__VA_ARGS__); }
 
 #ifdef DEBUG_LEVEL
-
-//#define DEBUG_PLOG_LEVEL_0(...)  if(DEBUG_LEVEL > 0) { printf("%s:%d: ", __FILE__, __LINE__); printf(__VA_ARGS__); }
-//#define DEBUG_PLOG_LEVEL_1(...)  if(DEBUG_LEVEL > 1) { printf("%s:%d: ", __FILE__, __LINE__); printf(__VA_ARGS__); }
-//#define DEBUG_PLOG_LEVEL_2(...)  if(DEBUG_LEVEL > 2) { printf("%s:%d: ", __FILE__, __LINE__); printf(__VA_ARGS__); }
-//#define DEBUG_PLOG_LEVEL_3(...)  if(DEBUG_LEVEL > 3) { printf("%s:%d: ", __FILE__, __LINE__); printf(__VA_ARGS__); }
-//#define DEBUG_PLOG_LEVEL_4(...)  if(DEBUG_LEVEL > 4) { printf("%s:%d: ", __FILE__, __LINE__); printf(__VA_ARGS__); }
-//#define DEBUG_PLOG_LEVEL_5(...)  if(DEBUG_LEVEL > 5) { printf("%s:%d: ", __FILE__, __LINE__); printf(__VA_ARGS__); }
-
+#define DEBUG_TEST_OK()     	 if(DEBUG_LEVEL > 0) { printf("OK   %s\n", __FUNCTION__); }
 #define DEBUG_PLOG_FILE()        if(DEBUG_LEVEL > 0) { printf("%s: \n", __FILE__); }
+
 #define DEBUG_PLOG_LEVEL_0(...)  if(DEBUG_LEVEL > 0) { printf(__VA_ARGS__); }
 #define DEBUG_PLOG_LEVEL_1(...)  if(DEBUG_LEVEL > 1) { printf(__VA_ARGS__); }
 #define DEBUG_PLOG_LEVEL_2(...)  if(DEBUG_LEVEL > 2) { printf(__VA_ARGS__); }

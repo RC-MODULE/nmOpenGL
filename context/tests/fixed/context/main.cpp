@@ -27,6 +27,6 @@ int main(){
         uassert((int)context->pools[i].i != 0);
     }
 #endif
-    DEBUG_PLOG_LEVEL_0("Context test OK\n");
+    DEBUG_TEST_OK();
     return 0;
 }

@@ -35,7 +35,7 @@ void testSize(){
 
 		m_uassert(dst[size - 1] != INIT_DST_VALUE, "underflow: size=%d\n", size);
 	}
-	DEBUG_PLOG_LEVEL_0("Test size OK\n");
+	DEBUG_TEST_OK();
 }
 
 void testValues(){
@@ -54,7 +54,7 @@ void testValues(){
 	for(int i = 0; i < 4; i++){
 		uassert(dst[i] == expected[i]);
 	}
-	DEBUG_PLOG_LEVEL_0("Test values OK\n");
+	DEBUG_TEST_OK();
 }
 
 int main(){

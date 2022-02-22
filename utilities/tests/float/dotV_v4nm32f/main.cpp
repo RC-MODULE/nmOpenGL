@@ -71,7 +71,7 @@ void valueTest(){
             }
         }
     }
-    DEBUG_PLOG_LEVEL_0("Test value OK!\n");
+    DEBUG_TEST_OK();
 }
 void sizeTest(){
     for(int i = 0; i < MAX_SIZE + 1; i++){
@@ -92,7 +92,7 @@ void sizeTest(){
         uassert(dst[size - 1] != excepted);
 
     }
-    DEBUG_PLOG_LEVEL_0("Test size OK!\n");
+    DEBUG_TEST_OK();
 }
 
 int main(){

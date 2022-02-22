@@ -35,7 +35,7 @@ void logicTest(){
 		DEBUG_PLOG_LEVEL_1("%d: dst=%f, expected=%f\n", i, dst[i], expected[i]);
 		uassert(dst[i] == expected[i]);
 	}
-	DEBUG_PLOG_LEVEL_0("Value test OK\n");
+	DEBUG_TEST_OK();
 }
 
 
@@ -58,7 +58,7 @@ void borderTest(){
 
 		m_uassert(dst[size - 1] != INIT_DST_VALUE, "underflow: size=%d\n", size);
 	}
-	DEBUG_PLOG_LEVEL_0("Size test OK\n");
+	DEBUG_TEST_OK();
 }
 
 
