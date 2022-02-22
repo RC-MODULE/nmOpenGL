@@ -11,7 +11,7 @@ solution "demo3d-host"
 		language "C++"
 		files { "../../../include/*.h","../src_host/*.cpp","../src_host/*.c", "../../../nmglvs_mc12101-gcc/src_host/*.cpp"}
 		libdirs { "$(VSHELL)/lib","$(NMPP)/lib","$(HAL)/lib"}
-		includedirs { "$(MC12101)/include","$(HAL)/include","$(VSHELL)/include","$(NMPP)/include","../../../include"}
+		includedirs { "$(MC12101)/include","$(HAL)/include","$(VSHELL)/include","$(NMPP)/include","../../../include", "../../../utilities/include", "../../../context/include"}
         configuration {"Debug","x86"}
 			links { "vshell.lib", "nmpp-x86d.lib","hal-virtual-x86d.lib"}
 			targetsuffix ("-x86d")
@@ -49,7 +49,7 @@ solution "demo3d-target0"
 	  language "C++"
       files { "../../../include/*.h", "../include/*.h", "../src_target0/*.cpp", "../src_target0/tests/*.*",  "../../../nmglvs_mc12101-gcc/src_nmc0/*.*" }
 	  libdirs { "$(NMPP)/lib","$(HAL)/lib", "../../../lib"}
-	  includedirs { "$(MC12101)/include","$(HAL)/include","$(NMPP)/include","../../../include","../include"}
+	  includedirs { "$(MC12101)/include","$(HAL)/include","$(NMPP)/include","../../../include", "../../../utilities/include", "../../../context/include", "../include"}
 	  defines { "TEST_NMGL_TEX_FUNC"}
 	  configuration {"Debug","x86"}
 			links { "nmpp-x86d.lib","hal-virtual-x86d.lib"," nmopengl-x86d.lib"}
@@ -86,7 +86,7 @@ solution "demo3d-target1"
 	  language "C++"
       files { "../../../include/*.h","../src_target1/*.cpp", "../../../nmglvs_mc12101-gcc/src_nmc1/*.*"  }
 	  libdirs { "$(NMPP)/lib","$(HAL)/lib", "../../../lib"}
-	  includedirs { "$(MC12101)/include","$(HAL)/include","$(NMPP)/include","../../../include"}
+	  includedirs { "$(MC12101)/include","$(HAL)/include","$(NMPP)/include","../../../include", "../../../utilities/include", "../../../context/include"}
 	  defines { "TEST_NMGL_TEX_FUNC"}
 	  configuration {"Debug","x86"}
 			links { "nmpp-x86d.lib","hal-virtual-x86d.lib"," nmopengl-x86d.lib"}

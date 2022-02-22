@@ -58,7 +58,7 @@ PROJECT 		 = main0d
 endif
 OUT_DIR          = .
 TARGET           = $(OUT_DIR)/$(PROJECT).abs
-INC_DIRS         = -I"$(NMPP)/include" -I$(HAL)/include -I$(ROOT)/include -I"../include"
+INC_DIRS         = -I"$(NMPP)/include" -I$(HAL)/include -I$(ROOT)/include -I$(ROOT)/utilities/include -I$(ROOT)/context/include  -I"../include"
 SRC_DIRS         = $(ROOT)/nmglvs_mc12101-gcc/src_nmc0 ../src_target0 ./ ../src_nm ../src_target0/tests 
 LIB_DIRS         = -L"$(NMC_GCC_TOOLPATH)/nmc4-ide/lib" -L"$(NMPP)/lib" -L"$(HAL)/lib" -L$(ROOT)/lib
 TMP_DIR          ?= tmp_obj
@@ -68,7 +68,7 @@ CC_FLAGS	 	 = -O2 -fno-builtin-printf -std=c++11 -mnmc4-float
 CC_FLAGS+= -DTEST_NMGL_TEX_FUNC
 AS               = nmc-gcc 				 
 AS_FLAGS    	 = -c -mmas -x assembler -mnmc4-float
-LIBS             = -lnmopengl-nmc4f -lnmpp-nmc4f -lhal-mc12101 
+LIBS             = -lnmopengl_nmc4f -lnmpp-nmc4f -lhal-mc12101 
 MAP		         = $(PROJECT).map
 LINKER_FLAGS     = -Xlinker -Map=$(MAP) $(LIB_DIRS) "-Wl,-Tldscript-nmc0.ld" -Wl,--whole-archive -lmc12101 -Wl,--no-whole-archive -o$(TARGET) 
 

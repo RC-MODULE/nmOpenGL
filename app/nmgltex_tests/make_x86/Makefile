@@ -76,14 +76,9 @@ runtarget1d: $(TARGET1)
 	bin\$(PLATFORM)\debug\$(TARGET1)-$(PLATFORM)d
 	
 libs:
-	
-	$(MAKE) -C $(ROOT)/make/nmopengl-nmc4 -f ./Makefile clean
-	$(MAKE) -C $(ROOT)/make/nmopengl-nmc4 -f ./Makefile
-	
-	$(MAKE) -C $(ROOT)/make/nmopengl-nmc4f -f ./Makefile clean
-	$(MAKE) -C $(ROOT)/make/nmopengl-nmc4f -f ./Makefile
-	
-	$(MAKE) -C $(ROOT)/make/nmopengl-x86-x64 -f ./Makefile kill
-	$(MAKE) -C $(ROOT)/make/nmopengl-x86-x64 -f ./Makefile
+	$(MAKE) -C $(ROOT)/make kill
+	$(MAKE) -C $(ROOT)/make float 
+	$(MAKE) -C $(ROOT)/make fixed 
+	$(MAKE) -C $(ROOT)/make x86 
 
 include $(ROOT)/clean.mk
