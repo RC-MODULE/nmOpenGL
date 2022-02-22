@@ -8,8 +8,6 @@ solution "nmopengl-x86"
 	project "nmopengl"
       kind "StaticLib"
       files { 	
-				"../src/common/*.c*",
-				"../src/common/pc/*.c*",
 				"../src/fixed/*.c*",
 				"../src/fixed/pc/*.c*",
 				"../src/float/*.c*",

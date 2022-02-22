@@ -24,7 +24,7 @@ NMGL_CoreContextFixed *getCoreContextFixed(void){
     return &context;
 #endif
 #ifdef _MSC_VER 
-    static NMGL_CoreContextFloat context;
+    static NMGL_CoreContextFixed context;
     context.pools[0].f = mem_imu0;
     context.pools[1].f = mem_imu1;
     context.pools[2].f = mem_imu2;
