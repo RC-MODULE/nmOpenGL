@@ -86,6 +86,9 @@ SECTION(".text_nmglvs") int nmglvsNm1Step()
 	case NMC1_POLYGON_STIPPLE:
 		NMGL_PolygonStippleSet(cntxt,command);
 		break;
+	case NMC1_SET_HINT:
+		NMGL_SetHint(cntxt,command);
+		break;
 		
 	case NMC1_SET_ACTIVE_TEXTURE: 
 		NMGL_SetActiveTexture(cntxt, command);
