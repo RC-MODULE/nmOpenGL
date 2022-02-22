@@ -12,10 +12,18 @@
 #include "service.h"
 #include "imagebuffer.h"
 #include "stacktrace.h"
+#include "framebuffer.h"
 
 
-extern ImageConnector hostImageRB;
+extern NMGL_Framebuffer *remote;
 static int imageTemp[WIDTH_IMAGE * HEIGHT_IMAGE];
+
+
+bool frameBufferIsEmpty(NMGL_Framebuffer *remoteAddr);
+void frameBufferIncTail(NMGL_Framebuffer *remoteAddr);
+void readColorBackNM(void *data, NMGL_Framebuffer *fb, int x, int y, int width, int height);
+void readColorFrontNM(void *data, NMGL_Framebuffer *fb, int x, int y, int width, int height);
+void readDepthNM(void *data, NMGL_Framebuffer *fb, int x, int y, int width, int height);
 
 
 #ifdef STACK_TRACE_ENABLED
@@ -55,18 +63,11 @@ int nmglvsHostReadImage(int* dstImage)
 #else
 	if (mouseStatus.nKey != VS_MOUSE_LBUTTON) {
 #endif
-		clock_t t0, t1;
-		t0 = clock();
-		while (hostImageRB.isEmpty()) {
-			t1 = clock();
-			if (t1 - t0 > 10000) {
-				#ifdef STACK_TRACE_ENABLED
-				PrintTrace(&stackTraceConnector, 5, 5);
-				while (true);
-				#endif //STACK_TRACE_ENABLED
-			}
+		while(frameBufferIsEmpty(remote)){
+			halSleep(2);
 		}
-		hostImageRB.pop((NMGL_IMAGE*)imageTemp, 1);
+		readColorFrontNM(imageTemp, remote, 0, 0, WIDTH_IMAGE, HEIGHT_IMAGE);
+		frameBufferIncTail(remote);
 		for(int y = 0; y < HEIGHT_IMAGE; y++){
 			for(int x = 0; x < WIDTH_IMAGE; x++){
 				dstImage[y * WIDTH_IMAGE + x] = imageTemp[(HEIGHT_IMAGE - y - 1) * WIDTH_IMAGE + x];
@@ -74,10 +75,10 @@ int nmglvsHostReadImage(int* dstImage)
 		}
 	}
 	else {
-		while (hostImageRB.isEmpty()) {
+		while(frameBufferIsEmpty(remote)){
 			halSleep(2);
 		}
-		hostImageRB.incTail();
+		frameBufferIncTail(remote);
 	}
 	return 0;
 };

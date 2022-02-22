@@ -6,6 +6,7 @@
 #include "cache.h"
 #include "ringbuffer.h"
 #include "context_float.h"
+#include "debugprint.h"
 
 #ifdef STACK_TRACE_ENABLED
 #include "stacktrace.h"
@@ -13,6 +14,8 @@
 
 #include "nmgl.h"
 
+#define PRINT_ADDR(a) printf(#a "=%p\n", a)
+#define PRINT_HEX(a) printf(#a "=0x%x\n", a)
 
 #define CHECK_EXIT0 if(nmglSynchro->exit_nm==EXIT) {	break;	}
 #ifdef TEST_NMGL_TEX_FUNC
@@ -95,16 +98,23 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 	ImageData* imagesData;
 
 
+
+	DEBUG_PLOG_LEVEL_0("handshake\n");
 	int fromHost = halHostSync(0xC0DE0000);		// send handshake to host
 	if (fromHost != 0xC0DE0086) {					// get  handshake from host
+		DEBUG_PLOG_ERROR("handshake fail\n");
 		return 1;
 	}
+	DEBUG_PLOG_LEVEL_0("Handshake OK\n");
 
 	try {
+		
 		int fromNm1 = halSync(0xC0DE0000, 1);
 		if (fromNm1 != 0xC0DE0001) {					// get  handshake from nm1
+			DEBUG_PLOG_ERROR("Interprocessor sync fail!!\n");
 			return 1;
 		}
+		DEBUG_PLOG_LEVEL_0("Interprocessor sync OK\n");
 		setHeap(7);
 
 		synchroData = myMallocT<NMGLSynchroData>();
@@ -121,10 +131,10 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
     	}
     	catch(int& e)
     	{
-    	    printf("Error! Cant allocate texture palette memory!");
+    	    DEBUG_PLOG_LEVEL_0("Error! Cant allocate texture palette memory!\n");
     	    return -1;
     	}
-    	DEBUG_PRINT(("allocated palette_pointer:0x%x",palettes_p));
+    	DEBUG_PRINT(("allocated palette_pointer:0x%x\n",palettes_p));
 		halSyncAddr(palettes_p, 1);
 		
 		 try
@@ -133,7 +143,7 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
         }
         catch(int& e)
         {
-            printf("Error! Cant allocate texture palette width memory!");
+            DEBUG_PLOG_LEVEL_0("Error! Cant allocate texture palette width memory!\n");
             return -1;
         }
 		halSyncAddr(palettes_widths_p, 1);
@@ -143,7 +153,7 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
     	}
     	catch(int& e)
     	{
-    	    printf("Error! Cant allocate PolygonsStipplePattern memory!\n");
+    	    DEBUG_PLOG_LEVEL_0("Error! Cant allocate PolygonsStipplePattern memory!\n");
     	    return -1;
     	}
 		halSyncAddr(PolygonsStipplePattern_p, 1);
@@ -215,18 +225,27 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 		//Must be in EMI. 
 		//EMI has enough space and does not require address mapping at mc12101
 		setHeap(12);
-		imagesData = myMallocT<ImageData>();
-		imagesData->init();
-		for (int i = 0; i < COUNT_IMAGE_BUFFER; i++) {
-			for (int j = 0; j < WIDTH_IMAGE * HEIGHT_IMAGE; j++) {
-				((int*)imagesData->ptr(i))[j] = 0;
-			}
-		}
-		cntxt->imageConnector.init(imagesData);
-		halSyncAddr(imagesData, 1);
+		NMGL_FramebufferInit(&cntxt->defaultFramebuffer, WIDTH_IMAGE, HEIGHT_IMAGE);
 		
+		ImageRGB8888* imagesData0 = myMallocT<ImageRGB8888>();
+		ImageRGB8888* imagesData1 = myMallocT<ImageRGB8888>();
 		DepthImage* depthImage = myMallocT<DepthImage>();
-		halSyncAddr(depthImage, 1);
+		DEBUG_PLOG_LEVEL_0("Alloc image OK!\n");
+
+		for (int i = 0; i < WIDTH_IMAGE * HEIGHT_IMAGE; i++) {
+			((int*)imagesData0)[i] = 0;
+			((int*)imagesData1)[i] = 0;
+			((int*)depthImage)[i] = ZBUFF_MAX;
+			//((int*)depthImage)[i] = 0;
+		}
+
+		cntxt->defaultFramebuffer.buffers[0] = imagesData0;
+		cntxt->defaultFramebuffer.buffers[1] = imagesData1;
+		cntxt->defaultFramebuffer.buffers[2] = depthImage;
+
+		halSyncAddr(&cntxt->defaultFramebuffer, 1);
+		DEBUG_PLOG_LEVEL_0("Share image with nmc1 OK!\n");
+
 #ifdef TEST_NMGL_TEX_FUNC
 		cntxtAddr_nm1 = (void*)halSyncAddr(0, 1);
 #ifndef __NM__
@@ -313,8 +332,9 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 	halSync(0x600D600D, 1);
 
 
-
-	halHostSyncAddr(imagesData);
+	DEBUG_PLOG_LEVEL_0("nmOpenGL inited!\n");
+	halHostSyncAddr(&cntxt->defaultFramebuffer);
+	DEBUG_PLOG_LEVEL_0("Send addr of framebuffer\n");
 	return 0;
 } 
 

@@ -1,9 +1,6 @@
 #pragma once
 #include "nmtype.h"
 #include "stdio.h"
-#include "demo3d_common.h"
-#include "pattern.h"
-#include "stacktrace.h"
 
 #define NUM_NM_CORES 2
 
@@ -20,13 +17,13 @@
 #endif
 
 struct Models{
-	char* sphere = "../../models/sphere_31.stl";
-	char* test = "../../models/test.stl";
-	char* cube = "../../models/small_cube.stl";
-	char* two_sphere = "../../models/2_sphere.stl";
-	char* rcm = "../../models/out_RCM_32.stl";
-	char* nm = "../../models/NM_32.stl";
-	char* snowman = "../../models/snow_white_32.stl";
+    const char* sphere = "../../models/sphere_31.stl";
+    const char* test = "../../models/test.stl";
+    const char* cube = "../../models/small_cube.stl";
+    const char* two_sphere = "../../models/2_sphere.stl";
+    const char* rcm = "../../models/out_RCM_32.stl";
+    const char* nm = "../../models/NM_32.stl";
+    const char* snowman = "../../models/snow_white_32.stl";
 };
 
 extern "C"{

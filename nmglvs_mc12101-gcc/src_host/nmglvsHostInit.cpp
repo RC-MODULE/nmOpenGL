@@ -16,6 +16,7 @@
 #include "ringbuffert.h"
 #include "imagebuffer.h"
 #include <thread>
+#include "framebuffer.h"
 
 #ifdef STACK_TRACE_ENABLED
 #include "stacktrace.h"
@@ -26,7 +27,10 @@ StackTraceConnector stackTraceConnector;
 
 using namespace std;
 
-ImageConnector hostImageRB; 
+NMGL_Framebuffer *remote;
+
+
+
 
 bool gccmap_address2symbol_(char* mapfile, unsigned addr, char* fullname) {
 	FILE* f;
@@ -93,7 +97,6 @@ int nmglvsHostInit()
 		return -1;
 	}
 
-	ImageData* nmImageRB = (ImageData*)halSyncAddr(0, 0);
-	hostImageRB.init(nmImageRB, writeMem0, readMem0);
+	remote = (NMGL_Framebuffer *)halSyncAddr(0, 0);
 	return 0;
 };

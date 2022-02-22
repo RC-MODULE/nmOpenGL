@@ -42,13 +42,13 @@ AS_FLAGS         = -mnmc4-float -g
 else ifeq ($(ARCH),nmc4_fixed)
 SRC_DIRS         = $(ROOT)/src_proc1/nm $(ROOT)/src_proc1/common $(ROOT)/utilities/src/fixed $(ROOT)/utilities/src/common $(ROOT)/context/src/fixed
 CC_FLAGS 	     = -mnmc4-fixed -O2 -g
-AS_FLAGS         = -mnmc4-fixed -g
+AS_FLAGS         = -mnmc4-fixed -g -Wa,-W-111
 endif
 CXX_FLAGS	 	 = -std=c++11
 C_FLAGS 	 	 = -std=c99
 
 ifeq ($(CONFIGURATION),Debug)
-CC_FLAGS	+= -DDEBUG
+CC_FLAGS	+= -DDEBUG -DDEBUG_LEVEL=1
 endif
 #=================== SOURCE & OBJECTS COLLECTION ===========================
 .SUFFIXES:

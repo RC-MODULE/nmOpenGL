@@ -3,7 +3,7 @@ ROOT = ../..
 
 include $(ROOT)/global.mk
 include 		 nmc4vars_win.mk
-DEBUG := y
+DEBUG ?= y
 
 ifeq ($(CORE),float)
 CORE_NUM	= 0
@@ -14,7 +14,7 @@ $(error unknown core)
 endif
 
 #-------------- target & input dirs -------------------
-
+PROFILE			 = ../src_target$(CORE_NUM)/proflist_$(CORE).asm
 PROJECT          = main$(CORE_NUM)
 ifdef DEBUG
 PROJECT 		 = main$(CORE_NUM)d
@@ -25,9 +25,9 @@ INC_DIRS         = -I"$(NMPP)/include" -I$(HAL)/include -I$(ROOT)/include -I$(RO
 SRC_DIRS         = $(ROOT)/nmglvs_mc12101-gcc/src_nmc$(CORE_NUM) ../src_target$(CORE_NUM)
 LIB_DIRS         = -L"$(NMC_GCC_TOOLPATH)/nmc4-ide/lib" -L"$(NMPP)/lib" -L"$(HAL)/lib" -L"$(ROOT)/lib"
 ifdef DEBUG
-TMP_DIR          = Debug
+TMP_DIR          = Debug/nmc$(CORE_NUM)
 else
-TMP_DIR          = Release
+TMP_DIR          = Release/nmc$(CORE_NUM)
 endif
 #-------------- RELEASE/ALL config -------------------
 CC 				 = nmc-g++
@@ -44,9 +44,13 @@ CFG				 = ldscript-nmc$(CORE_NUM).ld
 LINKER_FLAGS     = -Xlinker -Map=$(MAP) $(LIB_DIRS) "-Wl,-T$(CFG)" -Wl,--whole-archive -lmc12101 -Wl,--no-whole-archive -o$(TARGET)
 
 ifdef DEBUG
-	CC_FLAGS	+= -DDEBUG
+	CC_FLAGS	+= -DDEBUG 
 else
 	CC_FLAGS	+= -DNDEBUG
+endif
+
+ifeq ($(CORE),fixed)
+	CC_FLAGS	+= -DDEBUG_LEVEL=2
 endif
 #=================== SOURCE & OBJECTS COLLECTION ===========================
 
@@ -104,7 +108,9 @@ $(OUT_DIR):
 	-mkdir "$(@)"
 	
 $(TMP_DIR)/%.o: %.asm Makefile
-	$(AS) -c $(AS_FLAGS) $(<) -o$(@) $(INC_DIRS)
+	$(AS) -MMD -c -mmas $(AS_FLAGS) $(<) -o$(@) $(INC_DIRS)
+$(TMP_DIR)/%.o: %.s Makefile
+	$(AS) -MMD -c -mgas $(AS_FLAGS) $(<) -o$(@) $(INC_DIRS)
 	
 $(TMP_DIR)/%.o: %.cpp Makefile
 	$(CC) -MMD -c $(CC_FLAGS) $(<) -o$(@) $(INC_DIRS)

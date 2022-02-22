@@ -6,6 +6,7 @@
 #include "nmgl.h"
 #include "nmglvs_nmc0.h"
 #include "nmprofiler.h"
+#include "debugprint.h"
 
 
 
@@ -28,6 +29,7 @@ SECTION(".text_shared0") int main()
 	float* normal_DDR2 = new float[2000 * 9];
 	int ok;
 
+	DEBUG_PLOG_LEVEL_0("Start program\n");
 	Models models;
 	char* filePath = models.nm;
 
@@ -40,6 +42,7 @@ SECTION(".text_shared0") int main()
 	fmodel = fopen(filePath, "r");
 	createArrayVec4(fmodel, vertices_DDR, normal_DDR, 1);
 	int amountPolygons = amount;
+	DEBUG_PLOG_LEVEL_0("Get first model\n");
 
 	filePath = models.two_sphere;
 	fmodel = fopen(filePath, "r");
@@ -48,6 +51,7 @@ SECTION(".text_shared0") int main()
 	fmodel = fopen(filePath, "r");
 	createArrayVec4(fmodel, vertices_DDR2, normal_DDR2, 0.5);
 	fclose(fmodel);
+	DEBUG_PLOG_LEVEL_0("Get second model\n");
 
 	int amountPolygons2 = amount;
 #else

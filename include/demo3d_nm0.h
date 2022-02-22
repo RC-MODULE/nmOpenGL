@@ -10,6 +10,7 @@
 #include "lighting.h"
 #include "primitive.h"
 #include "segment.h"
+#include "framebuffer.h"
 
 #define BIG_NMGL_SIZE (64 * NMGL_SIZE)
 
@@ -144,7 +145,7 @@ public:
 	}
 
 
-	NMGL_SynchroMasterRingBuffer synchro;
+	alignas(8) NMGL_SynchroMasterRingBuffer synchro;
 	BitMask segmentMasks[36];
 	v4nm32f *vertexResult;
 	v4nm32f *colorResult;
@@ -203,6 +204,7 @@ public:
 	int shadeModel;
 
 
+	NMGL_Framebuffer defaultFramebuffer;
 	ImageConnector imageConnector;
 
 

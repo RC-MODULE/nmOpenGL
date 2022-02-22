@@ -8,6 +8,7 @@
 #include "nmgltex_nm1.h"
 #include "nmsynchro.h"
 #include "nmbuffer.h"
+#include "framebuffer.h"
 #define BUFFERS_COUNT 3
 
 void selectPatterns(nm32s* dydxTable, nm32s* dX, nm32s* dY, nm32s* x0, nm32s* pPtrnPaintSide, nm32s** pSrcPack, int nSize, int* pTmp);
@@ -82,7 +83,6 @@ public:
 	PatternsArray* patterns;			///< Указатель на массив всевозможных двухбитных паттернов
 	
 	alignas(8) int fillInnerTable[SIZE_TABLE];
-	ImageConnector imageConnector;				///< Коннектор к кольцевому буферу изображений
 	int* imageOffsets;
 
 	int* buffer0;						///< Указатель на временный буфер 0. Размер должен быть не меньше SIZE_BUFFER_NM1
@@ -107,6 +107,8 @@ public:
 	int* valuesZ;
 	int* valuesC;
 
+	NMGL_Framebuffer *defaultFramebuffer;
+
 	// TEXTURING PART
 	float* x0;
 	float* y0;
@@ -126,6 +128,7 @@ public:
 	float* w1;
 	float* w2;
 	// TEXTURING PART
+	
 	
 	NMGL_Context_NM1_Texture texState;
 	int shadeModel;

@@ -8,15 +8,15 @@
             "request": "launch",
             "launchCompleteCommand": "exec-run",
             "cwd": "${workspaceFolder}",
-            "symbolSearchPath": "${cwd}/bin/x64/Debug/mc12101-host-x64.pdb",
-            "program": "${workspaceFolder}\\bin\\x64\\Debug\\mc12101-host-x64.exe",
+            "symbolSearchPath": "${cwd}/bin/x64/Debug/mc12101-host-x64d.pdb",
+            "program": "${workspaceFolder}\\bin\\x64\\Debug\\mc12101-host-x64d.exe",
             "console": "integratedTerminal",
             "logging": {
                 "moduleLoad": false,
                 "trace": true
             },
             "stopAtEntry": true,
-            "preLaunchTask": "Build host",
+            //"preLaunchTask": "Build host",
             "setupCommands": [],
         },
         {

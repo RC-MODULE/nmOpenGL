@@ -9,6 +9,7 @@
 #include "link.h"
 #include "pattern.h"
 #include "context_fixed.h"
+#include "debugprint.h"
 
 #include "nmgl.h"
 
@@ -101,15 +102,13 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 		hostCreatePatterns(cntxt->patterns);
 		halSleep(10);
 
-		imagesData = (ImageData*)halSyncAddr(0, 0);
-		cntxt->imageConnector.init(imagesData);
+		cntxt->defaultFramebuffer = (NMGL_Framebuffer *)halSyncAddr(0, 0);
 
-		DepthImage* depthImage = (DepthImage*)halSyncAddr(0, 0);
 		setHeap(11);
 		
 
-		cntxt->colorBuffer.init(cntxt->imageConnector.ptrHead(), WIDTH_IMAGE, HEIGHT_IMAGE);
-		cntxt->depthBuffer.init(depthImage, WIDTH_IMAGE, HEIGHT_IMAGE);
+		cntxt->colorBuffer.init(cntxt->defaultFramebuffer->buffers[1], WIDTH_IMAGE, HEIGHT_IMAGE);
+		cntxt->depthBuffer.init(cntxt->defaultFramebuffer->buffers[2], WIDTH_IMAGE, HEIGHT_IMAGE);
 		cntxt->texState.init();
 		cntxt->init_elements();
 		cntxt->shadeModel=NMGL_SMOOTH;

@@ -19,6 +19,13 @@ obj/
 obj_x86/
 x86/
 
+# 
+*.user
+*.stash
+debug/
+release/
+monitor/Makefile*
+
 # Compiler files #
 ##################
 nmc4vars_win.mk

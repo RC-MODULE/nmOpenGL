@@ -174,11 +174,13 @@
 			"${env:HAL}/include/**",
 			"${env:VSHELL}/include/**",
 			"${env:NMC_GCC_TOOLPATH}/../nmkit/mc12101sdk/**",
-			"${env:NMC_GCC_TOOLPATH}/nmc4-ide/**"
+			"${env:NMC_GCC_TOOLPATH}/nmc4-ide/**",
+			"${env:MC12101}/include**"
 		],
 		"C_Cpp.default.cStandard": "c11",
 		"C_Cpp.default.cppStandard": "c++11",
 		"C_Cpp.default.configurationProvider": "ms-vscode.makefile-tools"
+
 		//"C_Cpp.default.intelliSenseMode": "gcc-x64"
 	},
 	"launch": {

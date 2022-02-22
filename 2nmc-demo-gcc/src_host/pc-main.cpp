@@ -3,6 +3,7 @@
 #include "hal_host.h"
 #include "stdio.h"
 #include "demo3d_host.h"
+#include "demo3d_common.h"
 #include "hostprofiler.h"
 #include "nmglvs_host.h"
 #include <fstream>
@@ -29,7 +30,7 @@ int main()
 	int ok;
 
 	Models models;
-	char* filePath = models.nm;
+	const char* filePath = models.nm;
 	
 	FILE* fmodel = fopen(filePath, "r");
 	int amount = get_amm_poligone(fmodel);
