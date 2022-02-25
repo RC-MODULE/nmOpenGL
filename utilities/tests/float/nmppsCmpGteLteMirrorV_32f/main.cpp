@@ -1,10 +1,9 @@
 #include <cstdio>
-#include <cerrno>
 
 #include "nmtype.h"
 #include "malloc32.h"
 #include "nmplv/vSupport.h"
-#include "service.h"
+#include "utility_float.h"
 #include "tests.h"
 
 // Performance testing
@@ -29,7 +28,7 @@ clock_t nmppsCmpGteLteMirrorV_32f_64ValuesAreInsideTheRange_allFlagsAreOnes();
 
 int main(int argc, char **argv)
 {
-	puts("nmppsCmpGteLteMirrorV_32f tests: ");
+	printf("%s: \n", __FILE__);
 	RUN_TEST(nmppsCmpGteLteMirrorV_32f_valuesAreGreaterThanRange_allFlagsAreZero);
 	RUN_TEST(nmppsCmpGteLteMirrorV_32f_valuesAreLessThanRange_allFlagsAreZero);
 	RUN_TEST(nmppsCmpGteLteMirrorV_32f_valuesAreEqualToTheMax_allFlagsAreOnes);

@@ -1,10 +1,8 @@
-#include <iostream>
-#include <cerrno>
+#include <cstdio>
 
 #include "nmtype.h"
-#include "demo3d_common.h"
 #include "malloc32.h"
-#include "service.h"
+#include "utility_fixed.h"
 #include "nmplv/vSupport.h"
 #include "tests.h"
 
@@ -210,7 +208,7 @@ clock_t convertRGB565_RGB8888_perf_4InputValues_4OutputValues()
 	dt = t2 - t1;
 
 	nmppsFree(srcArray);
-	delete dstArray;
+	nmppsFree(dstArray);
 
     return dt;
 }

@@ -1,12 +1,10 @@
-#include <iostream>
-#include <cerrno>
+#include <cstdio>
 
-#include "tests.h"
 #include "nmtype.h"
-#include "demo3d_common.h"  // rgb565 type
 #include "nmplv/vSupport.h"
 #include "malloc32.h"
-#include "service.h"
+#include "utility_fixed.h"
+#include "tests.h"
 
 // Performance testing
 #include "time.h"
@@ -151,7 +149,7 @@ int convertABGR32_RGB565_singleInputMaxValue_SingleOutputMaxValue()
 {
     // Arrange
     constexpr int count = 1;
-    abgr32 *srcArray = new abgr32[count];    
+    abgr32 *srcArray = (abgr32 *) nmppsMalloc_32u(sizeof(abgr32) * count);    
     rgb565 *dstArray = nmppsMalloc_16s(count);
     rgb565 *expectedDstArray = nmppsMalloc_16s(count);
     // The following arrays are used for comparison
@@ -174,7 +172,7 @@ int convertABGR32_RGB565_singleInputMaxValue_SingleOutputMaxValue()
     }
     TEST_ARRAYS_EQUALI(((nm32u *) dstArray_int16b), ((nm32u *) expectedDstArray_int16b), count);
     
-    delete srcArray;
+    nmppsFree(srcArray);
     nmppsFree(dstArray);
     nmppsFree(expectedDstArray);
 
@@ -192,7 +190,7 @@ int convertABGR32_RGB565_singleInputMinValue_singleOutputMinValue()
 {
     // Arrange
     constexpr int count = 1;
-    abgr32 *srcArray = new abgr32[count];    
+    abgr32 *srcArray = (abgr32 *) nmppsMalloc_32u(sizeof(abgr32) * count);    
     rgb565 *dstArray = nmppsMalloc_16s(count);
     rgb565 *expectedDstArray = nmppsMalloc_16s(count);
     // The following arrays are used for comparison
@@ -215,7 +213,7 @@ int convertABGR32_RGB565_singleInputMinValue_singleOutputMinValue()
     }
     TEST_ARRAYS_EQUALI(((nm32u *) dstArray_int16b), ((nm32u *) expectedDstArray_int16b), count);
 
-    delete srcArray;
+    nmppsFree(srcArray);
     nmppsFree(dstArray);
     nmppsFree(expectedDstArray);
 
@@ -233,7 +231,7 @@ int convertABGR32_RGB565_singleInputIntermediateValue_singleOutputIntermediateVa
 {
     // Arrange
     constexpr int count = 1;
-    abgr32 *srcArray = new abgr32[count];    
+    abgr32 *srcArray = (abgr32 *) nmppsMalloc_32u(sizeof(abgr32) * count);    
     rgb565 *dstArray = nmppsMalloc_16s(count);
     rgb565 *expectedDstArray = nmppsMalloc_16s(count);
     // The following arrays are used for comparison
@@ -256,7 +254,7 @@ int convertABGR32_RGB565_singleInputIntermediateValue_singleOutputIntermediateVa
     }
     TEST_ARRAYS_EQUALI(((nm32u *) dstArray_int16b), ((nm32u *) expectedDstArray_int16b), count);
 
-    delete srcArray;
+    nmppsFree(srcArray);
     nmppsFree(dstArray);
     nmppsFree(expectedDstArray);
 
@@ -292,7 +290,7 @@ clock_t convertABGR32_RGB565_perf_4InputValues_4OutputValues()
 {
     // Arrange
     constexpr int count = 4;
-    abgr32 *srcArray = new abgr32[count];    
+    abgr32 *srcArray = (abgr32 *) nmppsMalloc_32u(sizeof(abgr32) * count);    
     rgb565 *dstArray = nmppsMalloc_16s(count);
 
     srcArray[0].vec[0] = 0x3333333355555555;
@@ -317,7 +315,7 @@ clock_t convertABGR32_RGB565_perf_4InputValues_4OutputValues()
 
     //Assert
 
-    delete srcArray;
+    nmppsFree(srcArray);
     nmppsFree(dstArray);
 
     return dt;

@@ -68,7 +68,7 @@ all_s = Glob(path(src_dir)/'*.s')
 
 obj_cpp = [nmc_mc12101.Object(c) for c in all_cpp]
 obj_c   = [nmc_mc12101.Object(c) for c in all_c]
-obj_asm = [nmc_mc12101.Object(s, ASFLAGS = nmc_mc12101['ASFLAGS'] + ['-mmas']) for s in all_asm]
+obj_asm = [nmc_mc12101.Object(s, ASFLAGS = nmc_mc12101['ASFLAGS'] + ['-mmas'] + ['-Wa,-split_sir']) for s in all_asm]
 obj_s   = [nmc_mc12101.Object(s, ASFLAGS = nmc_mc12101['ASFLAGS'] + ['-mgas']) for s in all_s]
 dump_list =[]
 for objects in [obj_cpp, obj_s, obj_asm, obj_s]:

@@ -698,6 +698,39 @@ extern "C"{
 	void mul_v4nm32f_mat4nm32f(v4nm32f* srcVec4xN, mat4nm32f* srcMat4x4, v4nm32f* dstVec4xN, int count);
 	 //! \}
 
+	 /*!
+	 *  \defgroup nmppsCmpGteLteMirrorV_32f_f nmppsCmpGteLteMirrorV_32f
+	 *  \ingroup service_api
+	 *  \brief Проверка принадлежности элементов одного массива соответствующим  
+	 *  \ диапазонам, заданным вторым массивом
+	 *  \param srcArray [in] Входной массив элементов
+	 *  \param wArray [in] Входной массив, задающий диапазоны
+	 *  \param evenFlags [out] Выходной массив флагов принадлежности чётных элементов
+	 *  \param oddFlags [out] Выходной массив флагов принадлежности нечётных элементов
+	 *  \param size [in] Количество элементов во входном массиве 
+	 *  \return Через параметры возвращает флаги принадлежности диапазонам
+	 *  \par
+	 *  \xmlonly
+	 *  	<testperf>
+	 *   		<param name=" srcArray ">	im00 </param>
+	 *   		<param name=" wArray ">		im10 </param>
+	 *   		<param name=" evenFlags ">	im20 </param>
+	 *   		<param name=" oddFlags ">	im30 </param>
+	 *   		<param name=" size "> 64 128 192 256 512 768 1024 1280 1536 1792 2048 </param>
+	 *  	</testperf>
+	 *  	<testperf>
+	 *   		<param name=" srcArray ">	im00 im10 im20 im30 im40 im50 im60 im70 </param>
+	 *   		<param name=" wArray ">		im01 im11 im21 im31 im41 im51 im61 im71 </param>
+	 *   		<param name=" evenFlags ">	im02 im12 im22 im32 im42 im52 im62 im72 </param>
+	 *   		<param name=" oddFlags ">	im03 im13 im23 im33 im43 im53 im63 im73 </param>
+	 *   		<param name=" size "> 64 </param>
+	 *  	</testperf>
+	 *  \endxmlonly
+	 */
+	 //! \{
+	 void nmppsCmpGteLteMirrorV_32f(const nm32f *srcArray, const nm32f *wArray, nm1* evenFlags, nm1* oddFlags, int size);
+	 //! \}
+
 	/*!
 	 *  \ingroup service_api
 	 *  \brief Функция замены нуля другим значением

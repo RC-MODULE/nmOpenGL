@@ -1,9 +1,5 @@
-#include <cerrno>
-#include <cstdlib>
-#include <cstdio>
-
 #include "nmplv/vSupport.h"
-#include "service.h"
+#include "utility_float.h"
 
 void nmppsCmpGteLteMirrorV_32f(const nm32f *srcArray, const nm32f *wArray, nm1* evenFlags, nm1* oddFlags, int size)
 {
