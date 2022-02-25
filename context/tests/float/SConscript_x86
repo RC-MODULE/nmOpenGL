@@ -34,10 +34,12 @@ elif env['PLATFORM'] == 'posix':
 	env['CFLAGS'] = '-std=c99'
 	env['CXXFLAGS'] = '-std=c++11'
 
-env['CPPDEFINES'] = [ f"DEBUG_LEVEL={debug_lvl}" ]
+env['CPPDEFINES'] = [ f"DEBUG_LEVEL={debug_lvl}",
+					  f"_CRT_DECLARE_NONSTDC_NAMES=0"]
 #env['PDB'] = 'bin/x64/Debug/mc12101-host.pdb'
 	
 src_dirs = [	f"{ROOT}/src/float", 
+				f"{ROOT}/src/float/pc", 
 				f"{ROOT}/../utilities/src/float", 
 				f"{ROOT}/../utilities/src/float/pc", 
 				f"{ROOT}/../utilities/src/common", 
