@@ -1,9 +1,9 @@
 #include "nmpp.h"
-#include "service.h"
+#include "primitive.h"
 
 #include "nmblas.h"
 
-SECTION(".text_demo3d")
+extern "C" {
 int repackToPrimitives_ts(const v4nm32f *srcVertex,	const v4nm32f *srcColor, const v2nm32f *srcTex,	TrianglePointers *dstPointers, int vertexAmount){
 	int result = vertexAmount - 2;
     for (int i = 0; i < result; i++)
@@ -106,4 +106,6 @@ int repackToPrimitives_ts(const v4nm32f *srcVertex,	const v4nm32f *srcColor, con
 	}	
 	
 	return result;
+}
+
 }
