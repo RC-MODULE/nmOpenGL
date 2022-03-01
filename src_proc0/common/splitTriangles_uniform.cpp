@@ -3,8 +3,6 @@
 #include "service.h"
 #include "utility_float.h"
 
-#define PERSPECTIVE_CORRECT
-
 static void unpackColors(const v4nm32f *color, float *rr, float *gg, float *bb, float *aa, int size);
 static  int pushPoints(const nm32f *x, const nm32f *y, const nm32f *z, const nm32f *w, 
 						const nm32f *r, const nm32f *g, const nm32f *b, const nm32f *a, 
@@ -255,130 +253,127 @@ int splitTriangles_uniform(TrianglePointers *srcTriangles,
 		ones[kk] = 1.0f;
 	}
 
-#ifdef PERSPECTIVE_CORRECT        
-	// Calculate some coefficients to interpolate attribute values.
-	// Formulas obtained by simplifying formulas for barycentric coordinates.
+	if (NMGL_NICEST == cntxt->perspectiveCorrectionHint){
+		// Calculate some coefficients to interpolate attribute values.
+		// Formulas obtained by simplifying formulas for barycentric coordinates.
 
-	nmppsMul_32f(z1, z2, buf2, srcCountEven);	// Calc z12 = z1 * z2
-	// A0 = z12*(y2 - y1);
-	nmppsSub_32f(y2, y1, buf, srcCountEven);
-	nmppsMul_32f(buf2, buf, buf1, srcCountEven);	
-	nmblas_scopy(srcCountEven, buf1, 1, A0, 1);
-	// B0 = -z12*(x2 - x1) = z12*(x1 - x2);
-	nmppsSub_32f(x1, x2, buf, srcCountEven);
-	nmppsMul_32f(buf2, buf, buf1, srcCountEven);	
-	nmblas_scopy(srcCountEven, buf1, 1, B0, 1);
-	// D0 = z12*(x2*y1 - x1*y2);
-	nmppsMul_Mul_Sub_32f(x2, y1, x1, y2, buf, srcCountEven);
-	nmppsMul_32f(buf2, buf, buf1, srcCountEven);	
-	nmblas_scopy(srcCountEven, buf1, 1, D0, 1);
+		nmppsMul_32f(z1, z2, buf2, srcCountEven);	// Calc z12 = z1 * z2
+		// A0 = z12*(y2 - y1);
+		nmppsSub_32f(y2, y1, buf, srcCountEven);
+		nmppsMul_32f(buf2, buf, buf1, srcCountEven);	
+		nmblas_scopy(srcCountEven, buf1, 1, A0, 1);
+		// B0 = -z12*(x2 - x1) = z12*(x1 - x2);
+		nmppsSub_32f(x1, x2, buf, srcCountEven);
+		nmppsMul_32f(buf2, buf, buf1, srcCountEven);	
+		nmblas_scopy(srcCountEven, buf1, 1, B0, 1);
+		// D0 = z12*(x2*y1 - x1*y2);
+		nmppsMul_Mul_Sub_32f(x2, y1, x1, y2, buf, srcCountEven);
+		nmppsMul_32f(buf2, buf, buf1, srcCountEven);	
+		nmblas_scopy(srcCountEven, buf1, 1, D0, 1);
 
-	nmppsMul_32f(z0, z2, buf2, srcCountEven);	// Calc z02 = z0 * z2
-	// A1 = z02*(y0 - y2);
-	nmppsSub_32f(y0, y2, buf, srcCountEven);
-	nmppsMul_32f(buf2, buf, buf1, srcCountEven);	
-	nmblas_scopy(srcCountEven, buf1, 1, A1, 1);
-	// B1 = -z02*(x0 - x2) = z02*(x2 - x0);
-	nmppsSub_32f(x2, x0, buf, srcCountEven);
-	nmppsMul_32f(buf2, buf, buf1, srcCountEven);	
-	nmblas_scopy(srcCountEven, buf1, 1, B1, 1);
-	// D1 = z02*(x0*y2 - x2*y0);
-	nmppsMul_Mul_Sub_32f(x0, y2, x2, y0, buf, srcCountEven);
-	nmppsMul_32f(buf2, buf, buf1, srcCountEven);	
-	nmblas_scopy(srcCountEven, buf1, 1, D1, 1);
+		nmppsMul_32f(z0, z2, buf2, srcCountEven);	// Calc z02 = z0 * z2
+		// A1 = z02*(y0 - y2);
+		nmppsSub_32f(y0, y2, buf, srcCountEven);
+		nmppsMul_32f(buf2, buf, buf1, srcCountEven);	
+		nmblas_scopy(srcCountEven, buf1, 1, A1, 1);
+		// B1 = -z02*(x0 - x2) = z02*(x2 - x0);
+		nmppsSub_32f(x2, x0, buf, srcCountEven);
+		nmppsMul_32f(buf2, buf, buf1, srcCountEven);	
+		nmblas_scopy(srcCountEven, buf1, 1, B1, 1);
+		// D1 = z02*(x0*y2 - x2*y0);
+		nmppsMul_Mul_Sub_32f(x0, y2, x2, y0, buf, srcCountEven);
+		nmppsMul_32f(buf2, buf, buf1, srcCountEven);	
+		nmblas_scopy(srcCountEven, buf1, 1, D1, 1);
 
-	nmppsMul_32f(z1, z0, buf2, srcCountEven);	// Calc z10 = z1 * z0
-	// A2 = z10*(y1 - y0);
-	nmppsSub_32f(y1, y0, buf, srcCountEven);
-	nmppsMul_32f(buf2, buf, buf1, srcCountEven);	
-	nmblas_scopy(srcCountEven, buf1, 1, A2, 1);
-	// B2 = -z10*(x1 - x0) = z10*(x0 - x1);
-	nmppsSub_32f(x0, x1, buf, srcCountEven);
-	nmppsMul_32f(buf2, buf, buf1, srcCountEven);	
-	nmblas_scopy(srcCountEven, buf1, 1, B2, 1);
-	// D2 = z10*(x1*y0 - x0*y1);
-	nmppsMul_Mul_Sub_32f(x1, y0, x0, y1, buf, srcCountEven);
-	nmppsMul_32f(buf2, buf, buf1, srcCountEven);	
-	nmblas_scopy(srcCountEven, buf1, 1, D2, 1);
+		nmppsMul_32f(z1, z0, buf2, srcCountEven);	// Calc z10 = z1 * z0
+		// A2 = z10*(y1 - y0);
+		nmppsSub_32f(y1, y0, buf, srcCountEven);
+		nmppsMul_32f(buf2, buf, buf1, srcCountEven);	
+		nmblas_scopy(srcCountEven, buf1, 1, A2, 1);
+		// B2 = -z10*(x1 - x0) = z10*(x0 - x1);
+		nmppsSub_32f(x0, x1, buf, srcCountEven);
+		nmppsMul_32f(buf2, buf, buf1, srcCountEven);	
+		nmblas_scopy(srcCountEven, buf1, 1, B2, 1);
+		// D2 = z10*(x1*y0 - x0*y1);
+		nmppsMul_Mul_Sub_32f(x1, y0, x0, y1, buf, srcCountEven);
+		nmppsMul_32f(buf2, buf, buf1, srcCountEven);	
+		nmblas_scopy(srcCountEven, buf1, 1, D2, 1);
 
-	//A = A0 + A1 + A2;
-	nm32f *A0_imu = cntxt->buffer3 +  0 * NMGL_SIZE;
-	nm32f *A1_imu = cntxt->buffer3 +  1 * NMGL_SIZE;;
-	nm32f *A2_imu = cntxt->buffer3 +  2 * NMGL_SIZE;;
-	nmblas_scopy(srcCountEven, A0, 1, A0_imu, 1);
-	nmblas_scopy(srcCountEven, A1, 1, A1_imu, 1);
-	nmblas_scopy(srcCountEven, A2, 1, A2_imu, 1);
-	nmppsAdd_32f(A0_imu, A1_imu, buf, srcCountEven);
-	nmppsAdd_32f(  buf, A2_imu,  buf1, srcCountEven);
-	nmblas_scopy(srcCountEven, buf1, 1, A, 1);
-	//B = B0 + B1 + B2;
-	nm32f *B0_imu = cntxt->buffer3 +  0 * NMGL_SIZE;
-	nm32f *B1_imu = cntxt->buffer3 +  1 * NMGL_SIZE;;
-	nm32f *B2_imu = cntxt->buffer3 +  2 * NMGL_SIZE;;
-	nmblas_scopy(srcCountEven, B0, 1, B0_imu, 1);
-	nmblas_scopy(srcCountEven, B1, 1, B1_imu, 1);
-	nmblas_scopy(srcCountEven, B2, 1, B2_imu, 1);
-	nmppsAdd_32f(B0_imu, B1_imu, buf, srcCountEven);
-	nmppsAdd_32f(  buf, B2_imu,  buf1, srcCountEven);
-	nmblas_scopy(srcCountEven, buf1, 1, B, 1);
-	//D = D0 + D1 + D2;
-	nm32f *D0_imu = cntxt->buffer3 +  0 * NMGL_SIZE;
-	nm32f *D1_imu = cntxt->buffer3 +  1 * NMGL_SIZE;;
-	nm32f *D2_imu = cntxt->buffer3 +  2 * NMGL_SIZE;;
-	nmblas_scopy(srcCountEven, D0, 1, D0_imu, 1);
-	nmblas_scopy(srcCountEven, D1, 1, D1_imu, 1);
-	nmblas_scopy(srcCountEven, D2, 1, D2_imu, 1);
-	nmppsAdd_32f(D0_imu, D1_imu, buf, srcCountEven);
-	nmppsAdd_32f(  buf, D2_imu,  buf1, srcCountEven);
-	nmblas_scopy(srcCountEven, buf1, 1, D, 1);
+		//A = A0 + A1 + A2;
+		nm32f *A0_imu = cntxt->buffer3 +  0 * NMGL_SIZE;
+		nm32f *A1_imu = cntxt->buffer3 +  1 * NMGL_SIZE;;
+		nm32f *A2_imu = cntxt->buffer3 +  2 * NMGL_SIZE;;
+		nmblas_scopy(srcCountEven, A0, 1, A0_imu, 1);
+		nmblas_scopy(srcCountEven, A1, 1, A1_imu, 1);
+		nmblas_scopy(srcCountEven, A2, 1, A2_imu, 1);
+		nmppsAdd_32f(A0_imu, A1_imu, buf, srcCountEven);
+		nmppsAdd_32f(  buf, A2_imu,  buf1, srcCountEven);
+		nmblas_scopy(srcCountEven, buf1, 1, A, 1);
+		//B = B0 + B1 + B2;
+		nm32f *B0_imu = cntxt->buffer3 +  0 * NMGL_SIZE;
+		nm32f *B1_imu = cntxt->buffer3 +  1 * NMGL_SIZE;;
+		nm32f *B2_imu = cntxt->buffer3 +  2 * NMGL_SIZE;;
+		nmblas_scopy(srcCountEven, B0, 1, B0_imu, 1);
+		nmblas_scopy(srcCountEven, B1, 1, B1_imu, 1);
+		nmblas_scopy(srcCountEven, B2, 1, B2_imu, 1);
+		nmppsAdd_32f(B0_imu, B1_imu, buf, srcCountEven);
+		nmppsAdd_32f(  buf, B2_imu,  buf1, srcCountEven);
+		nmblas_scopy(srcCountEven, buf1, 1, B, 1);
+		//D = D0 + D1 + D2;
+		nm32f *D0_imu = cntxt->buffer3 +  0 * NMGL_SIZE;
+		nm32f *D1_imu = cntxt->buffer3 +  1 * NMGL_SIZE;;
+		nm32f *D2_imu = cntxt->buffer3 +  2 * NMGL_SIZE;;
+		nmblas_scopy(srcCountEven, D0, 1, D0_imu, 1);
+		nmblas_scopy(srcCountEven, D1, 1, D1_imu, 1);
+		nmblas_scopy(srcCountEven, D2, 1, D2_imu, 1);
+		nmppsAdd_32f(D0_imu, D1_imu, buf, srcCountEven);
+		nmppsAdd_32f(  buf, D2_imu,  buf1, srcCountEven);
+		nmblas_scopy(srcCountEven, buf1, 1, D, 1);
+	} else { // NMGL_FASTEST, NMGL_DONT_CARE
+		//float A0 = y2-y1;
+		//float A1 = y0-y2;
+		//float A2 = y1-y0;
+		nmppsSub_32f(y2, y1, buf,  srcCountEven);
+		nmppsSub_32f(y0, y2, buf1, srcCountEven);
+		nmppsSub_32f(y1, y0, buf2, srcCountEven);
+		nmblas_scopy(srcCountEven, buf,  1, A0, 1);
+		nmblas_scopy(srcCountEven, buf1, 1, A1, 1);
+		nmblas_scopy(srcCountEven, buf2, 1, A2, 1);
 
-#else //PERSPECTIVE_CORRECT
+		//float B0 = x1-x2;
+		//float B1 = x2-x0;
+		//float B2 = x0-x1;
+		nmppsSub_32f(x1, x2, buf,  srcCountEven);
+		nmppsSub_32f(x2, x0, buf1, srcCountEven);
+		nmppsSub_32f(x0, x1, buf2, srcCountEven);
+		nmblas_scopy(srcCountEven, buf,  1, B0, 1);
+		nmblas_scopy(srcCountEven, buf1, 1, B1, 1);
+		nmblas_scopy(srcCountEven, buf2, 1, B2, 1);
 
-	//float A0 = y2-y1;
-	//float A1 = y0-y2;
-	//float A2 = y1-y0;
-	nmppsSub_32f(y2, y1, buf,  srcCountEven);
-	nmppsSub_32f(y0, y2, buf1, srcCountEven);
-	nmppsSub_32f(y1, y0, buf2, srcCountEven);
-	nmblas_scopy(srcCountEven, buf,  1, A0, 1);
-	nmblas_scopy(srcCountEven, buf1, 1, A1, 1);
-	nmblas_scopy(srcCountEven, buf2, 1, A2, 1);
+		//float D0 = x2*y1-y2*x1;
+		//float D1 = y2*x0-x2*y0;
+		//float D2 = x1*y0-x0*y1;
+		nmppsMul_Mul_Sub_32f(x2, y1, y2, x1, buf,  srcCountEven);	
+		nmppsMul_Mul_Sub_32f(y2, x0, x2, y0, buf1, srcCountEven);	
+		nmppsMul_Mul_Sub_32f(x1, y0, x0, y1, buf2, srcCountEven);	
+		nmblas_scopy(srcCountEven, buf,  1, D0, 1);
+		nmblas_scopy(srcCountEven, buf1, 1, D1, 1);
+		nmblas_scopy(srcCountEven, buf2, 1, D2, 1);
 
-	//float B0 = x1-x2;
-	//float B1 = x2-x0;
-	//float B2 = x0-x1;
-	nmppsSub_32f(x1, x2, buf,  srcCountEven);
-	nmppsSub_32f(x2, x0, buf1, srcCountEven);
-	nmppsSub_32f(x0, x1, buf2, srcCountEven);
-	nmblas_scopy(srcCountEven, buf,  1, B0, 1);
-	nmblas_scopy(srcCountEven, buf1, 1, B1, 1);
-	nmblas_scopy(srcCountEven, buf2, 1, B2, 1);
+		//float oneOverTriSquare = 1.0/((x0-x1)*(y2-y1)-(y0-y1)*(x2-x1));
+		nm32f *A0_imu  = cntxt->buffer3 + 0 * NMGL_SIZE;
+		nm32f *A2_imu  = cntxt->buffer3 + 1 * NMGL_SIZE;
+		nm32f *B0_imu  = cntxt->buffer3 + 2 * NMGL_SIZE;
+		nm32f *B2_imu  = cntxt->buffer3 + 3 * NMGL_SIZE;
+		nmblas_scopy(srcCountEven, A0, 1, A0_imu, 1);
+		nmblas_scopy(srcCountEven, A2, 1, A2_imu, 1);
+		nmblas_scopy(srcCountEven, B0, 1, B0_imu, 1);
+		nmblas_scopy(srcCountEven, B2, 1, B2_imu, 1);
+		nmppsMul_Mul_Sub_32f(B2_imu, A0_imu, A2_imu, B0_imu, buf, srcCountEven);
+		nmppsDiv_32f(ones, buf, buf1, srcCountEven);
+		nmblas_scopy(srcCountEven, buf1, 1, oneOverTriSquare, 1);
+	} 
 
-	//float D0 = x2*y1-y2*x1;
-	//float D1 = y2*x0-x2*y0;
-	//float D2 = x1*y0-x0*y1;
-	nmppsMul_Mul_Sub_32f(x2, y1, y2, x1, buf,  srcCountEven);	
-	nmppsMul_Mul_Sub_32f(y2, x0, x2, y0, buf1, srcCountEven);	
-	nmppsMul_Mul_Sub_32f(x1, y0, x0, y1, buf2, srcCountEven);	
-	nmblas_scopy(srcCountEven, buf,  1, D0, 1);
-	nmblas_scopy(srcCountEven, buf1, 1, D1, 1);
-	nmblas_scopy(srcCountEven, buf2, 1, D2, 1);
-
-	//float oneOverTriSquare = 1.0/((x0-x1)*(y2-y1)-(y0-y1)*(x2-x1));
-	nm32f *A0_imu  = cntxt->buffer3 + 0 * NMGL_SIZE;
-	nm32f *A2_imu  = cntxt->buffer3 + 1 * NMGL_SIZE;
-	nm32f *B0_imu  = cntxt->buffer3 + 2 * NMGL_SIZE;
-	nm32f *B2_imu  = cntxt->buffer3 + 3 * NMGL_SIZE;
-	nmblas_scopy(srcCountEven, A0, 1, A0_imu, 1);
-	nmblas_scopy(srcCountEven, A2, 1, A2_imu, 1);
-	nmblas_scopy(srcCountEven, B0, 1, B0_imu, 1);
-	nmblas_scopy(srcCountEven, B2, 1, B2_imu, 1);
-	nmppsMul_Mul_Sub_32f(B2_imu, A0_imu, A2_imu, B0_imu, buf, srcCountEven);
-	nmppsDiv_32f(ones, buf, buf1, srcCountEven);
-	nmblas_scopy(srcCountEven, buf1, 1, oneOverTriSquare, 1);
-
-#endif //PERSPECTIVE_CORRECT
-	
 	// For c = [r, g, b, a, s, t, z, w] and N = [A, B, D] calc N_c:
 	// 1. Perspective correct interpolation
 		//float N_c = N0 * c0 + N1 * c1 + N2 * c2
@@ -415,12 +410,12 @@ int splitTriangles_uniform(TrianglePointers *srcTriangles,
 			nmppsMul_32f(N2, c2, buf, srcCountEven);	
 			nmppsMul_Add_32f(N1, c1, buf, buf1, srcCountEven);
 
-#ifdef PERSPECTIVE_CORRECT
-			nmppsMul_Add_32f(N0, c0, buf1, N_c, srcCountEven);
-#else	//PERSPECTIVE_CORRECT
-			nmppsMul_Add_32f(N0, c0, buf1, buf2, srcCountEven);
-			nmppsMul_32f(oneOverTriSquare, buf2, N_c, srcCountEven);
-#endif	//PERSPECTIVE_CORRECT
+			if (NMGL_NICEST == cntxt->perspectiveCorrectionHint){
+				nmppsMul_Add_32f(N0, c0, buf1, N_c, srcCountEven);
+			} else { // NMGL_FASTEST, NMGL_DONT_CARE
+				nmppsMul_Add_32f(N0, c0, buf1, buf2, srcCountEven);
+				nmppsMul_32f(oneOverTriSquare, buf2, N_c, srcCountEven);
+			}
 
 			nmblas_scopy(srcCountEven, N_c, 1, ABD_[i][j], 1);
 		}
@@ -521,15 +516,16 @@ int splitTriangles_uniform(TrianglePointers *srcTriangles,
 					// i.e. keep startAttr equal to 0 (by default)
 				}
 
-#ifdef PERSPECTIVE_CORRECT
-				// float oneOverDenominator = 1 / (A * x + B * y + D);
-				nmblas_scopy(primWidth, y, 1, buf1, 1);	
-				nmblas_scopy(primWidth, x, 1, buf2, 1);
-				nmppsMulC_AddC_32f(buf1, B[i], D[i], buf, primWidth);
-				nmppsMulC_AddV_32f(buf2, buf, buf1, A[i], primWidth);
-				nmppsDiv_32f(ones, buf1, buf2, primWidth);
-				nmblas_scopy(primWidth, buf2, 1, oneOverDenominator, 1);
-#endif // PERSPECTIVE_CORRECT
+				// These calcs are for PERSPECTIVE_CORRECT interpolation
+				if (NMGL_NICEST == cntxt->perspectiveCorrectionHint){
+					// float oneOverDenominator = 1 / (A * x + B * y + D);
+					nmblas_scopy(primWidth, y, 1, buf1, 1);	
+					nmblas_scopy(primWidth, x, 1, buf2, 1);
+					nmppsMulC_AddC_32f(buf1, B[i], D[i], buf, primWidth);
+					nmppsMulC_AddV_32f(buf2, buf, buf1, A[i], primWidth);
+					nmppsDiv_32f(ones, buf1, buf2, primWidth);
+					nmblas_scopy(primWidth, buf2, 1, oneOverDenominator, 1);
+				}
 
 				nm32f *attr[] = {r, g, b, a, s, t, z, w};
 				// Process attributes in parts within a loop. 
@@ -545,13 +541,14 @@ int splitTriangles_uniform(TrianglePointers *srcTriangles,
 						nmblas_scopy(kk, x + cnt, 1, buf2, 1);
 						nmppsMulC_AddC_32f(buf1, B_[i], D_[i], buf, kk);
 						nmppsMulC_AddV_32f(buf2, buf,   buf1, A_[i], kk);
-#ifdef PERSPECTIVE_CORRECT
-						nmblas_scopy(kk, oneOverDenominator, 1, buf, 1);//Get oneOverDenominator
-						nmppsMul_32f(buf1, buf, buf2, kk);
-						nmblas_scopy(kk, buf2, 1, attr[j] + cnt, 1);
-#else 	// PERSPECTIVE_CORRECT
-						nmblas_scopy(kk, buf1, 1, attr[j] + cnt, 1);
-#endif	// PERSPECTIVE_CORRECT
+
+						if (NMGL_NICEST == cntxt->perspectiveCorrectionHint){
+							nmblas_scopy(kk, oneOverDenominator, 1, buf, 1);//Get oneOverDenominator
+							nmppsMul_32f(buf1, buf, buf2, kk);
+							nmblas_scopy(kk, buf2, 1, attr[j] + cnt, 1);
+						} else {
+							nmblas_scopy(kk, buf1, 1, attr[j] + cnt, 1);
+						}
 						cnt += kk;
 					}
 				}

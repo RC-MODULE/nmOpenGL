@@ -14,47 +14,74 @@
 // Performance testing
 #include "time.h"
 
-int splitTriangles_uniform_EmptyInput_NoTrianglesAtOutput();
-int splitTriangles_uniform_EmptyInput_NoTreatedTriangles();
-int splitTriangles_uniform_oneInputTriangleNeedsDivision_dstSizeIsCorrect();
-int splitTriangles_uniform_oneInputTriangleNeedsDivision_srcTreatedIsCorrect();
-int splitTriangles_uniform_oneInputTrianglesNeedsDivision_dstIsCorrect();
+// Base test functions: correctness
+int splitTriangles_uniform_EmptyInput_NoTrianglesAtOutput(NMGLenum hint);
+int splitTriangles_uniform_EmptyInput_NoTreatedTriangles(NMGLenum hint);
+int splitTriangles_uniform_oneInputTriangleNeedsDivision_dstSizeIsCorrect(NMGLenum hint);
+int splitTriangles_uniform_oneInputTriangleNeedsDivision_srcTreatedIsCorrect(NMGLenum hint);
+// Base test functions: performance
+clock_t splitTriangles_uniform_isoscelesTrianglesNeedsDivision(float width, int *treated, int *dstSize, NMGLenum hint);
+clock_t splitTriangles_uniform_narrowTriangleNeedsDivision(float width, int *treated, int *dstSize, NMGLenum hint);
+clock_t splitTriangles_uniform_nInputsNoDivision_nOutputs(int n, NMGLenum hint);
 
+// Correctness tests
+int splitTriangles_uniform_NON_PERSPECTIVE_CORRECT_EmptyInput_NoTrianglesAtOutput();
+int splitTriangles_uniform_NON_PERSPECTIVE_CORRECT_EmptyInput_NoTreatedTriangles();
+int splitTriangles_uniform_NON_PERSPECTIVE_CORRECT_oneInputTriangleNeedsDivision_dstSizeIsCorrect();
+int splitTriangles_uniform_NON_PERSPECTIVE_CORRECT_oneInputTriangleNeedsDivision_srcTreatedIsCorrect();
+
+int splitTriangles_uniform_PERSPECTIVE_CORRECT_EmptyInput_NoTrianglesAtOutput();
+int splitTriangles_uniform_PERSPECTIVE_CORRECT_EmptyInput_NoTreatedTriangles();
+int splitTriangles_uniform_PERSPECTIVE_CORRECT_oneInputTriangleNeedsDivision_dstSizeIsCorrect();
+int splitTriangles_uniform_PERSPECTIVE_CORRECT_oneInputTriangleNeedsDivision_srcTreatedIsCorrect();
+
+int splitTriangles_uniform_NON_PERSPECTIVE_CORRECT_oneInputTrianglesNeedsDivision_dstIsCorrect();
 int splitTriangles_uniform_PERSPECTIVE_CORRECT_oneInputTrianglesNeedsDivision_dstIsCorrect();
 
 // Performance tests
-clock_t splitTriangles_isoscelesTrianglesNeedsDivision(float width, int *treated, int *dstSize);
-clock_t splitTriangles_narrowTriangleNeedsDivision(float width, int *treated, int *dstSize);
-clock_t splitTriangles_nInputsNoDivision_nOutputs(int n);
-int splitTriangles_0_to_1024InputsNoDivision_0_to_1024Outputs();
-int splitTriangles_isoscelesTrianglesNeedsDivisionWidth_40_to_760();
-int splitTriangles_narrowTriangleNeedsDivisionWidth_40_to_760();
+int splitTriangles_uniform_NON_PERSPECTIVE_CORRECT_0_to_1024InputsNoDivision_0_to_1024Outputs();
+int splitTriangles_uniform_NON_PERSPECTIVE_CORRECT_isoscelesTrianglesNeedsDivisionWidth_40_to_760();
+int splitTriangles_uniform_NON_PERSPECTIVE_CORRECT_narrowTriangleNeedsDivisionWidth_40_to_760();
+
+int splitTriangles_uniform_PERSPECTIVE_CORRECT_0_to_1024InputsNoDivision_0_to_1024Outputs();
+int splitTriangles_uniform_PERSPECTIVE_CORRECT_isoscelesTrianglesNeedsDivisionWidth_40_to_760();
+int splitTriangles_uniform_PERSPECTIVE_CORRECT_narrowTriangleNeedsDivisionWidth_40_to_760();
 
 clock_t fillArray();
 
 int main(int argc, char **argv)
 {
-	puts("\nsplitTriangles_uniform functional tests: ");
+	printf("\n%s functional tests: \n", __FILE__);
+	// Perspective correction disabled
+	RUN_TEST(splitTriangles_uniform_NON_PERSPECTIVE_CORRECT_EmptyInput_NoTrianglesAtOutput);
+	RUN_TEST(splitTriangles_uniform_NON_PERSPECTIVE_CORRECT_EmptyInput_NoTreatedTriangles);
+	RUN_TEST(splitTriangles_uniform_NON_PERSPECTIVE_CORRECT_oneInputTriangleNeedsDivision_dstSizeIsCorrect);
+	RUN_TEST(splitTriangles_uniform_NON_PERSPECTIVE_CORRECT_oneInputTriangleNeedsDivision_srcTreatedIsCorrect);
+	RUN_TEST(splitTriangles_uniform_NON_PERSPECTIVE_CORRECT_oneInputTrianglesNeedsDivision_dstIsCorrect);
 
-	RUN_TEST(splitTriangles_uniform_EmptyInput_NoTrianglesAtOutput);
-	RUN_TEST(splitTriangles_uniform_EmptyInput_NoTreatedTriangles);
-	RUN_TEST(splitTriangles_uniform_oneInputTriangleNeedsDivision_dstSizeIsCorrect);
-	RUN_TEST(splitTriangles_uniform_oneInputTriangleNeedsDivision_srcTreatedIsCorrect);
-	//RUN_TEST(splitTriangles_uniform_oneInputTrianglesNeedsDivision_dstIsCorrect);
-	// Use the following test to test the PERPECTIVE_CORRECT interpolation
+	// Perspective correction enabled
+	RUN_TEST(splitTriangles_uniform_PERSPECTIVE_CORRECT_EmptyInput_NoTrianglesAtOutput);
+	RUN_TEST(splitTriangles_uniform_PERSPECTIVE_CORRECT_EmptyInput_NoTreatedTriangles);
+	RUN_TEST(splitTriangles_uniform_PERSPECTIVE_CORRECT_oneInputTriangleNeedsDivision_dstSizeIsCorrect);
+	RUN_TEST(splitTriangles_uniform_PERSPECTIVE_CORRECT_oneInputTriangleNeedsDivision_srcTreatedIsCorrect);
 	RUN_TEST(splitTriangles_uniform_PERSPECTIVE_CORRECT_oneInputTrianglesNeedsDivision_dstIsCorrect);
 
+	printf("\n%s performance tests: \n", __FILE__);
+	// Perspective correction disabled
+	puts("\nN input small triangles, no division, N output triangles, perspective correction disabled:");
+	RUN_PERF_TEST(splitTriangles_uniform_NON_PERSPECTIVE_CORRECT_0_to_1024InputsNoDivision_0_to_1024Outputs);
+	puts("\nN = 1 input triangles, needs division, M output triangles, perspective correction disabled:");
+	RUN_PERF_TEST(splitTriangles_uniform_NON_PERSPECTIVE_CORRECT_isoscelesTrianglesNeedsDivisionWidth_40_to_760);
+	puts("\nN = 1 input narrow triangles (height is OK, width is big), needs division, M output triangles, perspective correction disabled:");
+	RUN_PERF_TEST(splitTriangles_uniform_NON_PERSPECTIVE_CORRECT_narrowTriangleNeedsDivisionWidth_40_to_760);
 
-	puts("\nsplitTriangles_uniform performance tests: ");
-
-	puts("\nN input small triangles, no division, N output triangles:");
-	RUN_PERF_TEST(splitTriangles_0_to_1024InputsNoDivision_0_to_1024Outputs);
-
-	puts("\nN = 1 input triangles, needs division, M output triangles:");
-	RUN_PERF_TEST(splitTriangles_isoscelesTrianglesNeedsDivisionWidth_40_to_760);
-	
-	puts("\nN = 1 input narrow triangles (height is OK, width is big), needs division, M output triangles:");
-	RUN_PERF_TEST(splitTriangles_narrowTriangleNeedsDivisionWidth_40_to_760);
+	// Perspective correction enabled
+	puts("\nN input small triangles, no division, N output triangles, perspective correction enabled:");
+	RUN_PERF_TEST(splitTriangles_uniform_PERSPECTIVE_CORRECT_0_to_1024InputsNoDivision_0_to_1024Outputs);
+	puts("\nN = 1 input triangles, needs division, M output triangles, perspective correction enabled:");
+	RUN_PERF_TEST(splitTriangles_uniform_PERSPECTIVE_CORRECT_isoscelesTrianglesNeedsDivisionWidth_40_to_760);
+	puts("\nN = 1 input narrow triangles (height is OK, width is big), needs division, M output triangles, perspective correction enabled:");
+	RUN_PERF_TEST(splitTriangles_uniform_PERSPECTIVE_CORRECT_narrowTriangleNeedsDivisionWidth_40_to_760);
 	//RUN_PERF_TEST(fillArray);
 	
 
@@ -120,6 +147,7 @@ unsigned int* palettes_widths_p; // texture palettes widths memory
 
 // @case Количество треугольников в выходном массиве равно нулю при отсутствии треугольников на входе
 	// @step Инициализировать структуры, используемые тестирумой функцией (контекст, вспомогательные буферы)
+	// @step Установить заданный режим интерполяции
 	// @step Создать входной и выходной массивы
 	// @step Установить количество треугольников на входе равным 0 
 	// @step Установить произвольное ограничение ширины треугольника
@@ -130,7 +158,7 @@ unsigned int* palettes_widths_p; // texture palettes widths memory
 	// @step Вызвать функцию splitTriangles_uniform с заданными аргументами
 	// @assert Проверить, что в количество треугольников на выходе равно 0
 	// @pass Количество треугольников на выходе, проверяемое на шаге #assert, равно 0
-int splitTriangles_uniform_EmptyInput_NoTrianglesAtOutput()
+int splitTriangles_uniform_EmptyInput_NoTrianglesAtOutput(NMGLenum hint)
 {
 	NMGL_Context_NM0 *cntxt;
 	NMGL_Context_NM0::create();
@@ -138,6 +166,7 @@ int splitTriangles_uniform_EmptyInput_NoTrianglesAtOutput()
 	cntxt->buffer2 = (float*)nmglBuffer2;
 	cntxt->buffer3 = (float*)nmglBuffer3;
 	cntxt->buffer5 = (float*)nmglBuffer5;
+	cntxt->perspectiveCorrectionHint = hint;
 
 	// Arrange
 	TrianglePointers srcTriangles = {
@@ -169,6 +198,7 @@ int splitTriangles_uniform_EmptyInput_NoTrianglesAtOutput()
 
 // @case Количество обработанных треугольников равно нулю при отсутствии треугольников на входе
 	// @step Инициализировать структуры, используемые тестирумой функцией (контекст, вспомогательные буферы)
+	// @step Установить заданный режим интерполяции
 	// @step Создать входной и выходной массивы
 	// @step Установить количество треугольников на входе равным 0 
 	// @step Установить произвольное ограничение ширины треугольника
@@ -179,7 +209,7 @@ int splitTriangles_uniform_EmptyInput_NoTrianglesAtOutput()
 	// @step Вызвать функцию splitTriangles_uniform с заданными аргументами
 	// @assert Проверить, что в количество обработанных треугольников равно 0
 	// @pass Количество обработанных треугольников, проверяемое на шаге #assert, равно 0
-int splitTriangles_uniform_EmptyInput_NoTreatedTriangles()
+int splitTriangles_uniform_EmptyInput_NoTreatedTriangles(NMGLenum hint)
 {
 	NMGL_Context_NM0 *cntxt;
 	NMGL_Context_NM0::create();
@@ -187,6 +217,7 @@ int splitTriangles_uniform_EmptyInput_NoTreatedTriangles()
 	cntxt->buffer2 = (float*)nmglBuffer2;
 	cntxt->buffer3 = (float*)nmglBuffer3;
 	cntxt->buffer5 = (float*)nmglBuffer5;
+	cntxt->perspectiveCorrectionHint = hint;
 
 	// Arrange
 	TrianglePointers srcTriangles = {
@@ -218,6 +249,7 @@ int splitTriangles_uniform_EmptyInput_NoTreatedTriangles()
 
 // @case Количество треугольников в выходном массиве корректно, если на входе один треугольник, требующий деления (места в выходном массиве достаточно)
 	// @step Инициализировать структуры, используемые тестирумой функцией (контекст, вспомогательные буферы)
+	// @step Установить заданный режим интерполяции
 	// @step Создать входной и выходной массивы
 	// @step Установить количество треугольников на входе равным 1 
 	// @step Во входном массиве создать треугольник с шириной 128 и высотой 128
@@ -230,7 +262,7 @@ int splitTriangles_uniform_EmptyInput_NoTreatedTriangles()
 	// @step Вызвать функцию splitTriangles_uniform с заданными аргументами
 	// @assert Сравнить фактическое и ожидаемое значения количества треугольников в выходном массиве
 	// @pass Ожидаемое и фактическое значения количества треугольников в выходном массиве, сравниваемые на шаге #assert, совпадают
-int splitTriangles_uniform_oneInputTriangleNeedsDivision_dstSizeIsCorrect()
+int splitTriangles_uniform_oneInputTriangleNeedsDivision_dstSizeIsCorrect(NMGLenum hint)
 {
 
 	constexpr int size = 1;
@@ -241,6 +273,7 @@ int splitTriangles_uniform_oneInputTriangleNeedsDivision_dstSizeIsCorrect()
 	cntxt->buffer2 = (float*)nmglBuffer2;
 	cntxt->buffer3 = (float*)nmglBuffer3;
 	cntxt->buffer5 = (float*)nmglBuffer5;
+	cntxt->perspectiveCorrectionHint = hint;
 
 	// Arrange
 	TrianglePointers srcTriangles = {
@@ -287,6 +320,7 @@ int splitTriangles_uniform_oneInputTriangleNeedsDivision_dstSizeIsCorrect()
 
 // @case Количество обработанных треугольников корректно, если на входе один треугольник, требующий деления (места в выходном массиве достаточно)
 	// @step Инициализировать структуры, используемые тестирумой функцией (контекст, вспомогательные буферы)
+	// @step Установить заданный режим интерполяции
 	// @step Создать входной и выходной массивы
 	// @step Установить количество треугольников на входе равным 1 
 	// @step Во входном массиве создать треугольник с шириной 128 и высотой 128
@@ -300,7 +334,7 @@ int splitTriangles_uniform_oneInputTriangleNeedsDivision_dstSizeIsCorrect()
 	// @step Зафиксировать фактическое значения количества обработанных треугольников 
 	// @assert Сравнить фактическое и ожидаемое значения количества обработанных треугольников
 	// @pass Ожидаемое и фактическое значения количества обработанных треугольников, сравниваемые на шаге #assert, совпадают
-int splitTriangles_uniform_oneInputTriangleNeedsDivision_srcTreatedIsCorrect()
+int splitTriangles_uniform_oneInputTriangleNeedsDivision_srcTreatedIsCorrect(NMGLenum hint)
 {
 
 	constexpr int size = 1;
@@ -311,6 +345,7 @@ int splitTriangles_uniform_oneInputTriangleNeedsDivision_srcTreatedIsCorrect()
 	cntxt->buffer2 = (float*)nmglBuffer2;
 	cntxt->buffer3 = (float*)nmglBuffer3;
 	cntxt->buffer5 = (float*)nmglBuffer5;
+	cntxt->perspectiveCorrectionHint = hint;
 
 	// Arrange
 	TrianglePointers srcTriangles = {
@@ -355,11 +390,47 @@ int splitTriangles_uniform_oneInputTriangleNeedsDivision_srcTreatedIsCorrect()
 	return 0;
 }
 
-typedef enum {	
-				V0_X, V0_Y, V0_Z, V0_W, V0_COLOR, V0_S, V0_T,
-				V1_X, V1_Y, V1_Z, V1_W, V1_COLOR, V1_S, V1_T, 
-				V2_X, V2_Y, V2_Z, V2_W, V2_COLOR, V2_S, V2_T, 
-} attrib_t;
+// Correctness tests
+int splitTriangles_uniform_NON_PERSPECTIVE_CORRECT_EmptyInput_NoTrianglesAtOutput()
+{
+	return splitTriangles_uniform_EmptyInput_NoTrianglesAtOutput(NMGL_DONT_CARE);
+}
+
+int splitTriangles_uniform_NON_PERSPECTIVE_CORRECT_EmptyInput_NoTreatedTriangles()
+{
+	return splitTriangles_uniform_EmptyInput_NoTreatedTriangles(NMGL_DONT_CARE);
+}
+
+int splitTriangles_uniform_NON_PERSPECTIVE_CORRECT_oneInputTriangleNeedsDivision_dstSizeIsCorrect()
+{
+	return splitTriangles_uniform_oneInputTriangleNeedsDivision_dstSizeIsCorrect(NMGL_DONT_CARE);
+}
+
+int splitTriangles_uniform_NON_PERSPECTIVE_CORRECT_oneInputTriangleNeedsDivision_srcTreatedIsCorrect()
+{
+	return splitTriangles_uniform_oneInputTriangleNeedsDivision_srcTreatedIsCorrect(NMGL_DONT_CARE);
+}
+
+int splitTriangles_uniform_PERSPECTIVE_CORRECT_EmptyInput_NoTrianglesAtOutput()
+{
+	return splitTriangles_uniform_EmptyInput_NoTrianglesAtOutput(NMGL_NICEST);
+}
+
+int splitTriangles_uniform_PERSPECTIVE_CORRECT_EmptyInput_NoTreatedTriangles()
+{
+	return splitTriangles_uniform_EmptyInput_NoTreatedTriangles(NMGL_NICEST);
+}
+
+int splitTriangles_uniform_PERSPECTIVE_CORRECT_oneInputTriangleNeedsDivision_dstSizeIsCorrect()
+{
+	return splitTriangles_uniform_oneInputTriangleNeedsDivision_dstSizeIsCorrect(NMGL_NICEST);
+}
+
+int splitTriangles_uniform_PERSPECTIVE_CORRECT_oneInputTriangleNeedsDivision_srcTreatedIsCorrect()
+{
+	return splitTriangles_uniform_oneInputTriangleNeedsDivision_srcTreatedIsCorrect(NMGL_NICEST);
+}
+
 
 // @case Данные в выходном массиве треугольников корректны, если на входе один треугольник, требующий деления (места в выходном массиве достаточно)
 	// @step Инициализировать структуры, используемые тестирумой функцией (контекст, вспомогательные буферы)
@@ -375,7 +446,7 @@ typedef enum {
 	// @step Вызвать функцию splitTriangles_uniform с заданными аргументами
 	// @assert Сравнить фактические и ожидаемые значения атрибутов вершин выходных треугольников
 	// @pass Фактические и ожидаемые значения атрибутов вершин выходных треугольников, сравниваемые на шаге #assert, совпадают
-int splitTriangles_uniform_oneInputTrianglesNeedsDivision_dstIsCorrect()
+int splitTriangles_uniform_NON_PERSPECTIVE_CORRECT_oneInputTrianglesNeedsDivision_dstIsCorrect()
 {
 	constexpr int size = 1;
 
@@ -494,6 +565,7 @@ int splitTriangles_uniform_oneInputTrianglesNeedsDivision_dstIsCorrect()
 
 // @case Данные в выходном массиве треугольников корректны, если на входе один треугольник, требующий деления (места в выходном массиве достаточно). Используется перспективно-корректная интерполяция
 	// @step Инициализировать структуры, используемые тестирумой функцией (контекст, вспомогательные буферы)
+	// @step Включить перпективно-корректную интерполяцию (установить переменную контекста, определяющую режим интерполяции, равной NMGL_NICEST).
 	// @step Создать входной и выходной массивы
 	// @step Установить количество треугольников на входе равным 1 
 	// @step Во входном массиве создать треугольник с шириной 128 и высотой 128, инициализировать атрибуты вершин треугольника
@@ -516,6 +588,7 @@ int splitTriangles_uniform_PERSPECTIVE_CORRECT_oneInputTrianglesNeedsDivision_ds
 	cntxt->buffer2 = (float*)nmglBuffer2;
 	cntxt->buffer3 = (float*)nmglBuffer3;
 	cntxt->buffer5 = (float*)nmglBuffer5;
+	cntxt->perspectiveCorrectionHint = NMGL_NICEST;
 
 	// Arrange
 	TrianglePointers srcTriangles = {
@@ -621,7 +694,7 @@ int splitTriangles_uniform_PERSPECTIVE_CORRECT_oneInputTrianglesNeedsDivision_ds
 	return 0;
 }
 
-clock_t splitTriangles_nInputsNoDivision_nOutputs(int n)
+clock_t splitTriangles_uniform_nInputsNoDivision_nOutputs(int n, NMGLenum hint)
 {
 	size_t size = n;
 
@@ -631,6 +704,7 @@ clock_t splitTriangles_nInputsNoDivision_nOutputs(int n)
 	cntxt->buffer2 = (float*)nmglBuffer2;
 	cntxt->buffer3 = (float*)nmglBuffer3;
 	cntxt->buffer5 = (float*)nmglBuffer5;
+	cntxt->perspectiveCorrectionHint = hint;
 
 	// Arrange
 	TrianglePointers srcTriangles = {
@@ -673,18 +747,7 @@ clock_t splitTriangles_nInputsNoDivision_nOutputs(int n)
 	return dt;
 }
 
-int splitTriangles_0_to_1024InputsNoDivision_0_to_1024Outputs()
-{
-	puts("N\tTime");
-	for (int i = -1; i <= 10; ++i){
-		int n = (i < 0)? 0: (int) pow(2.0, (double) i);
-		clock_t dt = splitTriangles_nInputsNoDivision_nOutputs(n);
-		printf("%i\t%i\r\n", n, (int) dt);
-	}
-	return 0;
-}
-
-clock_t splitTriangles_isoscelesTrianglesNeedsDivision(float width, int *treated, int *dstSize)
+clock_t splitTriangles_uniform_isoscelesTrianglesNeedsDivision(float width, int *treated, int *dstSize, NMGLenum hint)
 {
 	size_t size = 1;
 
@@ -694,6 +757,7 @@ clock_t splitTriangles_isoscelesTrianglesNeedsDivision(float width, int *treated
 	cntxt->buffer2 = (float*)nmglBuffer2;
 	cntxt->buffer3 = (float*)nmglBuffer3;
 	cntxt->buffer5 = (float*)nmglBuffer5;
+	cntxt->perspectiveCorrectionHint = hint;
 
 	// Arrange
 
@@ -738,19 +802,7 @@ clock_t splitTriangles_isoscelesTrianglesNeedsDivision(float width, int *treated
 	return dt;
 }
 
-int splitTriangles_isoscelesTrianglesNeedsDivisionWidth_40_to_760()
-{
-	puts("Treated\tSize\tM\tTime");
-	for (float w = 40.0f; w <= 760.0f; w += 40.0f){
-		int treatedCount = 0;
-		int dstSize = 0;
-		clock_t dt = splitTriangles_isoscelesTrianglesNeedsDivision(w, &treatedCount, &dstSize);
-		printf("%i\t%.2f\t%i\t%i\n\r", treatedCount, w, dstSize, (int) dt);
-	}
-	return 0;
-}
-
-clock_t splitTriangles_narrowTriangleNeedsDivision(float width, int *treated, int *dstSize)
+clock_t splitTriangles_uniform_narrowTriangleNeedsDivision(float width, int *treated, int *dstSize, NMGLenum hint)
 {
 	size_t size = 1;
 
@@ -760,6 +812,7 @@ clock_t splitTriangles_narrowTriangleNeedsDivision(float width, int *treated, in
 	cntxt->buffer2 = (float*)nmglBuffer2;
 	cntxt->buffer3 = (float*)nmglBuffer3;
 	cntxt->buffer5 = (float*)nmglBuffer5;
+	cntxt->perspectiveCorrectionHint = hint;
 
 	// Arrange
 
@@ -804,13 +857,73 @@ clock_t splitTriangles_narrowTriangleNeedsDivision(float width, int *treated, in
 	return dt;
 }
 
-int splitTriangles_narrowTriangleNeedsDivisionWidth_40_to_760()
+// Performance tests
+
+int splitTriangles_uniform_NON_PERSPECTIVE_CORRECT_0_to_1024InputsNoDivision_0_to_1024Outputs()
+{
+	puts("N\tTime");
+	for (int i = -1; i <= 10; ++i){
+		int n = (i < 0)? 0: (int) pow(2.0, (double) i);
+		clock_t dt = splitTriangles_uniform_nInputsNoDivision_nOutputs(n, NMGL_DONT_CARE);
+		printf("%i\t%i\r\n", n, (int) dt);
+	}
+	return 0;
+}
+
+int splitTriangles_uniform_NON_PERSPECTIVE_CORRECT_isoscelesTrianglesNeedsDivisionWidth_40_to_760()
 {
 	puts("Treated\tSize\tM\tTime");
 	for (float w = 40.0f; w <= 760.0f; w += 40.0f){
 		int treatedCount = 0;
 		int dstSize = 0;
-		clock_t dt = splitTriangles_narrowTriangleNeedsDivision(w, &treatedCount, &dstSize);
+		clock_t dt = splitTriangles_uniform_isoscelesTrianglesNeedsDivision(w, &treatedCount, &dstSize, NMGL_DONT_CARE);
+		printf("%i\t%.2f\t%i\t%i\n\r", treatedCount, w, dstSize, (int) dt);
+	}
+	return 0;
+}
+
+int splitTriangles_uniform_NON_PERSPECTIVE_CORRECT_narrowTriangleNeedsDivisionWidth_40_to_760()
+{
+	puts("Treated\tSize\tM\tTime");
+	for (float w = 40.0f; w <= 760.0f; w += 40.0f){
+		int treatedCount = 0;
+		int dstSize = 0;
+		clock_t dt = splitTriangles_uniform_narrowTriangleNeedsDivision(w, &treatedCount, &dstSize, NMGL_DONT_CARE);
+		printf("%i\t%.2f\t%i\t%i\n\r", treatedCount, w, dstSize, (int) dt);
+	}
+	return 0;
+}
+
+int splitTriangles_uniform_PERSPECTIVE_CORRECT_0_to_1024InputsNoDivision_0_to_1024Outputs()
+{
+	puts("N\tTime");
+	for (int i = -1; i <= 10; ++i){
+		int n = (i < 0)? 0: (int) pow(2.0, (double) i);
+		clock_t dt = splitTriangles_uniform_nInputsNoDivision_nOutputs(n, NMGL_NICEST);
+		printf("%i\t%i\r\n", n, (int) dt);
+	}
+	return 0;
+}
+
+int splitTriangles_uniform_PERSPECTIVE_CORRECT_isoscelesTrianglesNeedsDivisionWidth_40_to_760()
+{
+	puts("Treated\tSize\tM\tTime");
+	for (float w = 40.0f; w <= 760.0f; w += 40.0f){
+		int treatedCount = 0;
+		int dstSize = 0;
+		clock_t dt = splitTriangles_uniform_isoscelesTrianglesNeedsDivision(w, &treatedCount, &dstSize, NMGL_NICEST);
+		printf("%i\t%.2f\t%i\t%i\n\r", treatedCount, w, dstSize, (int) dt);
+	}
+	return 0;
+}
+
+int splitTriangles_uniform_PERSPECTIVE_CORRECT_narrowTriangleNeedsDivisionWidth_40_to_760()
+{
+	puts("Treated\tSize\tM\tTime");
+	for (float w = 40.0f; w <= 760.0f; w += 40.0f){
+		int treatedCount = 0;
+		int dstSize = 0;
+		clock_t dt = splitTriangles_uniform_narrowTriangleNeedsDivision(w, &treatedCount, &dstSize, NMGL_NICEST);
 		printf("%i\t%.2f\t%i\t%i\n\r", treatedCount, w, dstSize, (int) dt);
 	}
 	return 0;
