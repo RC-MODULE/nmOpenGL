@@ -42,7 +42,7 @@ AS_FLAGS         = -mnmc4-float -g
 else ifeq ($(ARCH),nmc4_fixed)
 SRC_DIRS         = $(ROOT)/src_proc1/nm $(ROOT)/src_proc1/common $(ROOT)/utilities/src/fixed $(ROOT)/utilities/src/common $(ROOT)/context/src/fixed
 CC_FLAGS 	     = -mnmc4-fixed -O2 -g
-AS_FLAGS         = -mnmc4-fixed -g -Wa,-W-111
+AS_FLAGS         = -mnmc4-fixed -g
 endif
 CXX_FLAGS	 	 = -std=c++11
 C_FLAGS 	 	 = -std=c99
@@ -120,7 +120,7 @@ $(TMP_DIR)/%.o: %.cpp Makefile
 #$(CC) -MM $(CC_FLAGS) $(CXX_FLAGS) $(INC_DIRS) $(<) >  $(@).d
 	
 $(TMP_DIR)/%.o: %.asm Makefile
-	$(AS) -c $(AS_FLAGS) -mmas -Wa,-split_sir $(<) -o$(@) $(ERRECHO)
+	$(AS) -c $(AS_FLAGS) -mmas -Wa,-split_sir -Wa,-W-111 $(<) -o$(@) $(ERRECHO)
 
 $(TMP_DIR)/%.o: %.s Makefile
 	$(AS) -c $(AS_FLAGS) -mgas $(<) -o$(@) $(ERRECHO)
