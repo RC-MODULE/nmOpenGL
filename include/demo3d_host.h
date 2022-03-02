@@ -1,5 +1,4 @@
 #pragma once
-#include "nmtype.h"
 #include "stdio.h"
 
 #define NUM_NM_CORES 2

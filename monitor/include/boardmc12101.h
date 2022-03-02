@@ -21,13 +21,17 @@ private:
     bool accessed[MC12101_COUNT_OF_CORES];
     PL_Board *desc;
 
+
 public:
 #ifdef _WIN32
+    FILE *file_log[MC12101_COUNT_OF_CORES];
     ostream *nm_cout[MC12101_COUNT_OF_CORES];
     ostream *nm_cerr[MC12101_COUNT_OF_CORES];
     istream *nm_cin[MC12101_COUNT_OF_CORES];
     IO_Service *io_services[MC12101_COUNT_OF_CORES];
 #endif
+
+    const char *program_name[MC12101_COUNT_OF_CORES];
 
     BoardMC12101(int index = 0);
     ~BoardMC12101();
@@ -50,9 +54,12 @@ public:
     void loadProgram(const char *filename, int core );
 
     void setIO(int core, ostream *_out, ostream *_err, istream *_in);
+    void setIO(int core, const char *outfilename);
 
     void openIO(const char *filename, int core);
     void closeIO(int core);
+
+    void flushIO(int core);
 };
 
 class BoardMC12101Error: public exception{

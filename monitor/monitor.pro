@@ -11,14 +11,14 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TEMPLATE = app
 
-LIBS = -L$(MC12101)/lib -L$(HAL)/lib -lmc12101load -lio_host
+LIBS = -L$(MC12101)/lib -lmc12101load -lio_host
 #LIBS = -L$(MC12101)/lib -L$(HAL)/lib -lmc12101load
 DEFINES += _ITERATOR_DEBUG_LEVEL=0
 #QMAKE_CXXFLAGS += /MT
 
-INCLUDEPATH  = include $(MC12101)/include ../include $(NMPP)/include $(HAL)/include ../utilities/include ../context/include
-HEADERS = include/*.h 
-SOURCES += src/*.cpp src/*.c 
+INCLUDEPATH  += $$PWD/include $(MC12101)/include $$PWD/../include
+HEADERS += $$PWD/include/*.h $$PWD/../include/framebuffer.h
+SOURCES += $$PWD/src/*.cpp $$PWD/src/*.c
 
 
 # Directories

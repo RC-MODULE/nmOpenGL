@@ -1,6 +1,4 @@
 #pragma once
-#include "nmpp.h"
-#include "nmgl.h"
 
 
 #define MAX_BUFFERS_COUNT 4

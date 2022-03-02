@@ -2,7 +2,6 @@
 #define REFRESH_H
 #include <QLabel>
 #include <QThread>
-#include "demo3d_host.h"
 #include "framebuffer.h"
 #include "mc12101load.h"
 #include "boardmc12101.h"
@@ -17,7 +16,6 @@ typedef int Image[WIDTH_IMAGE * HEIGHT_IMAGE];
 
 class Refresh : public QThread{
 private:
-    NMGL_Framebuffer *fb;
     NMGL_Framebuffer local;
     QLabel* _label;
 
@@ -35,7 +33,9 @@ private:
 
 
 public:
-    Refresh(BoardMC12101 *board, NMGL_Framebuffer* framebuffer, QLabel* label, PL_Access *access);
+
+    NMGL_Framebuffer *fb;
+    Refresh(BoardMC12101 *board, QLabel* label);
     ~Refresh();
 protected:
 

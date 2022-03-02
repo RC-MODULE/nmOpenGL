@@ -26,8 +26,10 @@ void BoardMC12101::close()
     }
 }
 
-BoardMC12101::BoardMC12101(int board){
-    open(board);
+BoardMC12101::BoardMC12101(int boardIndex){
+    open(boardIndex);
+    PL_ResetBoard(desc);
+
 
     for(int i = 0; i < MC12101_COUNT_OF_CORES; i++){
         accessed[i] = false;
@@ -108,30 +110,50 @@ void BoardMC12101::writeMemBlock(void* src, PL_Addr dst, int size32, int core){
 
 void BoardMC12101::loadProgram(const char *filename, int core ){
     if(accessed[core]){
-        PL_LoadProgramFile(access[core], filename);
+        if(int ok = PL_LoadProgramFile(access[core], filename)){
+            throw BoardMC12101Error(this, "LoadProgram failed");
+        }
+        program_name[core] = filename;
     }
 
 }
 
 void BoardMC12101::setIO(int core, ostream *_out, ostream *_err, istream *_in){
-
     nm_cout[core] = _out;
     nm_cerr[core] = _err;
     nm_cin[core] = _in;
-
+}
+void BoardMC12101::setIO(int core, const char *outfilename){
+    file_log[core] = fopen(outfilename, "w+");
+    if(file_log[core] == 0){
+        throw BoardMC12101Error(this, "set IO error");
+    }
 }
 
 void BoardMC12101::openIO(const char *filename, int core){
 #ifdef _WIN32
     PL_GetAccess(desc, core, &access_io[core]);
-    io_services[core] = new IO_Service(filename, access_io[core], NULL, 1, nm_cout[core], nm_cerr[core], nm_cin[core]);
-    //io_services[core] = new IO_Service(filename, io_access[core], NULL);
-    //io_services[core] = new IO_Service(filename, access[core], NULL);
+    if(file_log[core]){
+        io_services[core] = new IO_Service(filename, access_io[core], file_log[core]);
+    } else {
+        io_services[core] = new IO_Service(filename, access_io[core], NULL, 1, nm_cout[core], nm_cerr[core], nm_cin[core]);
+    }
 #endif
+}
+
+void BoardMC12101::flushIO(int core){
+    if(file_log[core] == 0)
+        return;
+    delete io_services[core];
+    //fclose(file_log[core]);
+    //fopen(file_log[core]);
+    io_services[core] = new IO_Service(program_name[core], access_io[core], file_log[core]);
 }
 
 void BoardMC12101::closeIO(int core){
 #ifdef _WIN32
+    if(file_log[core])
+        fclose(file_log[core]);
     delete io_services[core];
     PL_CloseAccess(access_io[core]);
 #endif

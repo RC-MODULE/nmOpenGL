@@ -11,6 +11,7 @@
 #include "framebuffer.h"
 #include "boardmc12101.h"
 #include "printnmlog.h"
+#include "nmgl_host_init.h"
 
 #include "ui_mainwindow.h"
 
@@ -30,15 +31,16 @@ public:
 
     void loadProgram(const char *filename, int core);
 
-    void boardWork();
-
-
 private:
     PrintNmLog *log[2];
     BoardMC12101 *board;
-    NMGL_Framebuffer *framebuffer = 0;
+    NMGL_HostInit *hostInit;
+
     Refresh *refresh;
     QLabel *label;
+
+    NMGL_Framebuffer *framebuffer = 0;
+    PrintNmLogThread *print_thread;
 
 private:
     Ui::MainWindow *ui;

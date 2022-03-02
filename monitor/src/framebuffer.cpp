@@ -1,20 +1,17 @@
 #include "framebuffer.h"
 #include "refresh.h"
 #include <iostream>
-#include <qDebug>
 
 using namespace std;
 
 
 bool Refresh::frameBufferIsEmpty(NMGL_Framebuffer *remoteAddr) {
-    qDebug() << __FUNCTION__;
     readFramebufferNM(local, remoteAddr);
 
 	return (local.head == local.tail);
 }
 
 void Refresh::frameBufferIncTail(NMGL_Framebuffer *remoteAddr) {
-    qDebug() << __FUNCTION__;
 	readFramebufferNM(local, remoteAddr);
 
 	local.tail++;
@@ -23,7 +20,6 @@ void Refresh::frameBufferIncTail(NMGL_Framebuffer *remoteAddr) {
 }
 
 void Refresh::readColorBackNM(void *data, NMGL_Framebuffer *fb, int x, int y, int width, int height){
-    qDebug() << __FUNCTION__;
 	readFramebufferNM(local, fb);
 
 	if (local.width == width) {
@@ -32,7 +28,6 @@ void Refresh::readColorBackNM(void *data, NMGL_Framebuffer *fb, int x, int y, in
 }
 
 void Refresh::readColorFrontNM(void *data, NMGL_Framebuffer *fb, int x, int y, int width, int height){
-    qDebug() << __FUNCTION__;
 	readFramebufferNM(local, fb);
 
     if (local.width == width) {
@@ -41,7 +36,6 @@ void Refresh::readColorFrontNM(void *data, NMGL_Framebuffer *fb, int x, int y, i
 }
 
 void Refresh::readDepthNM(void *data, NMGL_Framebuffer *fb, int x, int y, int width, int height){
-    qDebug() << __FUNCTION__;
 	readFramebufferNM(local, fb);
 
     if (local.width == width) {
@@ -50,7 +44,6 @@ void Refresh::readDepthNM(void *data, NMGL_Framebuffer *fb, int x, int y, int wi
 }
 
 void Refresh::readFramebufferNM(NMGL_Framebuffer &framebuffer, NMGL_Framebuffer *remoteAddr) {
-    qDebug() << __FUNCTION__;
     //cout << "access: " << _access << endl;
     //cout << "local: " << &framebuffer << endl;
     //cout << "remote: " << remoteAddr << endl;
