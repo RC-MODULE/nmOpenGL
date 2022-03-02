@@ -4,7 +4,15 @@
 #include <cstdio>
 #include <iostream>
 #include "mc12101load.h"
+
+#ifdef unix
 #include "io_host_lin.h"
+#endif
+
+#ifdef _WIN32
+#include "io_host_win.h"
+#endif
+
 
 using namespace std;
 

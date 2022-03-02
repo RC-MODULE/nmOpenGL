@@ -27,8 +27,14 @@ OUT_DIR          = .
 TARGET           = $(OUT_DIR)/$(PROJECT).abs
 INC_DIRS         = -I"$(NMPP)/include" -I$(HAL)/include -I$(ROOT)/include -I$(ROOT)/utilities/include -I$(ROOT)/context/include
 SRC_DIRS         = $(ROOT)/nmglvs_mc12101-gcc/src_nmc$(CORE_NUM) ../src_target$(CORE_NUM)
-#LIB_DIRS         = -L"$(NMC_GCC_TOOLPATH)/nmc4-ide/lib" -L"$(NMPP)/lib" -L"$(HAL)/lib" -L"$(ROOT)/lib" -L$(MC12101)/lib
+
+ifeq ($(OS),Windows_NT)
+LIB_DIRS         = -L"$(NMC_GCC_TOOLPATH)/nmc4-ide/lib" -L"$(NMPP)/lib" -L"$(HAL)/lib" -L"$(ROOT)/lib" -L$(MC12101)/lib
+else
 LIB_DIRS         = -L"$(NMPP)/lib" -L"$(HAL)/lib" -L"$(ROOT)/lib" -L$(MC12101)/lib
+endif
+
+
 ifdef DEBUG
 TMP_DIR          = Debug/nmc$(CORE_NUM)
 else

@@ -1,6 +1,5 @@
 #include "boardmc12101.h"
 #include "mc12101load.h"
-#include <iostream>
 #define MC12101_SYNC_TIMEOUT 5000
 
 void BoardMC12101::open(int board)
