@@ -5,71 +5,6 @@
 #include "demo3d_nm0.h"
 #include "nmtype.h"
 
-typedef v4nm32u abgr32;
-
-/*!
-\ingroup service_api
-\defgroup convertABGR32_RGB565 convertABGR32_RGB565 
-\brief Преобразование формата ABGR32-32-32-32 в формат RGB565 
-\param srcArray [in] Входной массив элементов в формате ABGR32
-\param dstArray [in] Выходной массив элементов в формате RGB565
-\param count [in] Количество элементов во входном массиве для обработки (должно быть кратно 4)
-\return Через параметр возвращает преобразованные элементы в формате RGB565
-\details Входной и выходной массивы должны вмещать N элементов, 
-где N - кратно 4 и не меньше count. Если count не кратно 4, принято решение не отбрасывать элементы. 
-Функция обработает ближайшее к count число, большее и кратное 4 
-(например, если count = 5, то функция прочитает из входного массива, 
-обработает и запишет в выходной массив 8 элементов, 12 - для count = 10)
-
-\par
-\xmlonly
-	<testperf>
- 		<param name=" srcArray "> im00 </param>
- 		<param name=" dstArray "> im10 </param>
- 		<param name=" count "> 4 8 12 16 20 24 28 32 36 40 128 256 512 </param>
-	</testperf>
-	<testperf>
- 		<param name=" srcArray "> im00 im10 im20 im30 </param>
- 		<param name=" dstArray "> im01 im11 im21 im31 </param>
- 		<param name=" count "> 4 </param>
-	</testperf>
-\endxmlonly
-*/
-//! \{
-extern "C" void convertABGR32_RGB565(const abgr32  *srcArray, rgb565 *dstArray, int count);
-//! \}
-
-/*!
-\ingroup service_api
-\defgroup convertRGB565_RGB8888 convertRGB565_RGB8888 
-\brief Преобразование формата RGB565 в формат RGB8888 
-\details Количество обрабатываемых элементов должно быть кратно 4, в противном случае
-оно округляется до кратного 4 в нижнюю сторону (например, если count = 5, 
-то обработано будет 4 элемента).
-\param srcArray [in] Входной массив элементов в формате RGB565
-\param dstArray [in] Выходной массив элементов в формате RGB8888
-\param count [in] Количество элементов во входном массиве для обработки (должно быть кратно 4)
-
-\return Через параметр возвращает преобразованные элементы в формате RGB8888
-
-\par
-\xmlonly
-	<testperf>
- 		<param name=" srcArray "> im00 </param>
- 		<param name=" dstArray "> im10 </param>
- 		<param name=" count "> 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 36 40 128 256 512 1024 2048 4096 </param>
-	</testperf>
-	<testperf>
- 		<param name=" srcArray "> im00 im10 im20 im30 </param>
- 		<param name=" dstArray "> im01 im11 im21 im31 </param>
- 		<param name=" count "> 4 </param>
-	</testperf>
-\endxmlonly
-*/
-//! \{
-extern "C" void convertRGB565_RGB8888(const rgb565 *srcArray, rgb8888 *dstArray, int count);
-//! \}
-
 /*!
 \ingroup service_api
 \brief Переупаковка вершин в формат GL_TRIANGLES 
@@ -317,39 +252,6 @@ extern "C" int repackToPrimitives_tf(const v4nm32f *srcVertex,
 */
 //! \{
 extern "C" int texCoordsRepack(const v2nm32f *srcTexCoords,  nm32f *dstTexCoords, int mode, int vertCount);
-//! \}
-
-/**
-\defgroup nmppsCmpGteLteMirrorV_32f_f nmppsCmpGteLteMirrorV_32f
-\ingroup service_api
-\brief Проверка принадлежности элементов одного массива соответствующим  
-\ диапазонам, заданным вторым массивом
-\param srcArray [in] Входной массив элементов
-\param wArray [in] Входной массив, задающий диапазоны
-\param evenFlags [out] Выходной массив флагов принадлежности чётных элементов
-\param oddFlags [out] Выходной массив флагов принадлежности нечётных элементов
-\param size [in] Количество элементов во входном массиве 
-\return Через параметры возвращает флаги принадлежности диапазонам
-\par
-\xmlonly
-	<testperf>
- 		<param name=" srcArray ">	im00 </param>
- 		<param name=" wArray ">		im10 </param>
- 		<param name=" evenFlags ">	im20 </param>
- 		<param name=" oddFlags ">	im30 </param>
- 		<param name=" size "> 64 128 192 256 512 768 1024 1280 1536 1792 2048 </param>
-	</testperf>
-	<testperf>
- 		<param name=" srcArray ">	im00 im10 im20 im30 im40 im50 im60 im70 </param>
- 		<param name=" wArray ">		im01 im11 im21 im31 im41 im51 im61 im71 </param>
- 		<param name=" evenFlags ">	im02 im12 im22 im32 im42 im52 im62 im72 </param>
- 		<param name=" oddFlags ">	im03 im13 im23 im33 im43 im53 im63 im73 </param>
- 		<param name=" size "> 64 </param>
-	</testperf>
-\endxmlonly
-*/
-//! \{
-extern "C" void nmppsCmpGteLteMirrorV_32f(const nm32f *srcArray, const nm32f *wArray, nm1* evenFlags, nm1* oddFlags, int size);
 //! \}
 
 // Declarations for the triangulate function:

@@ -45,6 +45,73 @@ extern "C" {
 	void baseAddrOffs_16u(nm16u* baseAddr, int* offsets, nm16u** ppDst, int size);
 	 //! \}
 
+	typedef v4nm32u abgr32;
+	typedef nm16s   rgb565;
+	typedef v4nm8s  rgb8888;
+	
+	/*!
+	 *  \ingroup service_api
+	 *  \defgroup convertABGR32_RGB565 convertABGR32_RGB565 
+	 *  \brief Преобразование формата ABGR32-32-32-32 в формат RGB565 
+	 *  \param srcArray [in] Входной массив элементов в формате ABGR32
+	 *  \param dstArray [in] Выходной массив элементов в формате RGB565
+	 *  \param count [in] Количество элементов во входном массиве для обработки (должно быть кратно 4)
+	 *  \return Через параметр возвращает преобразованные элементы в формате RGB565
+	 *  \details Входной и выходной массивы должны вмещать N элементов, 
+	 *  где N - кратно 4 и не меньше count. Если count не кратно 4, принято решение не отбрасывать элементы. 
+	 *  Функция обработает ближайшее к count число, большее и кратное 4 
+	 *  (например, если count = 5, то функция прочитает из входного массива, 
+	 *  обработает и запишет в выходной массив 8 элементов, 12 - для count = 10)
+	 *  
+	 *  \par
+	 *  \xmlonly
+	 *  	<testperf>
+	 *   		<param name=" srcArray "> im00 </param>
+	 *   		<param name=" dstArray "> im10 </param>
+	 *   		<param name=" count "> 4 8 12 16 20 24 28 32 36 40 128 256 512 </param>
+	 *  	</testperf>
+	 *  	<testperf>
+	 *   		<param name=" srcArray "> im00 im10 im20 im30 </param>
+	 *   		<param name=" dstArray "> im01 im11 im21 im31 </param>
+	 *   		<param name=" count "> 4 </param>
+	 *  	</testperf>
+	 *  \endxmlonly
+	 */
+	//! \{
+	void convertABGR32_RGB565(const abgr32  *srcArray, rgb565 *dstArray, int count);
+	//! \}
+	
+	/*!
+	 *  \ingroup service_api
+	 *  \defgroup convertRGB565_RGB8888 convertRGB565_RGB8888 
+	 *  \brief Преобразование формата RGB565 в формат RGB8888 
+	 *  \details Количество обрабатываемых элементов должно быть кратно 4, в противном случае
+	 *  оно округляется до кратного 4 в нижнюю сторону (например, если count = 5, 
+	 *  то обработано будет 4 элемента).
+	 *  \param srcArray [in] Входной массив элементов в формате RGB565
+	 *  \param dstArray [in] Выходной массив элементов в формате RGB8888
+	 *  \param count [in] Количество элементов во входном массиве для обработки (должно быть кратно 4)
+	 *  
+	 *  \return Через параметр возвращает преобразованные элементы в формате RGB8888
+	 *  
+	 *  \par
+	 *  \xmlonly
+	 *  	<testperf>
+	 *   		<param name=" srcArray "> im00 </param>
+	 *   		<param name=" dstArray "> im10 </param>
+	 *   		<param name=" count "> 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 36 40 128 256 512 1024 2048 4096 </param>
+	 *  	</testperf>
+	 *  	<testperf>
+	 *   		<param name=" srcArray "> im00 im10 im20 im30 </param>
+	 *   		<param name=" dstArray "> im01 im11 im21 im31 </param>
+	 *   		<param name=" count "> 4 </param>
+	 *  	</testperf>
+	 *  \endxmlonly
+	 */
+	//! \{
+	void convertRGB565_RGB8888(const rgb565 *srcArray, rgb8888 *dstArray, int count);
+	//! \}
+
 	/*!
 	 *  \ingroup service_api
 	 *  \brief Функция копирования нескольких кусков.

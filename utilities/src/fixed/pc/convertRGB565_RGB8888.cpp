@@ -1,8 +1,7 @@
-#include <cerrno>
-#include <iostream>
+#include <cstdio>
 
 #include "nmplv/vSupport.h"
-#include "service.h"
+#include "utility_fixed.h"
 
 void convertRGB565_RGB8888(const rgb565 *srcArray, rgb8888 *dstArray, int count)
 {

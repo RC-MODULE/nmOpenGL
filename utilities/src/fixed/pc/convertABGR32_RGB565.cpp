@@ -1,8 +1,7 @@
-#include <cerrno>
-#include <iostream>
+#include <cstdio>
 
 #include "nmplv/vSupport.h"
-#include "service.h"
+#include "utility_fixed.h"
 
 void convertABGR32_RGB565(const abgr32 *srcArray, rgb565 *dstArray, int count)
 {
