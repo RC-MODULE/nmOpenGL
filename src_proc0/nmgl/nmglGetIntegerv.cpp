@@ -18,7 +18,17 @@ void nmglGetIntegerv(NMGLenum pname, NMGLint * params) {
 		case NMGL_PACK_ALIGNMENT:
 			params[0] = (NMGLint)cntxt->packAlignment;
 			break;
+		case NMGL_PERSPECTIVE_CORRECTION_HINT: 
+			params[0] = (NMGLint)cntxt->perspectiveCorrectionHint;
+			break;
+		case NMGL_LINE_SMOOTH_HINT:
+			params[0] = (NMGLint)cntxt->lineSmoothHint;
+			break;
+		case NMGL_POINT_SMOOTH_HINT:
+			params[0] = (NMGLint)cntxt->pointSmoothHint;
+			break;
 		default:
 			cntxt->error = NMGL_INVALID_ENUM;
 	}
 }
+
