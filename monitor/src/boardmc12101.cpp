@@ -164,6 +164,6 @@ BoardMC12101Error::BoardMC12101Error(BoardMC12101 *_board, const char *_message)
     message = _message;
 }
 
-const char *BoardMC12101Error::what()const {
-    return message;
-}
+//const char *BoardMC12101Error::what()const {
+//    return message;
+//}

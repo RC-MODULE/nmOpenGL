@@ -2,7 +2,11 @@ ROOT = ../..
 
 
 include $(ROOT)/global.mk
+
+ifeq ($(OS),Windows_NT)
 include 		 nmc4vars_win.mk
+endif
+
 DEBUG ?= y
 
 ifeq ($(CORE),float)
@@ -23,7 +27,8 @@ OUT_DIR          = .
 TARGET           = $(OUT_DIR)/$(PROJECT).abs
 INC_DIRS         = -I"$(NMPP)/include" -I$(HAL)/include -I$(ROOT)/include -I$(ROOT)/utilities/include -I$(ROOT)/context/include
 SRC_DIRS         = $(ROOT)/nmglvs_mc12101-gcc/src_nmc$(CORE_NUM) ../src_target$(CORE_NUM)
-LIB_DIRS         = -L"$(NMC_GCC_TOOLPATH)/nmc4-ide/lib" -L"$(NMPP)/lib" -L"$(HAL)/lib" -L"$(ROOT)/lib"
+#LIB_DIRS         = -L"$(NMC_GCC_TOOLPATH)/nmc4-ide/lib" -L"$(NMPP)/lib" -L"$(HAL)/lib" -L"$(ROOT)/lib" -L$(MC12101)/lib
+LIB_DIRS         = -L"$(NMPP)/lib" -L"$(HAL)/lib" -L"$(ROOT)/lib" -L$(MC12101)/lib
 ifdef DEBUG
 TMP_DIR          = Debug/nmc$(CORE_NUM)
 else
@@ -35,9 +40,9 @@ CC_FLAGS	 	 = -O2 -fno-builtin-printf -std=c++11 -mnmc4-$(CORE)
 AS               = nmc-gcc 	
 AS_FLAGS    	 = -mnmc4-$(CORE)
 ifeq ($(CORE),float)
-LIBS             = -lnmopengl_nmc4f -lnmpp-nmc4f -lhal-mc12101 
+LIBS             = -lnmopengl_nmc4f -lnmpp-nmc4f -lhal-mc12101
 else ifeq($(CORE),fixed)
-LIBS             = -lnmopengl_nmc4 -lnmpp-nmc4 -lhal-mc12101 
+LIBS             = -lnmopengl_nmc4 -lnmpp-nmc4 -lhal-mc12101
 endif
 MAP		         = $(PROJECT).map
 CFG				 = ldscript-nmc$(CORE_NUM).ld
@@ -92,20 +97,22 @@ dump:
 build: $(TARGET)
 	
 $(TMP_DIR):
-	-mkdir "$(@)"
+	-mkdir -p "$(@)"
 
 $(TARGET): $(TMP_DIR) $(OBJECTS) nmc4vars_win.mk Makefile lib
 	$(CC) $(CC_FLAGS) $(LINKER_FLAGS) $(OBJECTS) $(LIBS)
 	@echo nm$(CORE_NUM) done
 
 nmc4vars_win.mk:
+ifeq ($(OS),Windows_NT)
 	copy "$(NMC_GCC_TOOLPATH)\nmc4-ide\include\nmc4vars_win.mk" nmc4vars_win.mk
+endif	
 
 lib:
 	$(MAKE) -C $(ROOT)/make ARCH=nmc4_$(CORE) -j4 lib
 
 $(OUT_DIR):
-	-mkdir "$(@)"
+	-mkdir -p "$(@)"
 	
 $(TMP_DIR)/%.o: %.asm Makefile
 	$(AS) -MMD -c -mmas $(AS_FLAGS) $(<) -o$(@) $(INC_DIRS)

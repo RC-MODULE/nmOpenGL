@@ -1,12 +1,10 @@
 #ifndef BOARDMC12101_H
 #define BOARDMC12101_H
 #include <exception>
+#include <cstdio>
+#include <iostream>
 #include "mc12101load.h"
-
-#ifdef _WIN32
-#include "io_host_win.h"
-#endif
-
+#include "io_host_lin.h"
 
 using namespace std;
 
@@ -23,13 +21,11 @@ private:
 
 
 public:
-#ifdef _WIN32
     FILE *file_log[MC12101_COUNT_OF_CORES];
     ostream *nm_cout[MC12101_COUNT_OF_CORES];
     ostream *nm_cerr[MC12101_COUNT_OF_CORES];
     istream *nm_cin[MC12101_COUNT_OF_CORES];
     IO_Service *io_services[MC12101_COUNT_OF_CORES];
-#endif
 
     const char *program_name[MC12101_COUNT_OF_CORES];
 
@@ -71,7 +67,9 @@ public:
 
     // exception interface
 public:
-    const char *what() const;
+    virtual const char *what() const noexcept{
+        return message;
+    };
 };
 
 #endif // BOARDMC12101_H

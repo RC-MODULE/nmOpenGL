@@ -3,7 +3,8 @@
 ######################################################################
 
 QT       += core gui
-CONFIG   += console static_runtime c++11 release
+win32:CONFIG   += console static_runtime c++14 release
+linux-g++:CONFIG   += console static_runtime c++14 debug
 #CONFIG   += console static_runtime c++11
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
@@ -14,6 +15,7 @@ TEMPLATE = app
 LIBS = -L$(MC12101)/lib -lmc12101load -lio_host
 #LIBS = -L$(MC12101)/lib -L$(HAL)/lib -lmc12101load
 DEFINES += _ITERATOR_DEBUG_LEVEL=0
+linux-g++:QMAKE_CXXFLAGS += -fpermissive
 #QMAKE_CXXFLAGS += /MT
 
 INCLUDEPATH  += $$PWD/include $(MC12101)/include $$PWD/../include

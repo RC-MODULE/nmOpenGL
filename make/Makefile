@@ -101,10 +101,10 @@ $(TARGET): $(TMP_DIR) $(OUT_DIR) $(OBJECTS)
 	
 
 $(TMP_DIR):
-	-mkdir "$(@)"
+	mkdir -p "$(@)"
 	
 $(OUT_DIR): 
-	-mkdir "$(@)"
+	mkdir -p "$(@)"
 
 #depend: .depend
 #
