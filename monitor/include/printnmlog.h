@@ -45,6 +45,7 @@ public:
     QFile *file[2];
 
     BoardMC12101 *board;
+    std::atomic<bool> is_run;
 
     PrintNmLogThread(BoardMC12101 *board, PrintNmLog *logs[]);
     ~PrintNmLogThread();

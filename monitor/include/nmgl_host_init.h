@@ -9,15 +9,18 @@
 class NMGL_HostInit : public QThread{
 public:
     NMGL_HostInit(BoardMC12101 *_board, Refresh *host_program, PrintNmLog *_logs[]);
+    ~NMGL_HostInit();
 
-    BoardMC12101 *board;
+    BoardMC12101 *board = 0;
 
     Refresh *program;
 
     PrintNmLog *logs[2];
     PrintNmLogThread *print_thread;
-private:
+
+protected:
     void run();
+
 };
 
 #endif //NMGL_INIT_H

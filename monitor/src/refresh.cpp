@@ -5,6 +5,7 @@
 #include <QDebug>
 #include "mc12101load.h"
 #include "demo3d_host.h"
+#include <thread>
 
 using namespace std;
 
@@ -13,6 +14,7 @@ Refresh::Refresh(BoardMC12101 *_board, QLabel* label)
 {
     board = _board;
     _label = label;
+    is_run = true;
 }
 
 Refresh::~Refresh()
@@ -30,6 +32,9 @@ void Refresh::run(){
     int amount;
     FILE* fmodel;
 
+    //qDebug() << "board: " << board;
+    //qDebug() << "access: " << board->getAccess(0) << ", " << board->getAccess(1);
+    //qDebug() << "program names: " << board->program_name[0] << ", " << board->program_name[1];
     try{
 
         qDebug() << "Load first model:";
@@ -86,20 +91,21 @@ void Refresh::run(){
 
 
         qDebug() << "Second model loaded";
-       board->sync(4);
+        board->sync(4);
 
-
-        delete[] vertices;
-        delete[] normal;
     }catch(BoardMC12101Error e){
         qCritical() << e.what() << ": error: " << e.details();
+    } catch(...){
+        qCritical() << "Undefined error";
     }
+    delete[] vertices;
+    delete[] normal;
 
-    while(true){
+    while(is_run){
         if(fb == NULL) continue;
 
         while(frameBufferIsEmpty(fb)){
-            msleep(2);
+            std::this_thread::sleep_for(std::chrono::milliseconds(2));
         }
         readColorFrontNM(imageTemp, fb, 0, 0, WIDTH_IMAGE, HEIGHT_IMAGE);
         frameBufferIncTail(fb);

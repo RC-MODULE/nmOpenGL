@@ -9,6 +9,12 @@ NMGL_HostInit::NMGL_HostInit(BoardMC12101 *_board, Refresh *host_program, PrintN
     logs[1] = _logs[1];
 }
 
+NMGL_HostInit::~NMGL_HostInit(){
+    print_thread->is_run = false;
+    print_thread->wait();
+    delete print_thread;
+}
+
 void NMGL_HostInit::run(){
     try {
         const char *program_name[2];
@@ -43,7 +49,7 @@ void NMGL_HostInit::run(){
         exit(2);
     }
 
-    program->start();
+    program->run();
 }
 
 

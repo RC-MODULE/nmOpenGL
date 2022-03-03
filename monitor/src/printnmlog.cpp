@@ -51,6 +51,8 @@ PrintNmLogThread::PrintNmLogThread(BoardMC12101 *_board, PrintNmLog *_logs[]){
         qCritical() << "Ups!";
     }
 
+    is_run = true;
+
 }
 
 PrintNmLogThread::~PrintNmLogThread(){
@@ -65,7 +67,7 @@ PrintNmLogThread::~PrintNmLogThread(){
 }
 
 void PrintNmLogThread::run(){
-    while(true){
+    while(is_run){
         msleep(1000);
         //board->flushIO(0);
         //board->flushIO(1);

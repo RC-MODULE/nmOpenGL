@@ -140,11 +140,11 @@ void BoardMC12101::openIO(const char *filename, int core){
 void BoardMC12101::flushIO(int core){
     if(file_log[core] == 0)
         return;
-    //io_services[core]->dispatch();
-    delete io_services[core];
+    io_services[core]->dispatch();
+    //delete io_services[core];
     //fclose(file_log[core]);
     //fopen(file_log[core]);
-    io_services[core] = new IO_Service(program_name[core], access_io[core], file_log[core]);
+    //io_services[core] = new IO_Service(program_name[core], access_io[core], file_log[core]);
 }
 
 void BoardMC12101::closeIO(int core){

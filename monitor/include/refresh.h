@@ -14,12 +14,12 @@
 typedef int Image[WIDTH_IMAGE * HEIGHT_IMAGE];
 
 
-class Refresh : public QThread{
+class Refresh{
 private:
     NMGL_Framebuffer local;
     QLabel* _label;
 
-    BoardMC12101 *board;
+    BoardMC12101 *board = 0;
 
     int imageTemp[WIDTH_IMAGE * HEIGHT_IMAGE];
     int imageDraw[WIDTH_IMAGE * HEIGHT_IMAGE];
@@ -31,13 +31,12 @@ private:
     void readColorFrontNM(void *data, NMGL_Framebuffer *fb, int x, int y, int width, int height);
     void readDepthNM(void *data, NMGL_Framebuffer *fb, int x, int y, int width, int height);
 
-
 public:
+    std::atomic<bool> is_run;
 
     NMGL_Framebuffer *fb;
     Refresh(BoardMC12101 *board, QLabel* label);
     ~Refresh();
-protected:
 
     void run();
 

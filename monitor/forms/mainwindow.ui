@@ -24,7 +24,10 @@
      </rect>
     </property>
     <property name="text">
-     <string>TextLabel</string>
+     <string>nmOpenGL image</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
     </property>
    </widget>
    <widget class="QLabel" name="io_nmc0">
@@ -66,7 +69,7 @@
      <x>0</x>
      <y>0</y>
      <width>1010</width>
-     <height>20</height>
+     <height>22</height>
     </rect>
    </property>
   </widget>
