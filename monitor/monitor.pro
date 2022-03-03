@@ -14,7 +14,7 @@ TEMPLATE = app
 
 LIBS = -L$(MC12101)/lib -lmc12101load -lio_host
 #LIBS = -L$(MC12101)/lib -L$(HAL)/lib -lmc12101load
-DEFINES += _ITERATOR_DEBUG_LEVEL=0
+win32:DEFINES += _ITERATOR_DEBUG_LEVEL=0
 linux-g++:QMAKE_CXXFLAGS += -fpermissive
 #QMAKE_CXXFLAGS += /MT
 

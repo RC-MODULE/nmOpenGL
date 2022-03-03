@@ -18,10 +18,6 @@ class PrintNmLog : public QPlainTextEdit
 {
     Q_OBJECT
 
-public:
-
-
-
 /* snip */
 public:
     PrintNmLog(QWidget *parent, QLabel *label);

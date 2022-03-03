@@ -7,11 +7,10 @@
 #include <QMainWindow>
 #include <QLabel>
 
-#include "refresh.h"
+#include "hostprogram.h"
 #include "framebuffer.h"
 #include "boardmc12101.h"
 #include "printnmlog.h"
-#include "nmgl_host_init.h"
 
 #include "ui_mainwindow.h"
 
@@ -34,10 +33,8 @@ public:
 private:
     PrintNmLog *log[2];
     BoardMC12101 *board;
-    NMGL_HostInit *hostInit;
 
-    Refresh *refresh;
-    QLabel *label;
+    HostProgram *program;
 
     NMGL_Framebuffer *framebuffer = 0;
     PrintNmLogThread *print_thread;

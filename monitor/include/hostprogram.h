@@ -14,17 +14,19 @@
 typedef int Image[WIDTH_IMAGE * HEIGHT_IMAGE];
 
 
-class Refresh{
+class HostProgram: public QThread{
 private:
+
+
+    void readFramebufferNM(NMGL_Framebuffer &framebuffer, NMGL_Framebuffer *remoteAddr);
     NMGL_Framebuffer local;
-    QLabel* _label;
-
-    BoardMC12101 *board = 0;
-
+protected:
     int imageTemp[WIDTH_IMAGE * HEIGHT_IMAGE];
     int imageDraw[WIDTH_IMAGE * HEIGHT_IMAGE];
 
-    void readFramebufferNM(NMGL_Framebuffer &framebuffer, NMGL_Framebuffer *remoteAddr);
+    BoardMC12101 *m_board = 0;
+    QLabel* m_label;
+
     bool frameBufferIsEmpty(NMGL_Framebuffer *remoteAddr);
     void frameBufferIncTail(NMGL_Framebuffer *remoteAddr);
     void readColorBackNM(void *data, NMGL_Framebuffer *fb, int x, int y, int width, int height);
@@ -35,11 +37,21 @@ public:
     std::atomic<bool> is_run;
 
     NMGL_Framebuffer *fb;
-    Refresh(BoardMC12101 *board, QLabel* label);
-    ~Refresh();
+    HostProgram(BoardMC12101 *board, QLabel* imageArea, QLabel *logNm0Area = 0, QLabel *logNm1Area = 0){
+        m_board = board;
+        m_label = imageArea;
+        is_run = true;
+    }
 
-    void run();
+protected:
+    void init();
 
+    virtual void host_main() = 0;
+private:
+    void run(){
+        init();
+        host_main();
+    }
 };
 
 #endif // REFRESH_H

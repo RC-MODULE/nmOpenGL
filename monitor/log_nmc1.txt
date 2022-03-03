@@ -1,0 +1,1 @@
+got palette_pointer:0x24000180got palette_width pointer:0x24001580

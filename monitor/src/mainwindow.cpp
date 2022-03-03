@@ -8,7 +8,7 @@
 #include "mc12101load.h"
 #include <iostream>
 #include "printnmlog.h"
-#include "nmgl_host_init.h"
+#include "demo3d_program.h"
 
 
 
@@ -20,13 +20,11 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    label = ui->imagedraw;
 
     log[0] = new PrintNmLog(this, ui->io_nmc0);
     log[0]->show();
     log[1] = new PrintNmLog(this, ui->io_nmc1);
     log[1]->show();
-
 
 
     if (BoardMC12101::getBoardCount() < 1){
@@ -41,20 +39,18 @@ MainWindow::MainWindow(QWidget *parent)
         exit(2);
     }
 
-    refresh = new Refresh(board, label);
-    hostInit = new NMGL_HostInit(board, refresh, log);
-    hostInit->start();
-    label->show();
+    program = new Demo3dProgram(board, ui->imagedraw);
+    program->start();
+    ui->imagedraw->show();
 }
 
 MainWindow::~MainWindow()
 {
-    refresh->is_run = false;
-    hostInit->wait();
-    delete hostInit;
+    program->is_run = false;
+    program->quit();
     delete log[0];
     delete log[1];
-    delete refresh;
+    delete program;
     delete board;
     delete ui;
 }
