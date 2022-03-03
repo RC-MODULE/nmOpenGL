@@ -69,14 +69,19 @@ public:
 class BoardMC12101Error: public exception{
 public:
     const char *message;
+    int error;
     BoardMC12101 *board;
+    const char* errors[6] = {"OK", "ERROR", "TIMEOUT", "FILE", "BADADDRESS", "NOT_IMPLEMENTED"};
 
-    BoardMC12101Error(BoardMC12101 *_board, const char *_message);
+    BoardMC12101Error(BoardMC12101 *_board, const char *_message, int error = 1);
 
     // exception interface
 public:
     virtual const char *what() const noexcept{
         return message;
+    };
+    const char *details() const noexcept{
+        return errors[error];
     };
 };
 

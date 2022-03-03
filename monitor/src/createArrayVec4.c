@@ -83,7 +83,6 @@ void createArrayVec4(
 			normalVec4[9 * pol_num + i] = 0;
 		}
 		pol_num++;
-	}
-	fclose(fmodel);
+    }
 	return;
 }

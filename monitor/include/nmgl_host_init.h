@@ -8,11 +8,11 @@
 
 class NMGL_HostInit : public QThread{
 public:
-    NMGL_HostInit(BoardMC12101 *_board, Refresh *_refresh, PrintNmLog *_logs[]);
+    NMGL_HostInit(BoardMC12101 *_board, Refresh *host_program, PrintNmLog *_logs[]);
 
     BoardMC12101 *board;
 
-    Refresh *refresh;
+    Refresh *program;
 
     PrintNmLog *logs[2];
     PrintNmLogThread *print_thread;

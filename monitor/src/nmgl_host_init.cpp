@@ -2,9 +2,9 @@
 #include "printnmlog.h"
 #include <QDebug>
 
-NMGL_HostInit::NMGL_HostInit(BoardMC12101 *_board, Refresh *_refresh, PrintNmLog *_logs[]){
+NMGL_HostInit::NMGL_HostInit(BoardMC12101 *_board, Refresh *host_program, PrintNmLog *_logs[]){
     board = _board;
-    refresh = _refresh;
+    program = host_program;
     logs[0] = _logs[0];
     logs[1] = _logs[1];
 }
@@ -30,20 +30,20 @@ void NMGL_HostInit::run(){
         }
         qDebug() << "Handshake passed";
 
-        refresh->fb = (NMGL_Framebuffer *)board->sync(0, 0);
-        qDebug() << "Framebuffer addr: 0x" << hex << refresh->fb << endl;
+        program->fb = (NMGL_Framebuffer *)board->sync(0, 0);
+        qDebug() << "Framebuffer addr: " << hex << program->fb;
     }
 
     catch (BoardMC12101Error e){
-        qCritical() << e.what();
-        exit(0);
+        qCritical() << e.what() << ": error: " << e.details();
+        exit(1);
     }
     catch (...){
         qCritical() << "WTF!!";
-        exit(0);
+        exit(2);
     }
 
-    refresh->start();
+    program->start();
 }
 
 

@@ -30,48 +30,70 @@ void Refresh::run(){
     int amount;
     FILE* fmodel;
 
-    fmodel = fopen(filePath, "r");
-    if(fmodel == 0){
-        qCritical() << "Can't open file";
-        exit(2);
+    try{
+
+        qDebug() << "Load first model:";
+        fmodel = fopen(filePath, "r");
+        if(fmodel == NULL){
+            qCritical() << "Can't open file";
+            exit(2);
+        }
+        amount = get_amm_poligone(fmodel);
+        qDebug() << "amount of polygons: " << amount;
+        if (fseek(fmodel, 0, SEEK_SET)){
+            qCritical() << "errno: " << errno;
+            exit(2);
+        }
+        createArrayVec4(fmodel, vertices, normal, 0.5);
+        fclose(fmodel);
+
+        board->sync(amount, 0);
+        verticesNM = board->sync(0, 0);
+        qDebug() << "vertices addr on NM: " << verticesNM;
+        board->writeMemBlock((PL_Word *)vertices, verticesNM, amount * 12);
+        normalNM = board->sync(0, 0);
+        qDebug() << "normal addr on NM: " << verticesNM;
+        board->writeMemBlock((PL_Word *)normal, normalNM, amount * 9);
+
+        qDebug() << "First model loaded";
+
+
+
+
+        qDebug() << "Load second model:";
+        filePath = "../models/2_sphere.stl";
+        fmodel = fopen(filePath, "r");
+        if(fmodel == 0){
+            qCritical() << "Can't open file";
+            exit(2);
+        }
+        amount = get_amm_poligone(fmodel);
+        qDebug() << "amount of polygons: " << amount;
+        if (fseek(fmodel, 0, SEEK_SET)){
+            qCritical() << "errno: " << errno;
+            exit(2);
+        }
+        createArrayVec4(fmodel, vertices, normal, 0.5);
+        fclose(fmodel);
+
+        board->sync(amount, 0);
+        verticesNM = board->sync(0, 0);
+        qDebug() << "vertices addr on NM: " << verticesNM;
+        board->writeMemBlock((PL_Word *)vertices, verticesNM, amount * 12);
+        normalNM = board->sync(0, 0);
+        qDebug() << "normal addr on NM: " << verticesNM;
+        board->writeMemBlock((PL_Word *)normal, normalNM, amount * 9);
+
+
+        qDebug() << "Second model loaded";
+       board->sync(4);
+
+
+        delete[] vertices;
+        delete[] normal;
+    }catch(BoardMC12101Error e){
+        qCritical() << e.what() << ": error: " << e.details();
     }
-    amount = get_amm_poligone(fmodel);
-    fclose(fmodel);
-    fmodel = fopen(filePath, "r");
-    createArrayVec4(fmodel, vertices, normal, 0.5);
-    fclose(fmodel);
-    board->sync(amount, 0);
-    verticesNM = board->sync(0, 0);
-    board->writeMemBlock((PL_Word *)vertices, verticesNM, amount * 12);
-    normalNM = board->sync(0, 0);
-    board->writeMemBlock((PL_Word *)normal, normalNM, amount * 9);
-
-    qDebug() << "First model loaded";
-
-    filePath = "../models/2_sphere.stl";
-    fmodel = fopen(filePath, "r");
-    if(fmodel == 0){
-        qCritical() << "Can't open file";
-        exit(2);
-    }
-    amount = get_amm_poligone(fmodel);
-    fclose(fmodel);
-    fmodel = fopen(filePath, "r");
-    createArrayVec4(fmodel, vertices, normal, 0.5);
-    fclose(fmodel);
-    board->sync(amount, 0);
-    verticesNM = board->sync(0, 0);
-    board->writeMemBlock((PL_Word *)vertices, verticesNM, amount * 12);
-    normalNM = board->sync(0, 0);
-    board->writeMemBlock((PL_Word *)normal, normalNM, amount * 9);
-
-
-    qDebug() << "Second model loaded";
-    board->sync(4);
-
-
-    delete[] vertices;
-    delete[] normal;
 
     while(true){
         if(fb == NULL) continue;

@@ -16,6 +16,5 @@ int get_amm_poligone(
 		}
 	} 
 
-	fclose(fp);
 	return(i);	
 }

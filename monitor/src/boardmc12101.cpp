@@ -5,7 +5,6 @@
 void BoardMC12101::open(int board)
 {
     if(_boardIndex != -1){
-        // TODO: close prev board
         for(int i = 0; i < MC12101_COUNT_OF_CORES; i++){
             disconnectFromCore(i);
             closeIO(i);
@@ -64,8 +63,8 @@ void BoardMC12101::connectToCore(int core){
         throw BoardMC12101Error(this, "Out of range cores");
     }
     if(!accessed[core]){
-        if(PL_GetAccess(desc, core, access + core)){
-            throw BoardMC12101Error(this, "Can't connect");
+        if(int error = PL_GetAccess(desc, core, access + core)){
+            throw BoardMC12101Error(this, "Can't connect", error);
         }
         accessed[core] = true;
     }
@@ -76,8 +75,8 @@ void BoardMC12101::disconnectFromCore(int core){
         throw BoardMC12101Error(this, "Out of range cores");
     }
     if(accessed[core]){
-        if(PL_CloseAccess(access[core])){
-            throw BoardMC12101Error(this, "Can't disconnect");
+        if(int error = PL_CloseAccess(access[core])){
+            throw BoardMC12101Error(this, "Can't disconnect", error);
         }
         accessed[core] = false;
     }
@@ -85,8 +84,8 @@ void BoardMC12101::disconnectFromCore(int core){
 
 int BoardMC12101::sync(int value, int core){
     int ret = 0;
-    if(PL_Sync(access[core], value, &ret)){
-        throw BoardMC12101Error(this, "sync fail");
+    if(int error = PL_Sync(access[core], value, &ret)){
+        throw BoardMC12101Error(this, "sync fail", error);
     }
     return ret;
 }
@@ -96,21 +95,21 @@ PL_Access *BoardMC12101::getAccess(int core){
 }
 
 void BoardMC12101::readMemBlock(PL_Addr src, void* dst, int size32, int core){
-    if(PL_ReadMemBlock(access[core], static_cast<PL_Word *>(dst), src, size32)){
-        // TODO
+    if(int error = PL_ReadMemBlock(access[core], static_cast<PL_Word *>(dst), src, size32)){
+        throw BoardMC12101Error(this, "LoadProgram failed", error);
     }
 }
 
 void BoardMC12101::writeMemBlock(void* src, PL_Addr dst, int size32, int core){
-    if(PL_WriteMemBlock(access[core], static_cast<PL_Word *>(src), dst, size32)){
-        // TODO
+    if(int error = PL_WriteMemBlock(access[core], static_cast<PL_Word *>(src), dst, size32)){
+        throw BoardMC12101Error(this, "LoadProgram failed", error);
     }
 }
 
 void BoardMC12101::loadProgram(const char *filename, int core ){
     if(accessed[core]){
-        if(int ok = PL_LoadProgramFile(access[core], filename)){
-            throw BoardMC12101Error(this, "LoadProgram failed");
+        if(int error = PL_LoadProgramFile(access[core], filename)){
+            throw BoardMC12101Error(this, "LoadProgram failed", error);
         }
         program_name[core] = filename;
     }
@@ -130,19 +129,18 @@ void BoardMC12101::setIO(int core, const char *outfilename){
 }
 
 void BoardMC12101::openIO(const char *filename, int core){
-#ifdef _WIN32
     PL_GetAccess(desc, core, &access_io[core]);
     if(file_log[core]){
         io_services[core] = new IO_Service(filename, access_io[core], file_log[core]);
     } else {
         io_services[core] = new IO_Service(filename, access_io[core], NULL, 1, nm_cout[core], nm_cerr[core], nm_cin[core]);
     }
-#endif
 }
 
 void BoardMC12101::flushIO(int core){
     if(file_log[core] == 0)
         return;
+    //io_services[core]->dispatch();
     delete io_services[core];
     //fclose(file_log[core]);
     //fopen(file_log[core]);
@@ -150,17 +148,16 @@ void BoardMC12101::flushIO(int core){
 }
 
 void BoardMC12101::closeIO(int core){
-#ifdef _WIN32
     if(file_log[core])
         fclose(file_log[core]);
     delete io_services[core];
     PL_CloseAccess(access_io[core]);
-#endif
 }
 
-BoardMC12101Error::BoardMC12101Error(BoardMC12101 *_board, const char *_message){
+BoardMC12101Error::BoardMC12101Error(BoardMC12101 *_board, const char *_message, int _error){
     board = _board;
     message = _message;
+    error = _error;
 }
 
 //const char *BoardMC12101Error::what()const {

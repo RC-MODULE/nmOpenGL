@@ -28,19 +28,21 @@ MainWindow::MainWindow(QWidget *parent)
     log[1]->show();
 
 
+    refresh = new Refresh(board, label);
+
     if (BoardMC12101::getBoardCount() < 1){
         qCritical() << "Error: Can't find board";
     }
-    board = new BoardMC12101(0);
-    board->connectToCore(0);
-    board->connectToCore(1);
+    try{
+        board = new BoardMC12101(0);
+        board->connectToCore(0);
+        board->connectToCore(1);
+        hostInit = new NMGL_HostInit(board, refresh, log);
+    } catch(BoardMC12101Error e){
+        qCritical() << e.what() << ": error: " << e.details();
+    }
 
-
-    refresh = new Refresh(board, label);
-
-    hostInit = new NMGL_HostInit(board, refresh, log);
     hostInit->start();
-
     label->show();
 }
 
