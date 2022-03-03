@@ -25,6 +25,9 @@ x86/
 debug/
 release/
 monitor/Makefile*
+ui_*
+log_nmc0.txt
+log_nmc1.txt
 
 # Compiler files #
 ##################

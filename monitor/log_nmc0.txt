@@ -1,9 +1,0 @@
-nm0 start
-handshake
-Handshake OK
-Interprocessor sync OK
-allocated palette_pointer:0x24000180
-Alloc image OK!
-Share image with nmc1 OK!
-nmOpenGL inited!
-Send addr of framebuffer
