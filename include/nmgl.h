@@ -949,7 +949,31 @@ void nmglGetTexEnviv (NMGLenum target, NMGLenum pname, NMGLint *params);
  */
 void nmglGetTexParameteriv (NMGLenum target, NMGLenum pname, NMGLint *params);
 const NMGLubyte * nmglGetString (NMGLenum name);
+
+ /*!
+ \brief Позволяет задать режим интерполяции, режим сглаживания точек и режим сглаживания линий.
+ 
+ \param target [in] Определяет режим, подлежащий настройке. Возможные варианты: GL_PERSPECTIVE_CORRECTION_HINT (режим интерполяции), GL_LINE_SMOOTH_HINT (режим сглаживания линий), и GL_POINT_SMOOTH_HINT (режим сглаживания точек).
+ \param mode [in] Определяет значение режима. Должен иметь одно из следующих значений: GL_NICEST, GL_FASTEST, GL_DONT_CARE.
+
+
+ \details Функция nmglHint имеет два аргумента. Первый, *target*, определяет, какой режим будет настраиваться: GL_PERSPECTIVE_CORRECTION_HINT, GL_LINE_SMOOTH_HINT, GL_POINT_SMOOTH_HINT. Второй, *mode*, определяет, само значение режима, определяющее те или иные вычисления:
+
+GL_NICEST
+
+> При target = GL_PERSPECTIVE_CORRECTION_HINT - включает перспективно-корректную интерполяцию. Перспективно-корректная интерполяция выполняется, например, при триангуляции (разбиении треугольников) или текстурировании.
+
+GL_FASTEST
+
+> При target = GL_PERSPECTIVE_CORRECTION_HINT - выключает перспективно-корректную интерполяцию. 
+
+GL_DONT_CARE
+
+> При target = GL_PERSPECTIVE_CORRECTION_HINT - выключает перспективно-корректную интерполяцию. 
+
+ */
 void nmglHint (NMGLenum target, NMGLenum mode);
+
 NMGLboolean nmglIsEnabled (NMGLenum cap);
 
 /*!
