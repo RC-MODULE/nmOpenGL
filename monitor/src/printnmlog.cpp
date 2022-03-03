@@ -7,11 +7,9 @@ PrintNmLog::PrintNmLog(QWidget *parent, QLabel *label) :
 {
     setReadOnly(true);
     setGeometry(label->geometry());
-
 }
 
 PrintNmLog::~PrintNmLog(){
-    terminate();
 }
 
 void PrintNmLog::appendMessage(const QString& text)

@@ -2,6 +2,14 @@
 #include "printnmlog.h"
 #include <QDebug>
 
+HostProgram::~HostProgram(){
+    /*if(print_thread){
+        print_thread->is_run = false;
+        print_thread->wait();
+    }
+    delete print_thread;*/
+}
+
 void HostProgram::init(){
     try {
         const char *program_name[2];
@@ -15,6 +23,7 @@ void HostProgram::init(){
 
         //print_thread = new PrintNmLogThread(board, logs);
         //print_thread->start();
+        if(!is_run) quit();
 
         int handshake = m_board->sync(0xC0DE0086, 0);
         if (handshake != 0xC0DE0000) {
@@ -23,10 +32,10 @@ void HostProgram::init(){
         }
         qDebug() << "Handshake passed";
 
+        if(!is_run) quit();
         fb = (NMGL_Framebuffer *)m_board->sync(0, 0);
         qDebug() << "Framebuffer addr: " << hex << fb;
     }
-
     catch (BoardMC12101Error e){
         qCritical() << e.what() << ": error: " << e.details();
         exit(1);
@@ -35,6 +44,7 @@ void HostProgram::init(){
         qCritical() << "WTF!!";
         exit(2);
     }
+    if(!is_run) quit();
 }
 
 

@@ -46,8 +46,10 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
-    program->is_run = false;
-    program->quit();
+    if(program){
+        program->is_run = false;
+        program->wait();
+    }
     delete log[0];
     delete log[1];
     delete program;

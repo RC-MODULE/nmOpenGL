@@ -42,6 +42,7 @@ public:
         m_label = imageArea;
         is_run = true;
     }
+    ~HostProgram();
 
 protected:
     void init();
