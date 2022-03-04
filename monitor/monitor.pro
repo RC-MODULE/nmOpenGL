@@ -20,7 +20,7 @@ linux-g++:QMAKE_CXXFLAGS += -fpermissive
 
 INCLUDEPATH  += $$PWD/include $(MC12101)/include $$PWD/../include
 HEADERS += $$PWD/include/*.h $$PWD/../include/framebuffer.h
-SOURCES += $$PWD/src/*.cpp $$PWD/src/*.c
+SOURCES += $$PWD/src/*.cpp
 
 
 # Directories

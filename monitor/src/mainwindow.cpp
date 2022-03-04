@@ -10,9 +10,8 @@
 #include "mc12101load.h"
 #include <iostream>
 #include "printnmlog.h"
-#include "demo3d_program.h"
 
-
+#include "unistd.h"
 
 using namespace std;
 
@@ -30,16 +29,16 @@ MainWindow::MainWindow(QWidget *parent)
     }
     try{
         board = new BoardMC12101Local(0);
-        board->reset();
-        board->connectToCore(0);
-        board->connectToCore(1);
-    } catch(exception e){
+    } catch(BoardMC12101Error &e){
         qCritical() << e.what();
     }
 
-
+    try{
+        board->reset();
+    }catch(std::exception &e){
+        qCritical() << e.what();
+    }
     program = new HostProgram(board, ui->imagedraw);
-
 }
 
 MainWindow::~MainWindow()
@@ -91,16 +90,21 @@ void MainWindow::on_program1_clicked()
 
 void MainWindow::on_start_button_clicked()
 {
-    qDebug() << "start";
-    program->setProgramNamePointer(ui->program0_filename->text(), ui->program1_filename->text());
-    program->is_run = true;
-    if(ui->program0_filename->text().isEmpty() || ui->program1_filename->text().isEmpty()){
-        QErrorMessage err(this);
-        err.showMessage("Program not selected");
-        err.exec();
-    } else{
-        program->start();
+    if(board->isOpened()){
+        program->setProgramNamePointer(ui->program0_filename->text(), ui->program1_filename->text());
+        program->is_run = true;
+        if(ui->program0_filename->text().isEmpty() || ui->program1_filename->text().isEmpty()){
+            QErrorMessage err(this);
+            err.showMessage("Program not selected");
+            err.exec();
+        } else{
+            program->start();
+            qDebug() << "start";
+        }
+    } else {
+        qCritical() << "Board not opened";
     }
+
 }
 
 
@@ -112,7 +116,37 @@ void MainWindow::on_stop_button_clicked()
         program->wait();
     }
     qDebug() << "stop";
-    if(board) board->reset();
-
+    try{
+        if(board) board->reset();
+    } catch(BoardMC12101Error &e){
+        qWarning() << e.what();
+    }
 }
 
+
+void MainWindow::on_connect_button_toggled(bool checked)
+{
+    if(checked){
+        try {
+            board->open();
+            board->connectToCore(0);
+            board->connectToCore(1);
+        } catch (std::exception &e) {
+            qCritical() << e.what();
+            //ui->connect_button->setChecked(true);
+            ui->connect_button->setChecked(false);
+            return;
+        }
+        qDebug() << "Board opened";
+    } else{
+        try {
+            board->disconnectFromCore(0);
+            board->disconnectFromCore(1);
+            board->close();
+        } catch (std::exception &e) {
+            qCritical() << e.what();
+            return;
+        }
+        qDebug() << "Board closed";
+    }
+}

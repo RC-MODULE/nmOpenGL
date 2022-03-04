@@ -1,6 +1,7 @@
 #include "hostprogram.h"
 #include "printnmlog.h"
 #include <QDebug>
+#include <exception>
 
 HostProgram::~HostProgram(){
     /*if(print_thread){
@@ -43,7 +44,7 @@ bool HostProgram::init(){
 
     try {
         if(programNames[0] == nullptr || programNames[1] == nullptr){
-            throw std::exception("Program not selected");
+            throw runtime_error("Program not selected");
         }
         qDebug() << "program 0: " << programNames[0];
         qDebug() << "program 1: " << programNames[1];
@@ -71,6 +72,7 @@ bool HostProgram::init(){
         return false;
     }
     if(!is_run) quit();
+    return true;
 }
 
 

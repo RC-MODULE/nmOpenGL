@@ -31,7 +31,7 @@ SRC_DIRS         = $(ROOT)/nmglvs_mc12101-gcc/src_nmc$(CORE_NUM) ../src_target$(
 ifeq ($(OS),Windows_NT)
 LIB_DIRS         = -L"$(NMC_GCC_TOOLPATH)/nmc4-ide/lib" -L"$(NMPP)/lib" -L"$(HAL)/lib" -L"$(ROOT)/lib" -L$(MC12101)/lib
 else
-LIB_DIRS         = -L"$(NMPP)/lib" -L"$(HAL)/lib" -L"$(ROOT)/lib" -L$(MC12101)/lib
+LIB_DIRS         = -L"$(NMPP)/lib" -L"$(HAL)/lib" -L"$(ROOT)/lib" -L$(MC12101)/lib -L/usr/local/lib
 endif
 
 
@@ -87,7 +87,9 @@ OBJECTS     = $(addprefix $(TMP_DIR)/, $(OBJECTS_C) $(OBJECTS_CPP)  $(OBJECTS_AS
 all:
 	$(MAKE) CORE=float -j4 build
 	$(MAKE) CORE=fixed -j4 build
+ifeq ($(OS),Windows_NT)	
 	$(MAKE) -f Makefile_host
+endif
 	@echo all done!	
 nm0:
 	$(MAKE) CORE=float -j4 build

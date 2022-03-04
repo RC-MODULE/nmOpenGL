@@ -29,6 +29,7 @@ protected:
     bool io_accessed[MC12101_COUNT_OF_CORES];
     PL_Board *desc;
 
+    bool is_opened;
 
 public:
     FILE *file_log[MC12101_COUNT_OF_CORES];
@@ -41,8 +42,9 @@ public:
 
     const char *programNames[MC12101_COUNT_OF_CORES];
 
-    virtual void open(int board) = 0;
+    virtual void open() = 0;
     virtual void close() = 0;
+    virtual bool isOpened() const = 0;
 
     virtual void connectToCore(int core) = 0;
     virtual void disconnectFromCore(int core) = 0;
@@ -72,8 +74,10 @@ public:
 
     static int getBoardCount();
 
-    void open(int board) override;
+    void open() override;
     void close() override;
+
+    bool isOpened() const override;
 
     void connectToCore(int core) override;
     void disconnectFromCore(int core) override;
@@ -96,7 +100,7 @@ public:
     void reset() override;
 };
 
-class BoardMC12101Error: public exception{
+class BoardMC12101Error: public std::exception{
 public:
     string message;
     int error;

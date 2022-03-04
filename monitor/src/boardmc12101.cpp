@@ -5,39 +5,37 @@
 
 const char* BoardMC12101Error::errors[6] = {"OK", "ERROR", "TIMEOUT", "FILE", "BADADDRESS", "NOT_IMPLEMENTED"};
 
-void BoardMC12101Local::open(int board)
+void BoardMC12101Local::open()
 {
-    if(_boardIndex != -1){
-        for(int i = 0; i < MC12101_COUNT_OF_CORES; i++){
-            disconnectFromCore(i);
-            closeIO(i);
-        }
-        close();
+    if(is_opened){
+        return;
     }
-    _boardIndex = board;
     if(PL_GetBoardDesc(_boardIndex, &desc)){
         throw BoardMC12101Error(this, "Can't open board");
     }
+    is_opened = true;
 }
 
 void BoardMC12101Local::close()
 {
-    if(PL_CloseBoardDesc(desc)){
-        std::cerr << "Can't close board" << std::endl;
+    if(int error = PL_CloseBoardDesc(desc)){
+        throw BoardMC12101Error(this, "Can't close board", error);
     }
+    is_opened = false;
+}
+
+bool BoardMC12101Local::isOpened() const{
+    return is_opened;
 }
 
 BoardMC12101Local::BoardMC12101Local(int boardIndex){
-    open(boardIndex);
-    PL_ResetBoard(desc);
-
-
+    _boardIndex = boardIndex;
+    is_opened = false;
     for(int i = 0; i < MC12101_COUNT_OF_CORES; i++){
         accessed[i] = false;
         io_accessed[i] = false;
         setIO(i, &std::cout, &std::cerr, &std::cin);
     }
-
     //PL_SetTimeout(MC12101_SYNC_TIMEOUT);
 }
 

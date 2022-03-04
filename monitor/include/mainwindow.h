@@ -39,6 +39,8 @@ private slots:
 
     void on_stop_button_clicked();
 
+    void on_connect_button_toggled(bool checked);
+
 private:
     PrintNmLog *log[2];
     BoardMC12101 *board;
