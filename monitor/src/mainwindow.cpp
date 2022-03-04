@@ -39,7 +39,7 @@ MainWindow::MainWindow(QWidget *parent)
         exit(2);
     }
 
-    program = new Demo3dProgram(board, ui->imagedraw);
+    program = new HostProgram(board, ui->imagedraw);
     program->start();
     ui->imagedraw->show();
 }

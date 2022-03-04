@@ -6,8 +6,9 @@
 #include "nmgl.h"
 #include "nmglvs_nmc0.h"
 #include "nmprofiler.h"
-#include "debugprint.h"
-
+//#include "debugprint.h"
+#include "data_NM_32.h"
+#include "data_2_sphere.h"
 
 
 SECTION(".text_shared0") int main()
@@ -20,64 +21,33 @@ SECTION(".text_shared0") int main()
 
 	nmglvsNm0Init();
 
-#ifdef __OPEN_GL__
-
 	setHeap(10);
-	float* vertices_DDR = new float[2000 * 12];
-	float* normal_DDR = new float[2000 * 9];
-	float* vertices_DDR2 = new float[2000 * 12];
-	float* normal_DDR2 = new float[2000 * 9];
+	//float* vertices_DDR = (float*)halMalloc32(2000 * 12);
+	//float* normal_DDR = (float*)halMalloc32(2000 * 12);
+	//float* vertices_DDR2 = (float*)halMalloc32(2000 * 12);
+	//float* normal_DDR2 = (float*)halMalloc32(2000 * 12);
 	int ok;
 
-	DEBUG_PLOG_LEVEL_0("Start program\n");
-	Models models;
-	char* filePath = models.nm;
-
-	FILE* fmodel = fopen(filePath, "r");
-	if (fmodel == 0) {
-		printf("File not opened\n");
-		return 1;
-	}
-	int amount = get_amm_poligone(fmodel);
-	fmodel = fopen(filePath, "r");
-	createArrayVec4(fmodel, vertices_DDR, normal_DDR, 1);
-	int amountPolygons = amount;
-	DEBUG_PLOG_LEVEL_0("Get first model\n");
-
-	filePath = models.two_sphere;
-	fmodel = fopen(filePath, "r");
-	amount = get_amm_poligone(fmodel);
-	fclose(fmodel);
-	fmodel = fopen(filePath, "r");
-	createArrayVec4(fmodel, vertices_DDR2, normal_DDR2, 0.5);
-	fclose(fmodel);
-	DEBUG_PLOG_LEVEL_0("Get second model\n");
-
-	int amountPolygons2 = amount;
-#else
-
-	setHeap(10);
-	float* vertices_DDR = (float*)halMalloc32(2000 * 12);
-	float* normal_DDR = (float*)halMalloc32(2000 * 12);
-	float* vertices_DDR2 = (float*)halMalloc32(2000 * 12);
-	float* normal_DDR2 = (float*)halMalloc32(2000 * 12);
-	int ok;
-	int amountPolygons = halHostSync(0);
-
-	//������ ������ ��������� (�� 4 ���������� �� �������)
+	int amountPolygons = stl_NM_32_amount;
+	float* vertices_DDR = stl_NM_32_vertices;
+	float* normal_DDR = stl_NM_32_normals;
+	//int amountPolygons = halHostSync(0);
 	//sync1
-	halHostSyncAddr(vertices_DDR);
+	//halHostSyncAddr(vertices_DDR);
+	//sync2
+	//halHostSyncAddr(normal_DDR);
+
+	//int amountPolygons2 = halHostSync(0);
+	//halHostSyncAddr(vertices_DDR2);
 
 	//sync2
-	halHostSyncAddr(normal_DDR);
+	//halHostSyncAddr(normal_DDR2);
+	//ok = halHostSync((int)0x600D600D);
+	
+	int amountPolygons2 = stl_2_sphere_amount;
+	float* vertices_DDR2 = stl_2_sphere_vertices;
+	float* normal_DDR2 = stl_2_sphere_normals;
 
-	int amountPolygons2 = halHostSync(0);
-	halHostSyncAddr(vertices_DDR2);
-
-	//sync2
-	halHostSyncAddr(normal_DDR2);
-	ok = halHostSync((int)0x600D600D);
-#endif
 	nmglClearColor(0, 0, 0.4f, 0.0f);
 
 	nmglEnable(NMGL_DEPTH_TEST);
@@ -117,6 +87,7 @@ SECTION(".text_shared0") int main()
 
 		nmglVertexPointer(4, NMGL_FLOAT, 0, vertices_DDR);
 		nmglNormalPointer(NMGL_FLOAT, 0, normal_DDR);
+		nmglMatrixMode(NMGL_MODELVIEW);
 		nmglLoadIdentity();
 		nmglScalef(0.95f, 0.95f, 0.95f);
 		nmglRotatef(angle, 0.707f, 0.707f, 0);
@@ -132,8 +103,10 @@ SECTION(".text_shared0") int main()
 
 		nmglVertexPointer(4, NMGL_FLOAT, 0, vertices_DDR2);
 		nmglNormalPointer(NMGL_FLOAT, 0, normal_DDR2);
+		nmglMatrixMode(NMGL_MODELVIEW);
 		nmglLoadIdentity();
-		nmglScalef(0.95f, 0.95f, 0.95f);
+		//nmglScalef(0.95f, 0.95f, 0.95f);
+		nmglScalef(0.5f, 0.5f, 0.5f);
 		materialDiffuse[0] = 0.4;
 		materialDiffuse[1] = 1;
 		materialDiffuse[2] = 1;
@@ -143,7 +116,7 @@ SECTION(".text_shared0") int main()
 		nmglMaterialfv(NMGL_FRONT_AND_BACK, NMGL_DIFFUSE, materialDiffuse);
 		nmglMaterialfv(NMGL_FRONT_AND_BACK, NMGL_SPECULAR, materialSpec);
 		nmglRotatef(angle, 0.707, 0.707, 0);
-		nmglTranslatef(150, 150, 0);
+		nmglTranslatef(300, 300, 0);
 		PROFILER_SIZE(amountPolygons2);
 		nmglDrawArrays(NMGL_TRIANGLES, 0, 3 * amountPolygons2);
 		angle += 1.72;
@@ -156,10 +129,6 @@ SECTION(".text_shared0") int main()
 		counter++;
 		nmglvsSwapBuffer();
 	}
-	halFree(vertices_DDR);
-	halFree(vertices_DDR2);
-	halFree(normal_DDR);
-	halFree(normal_DDR2);
 
 	nmglvsExit_mc12101();
 	return 0x600D600D;

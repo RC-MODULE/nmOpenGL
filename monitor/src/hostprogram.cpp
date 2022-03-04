@@ -10,6 +10,26 @@ HostProgram::~HostProgram(){
     delete print_thread;*/
 }
 
+void HostProgram::host_main(){
+    while(is_run){
+        if(fb == NULL) continue;
+
+        while(frameBufferIsEmpty(fb)){
+            std::this_thread::sleep_for(std::chrono::milliseconds(2));
+        }
+        readColorFrontNM(imageTemp, fb, 0, 0, WIDTH_IMAGE, HEIGHT_IMAGE);
+        frameBufferIncTail(fb);
+        for(int y = 0; y < HEIGHT_IMAGE; y++){
+            for(int x = 0; x < WIDTH_IMAGE; x++){
+                imageDraw[y * WIDTH_IMAGE + x] = imageTemp[(HEIGHT_IMAGE - y - 1) * WIDTH_IMAGE + x];
+            }
+        }
+        QImage image((const uchar *)imageDraw, 768, 768, QImage::Format_RGB32);
+        m_label->setPixmap(QPixmap::fromImage(image).scaled(m_label->size()));
+        m_label->update();
+    }
+}
+
 void HostProgram::init(){
     try {
         const char *program_name[2];

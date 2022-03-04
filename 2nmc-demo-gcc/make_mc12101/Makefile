@@ -25,7 +25,7 @@ PROJECT 		 = main$(CORE_NUM)d
 endif
 OUT_DIR          = .
 TARGET           = $(OUT_DIR)/$(PROJECT).abs
-INC_DIRS         = -I"$(NMPP)/include" -I$(HAL)/include -I$(ROOT)/include -I$(ROOT)/utilities/include -I$(ROOT)/context/include
+INC_DIRS         = -I"$(NMPP)/include" -I$(HAL)/include -I$(ROOT)/include -I$(ROOT)/utilities/include -I$(ROOT)/context/include -I../src_target0
 SRC_DIRS         = $(ROOT)/nmglvs_mc12101-gcc/src_nmc$(CORE_NUM) ../src_target$(CORE_NUM)
 
 ifeq ($(OS),Windows_NT)

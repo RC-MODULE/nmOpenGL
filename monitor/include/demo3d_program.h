@@ -6,6 +6,6 @@ class Demo3dProgram : public HostProgram{
 public:
     Demo3dProgram(BoardMC12101 *board, QLabel* label);
 
-    void host_main();
+    void host_main() override;
 };
 #endif // DEMO3D_PROGRAM_H

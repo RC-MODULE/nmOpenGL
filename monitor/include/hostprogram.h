@@ -47,7 +47,7 @@ public:
 protected:
     void init();
 
-    virtual void host_main() = 0;
+    virtual void host_main();
 private:
     void run(){
         init();
