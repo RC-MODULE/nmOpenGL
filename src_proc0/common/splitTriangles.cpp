@@ -664,12 +664,12 @@ int checkAndSplitLargestEdge(	const Triangle& tr,
 		d.y = (a.y + b.y) / 2;
 		d.z = (a.z + b.z) / 2;
 
-#ifdef PERSPECTIVE_CORRECT_TRIANGULATION
+		// The following variables are used for PERSPECTIVE_CORRECT_TRIANGULATION
 		//XXX: Warning. Potential division by zero
 		float oneOverWa = 1.0 / a.w;
 		float oneOverWb = 1.0 / b.w;
 		float oneOverW = 1.0 / (oneOverWa + oneOverWb);
-#endif //PERSPECTIVE_CORRECT_TRIANGULATION
+		// PERSPECTIVE_CORRECT_TRIANGULATION
 
 		if (NMGL_FLAT == cntxt->shadeModel) {
 			d.color.vec[0] = a.color.vec[0];
@@ -677,34 +677,29 @@ int checkAndSplitLargestEdge(	const Triangle& tr,
 			d.color.vec[2] = a.color.vec[2];
 			d.color.vec[3] = a.color.vec[3];
 		} else {
-#ifdef PERSPECTIVE_CORRECT_TRIANGULATION
-			d.color.vec[0] = (a.color.vec[0] * oneOverWa + b.color.vec[0] * oneOverWb) * oneOverW;
-			d.color.vec[1] = (a.color.vec[1] * oneOverWa + b.color.vec[1] * oneOverWb) * oneOverW;
-			d.color.vec[2] = (a.color.vec[2] * oneOverWa + b.color.vec[2] * oneOverWb) * oneOverW;
-			d.color.vec[3] = (a.color.vec[3] * oneOverWa + b.color.vec[3] * oneOverWb) * oneOverW;
-#else //PERSPECTIVE_CORRECT_TRIANGULATION
-			d.color.vec[0] = (a.color.vec[0] + b.color.vec[0]) * 0.5;
-			d.color.vec[1] = (a.color.vec[1] + b.color.vec[1]) * 0.5;
-			d.color.vec[2] = (a.color.vec[2] + b.color.vec[2]) * 0.5;
-			d.color.vec[3] = (a.color.vec[3] + b.color.vec[3]) * 0.5;
-#endif //PERSPECTIVE_CORRECT_TRIANGULATION
+			if (NMGL_NICEST == cntxt->perspectiveCorrectionHint){
+				d.color.vec[0] = (a.color.vec[0] * oneOverWa + b.color.vec[0] * oneOverWb) * oneOverW;
+				d.color.vec[1] = (a.color.vec[1] * oneOverWa + b.color.vec[1] * oneOverWb) * oneOverW;
+				d.color.vec[2] = (a.color.vec[2] * oneOverWa + b.color.vec[2] * oneOverWb) * oneOverW;
+				d.color.vec[3] = (a.color.vec[3] * oneOverWa + b.color.vec[3] * oneOverWb) * oneOverW;
+			} else { // NMGL_FASTEST, NMGL_DONT_CARE
+				d.color.vec[0] = (a.color.vec[0] + b.color.vec[0]) * 0.5;
+				d.color.vec[1] = (a.color.vec[1] + b.color.vec[1]) * 0.5;
+				d.color.vec[2] = (a.color.vec[2] + b.color.vec[2]) * 0.5;
+				d.color.vec[3] = (a.color.vec[3] + b.color.vec[3]) * 0.5;
+			}	
 		}
-//TEXTURING_PART
-#ifdef PERSPECTIVE_CORRECT_TRIANGULATION
-		d.w = (a.w * oneOverWa + b.w * oneOverWb) * oneOverW;
-#else //PERSPECTIVE_CORRECT_TRIANGULATION
-		d.w = (a.w + b.w) * 0.5;
-#endif //PERSPECTIVE_CORRECT_TRIANGULATION
 
-#ifdef PERSPECTIVE_CORRECT_TRIANGULATION
-		d.s = (a.s * oneOverWa + b.s * oneOverWb) * oneOverW;
-		d.t = (a.t * oneOverWa + b.t * oneOverWb) * oneOverW;
-#else //PERSPECTIVE_CORRECT_TRIANGULATION
-		d.s = (a.s + b.s) * 0.5;
-		d.t = (a.t + b.t) * 0.5;
-#endif //PERSPECTIVE_CORRECT_TRIANGULATION
-//TEXTURING_PART
-			
+		if (NMGL_NICEST == cntxt->perspectiveCorrectionHint){
+			d.w = (a.w * oneOverWa + b.w * oneOverWb) * oneOverW;
+			d.s = (a.s * oneOverWa + b.s * oneOverWb) * oneOverW;
+			d.t = (a.t * oneOverWa + b.t * oneOverWb) * oneOverW;
+		} else {
+			d.w = (a.w + b.w) * 0.5;
+			d.s = (a.s + b.s) * 0.5;
+			d.t = (a.t + b.t) * 0.5;
+		}
+
 		trOut1 = Triangle{ c, a, d };
 		trOut2 = Triangle{ c, d, b };
 		return 1;
