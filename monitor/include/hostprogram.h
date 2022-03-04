@@ -1,6 +1,7 @@
 #ifndef REFRESH_H
 #define REFRESH_H
 #include <QLabel>
+#include <QDebug>
 #include <QThread>
 #include "framebuffer.h"
 #include "mc12101load.h"
@@ -26,6 +27,7 @@ protected:
 
     BoardMC12101 *m_board = 0;
     QLabel* m_label;
+    QString programNames[2];
 
     bool frameBufferIsEmpty(NMGL_Framebuffer *remoteAddr);
     void frameBufferIncTail(NMGL_Framebuffer *remoteAddr);
@@ -35,6 +37,8 @@ protected:
 
 public:
     std::atomic<bool> is_run;
+    bool init();
+    void setProgramNamePointer(const QString &program0, const QString &program1);
 
     NMGL_Framebuffer *fb;
     HostProgram(BoardMC12101 *board, QLabel* imageArea, QLabel *logNm0Area = 0, QLabel *logNm1Area = 0){
@@ -45,14 +49,8 @@ public:
     ~HostProgram();
 
 protected:
-    void init();
+    virtual void run();
 
-    virtual void host_main();
-private:
-    void run(){
-        init();
-        host_main();
-    }
 };
 
 #endif // REFRESH_H

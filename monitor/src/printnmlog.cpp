@@ -28,8 +28,8 @@ PrintNmLogThread::PrintNmLogThread(BoardMC12101 *_board, PrintNmLog *_logs[]){
         board->setIO(0, filename[0]);
         board->setIO(1, filename[1]);
         //board->setIO(0, &std::cout, &std::cerr, &std::cin);
-        board->openIO(board->program_name[0], 0);
-        board->openIO(board->program_name[1], 1);
+        //board->openIO(board->program_name[0], 0);
+        //board->openIO(board->program_name[1], 1);
         file[0] = new QFile(filename[0]);
         file[1] = new QFile(filename[1]);
         if(file[0]->open(QFile::ReadOnly | QFile::Text) &&

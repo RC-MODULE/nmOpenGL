@@ -30,6 +30,15 @@ public:
 
     void loadProgram(const char *filename, int core);
 
+private slots:
+    void on_program0_clicked();
+
+    void on_program1_clicked();
+
+    void on_start_button_clicked();
+
+    void on_stop_button_clicked();
+
 private:
     PrintNmLog *log[2];
     BoardMC12101 *board;

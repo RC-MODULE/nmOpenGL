@@ -10,7 +10,11 @@ HostProgram::~HostProgram(){
     delete print_thread;*/
 }
 
-void HostProgram::host_main(){
+void HostProgram::run(){
+    if(!init()){
+        return;
+    }
+
     while(is_run){
         if(fb == NULL) continue;
 
@@ -30,15 +34,21 @@ void HostProgram::host_main(){
     }
 }
 
-void HostProgram::init(){
+void HostProgram::setProgramNamePointer(const QString &program0, const QString &program1){
+    programNames[0] = program0;
+    programNames[1] = program1;
+}
+
+bool HostProgram::init(){
+
     try {
-        const char *program_name[2];
-        program_name[0] = "main0d.abs";
-        program_name[1] = "main1d.abs";
-        qDebug() << "Program name 0: " << program_name[0];
-        qDebug() << "Program name 1: " << program_name[1];
-        m_board->loadProgram(program_name[0], 0);
-        m_board->loadProgram(program_name[1], 1);
+        if(programNames[0] == nullptr || programNames[1] == nullptr){
+            throw std::exception("Program not selected");
+        }
+        qDebug() << "program 0: " << programNames[0];
+        qDebug() << "program 1: " << programNames[1];
+        m_board->loadProgram(programNames[0].toStdString().c_str(), 0);
+        m_board->loadProgram(programNames[1].toStdString().c_str(), 1);
         qDebug() << "program loaded";
 
         //print_thread = new PrintNmLogThread(board, logs);
@@ -56,13 +66,9 @@ void HostProgram::init(){
         fb = (NMGL_Framebuffer *)m_board->sync(0, 0);
         qDebug() << "Framebuffer addr: " << hex << fb;
     }
-    catch (BoardMC12101Error e){
-        qCritical() << e.what() << ": error: " << e.details();
-        exit(1);
-    }
-    catch (...){
-        qCritical() << "WTF!!";
-        exit(2);
+    catch (std::exception &e){
+        qCritical() << e.what();
+        return false;
     }
     if(!is_run) quit();
 }
