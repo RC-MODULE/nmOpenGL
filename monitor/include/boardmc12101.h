@@ -19,6 +19,10 @@ using namespace std;
 
 #define MC12101_COUNT_OF_CORES 2
 
+class BoardMC12101;
+class BoardMC12101Access;
+
+
 class BoardMC12101
 {
 protected:
@@ -40,7 +44,7 @@ public:
 
     virtual ~BoardMC12101();
 
-    const char *programNames[MC12101_COUNT_OF_CORES];
+    char programNames[MC12101_COUNT_OF_CORES][100];
 
     virtual void open() = 0;
     virtual void close() = 0;
@@ -66,6 +70,17 @@ public:
 
     virtual void reset() = 0;
 };
+
+class BoardMC12101Access{
+    BoardMC12101 *mBoard;
+    PL_Access *mAccess;
+    int mCore;
+
+public:
+    BoardMC12101Access(BoardMC12101 *board, int core);
+    ~BoardMC12101Access();
+};
+
 
 class BoardMC12101Local : public BoardMC12101{
 public:

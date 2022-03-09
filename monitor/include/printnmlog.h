@@ -14,19 +14,6 @@
 
 using namespace std;
 
-class PrintNmLog : public QPlainTextEdit
-{
-    Q_OBJECT
-
-/* snip */
-public:
-    PrintNmLog(QWidget *parent, QLabel *label);
-    ~PrintNmLog();
-
-    void appendMessage(const QString& text);
-
-};
-
 class PrintNmLogThread : public QThread
 {
 public:
@@ -35,7 +22,7 @@ public:
     stringstream in[2];
 
     const char *filename[2];
-    PrintNmLog *logs[2];
+    QPlainTextEdit *logs[2];
 
     QTextStream *textstream[2];
     QFile *file[2];
@@ -43,7 +30,7 @@ public:
     BoardMC12101 *board;
     std::atomic<bool> is_run;
 
-    PrintNmLogThread(BoardMC12101 *board, PrintNmLog *logs[]);
+    PrintNmLogThread(BoardMC12101 *board, QPlainTextEdit *plane0, QPlainTextEdit *plane1);
     ~PrintNmLogThread();
 
     void run();

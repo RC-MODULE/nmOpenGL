@@ -43,19 +43,6 @@ void HostProgram::setProgramNamePointer(const QString &program0, const QString &
 bool HostProgram::init(){
 
     try {
-        if(programNames[0] == nullptr || programNames[1] == nullptr){
-            throw runtime_error("Program not selected");
-        }
-        qDebug() << "program 0: " << programNames[0];
-        qDebug() << "program 1: " << programNames[1];
-        m_board->loadProgram(programNames[0].toStdString().c_str(), 0);
-        m_board->loadProgram(programNames[1].toStdString().c_str(), 1);
-        qDebug() << "program loaded";
-
-        //print_thread = new PrintNmLogThread(board, logs);
-        //print_thread->start();
-        if(!is_run) quit();
-
         int handshake = m_board->sync(0xC0DE0086, 0);
         if (handshake != 0xC0DE0000) {
             qCritical() << "Error: Handshake with mc12101-nmc0 wrong!";
@@ -64,7 +51,7 @@ bool HostProgram::init(){
         qDebug() << "Handshake passed";
 
         if(!is_run) quit();
-        fb = (NMGL_Framebuffer *)m_board->sync(0, 0);
+        fb = (NMGL_Framebuffer *)m_board->sync(profilerEnabled, 0);
         qDebug() << "Framebuffer addr: " << hex << fb;
     }
     catch (std::exception &e){

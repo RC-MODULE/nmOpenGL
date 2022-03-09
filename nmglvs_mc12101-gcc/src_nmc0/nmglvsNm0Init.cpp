@@ -7,6 +7,7 @@
 #include "ringbuffer.h"
 #include "context_float.h"
 #include "debugprint.h"
+#include "nmprofiler.h"
 
 #ifdef STACK_TRACE_ENABLED
 #include "stacktrace.h"
@@ -333,8 +334,14 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 
 
 	DEBUG_PLOG_LEVEL_0("nmOpenGL inited!\n");
-	halHostSyncAddr(&cntxt->defaultFramebuffer);
+	int profiler_enabled = halHostSyncAddr(&cntxt->defaultFramebuffer);
 	DEBUG_PLOG_LEVEL_0("Send addr of framebuffer\n");
+#ifdef __NM__
+	if(profiler_enabled){
+		nmprofiler_init();
+		//nmprofiler_disabled();
+	}
+#endif
 	return 0;
 } 
 

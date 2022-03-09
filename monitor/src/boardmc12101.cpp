@@ -1,7 +1,17 @@
 #include "boardmc12101.h"
 #include "mc12101load.h"
 #include <sstream>
+#include <stdio.h>
+#include <cstring>
 #define MC12101_SYNC_TIMEOUT 5000
+
+#ifdef _WIN32
+#include "windows.h"
+#endif
+
+#ifdef unix
+#include <unistd.h>
+#endif
 
 const char* BoardMC12101Error::errors[6] = {"OK", "ERROR", "TIMEOUT", "FILE", "BADADDRESS", "NOT_IMPLEMENTED"};
 
@@ -40,6 +50,9 @@ BoardMC12101Local::BoardMC12101Local(int boardIndex){
 }
 
 BoardMC12101Local::~BoardMC12101Local(){
+    if(!is_opened){
+        return;
+    }
     for(int core = 0; core < MC12101_COUNT_OF_CORES; core++){
         if(accessed[core])
             if (int error = PL_CloseAccess(access[core]))
@@ -112,7 +125,8 @@ void BoardMC12101Local::loadProgram(const char *filename, int core ){
             throw BoardMC12101Error(this, "LoadProgram failed", error);
         }
     }
-    programNames[core] = filename;
+    strcpy(programNames[core], filename);
+
 }
 
 void BoardMC12101Local::setIO(int core, ostream *_out, ostream *_err, istream *_in){
@@ -120,6 +134,7 @@ void BoardMC12101Local::setIO(int core, ostream *_out, ostream *_err, istream *_
     nm_cerr[core] = _err;
     nm_cin[core] = _in;
 }
+
 void BoardMC12101Local::setIO(int core, const char *outfilename){
     file_log[core] = fopen(outfilename, "w+");
     if(file_log[core] == 0){
@@ -128,23 +143,33 @@ void BoardMC12101Local::setIO(int core, const char *outfilename){
 }
 
 void BoardMC12101Local::openIO(const char *filename, int core){
-    PL_GetAccess(desc, core, &io_access[core]);
+    if(int error = PL_GetAccess(desc, core, &io_access[core])){
+        throw BoardMC12101Error(this, "Opening IO error", error);
+    }
     if(file_log[core]){
         io_services[core] = new IO_Service(filename, io_access[core], file_log[core]);
     } else {
-        io_services[core] = new IO_Service(filename, io_access[core], NULL, 1, nm_cout[core], nm_cerr[core], nm_cin[core]);
+        //io_services[core] = new IO_Service(filename, io_access[core], NULL, 1, nm_cout[core], nm_cerr[core], nm_cin[core]);
+        io_services[core] = new IO_Service(filename, io_access[core], NULL);
     }
     io_accessed[core] = true;
 }
 
 void BoardMC12101Local::flushIO(int core){
-    if(file_log[core] == 0)
-        return;
-    //io_services[core]->dispatch();
-    //delete io_services[core];
-    //fclose(file_log[core]);
-    //fopen(file_log[core]);
-    //io_services[core] = new IO_Service(program_name[core], access_io[core], file_log[core]);
+    if(file_log[core]){
+        try{
+            //closeIO(core);
+            //openIO(programNames[core], core);
+            //io_services[core]->dispatch();
+            //delete io_services[core];
+            //io_services[core] = new IO_Service(programNames[core], io_access[core], file_log[core]);
+        } catch (...){
+            std::cerr << "nm io error" << std::endl;
+        }
+    } else{
+        nm_cout[core]->flush();
+    }
+
 }
 
 void BoardMC12101Local::closeIO(int core){
@@ -174,3 +199,11 @@ BoardMC12101::~BoardMC12101(){
 
 }
 
+BoardMC12101Access::BoardMC12101Access(BoardMC12101 *board, int core){
+    mBoard = board;
+    mCore = core;
+}
+
+BoardMC12101Access::~BoardMC12101Access(){
+
+}

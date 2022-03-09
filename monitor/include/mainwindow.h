@@ -12,6 +12,8 @@
 #include "boardmc12101.h"
 #include "printnmlog.h"
 
+#include "profilerview.h"
+
 #include "ui_mainwindow.h"
 
 using namespace std;
@@ -30,10 +32,9 @@ public:
 
     void loadProgram(const char *filename, int core);
 
-private slots:
-    void on_program0_clicked();
+    void MainWindow::setAbsFile(QLineEdit *outFilename);
 
-    void on_program1_clicked();
+private slots:
 
     void on_start_button_clicked();
 
@@ -41,16 +42,23 @@ private slots:
 
     void on_connect_button_toggled(bool checked);
 
+    void on_profilerCheck_stateChanged(int arg1);
+
+    void on_ProfilerButton_clicked();
+
 private:
-    PrintNmLog *log[2];
+
+
+    QPlainTextEdit *log[2];
     BoardMC12101 *board;
 
     HostProgram *program;
 
+    ProfilerView *profiler;
+
     NMGL_Framebuffer *framebuffer = 0;
     PrintNmLogThread *print_thread;
 
-private:
     Ui::MainWindow *ui;
 };
 #endif // MAINWINDOW_H

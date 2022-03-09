@@ -97,9 +97,9 @@
    <widget class="QLineEdit" name="program0_filename">
     <property name="geometry">
      <rect>
-      <x>610</x>
+      <x>620</x>
       <y>40</y>
-      <width>331</width>
+      <width>321</width>
       <height>21</height>
      </rect>
     </property>
@@ -107,9 +107,9 @@
    <widget class="QLineEdit" name="program1_filename">
     <property name="geometry">
      <rect>
-      <x>610</x>
+      <x>620</x>
       <y>90</y>
-      <width>331</width>
+      <width>321</width>
       <height>21</height>
      </rect>
     </property>
@@ -117,8 +117,8 @@
    <widget class="QPushButton" name="start_button">
     <property name="geometry">
      <rect>
-      <x>610</x>
-      <y>130</y>
+      <x>620</x>
+      <y>150</y>
       <width>80</width>
       <height>21</height>
      </rect>
@@ -130,8 +130,8 @@
    <widget class="QPushButton" name="stop_button">
     <property name="geometry">
      <rect>
-      <x>710</x>
-      <y>130</y>
+      <x>720</x>
+      <y>150</y>
       <width>80</width>
       <height>21</height>
      </rect>
@@ -143,7 +143,7 @@
    <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
-      <x>610</x>
+      <x>620</x>
       <y>20</y>
       <width>111</width>
       <height>21</height>
@@ -156,7 +156,7 @@
    <widget class="QLabel" name="label_2">
     <property name="geometry">
      <rect>
-      <x>610</x>
+      <x>620</x>
       <y>70</y>
       <width>111</width>
       <height>21</height>
@@ -189,6 +189,38 @@
     </property>
     <property name="flat">
      <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="profilerCheck">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>620</x>
+      <y>120</y>
+      <width>201</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Enable profiler</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="ProfilerButton">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>830</x>
+      <y>120</y>
+      <width>151</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>PushButton</string>
     </property>
    </widget>
   </widget>

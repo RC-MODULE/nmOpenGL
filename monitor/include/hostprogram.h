@@ -7,6 +7,7 @@
 #include "mc12101load.h"
 #include "boardmc12101.h"
 
+#include "printnmlog.h"
 
 #define WIDTH_IMAGE 768
 #define HEIGHT_IMAGE 768
@@ -27,7 +28,6 @@ protected:
 
     BoardMC12101 *m_board = 0;
     QLabel* m_label;
-    QString programNames[2];
 
     bool frameBufferIsEmpty(NMGL_Framebuffer *remoteAddr);
     void frameBufferIncTail(NMGL_Framebuffer *remoteAddr);
@@ -36,15 +36,23 @@ protected:
     void readDepthNM(void *data, NMGL_Framebuffer *fb, int x, int y, int width, int height);
 
 public:
+    QString programNames[2];
     std::atomic<bool> is_run;
+    bool profilerEnabled;
+
+    PrintNmLogThread *logThread;
+
     bool init();
     void setProgramNamePointer(const QString &program0, const QString &program1);
+    void setLogPlainText(const QPlainTextEdit *log0, const QPlainTextEdit *log1);
 
     NMGL_Framebuffer *fb;
-    HostProgram(BoardMC12101 *board, QLabel* imageArea, QLabel *logNm0Area = 0, QLabel *logNm1Area = 0){
+    HostProgram(BoardMC12101 *board, QLabel* imageArea){
         m_board = board;
         m_label = imageArea;
         is_run = true;
+        profilerEnabled = false;
+        //logThread = new PrintNmLogThread(board, );
     }
     ~HostProgram();
 
