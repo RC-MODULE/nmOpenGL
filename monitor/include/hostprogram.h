@@ -50,7 +50,7 @@ public:
     HostProgram(BoardMC12101 *board, QLabel* imageArea){
         m_board = board;
         m_label = imageArea;
-        is_run = true;
+        is_run = false;
         profilerEnabled = false;
         //logThread = new PrintNmLogThread(board, );
     }

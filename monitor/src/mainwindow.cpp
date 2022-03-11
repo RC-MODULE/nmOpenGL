@@ -25,9 +25,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(ui->program0, &QPushButton::clicked, this, [this](){this->setAbsFile(this->ui->program0_filename);});
     connect(ui->program1, &QPushButton::clicked, this, [this](){this->setAbsFile(this->ui->program1_filename);});
-    //connect(ui->openButton, &QPushButton::toggled, this, [this](){this->setAbsFile(this->ui->program1_filename);});
-    //connect(ui->openButton, SIGNAL(toggled()), this, SLOT(on_openButton_toggled(bool)));
-
 
     board = nullptr;
     program = nullptr;
@@ -83,26 +80,31 @@ void MainWindow::on_start_button_clicked()
             qCritical() << "Program not selected";
             return;
         }
-        qDebug() << "program 0: " << ui->program0_filename->text();
-        qDebug() << "program 1: " << ui->program1_filename->text();
-        try{
-            board->loadProgram(ui->program0_filename->text().toStdString().c_str(), 0);
-            board->loadProgram(ui->program1_filename->text().toStdString().c_str(), 1);
-            qDebug() << "board program 0: " << board->programNames[0];
-            qDebug() << "board program 1: " << board->programNames[1];
-        } catch(std::exception &e){
-            qCritical() << e.what();
+        if(!program->is_run){
+            qDebug() << "program 0: " << ui->program0_filename->text();
+            qDebug() << "program 1: " << ui->program1_filename->text();
+            try{
+                board->loadProgram(ui->program0_filename->text().toStdString().c_str(), 0);
+                board->loadProgram(ui->program1_filename->text().toStdString().c_str(), 1);
+                qDebug() << "board program 0: " << board->programNames[0];
+                qDebug() << "board program 1: " << board->programNames[1];
+            } catch(std::exception &e){
+                qCritical() << e.what();
+                return;
+            }
+            qDebug() << "program loaded";
+
+            program->is_run = true;
+            //print_thread->is_run = true;
+
+            //print_thread->start();
+            program->start();
+            qDebug() << "start";
+        } else{
+            qDebug() << "already started";
         }
-        qDebug() << "program loaded";
-
-        program->is_run = true;
-        print_thread->is_run = true;
-
-        print_thread->start();
-        program->start();
         //profiler = new ProfilerView(board);
         //ui->profilerCheck->setEnabled(false);
-        qDebug() << "start";
     } else {
         qCritical() << "Board not opened";
     }
@@ -121,11 +123,11 @@ void MainWindow::on_stop_button_clicked()
         program->wait();
     }
     qDebug() << "stop";
-    if(print_thread && print_thread->is_run){
+    /*if(print_thread && print_thread->is_run){
         print_thread->is_run = false;
         print_thread->wait();
     }
-    qDebug() << "print stop";
+    qDebug() << "print stop";*/
     try{
         if(board) board->reset();
     } catch(BoardMC12101Error &e){
