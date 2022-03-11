@@ -40,7 +40,7 @@ void ProfilerThread::run(){
 }
 
 
-ProfilerModel::ProfilerModel(QObject *parent = nullptr)
+ProfilerModel::ProfilerModel(QObject *parent)
     : QAbstractTableModel(parent)
 {
     qDebug() << "Profiler model";

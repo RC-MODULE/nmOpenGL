@@ -44,7 +44,7 @@ BoardMC12101Local::BoardMC12101Local(int boardIndex){
     for(int i = 0; i < MC12101_COUNT_OF_CORES; i++){
         accessed[i] = false;
         io_accessed[i] = false;
-        setIO(i, &std::cout, &std::cerr, &std::cin);
+        static_cast<BoardMC12101Local *>(this)->setIO(i, &std::cout, &std::cerr, &std::cin);
     }
     //PL_SetTimeout(MC12101_SYNC_TIMEOUT);
 }

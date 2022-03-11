@@ -169,10 +169,10 @@
    <widget class="QPushButton" name="connect_button">
     <property name="geometry">
      <rect>
-      <x>620</x>
+      <x>900</x>
       <y>350</y>
       <width>89</width>
-      <height>25</height>
+      <height>21</height>
      </rect>
     </property>
     <property name="whatsThis">
@@ -223,6 +223,41 @@
      <string>PushButton</string>
     </property>
    </widget>
+   <widget class="QLabel" name="label_3">
+    <property name="geometry">
+     <rect>
+      <x>640</x>
+      <y>330</y>
+      <width>47</width>
+      <height>13</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Board</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="OpenButton">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>800</x>
+      <y>350</y>
+      <width>81</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Open board</string>
+    </property>
+    <property name="checkable">
+     <bool>true</bool>
+    </property>
+    <property name="checked">
+     <bool>true</bool>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -230,7 +265,7 @@
      <x>0</x>
      <y>0</y>
      <width>1023</width>
-     <height>22</height>
+     <height>20</height>
     </rect>
    </property>
   </widget>

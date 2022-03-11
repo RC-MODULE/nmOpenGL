@@ -46,6 +46,8 @@ private slots:
 
     void on_ProfilerButton_clicked();
 
+    void on_OpenButton_toggled(bool checked);
+
 private:
 
 

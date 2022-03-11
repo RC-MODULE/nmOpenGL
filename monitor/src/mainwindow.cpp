@@ -11,7 +11,6 @@
 #include <iostream>
 #include "printnmlog.h"
 
-#include "unistd.h"
 
 //using namespace std;
 
@@ -26,24 +25,17 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(ui->program0, &QPushButton::clicked, this, [this](){this->setAbsFile(this->ui->program0_filename);});
     connect(ui->program1, &QPushButton::clicked, this, [this](){this->setAbsFile(this->ui->program1_filename);});
+    //connect(ui->openButton, &QPushButton::toggled, this, [this](){this->setAbsFile(this->ui->program1_filename);});
+    //connect(ui->openButton, SIGNAL(toggled()), this, SLOT(on_openButton_toggled(bool)));
 
-    if (BoardMC12101Local::getBoardCount() < 1){
-        qCritical() << "Error: Can't find board";
-    }
-    try{
-        board = new BoardMC12101Local(0);
-    } catch(BoardMC12101Error &e){
-        qCritical() << e.what();
-    }
 
-    try{
-        board->reset();
-    }catch(std::exception &e){
-        qCritical() << e.what();
-    }
-    program = new HostProgram(board, ui->imagedraw);
+    board = nullptr;
+    program = nullptr;
+    print_thread = nullptr;
 
-    print_thread = new PrintNmLogThread(board, ui->log_nm0, ui->log_nm1);
+    ui->start_button->setEnabled(false);
+    ui->stop_button->setEnabled(false);
+    on_OpenButton_toggled(true);
 }
 
 MainWindow::~MainWindow()
@@ -54,12 +46,14 @@ MainWindow::~MainWindow()
         program->wait();
     }
     qDebug() << "program quit";
-    delete program;
+    if (program) delete program;
     qDebug() << "delete program";
-    profiler->close();
-    delete profiler;
-    qDebug() << "delete profiler";
-    delete board;
+    /*if(profiler != nullptr) {
+        profiler->close();
+        delete profiler;
+    }
+    qDebug() << "delete profiler";*/
+    if (board) delete board;
     qDebug() << "board closed";
     delete ui;
     qDebug() << "delete ui";
@@ -81,7 +75,7 @@ void MainWindow::setAbsFile(QLineEdit *outFilename){
 
 void MainWindow::on_start_button_clicked()
 {
-    if(board->isOpened()){
+    if(board && board->isOpened()){
         if(ui->program0_filename->text().isEmpty() || ui->program1_filename->text().isEmpty()){
             QErrorMessage err(this);
             err.showMessage("Program not selected");
@@ -142,6 +136,7 @@ void MainWindow::on_stop_button_clicked()
 
 void MainWindow::on_connect_button_toggled(bool checked)
 {
+    qDebug() << "connect: " << board ;
     if(checked){
         try {
             board->open();
@@ -149,10 +144,11 @@ void MainWindow::on_connect_button_toggled(bool checked)
             board->connectToCore(1);
         } catch (std::exception &e) {
             qCritical() << e.what();
-            //ui->connect_button->setChecked(true);
-            ui->connect_button->setChecked(false);
+            ui->OpenButton->setChecked(false);
             return;
         }
+        ui->start_button->setEnabled(true);
+        ui->stop_button->setEnabled(true);
         qDebug() << "Board opened";
     } else{
         try {
@@ -161,8 +157,9 @@ void MainWindow::on_connect_button_toggled(bool checked)
             board->close();
         } catch (std::exception &e) {
             qCritical() << e.what();
-            return;
         }
+        ui->start_button->setEnabled(false);
+        ui->stop_button->setEnabled(false);
         qDebug() << "Board closed";
     }
 }
@@ -180,3 +177,62 @@ void MainWindow::on_ProfilerButton_clicked()
 {
     profiler->show();
 }
+
+void MainWindow::on_OpenButton_toggled(bool checked)
+{
+    qDebug() << "opening board";
+    if(checked){
+        int count = BoardMC12101Local::getBoardCount();
+        if (count < 1){
+            qCritical() << "Error: Can't find board";
+            ui->OpenButton->setChecked(false);
+            return;
+        }
+        qDebug() << "Founded " << count << " boards";
+        try{
+            board = new BoardMC12101Local(0);
+        } catch(BoardMC12101Error &e){
+            qCritical() << e.what();
+            ui->OpenButton->setChecked(false);
+            if(board) delete board;
+            return;
+        }
+        qDebug() << "board opened";
+
+        try{
+            board->reset();
+        }catch(std::exception e){
+            qCritical() << e.what();
+        } catch (...){
+            qCritical() << "Unknown error";
+        }
+        qDebug() << "board reseted";
+        program = new HostProgram(board, ui->imagedraw);
+        qDebug() << "program created";
+
+        //print_thread = new PrintNmLogThread(board, ui->log_nm0, ui->log_nm1);
+
+        ui->connect_button->setEnabled(true);
+    } else{
+        qDebug() << "Main destructor";
+        if(program && program->is_run){
+            program->is_run = false;
+            program->wait();
+        }
+        qDebug() << "program quit";
+        delete program;
+        program = nullptr;
+        qDebug() << "delete program";
+        /*if(profiler != nullptr) {
+            profiler->close();
+            delete profiler;
+        }
+        qDebug() << "delete profiler";*/
+        delete board;
+        board = nullptr;
+        qDebug() << "board closed";
+        ui->connect_button->setEnabled(false);
+    }
+}
+
+
