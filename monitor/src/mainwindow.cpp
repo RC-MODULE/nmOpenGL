@@ -20,8 +20,8 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    ui->program0_filename->setReadOnly(true);
-    ui->program1_filename->setReadOnly(true);
+    //ui->program0_filename->setReadOnly(true);
+    //ui->program1_filename->setReadOnly(true);
 
     connect(ui->program0, &QPushButton::clicked, this, [this](){this->setAbsFile(this->ui->program0_filename);});
     connect(ui->program1, &QPushButton::clicked, this, [this](){this->setAbsFile(this->ui->program1_filename);});
@@ -73,7 +73,9 @@ void MainWindow::setAbsFile(QLineEdit *outFilename){
 void MainWindow::on_start_button_clicked()
 {
     if(board && board->isOpened()){
-        if(ui->program0_filename->text().isEmpty() || ui->program1_filename->text().isEmpty()){
+        QFile file0(ui->program0_filename->text());
+        QFile file1(ui->program1_filename->text());
+        if(!file0.exists() || !file1.exists()){
             QErrorMessage err(this);
             err.showMessage("Program not selected");
             err.exec();
