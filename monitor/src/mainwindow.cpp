@@ -184,31 +184,31 @@ void MainWindow::on_OpenButton_toggled(bool checked)
 {
     qDebug() << "opening board";
     if(checked){
-        int count = BoardMC12101Local::getBoardCount();
-        if (count < 1){
-            qCritical() << "Error: Can't find board";
-            ui->OpenButton->setChecked(false);
-            return;
-        }
-        qDebug() << "Founded " << count << " boards";
         try{
+            int count = BoardMC12101Local::getBoardCount();
+            if (count < 1){
+                throw std::exception("Error: Can't find board");
+            }
+            qDebug() << "Founded " << count << " boards";
+
             board = new BoardMC12101Local(0);
-        } catch(BoardMC12101Error &e){
+            qDebug() << "board opened";
+        } catch(std::exception &e){
             qCritical() << e.what();
             ui->OpenButton->setChecked(false);
             if(board) delete board;
             return;
         }
-        qDebug() << "board opened";
 
         try{
             board->reset();
+            qDebug() << "board reseted";
         }catch(std::exception e){
             qCritical() << e.what();
         } catch (...){
             qCritical() << "Unknown error";
         }
-        qDebug() << "board reseted";
+
         program = new HostProgram(board, ui->imagedraw);
         qDebug() << "program created";
 
