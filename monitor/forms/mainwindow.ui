@@ -193,7 +193,7 @@
    </widget>
    <widget class="QCheckBox" name="profilerCheck">
     <property name="enabled">
-     <bool>false</bool>
+     <bool>true</bool>
     </property>
     <property name="geometry">
      <rect>
@@ -209,7 +209,7 @@
    </widget>
    <widget class="QPushButton" name="ProfilerButton">
     <property name="enabled">
-     <bool>false</bool>
+     <bool>true</bool>
     </property>
     <property name="geometry">
      <rect>
@@ -220,7 +220,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>PushButton</string>
+     <string>Profiler table</string>
     </property>
    </widget>
    <widget class="QLabel" name="label_3">
@@ -258,6 +258,22 @@
      <bool>true</bool>
     </property>
    </widget>
+   <widget class="QCheckBox" name="getImageCheck">
+    <property name="geometry">
+     <rect>
+      <x>620</x>
+      <y>180</y>
+      <width>151</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Getting image</string>
+    </property>
+    <property name="checked">
+     <bool>true</bool>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -265,7 +281,7 @@
      <x>0</x>
      <y>0</y>
      <width>1023</width>
-     <height>20</height>
+     <height>22</height>
     </rect>
    </property>
   </widget>

@@ -32,7 +32,7 @@ public:
 
     void loadProgram(const char *filename, int core);
 
-    void MainWindow::setAbsFile(QLineEdit *outFilename);
+    void setAbsFile(QLineEdit *outFilename);
 
 private slots:
 
@@ -48,6 +48,8 @@ private slots:
 
     void on_OpenButton_toggled(bool checked);
 
+    void on_getImageCheck_toggled(bool checked);
+
 private:
 
 
@@ -56,7 +58,8 @@ private:
 
     HostProgram *program;
 
-    ProfilerView *profiler;
+
+    ProfilerView *profilerView;
 
     NMGL_Framebuffer *framebuffer = 0;
     PrintNmLogThread *print_thread;

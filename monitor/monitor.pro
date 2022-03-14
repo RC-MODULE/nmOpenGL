@@ -19,8 +19,10 @@ linux-g++:QMAKE_CXXFLAGS += -fpermissive
 #QMAKE_CXXFLAGS += /MT
 
 INCLUDEPATH  += $$PWD/include $(MC12101)/include $$PWD/../include $(HAL)/include
-HEADERS += $$PWD/include/*.h $$PWD/../include/framebuffer.h
-SOURCES += $$PWD/src/*.cpp
+HEADERS += $$PWD/include/*.h $$PWD/../include/framebuffer.h $(HAL)/include/*.h \
+    include/iobserver.h
+SOURCES += $$PWD/src/*.cpp \
+    src/iobserver.cpp
 
 
 # Directories

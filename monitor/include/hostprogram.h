@@ -6,6 +6,8 @@
 #include "framebuffer.h"
 #include "mc12101load.h"
 #include "boardmc12101.h"
+#include "profilerview.h"
+#include "iobserver.h"
 
 #include "printnmlog.h"
 
@@ -40,21 +42,35 @@ public:
     std::atomic<bool> is_run;
     bool profilerEnabled;
 
+
+    ProfilerModel *model;
+    QTableView *mTableView;
+
+    bool hostImageIsRefreshing;
+
+    Subject refreshImageEvent;
+    Subject initedProgramEvent;
     PrintNmLogThread *logThread;
 
     bool init();
-    void setProgramNamePointer(const QString &program0, const QString &program1);
     void setLogPlainText(const QPlainTextEdit *log0, const QPlainTextEdit *log1);
 
     NMGL_Framebuffer *fb;
-    HostProgram(BoardMC12101 *board, QLabel* imageArea){
+    HostProgram(BoardMC12101 *board){
         m_board = board;
-        m_label = imageArea;
         is_run = false;
         profilerEnabled = false;
-        //logThread = new PrintNmLogThread(board, );
+
+        hostImageIsRefreshing = true;
+
     }
-    ~HostProgram();
+
+    int *getImage(){
+        return imageDraw;
+    }
+    ~HostProgram(){
+
+    }
 
 protected:
     virtual void run();

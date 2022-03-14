@@ -20,7 +20,7 @@ using namespace std;
 #define MC12101_COUNT_OF_CORES 2
 
 class BoardMC12101;
-class BoardMC12101Access;
+class BoardMC12101Core;
 
 
 class BoardMC12101
@@ -44,11 +44,12 @@ public:
 
     virtual ~BoardMC12101();
 
-    char programNames[MC12101_COUNT_OF_CORES][100];
+    char programNames[MC12101_COUNT_OF_CORES][1024];
 
     virtual void open() = 0;
     virtual void close() = 0;
     virtual bool isOpened() const = 0;
+
 
     virtual void connectToCore(int core) = 0;
     virtual void disconnectFromCore(int core) = 0;
@@ -71,14 +72,23 @@ public:
     virtual void reset() = 0;
 };
 
-class BoardMC12101Access{
-    BoardMC12101 *mBoard;
-    PL_Access *mAccess;
-    int mCore;
-
+class BoardMC12101Core{
 public:
-    BoardMC12101Access(BoardMC12101 *board, int core);
-    ~BoardMC12101Access();
+    virtual int sync(int value) = 0;
+
+    virtual void readMemBlock(PL_Addr src, void* dst, int size32) = 0;
+    virtual void writeMemBlock(void* src, PL_Addr dst, int size32) = 0;
+
+    virtual void loadProgram(const char *filename, int core ) = 0;
+};
+
+class BoardMC12101CoreLocal : public BoardMC12101Core{
+    int sync(int value) override;
+
+    void readMemBlock(PL_Addr src, void* dst, int size32) override;
+    void writeMemBlock(void* src, PL_Addr dst, int size32) override;
+
+    void loadProgram(const char *filename, int core ) override;
 };
 
 

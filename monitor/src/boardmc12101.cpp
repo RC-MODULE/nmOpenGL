@@ -109,13 +109,13 @@ int BoardMC12101Local::sync(int value, int core){
 
 void BoardMC12101Local::readMemBlock(PL_Addr src, void* dst, int size32, int core){
     if(int error = PL_ReadMemBlock(access[core], static_cast<PL_Word *>(dst), src, size32)){
-        throw BoardMC12101Error(this, "LoadProgram failed", error);
+        throw BoardMC12101Error(this, "Read mem block error", error);
     }
 }
 
 void BoardMC12101Local::writeMemBlock(void* src, PL_Addr dst, int size32, int core){
     if(int error = PL_WriteMemBlock(access[core], static_cast<PL_Word *>(src), dst, size32)){
-        throw BoardMC12101Error(this, "LoadProgram failed", error);
+        throw BoardMC12101Error(this, "Read mem block error", error);
     }
 }
 
@@ -199,11 +199,19 @@ BoardMC12101::~BoardMC12101(){
 
 }
 
-BoardMC12101Access::BoardMC12101Access(BoardMC12101 *board, int core){
-    mBoard = board;
-    mCore = core;
+
+int BoardMC12101CoreLocal::sync(int value){
+
 }
 
-BoardMC12101Access::~BoardMC12101Access(){
+void BoardMC12101CoreLocal::readMemBlock(PL_Addr src, void* dst, int size32){
+
+}
+
+void BoardMC12101CoreLocal::writeMemBlock(void* src, PL_Addr dst, int size32){
+
+}
+
+void BoardMC12101CoreLocal::loadProgram(const char *filename, int core ) {
 
 }

@@ -3,6 +3,8 @@
 #include <QLabel>
 
 
+
+
 PrintNmLogThread::PrintNmLogThread(BoardMC12101 *_board, QPlainTextEdit *plane0, QPlainTextEdit *plane1){
 
     try{

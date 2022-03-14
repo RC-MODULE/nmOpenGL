@@ -3,13 +3,6 @@
 #include <QDebug>
 #include <exception>
 
-HostProgram::~HostProgram(){
-    /*if(print_thread){
-        print_thread->is_run = false;
-        print_thread->wait();
-    }
-    delete print_thread;*/
-}
 
 void HostProgram::run(){
     if(!init()){
@@ -22,31 +15,28 @@ void HostProgram::run(){
         while(frameBufferIsEmpty(fb)){
             std::this_thread::sleep_for(std::chrono::milliseconds(2));
         }
-        readColorFrontNM(imageTemp, fb, 0, 0, WIDTH_IMAGE, HEIGHT_IMAGE);
-        frameBufferIncTail(fb);
-        for(int y = 0; y < HEIGHT_IMAGE; y++){
-            for(int x = 0; x < WIDTH_IMAGE; x++){
-                imageDraw[y * WIDTH_IMAGE + x] = imageTemp[(HEIGHT_IMAGE - y - 1) * WIDTH_IMAGE + x];
+        model->updateList();
+        if(hostImageIsRefreshing){
+            readColorFrontNM(imageTemp, fb, 0, 0, WIDTH_IMAGE, HEIGHT_IMAGE);
+            for(int y = 0; y < HEIGHT_IMAGE; y++){
+                for(int x = 0; x < WIDTH_IMAGE; x++){
+                    imageDraw[y * WIDTH_IMAGE + x] = imageTemp[(HEIGHT_IMAGE - y - 1) * WIDTH_IMAGE + x];
+                }
             }
         }
-        QImage image((const uchar *)imageDraw, 768, 768, QImage::Format_RGB32);
-        m_label->setPixmap(QPixmap::fromImage(image).scaled(m_label->size()));
-        m_label->update();
+        frameBufferIncTail(fb);
+        refreshImageEvent.notify();
     }
-}
-
-void HostProgram::setProgramNamePointer(const QString &program0, const QString &program1){
-    programNames[0] = program0;
-    programNames[1] = program1;
+    delete model;
 }
 
 bool HostProgram::init(){
-
     try {
+        model = new ProfilerModel(m_board, "/home/i.zhilenkov/nmOpenGL/2nmc-demo-gcc/make_mc12101/main0d.map");
+
         int handshake = m_board->sync(0xC0DE0086, 0);
         if (handshake != 0xC0DE0000) {
-            qCritical() << "Error: Handshake with mc12101-nmc0 wrong!";
-            exit(handshake);
+            throw std::runtime_error("Error: Handshake with mc12101-nmc0 wrong!");
         }
         qDebug() << "Handshake passed";
 
@@ -55,10 +45,12 @@ bool HostProgram::init(){
         qDebug() << "Framebuffer addr: " << hex << fb;
     }
     catch (std::exception &e){
-        qCritical() << e.what();
-        return false;
+        qCritical() << __FILE__ << ":" << __LINE__ << ": error: " << e.what();
+        is_run = false;
+        quit();
     }
     if(!is_run) quit();
+    initedProgramEvent.notify();
     return true;
 }
 

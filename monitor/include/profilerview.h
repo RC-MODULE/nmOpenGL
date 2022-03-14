@@ -5,43 +5,50 @@
 #include <QTableView>
 #include <QAbstractTableModel>
 #include <QVariant>
+#include <map>
+#include <vector>
+#include <string>
 
 #include "boardmc12101.h"
+#include "nmprofiler.h"
+
+using namespace std;
 
 class ProfilerModel;
 
-class ProfilerThread : public QThread{
-public:
-    ProfilerThread(BoardMC12101 *board);
-    ~ProfilerThread();
-    std::atomic<bool> is_run;
-private:
-    BoardMC12101 *m_board;
-    void run();
-};
 
 class ProfilerView : public QWidget
 {
     Q_OBJECT
 public:
-    ProfilerView(BoardMC12101 *board, QWidget *parent = nullptr);
+    ProfilerView(QWidget *parent = nullptr);
     ~ProfilerView();
 
-private:
-    ProfilerThread *profilerThread;
-    ProfilerModel *model;
     QTableView *tableView;
-};
 
+};
 
 
 class ProfilerModel : public QAbstractTableModel
 {
+private:
     Q_OBJECT
+
 public:
-    ProfilerModel(QObject *parent = nullptr);
+    ProfilerModel(BoardMC12101 *board, const char *mapfile, QObject *parent = nullptr);
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     int columnCount(const QModelIndex &parent = QModelIndex()) const override;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
+    QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
+
+
+    BoardMC12101 *mBoard;
+    char mMapFile[1024];
+
+
+    std::map<unsigned, QString> funcNames;
+    std::vector<ProfilerData> profilerVector;
+
+    void updateList();
 };
 #endif // PROFILERVIEW_H
