@@ -74,7 +74,9 @@ ProfilerModel::ProfilerModel(BoardMC12101 *board, QObject *parent)
         strcpy(mMapFile, mapname.toStdString().c_str());
         qDebug() << mMapFile;
         int head = profiler_head_address(mMapFile);
+        qDebug() << hex << "head: " << head;
         int count = profiler_count(mBoard, head, 0);
+        qDebug() << hex << "count: " << count;
         profilerVector.resize(count);
     }
 
