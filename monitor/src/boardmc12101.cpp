@@ -2,6 +2,7 @@
 #include "mc12101load.h"
 #include <sstream>
 #include <stdio.h>
+#include <string>
 #include <cstring>
 #define MC12101_SYNC_TIMEOUT 5000
 
@@ -109,20 +110,26 @@ int BoardMC12101Local::sync(int value, int core){
 
 void BoardMC12101Local::readMemBlock(PL_Addr src, void* dst, int size32, int core){
     if(int error = PL_ReadMemBlock(access[core], static_cast<PL_Word *>(dst), src, size32)){
-        throw BoardMC12101Error(this, "Read mem block error", error);
+        stringstream str;
+        str << "Read mem block error: src=0x" << hex << src << ", dst=0x" << hex << dst << ", size32=" << size32;
+        throw BoardMC12101Error(this, str.str().c_str(), error);
     }
 }
 
 void BoardMC12101Local::writeMemBlock(void* src, PL_Addr dst, int size32, int core){
     if(int error = PL_WriteMemBlock(access[core], static_cast<PL_Word *>(src), dst, size32)){
-        throw BoardMC12101Error(this, "Read mem block error", error);
+        stringstream str;
+        str << "Write mem block error: src=0x" << hex << src << ", dst=0x" << hex << dst << ", size32=" << size32;
+        throw BoardMC12101Error(this, str.str().c_str(), error);
     }
 }
 
 void BoardMC12101Local::loadProgram(const char *filename, int core ){
     if(accessed[core]){
         if(int error = PL_LoadProgramFile(access[core], filename)){
-            throw BoardMC12101Error(this, "LoadProgram failed", error);
+            stringstream str;
+            str << "Load program " << filename << " failed";
+            throw BoardMC12101Error(this, str.str().c_str(), error);
         }
     }
     strcpy(programNames[core], filename);
@@ -201,7 +208,7 @@ BoardMC12101::~BoardMC12101(){
 
 
 int BoardMC12101CoreLocal::sync(int value){
-
+    return 0;
 }
 
 void BoardMC12101CoreLocal::readMemBlock(PL_Addr src, void* dst, int size32){

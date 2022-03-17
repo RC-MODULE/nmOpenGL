@@ -1,5 +1,7 @@
 #include "profilerview.h"
 #include <QDebug>
+#include <QFile>
+#include <QFileInfo>
 //#include "hostprofiler.h"
 #include "nmprofiler.h"
 
@@ -32,6 +34,9 @@ ProfilerView::~ProfilerView(){
 }
 
 void ProfilerModel::updateList(){
+    if(!mapFileExisted){
+        return;
+    }
     int head = profiler_head_address(mMapFile);
     int count = profiler_count(mBoard, head, 0);
 
@@ -55,15 +60,23 @@ void ProfilerModel::updateList(){
     emit dataChanged( topLeft, bottomRight );
 }
 
-ProfilerModel::ProfilerModel(BoardMC12101 *board, const char *mapfile, QObject *parent)
+ProfilerModel::ProfilerModel(BoardMC12101 *board, QObject *parent)
     : QAbstractTableModel(parent)
 {
-    mBoard = board;
-    strcpy(mMapFile, mapfile);
 
-    int head = profiler_head_address(mMapFile);
-    int count = profiler_count(mBoard, head, 0);
-    profilerVector.resize(count);
+    mBoard = board;
+
+    QFileInfo info(board->programNames[0]);
+    QString mapname = info.path() + "/" + info.completeBaseName() + ".map";
+    QFile file(mapname);
+    mapFileExisted = file.exists();
+    if(mapFileExisted ){
+        strcpy(mMapFile, mapname.toStdString().c_str());
+        qDebug() << mMapFile;
+        int head = profiler_head_address(mMapFile);
+        int count = profiler_count(mBoard, head, 0);
+        profilerVector.resize(count);
+    }
 
     updateList();
 }
@@ -92,7 +105,7 @@ QVariant ProfilerModel::data(const QModelIndex &index, int role) const {
     if(role == Qt::DisplayRole){
         switch(index.column()){
         case 0:
-            return funcNames[profilerVector[index.row()].funcaddr];
+            return funcNames.at(profilerVector[index.row()].funcaddr);
         case 1:
             return profilerVector[index.row()].summary;
         case 2:
@@ -116,7 +129,7 @@ QVariant ProfilerModel::data(const QModelIndex &index, int role) const {
 
 
 
-unsigned map_symbol2address(char* mapfile,char* symbol){
+unsigned map_symbol2address(const char* mapfile, const char* symbol){
     FILE* f;
     char str[1024];
     /*ifstream file(mapfile);
@@ -202,7 +215,7 @@ bool gccmap_address2symbol(char* mapfile, unsigned addr, char* fullname) {
 
 
 unsigned profiler_head_address(char* mapfile){
-    unsigned addr=map_symbol2address(mapfile,"profileList");
+    unsigned addr = map_symbol2address(mapfile, "profileList");
     if (addr)
         addr+=12;
     return addr;
@@ -227,8 +240,6 @@ int  profiler_readfunc(BoardMC12101 *board, int addr, ProfilerData* prof, int pr
         printError(e.what());
         return 0;
     }
-    //if (halReadMemBlock(prof,addr,sizeof(ProfilerData)/4))
-    //    return 0;
     profiler_funcname2char(prof->funcname);
     return prof->funcaddr;
 }
@@ -244,8 +255,6 @@ int  profiler_count(BoardMC12101 *board, unsigned head_addr, int processor) {
             printError(e.what());
             return count;
         }
-        //if (halReadMemBlock(&next_field, head_addr, 1, processor) != 0)
-        //    return 0;
         head_addr += next_field;
         count++;
     }

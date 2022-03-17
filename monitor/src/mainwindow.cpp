@@ -239,8 +239,9 @@ void MainWindow::on_OpenButton_toggled(bool checked)
         qDebug() << "program created";
 
         //print_thread = new PrintNmLogThread(board, ui->log_nm0, ui->log_nm1);
-
-        ui->connect_button->setEnabled(true);
+        if(ui->profilerCheck->isChecked()){
+            ui->connect_button->setEnabled(true);
+        }
     } else{
         qDebug() << "Main destructor";
         if(program && program->is_run){

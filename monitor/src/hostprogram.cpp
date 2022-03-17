@@ -31,8 +31,8 @@ void HostProgram::run(){
 }
 
 bool HostProgram::init(){
-    try {
-        model = new ProfilerModel(m_board, "/home/i.zhilenkov/nmOpenGL/2nmc-demo-gcc/make_mc12101/main0d.map");
+    try {        
+        model = new ProfilerModel(m_board);
 
         int handshake = m_board->sync(0xC0DE0086, 0);
         if (handshake != 0xC0DE0000) {
