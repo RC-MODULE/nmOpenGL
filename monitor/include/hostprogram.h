@@ -63,13 +63,15 @@ public:
 
         hostImageIsRefreshing = true;
 
+
+        model = new ProfilerModel(m_board);
     }
 
     int *getImage(){
         return imageDraw;
     }
     ~HostProgram(){
-
+        delete model;
     }
 
 protected:

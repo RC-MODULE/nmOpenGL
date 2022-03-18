@@ -1,6 +1,8 @@
 #include "hostprogram.h"
 #include "printnmlog.h"
 #include <QDebug>
+#include <QFileInfo>
+#include <QFile>
 #include <exception>
 
 
@@ -31,9 +33,7 @@ void HostProgram::run(){
 }
 
 bool HostProgram::init(){
-    try {        
-        model = new ProfilerModel(m_board);
-
+    try {
         int handshake = m_board->sync(0xC0DE0086, 0);
         if (handshake != 0xC0DE0000) {
             throw std::runtime_error("Error: Handshake with mc12101-nmc0 wrong!");
@@ -43,6 +43,12 @@ bool HostProgram::init(){
         if(!is_run) quit();
         fb = (NMGL_Framebuffer *)m_board->sync(profilerEnabled, 0);
         qDebug() << "Framebuffer addr: " << hex << fb;
+
+        if(profilerEnabled){
+            model->head = m_board->sync(0, 0);
+            qDebug() << "Get profiler head addr: 0x" << hex << model->head;
+        }
+        model->init();
     }
     catch (std::exception &e){
         qCritical() << __FILE__ << ":" << __LINE__ << ": error: " << e.what();

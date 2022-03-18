@@ -12,7 +12,7 @@
 
 #include <fstream>
 
-unsigned map_symbol2address(char* mapfile,char* symbol);
+unsigned map_symbol2address(const char* mapfile, const char* symbol);
 bool map_address2symbol(char* mapfile, unsigned addr, char* fullname);
 bool gccmap_address2symbol(char* mapfile, unsigned addr, char* fullname);
 unsigned profiler_head_address(char* mapfile);
@@ -23,21 +23,13 @@ int profiler_read(BoardMC12101 *board, unsigned head_addr, ProfilerData* profile
 
 #define printError(message) qCritical() << __FILE__ << ":" << __LINE__ << ": " << message
 
-ProfilerView::ProfilerView(QWidget *parent) : QWidget(parent){
-    resize(800, 800);
-    tableView = new QTableView(this);
-    tableView->resize(size());
-}
-
-ProfilerView::~ProfilerView(){
-    delete tableView;
+void ProfilerModel::init(){
+    int count = profiler_count(mBoard, head, 0);
+    qDebug() << hex << "count: " << count;
+    profilerVector.resize(count);
 }
 
 void ProfilerModel::updateList(){
-    if(!mapFileExisted){
-        return;
-    }
-    int head = profiler_head_address(mMapFile);
     int count = profiler_count(mBoard, head, 0);
 
     ProfilerData *data = new ProfilerData[count];
@@ -45,15 +37,12 @@ void ProfilerModel::updateList(){
 
     //qDebug() << "row count before: " <<
 
-    char fullname[100];
     for(int i = 0; i < count; i++){
-        if(gccmap_address2symbol(mMapFile, data[i].funcaddr, fullname)){
-            QString funcName(fullname);
-            funcNames[data[i].funcaddr] = funcName;
-            profilerVector[i] = data[i];
-            std::sort(profilerVector.begin(), profilerVector.end(), [](const ProfilerData &a, const ProfilerData &b){return a.summary > b.summary; });
-        }
+        QString funcName((char *)data[i].funcname);
+        funcNames[data[i].funcaddr] = funcName;
+        profilerVector[i] = data[i];
     }
+    std::sort(profilerVector.begin(), profilerVector.end(), [](const ProfilerData &a, const ProfilerData &b){return a.summary > b.summary; });
     delete[] data;    
     QModelIndex topLeft = createIndex(0, 0);
     QModelIndex bottomRight = createIndex( count, 6);
@@ -63,24 +52,9 @@ void ProfilerModel::updateList(){
 ProfilerModel::ProfilerModel(BoardMC12101 *board, QObject *parent)
     : QAbstractTableModel(parent)
 {
-
     mBoard = board;
-
-    QFileInfo info(board->programNames[0]);
-    QString mapname = info.path() + "/" + info.completeBaseName() + ".map";
-    QFile file(mapname);
-    mapFileExisted = file.exists();
-    if(mapFileExisted ){
-        strcpy(mMapFile, mapname.toStdString().c_str());
-        qDebug() << mMapFile;
-        int head = profiler_head_address(mMapFile);
-        qDebug() << hex << "head: " << head;
-        int count = profiler_count(mBoard, head, 0);
-        qDebug() << hex << "count: " << count;
-        profilerVector.resize(count);
-    }
-
-    updateList();
+    head = 0;
+    //updateList();
 }
 
 int ProfilerModel::rowCount(const QModelIndex &parent) const {
@@ -124,104 +98,6 @@ QVariant ProfilerModel::data(const QModelIndex &index, int role) const {
     return QVariant();
 }
 
-
-
-
-
-
-
-
-unsigned map_symbol2address(const char* mapfile, const char* symbol){
-    FILE* f;
-    char str[1024];
-    /*ifstream file(mapfile);
-    if(file.is_open()){
-        while(file.good()){
-            file >> str;
-        }
-    }*/
-
-    f=fopen(mapfile,"rt");
-    if (f==0) return 0;
-    while(!feof(f)){
-        fgets(str,1024,f);
-        const char* where=strstr(str,symbol);
-        if (where==0)
-            continue;
-        const char* addrpos=strstr(str,"0x");
-        if (addrpos==0)
-            continue;
-        unsigned addr;
-        sscanf(addrpos,"%X8",&addr);
-        return addr;
-    }
-    fclose(f);
-    return 0;
-}
-
-bool map_address2symbol(char* mapfile, unsigned addr, char* fullname){
-    FILE* f;
-    char str[1024];
-    f=fopen(mapfile,"rt");
-    if (f==0)
-        return false;
-    char addr_str[16];
-    sprintf(addr_str,"0x%08x",addr);
-
-    while(!feof(f)){
-        fgets(str,1024,f);
-        const char* where_addr=strstr(str,addr_str);
-        if (where_addr==0)
-            continue;
-        if (strstr(str,":"))
-            continue;
-        if (strlen(str)>(where_addr-str+11))
-            continue;
-        sscanf(str," %s ",fullname);
-        fclose(f);
-        return true;
-    }
-    fclose(f);
-    return false;
-}
-
-
-bool gccmap_address2symbol(char* mapfile, unsigned addr, char* fullname) {
-    FILE* f;
-    char str[1024];
-    f = fopen(mapfile, "rt");
-    if (f == 0)
-        return false;
-    char addr_str[16];
-    sprintf(addr_str, "%08x", addr);
-
-    while (!feof(f)) {
-        fgets(str, 1024, f);
-        const char* where_addr = strstr(str, addr_str);
-        if (where_addr == 0)
-            continue;
-
-        if (strstr(where_addr, "0x"))
-            continue;
-        while (strstr(where_addr, " "))
-            where_addr++;
-        //if (strlen(str)>(where_addr - str + 11))
-        //	continue;
-        sscanf(where_addr, " %s ", fullname);
-        fclose(f);
-        return true;
-    }
-    fclose(f);
-    return false;
-}
-
-
-unsigned profiler_head_address(char* mapfile){
-    unsigned addr = map_symbol2address(mapfile, "profileList");
-    if (addr)
-        addr+=12;
-    return addr;
-}
 
 char* profiler_funcname2char(unsigned* funcname )	{
     char* str86=(char*)funcname;

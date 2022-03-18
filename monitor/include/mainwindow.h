@@ -44,25 +44,19 @@ private slots:
 
     void on_profilerCheck_stateChanged(int arg1);
 
-    void on_ProfilerButton_clicked();
-
     void on_OpenButton_toggled(bool checked);
 
     void on_getImageCheck_toggled(bool checked);
 
+    void on_resetButton_clicked();
+
+    void on_loadProgramButton_clicked();
+
 private:
 
-
-    QPlainTextEdit *log[2];
     BoardMC12101 *board;
 
     HostProgram *program;
-
-
-    ProfilerView *profilerView;
-
-    NMGL_Framebuffer *framebuffer = 0;
-    PrintNmLogThread *print_thread;
 
     Ui::MainWindow *ui;
 };

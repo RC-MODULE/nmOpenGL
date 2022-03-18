@@ -88,6 +88,8 @@ template<class T> inline T* myMallocT(int count) {
 
 SECTION(".data_imu0") NMGL_Context_NM0 *NMGL_Context_NM0::context;
 
+extern int nmprofiler_head_addr;
+
 SECTION(".text_nmglvs") int nmglvsNm0Init()
 {
 	//halSleep(500);
@@ -339,6 +341,7 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 #ifdef __NM__
 	if(profiler_enabled){
 		nmprofiler_init();
+		halHostSync(nmprofiler_head_addr);
 		//nmprofiler_disabled();
 	}
 #endif

@@ -14,21 +14,6 @@
 
 using namespace std;
 
-class ProfilerModel;
-
-
-class ProfilerView : public QWidget
-{
-    Q_OBJECT
-public:
-    ProfilerView(QWidget *parent = nullptr);
-    ~ProfilerView();
-
-    QTableView *tableView;
-
-};
-
-
 class ProfilerModel : public QAbstractTableModel
 {
 private:
@@ -42,10 +27,10 @@ public:
     QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
 
 
-    bool mapFileExisted;
     BoardMC12101 *mBoard;
-    char mMapFile[1024];
+    int head;
 
+    void init();
 
     std::map<unsigned, QString> funcNames;
     std::vector<ProfilerData> profilerVector;
