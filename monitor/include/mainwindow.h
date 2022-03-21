@@ -9,7 +9,7 @@
 
 #include "hostprogram.h"
 #include "framebuffer.h"
-#include "boardmc12101.h"
+#include "boardmc12101_local.h"
 #include "printnmlog.h"
 
 #include "profilerview.h"
@@ -54,10 +54,15 @@ private slots:
 
 private:
 
+    void printMessage(const QString &message);
+    void errorMessage(const QString &message);
     BoardMC12101 *board;
 
     HostProgram *program;
+    PrintNmLog *nmLog;
 
+    QThread hostThread;
+    QThread logThread;
     Ui::MainWindow *ui;
 };
 #endif // MAINWINDOW_H

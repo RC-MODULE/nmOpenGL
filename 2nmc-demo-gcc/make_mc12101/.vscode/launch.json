@@ -25,7 +25,7 @@
             "executable": "main0d.abs",
             "program": "main0d.abs",
             "request": "launch",
-            "type": "module-debug",
+            "type": "moduledebug",
             "servertype": "external",
             "gdbpath": "nmc-gdb.exe",
             "gdbTarget": ":5555",
@@ -40,7 +40,7 @@
             "executable": "main1d.abs",
             "program": "main1d.abs",
             "request": "launch",
-            "type": "module-debug",
+            "type": "moduledebug",
             "servertype": "external",
             "gdbpath": "d:\\download\\NMC_Mingw\\bin\\nmc-gdb.exe",
             "gdbTarget": ":5556",
@@ -55,7 +55,7 @@
             "executable": "main0d.abs",
             "program": "main0d.abs",
             "request": "launch",
-            "type": "module-debug",
+            "type": "moduledebug",
             "servertype": "external",
             "gdbpath": "nmc-gdb",
             "gdbTarget": ":10000",
@@ -70,7 +70,7 @@
             "executable": "main1d.abs",
             "program": "main1d.abs",
             "request": "launch",
-            "type": "module-debug",
+            "type": "moduledebug",
             "servertype": "external",
             "gdbpath": "nmc-gdb",
             "gdbTarget": ":10001",
@@ -78,6 +78,20 @@
             "toolchainPrefix": "nmc",
             "preLaunchTask": "run nm1-qemu"
             //"runToMain": true
+        },
+
+        {
+            "cwd": "${workspaceFolder}/src",
+            "executable": "main0.abs",
+            "name": "Debug Microcontroller",
+            "request": "launch",
+            "program": "main0.abs",
+            "gdbTarget": ":5555",
+            "gdbpath": "nmc-gdb.exe",
+            "toolchainPrefix": "nmc",
+            "type": "moduledebug",
+            "servertype": "external",
+            "preLaunchTask": "test_plugin2_run"
         }
 
     ]

@@ -28,7 +28,7 @@
                 "kind": "build",
                 "isDefault": true
             },
-            "command": "scons",
+            "command": "make",
             "args": [ "nm0", "debug=1", "-j4", "${config:errecho}" ],
             "options": {
                 "cwd": "${workspaceFolder}"
@@ -41,7 +41,7 @@
                 "kind": "build",
                 "isDefault": true
             },
-            "command": "scons",
+            "command": "make",
             "args": [ "nm1", "debug=1", "-j4", "${config:errecho}" ],
             "options": {
                 "cwd": "${workspaceFolder}"
@@ -233,6 +233,86 @@
                     }
                 ]
             }
+        },
+
+
+
+
+        {
+            "label": "load_program",
+            "command": "mc12101run.exe main0.abs  ",
+            "isBackground": true,
+            "type": "shell",
+            "problemMatcher": {
+                "fileLocation": [
+                    "relative",
+                    "${workspaceFolder}"
+                ],
+                "pattern": [
+                    {
+                        "regexp": "^(.*)\\s+::\\s+(warning|ERROR):\\s+(.*)$",
+                        "file": 1,
+                        "line": 2,
+                        "message": 3
+                    }
+                ],
+                "background": {
+                    "activeOnStart": true,
+                    "beginsPattern": ".",
+                    "endsPattern": "."
+                }
+            },
+            "presentation": {
+                "reveal": "silent",
+                "revealProblems": "onProblem",
+                "close": true
+            }
+        },
+        {
+            "label": "timeout",
+            "command": "timeout 2",
+            "type": "shell"
+        },
+        {
+            "label": "monitor",
+            "command": "nm_gdb_monitor.exe",
+            "isBackground": true,
+            "type": "shell",
+            "dependsOn": [
+                "timeout"
+            ],
+            "problemMatcher": {
+                "fileLocation": [
+                    "relative",
+                    "${workspaceFolder}"
+                ],
+                "pattern": [
+                    {
+                        "regexp": "^(.*)\\s+(warning|ERROR)\\s+(.*)$",
+                        "file": 1,
+                        "line": 2,
+                        "message": 3
+                    }
+                ],
+                "background": {
+                    "activeOnStart": true,
+                    "beginsPattern": ".",
+                    "endsPattern": "."
+                }
+            },
+            "presentation": {
+                "reveal": "silent",
+                "revealProblems": "onProblem",
+                "close": true
+            }
+        },
+        {
+            "label": "test_plugin2_run",
+            "type": "shell",
+            "dependsOn": [
+                "load_program",
+                "monitor"
+            ]
         }
     ]
 }

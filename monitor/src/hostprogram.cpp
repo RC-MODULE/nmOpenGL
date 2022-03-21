@@ -5,10 +5,29 @@
 #include <QFile>
 #include <exception>
 
+HostProgram::HostProgram(BoardMC12101 *board, QObject *parent) : QObject(parent){
+    m_board = board;
+    is_run = false;
+    profilerEnabled = false;
+
+    hostImageIsRefreshing = true;
+
+
+    model = new ProfilerModel(m_board, parent);
+
+}
+
+int *HostProgram::getImage(){
+    return imageDraw;
+}
+HostProgram::~HostProgram(){
+    delete model;
+}
+
 
 void HostProgram::run(){
     if(!init()){
-        programFinished.notify();
+        emit finished();
         return;
     }
 
@@ -28,10 +47,9 @@ void HostProgram::run(){
             }
         }
         frameBufferIncTail(fb);
-        refreshImageEvent.notify();
+        emit update();
     }
-    delete model;
-    programFinished.notify();
+    emit finished();
 }
 
 bool HostProgram::init(){
@@ -62,8 +80,8 @@ bool HostProgram::init(){
         is_run = false;
         return false;
     }
-    if(!is_run) quit();
-    initedProgramEvent.notify();
+    if(!is_run) return false;
+    emit inited();
     return true;
 }
 

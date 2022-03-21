@@ -47,6 +47,7 @@ void ProfilerModel::updateList(){
     delete[] data;    
     QModelIndex topLeft = createIndex(0, 0);
     QModelIndex bottomRight = createIndex( count, 6);
+
     emit dataChanged( topLeft, bottomRight );
 }
 

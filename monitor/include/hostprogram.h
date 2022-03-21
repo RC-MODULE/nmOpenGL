@@ -18,12 +18,13 @@
 typedef int Image[WIDTH_IMAGE * HEIGHT_IMAGE];
 
 
-class HostProgram: public QThread{
+class HostProgram: public QObject{
 private:
-
+    Q_OBJECT
 
     void readFramebufferNM(NMGL_Framebuffer &framebuffer, NMGL_Framebuffer *remoteAddr);
     NMGL_Framebuffer local;
+
 protected:
     int imageTemp[WIDTH_IMAGE * HEIGHT_IMAGE];
     int imageDraw[WIDTH_IMAGE * HEIGHT_IMAGE];
@@ -48,35 +49,24 @@ public:
 
     bool hostImageIsRefreshing;
 
-    Subject refreshImageEvent;
-    Subject initedProgramEvent;
-    Subject programFinished;
-    PrintNmLogThread *logThread;
-
     bool init();
-    void setLogPlainText(const QPlainTextEdit *log0, const QPlainTextEdit *log1);
 
     NMGL_Framebuffer *fb;
-    HostProgram(BoardMC12101 *board){
-        m_board = board;
+    HostProgram(BoardMC12101 *board, QObject *parent = nullptr);
+
+    int *getImage();
+
+    ~HostProgram();
+
+signals:
+    void inited();
+    void update();
+    void finished();
+public slots:
+    void run();
+    void stop(){
         is_run = false;
-        profilerEnabled = false;
-
-        hostImageIsRefreshing = true;
-
-
-        model = new ProfilerModel(m_board);
     }
-
-    int *getImage(){
-        return imageDraw;
-    }
-    ~HostProgram(){
-        delete model;
-    }
-
-protected:
-    virtual void run();
 
 };
 

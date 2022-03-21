@@ -6,8 +6,9 @@
 #include <QTextStream>
 #include <QFileDialog>
 #include <QErrorMessage>
+#include <QMessageBox>
 
-#include "mc12101load.h"
+
 #include <iostream>
 #include "printnmlog.h"
 
@@ -15,6 +16,19 @@
 //using namespace std;
 
 #define printError(message) qCritical() << __FILE__ << ":" << __LINE__ << ": " << message
+void MainWindow::printMessage(const QString &message){
+    ui->statusbar->showMessage(message);
+    qDebug() << message;
+}
+
+void MainWindow::errorMessage(const QString &message){
+    QMessageBox msgBox;
+    msgBox.setText(message);
+    msgBox.exec();
+    printMessage(message);
+    qCritical() << message;
+}
+
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -28,24 +42,34 @@ MainWindow::MainWindow(QWidget *parent)
     board = nullptr;
     program = nullptr;
 
+
     ui->start_button->setEnabled(false);
     ui->stop_button->setEnabled(false);
     ui->loadProgramButton->setEnabled(false);
-    on_OpenButton_toggled(true);
-
+    ui->OpenButton->click();
 
     program = new HostProgram(board);
-    program->initedProgramEvent.attach([this](){
-        if(program->profilerEnabled)
+
+
+
+    connect(program, &HostProgram::inited, this, [this](){
+        if(program->profilerEnabled){
             ui->profilerTableView->setModel(program->model);
+        }
     });
-    program->refreshImageEvent.attach([this](){
+
+    connect(program, &HostProgram::update, this, [this](){
+        if(program->profilerEnabled){
+            ui->profilerTableView->reset();
+        }
+    });
+    connect(program, &HostProgram::update, this, [this](){
         QImage image((const uchar *)program->getImage(), 768, 768, QImage::Format_RGB32);
         ui->imagedraw->setPixmap(QPixmap::fromImage(image).scaled(ui->imagedraw->size()));
         ui->imagedraw->update();
     });
 
-    program->refreshImageEvent.attach([this](){
+    connect(program, &HostProgram::update, this, [this](){
         static int m_frameCount = 0;
         static int m_timeFrameCount = 0;
         static QTime m_time;
@@ -53,7 +77,7 @@ MainWindow::MainWindow(QWidget *parent)
              m_time.start();
         } else {
             float fps = float(m_timeFrameCount) / (float(m_time.elapsed()) / 1000);
-            ui->statusbar->showMessage(QString("%1 fps. %2 frames").arg(fps).arg(m_frameCount));
+            printMessage(QString("%1 fps. %2 frames").arg(fps).arg(m_frameCount));
         }
         m_frameCount++;
         m_timeFrameCount++;
@@ -63,24 +87,53 @@ MainWindow::MainWindow(QWidget *parent)
         }
     });
 
-    program->programFinished.attach([this](){
+    connect(program, &HostProgram::finished, this, [this](){
         if(ui->stop_button->isEnabled()){
             ui->stop_button->click();
         }
     });
-    qDebug() << "program created";
 
+    printMessage("program created");
+    program->moveToThread(&hostThread);
+    connect(&hostThread, &QThread::started, program, &HostProgram::run);
+
+    nmLog = new PrintNmLog(board);
+    connect(nmLog, &PrintNmLog::started, this, [this](){
+        ui->log_nm0->clear();
+        ui->log_nm1->clear();
+    });
+
+    connect(nmLog, &PrintNmLog::updated, this, [this](QString text, int core){
+        if(core == 0){
+            ui->log_nm0->appendPlainText(text); // Adds the message to the widget
+            //ui->log_nm0->moveCursor (QTextCursor::End);
+            //ui->log_nm0->insertPlainText (text);
+            //ui->log_nm0->moveCursor (QTextCursor::End);
+            ui->log_nm0->verticalScrollBar()->setValue(ui->log_nm0->verticalScrollBar()->maximum()); // Scrolls to the bottom
+        } else{
+            ui->log_nm1->appendPlainText(text); // Adds the message to the widget
+            //ui->log_nm1->moveCursor (QTextCursor::End);
+            //ui->log_nm1->insertPlainText (text);
+            //ui->log_nm1->moveCursor (QTextCursor::End);
+            ui->log_nm1->verticalScrollBar()->setValue(ui->log_nm1->verticalScrollBar()->maximum()); // Scrolls to the bottom
+        }
+    });
+    nmLog->moveToThread(&logThread);
+    connect(&logThread, &QThread::started, nmLog, &PrintNmLog::run);
 
 }
 
 MainWindow::~MainWindow()
 {
     qDebug() << "Main destructor";
-    if(program && program->is_run){
-        program->is_run = false;
-        program->wait();
-    }
+    program->is_run = false;
+    hostThread.quit();
+    hostThread.wait();
     qDebug() << "program quit";
+    nmLog->is_run = false;
+    logThread.quit();
+    logThread.wait();
+    qDebug() << "nm io quit";
     if (program) delete program;
     qDebug() << "delete program";
     if (board) delete board;
@@ -106,30 +159,34 @@ void MainWindow::on_start_button_clicked()
 {
     if(!program->is_run){
         program->is_run = true;
-        program->start();
-        qDebug() << "start";
+        hostThread.start();
+        nmLog->is_run = true;
+        logThread.start();
+
+        printMessage("start");
 
         ui->profilerCheck->setEnabled(false);
         ui->start_button->setEnabled(false);
         ui->stop_button->setEnabled(true);
     } else{
-        qDebug() << "already started";
+        printMessage("already started");
     }
 }
 
 void MainWindow::on_stop_button_clicked()
 {
-    qDebug() << "stoping...";
-    qDebug() << "wait program";
-    if(program && program->is_run){
-        program->is_run = false;
-        program->wait();
-    }
-
+    printMessage("stoping...");
+    printMessage("wait program");
+    program->is_run = false;
+    hostThread.quit();
+    hostThread.wait();
+    nmLog->is_run = false;
+    logThread.quit();
+    logThread.wait();
     ui->profilerCheck->setEnabled(true);
     ui->start_button->setEnabled(true);
     ui->stop_button->setEnabled(false);
-    qDebug() << "stop";
+    printMessage("stop");
 }
 
 
@@ -141,16 +198,13 @@ void MainWindow::on_connect_button_toggled(bool checked)
             board->connectToCore(0);
             board->connectToCore(1);
         } catch (std::exception &e) {
-            QErrorMessage err(this);
-            err.showMessage(e.what());
-            err.exec();
-            printError(e.what());
+            errorMessage(e.what());
             ui->OpenButton->setChecked(false);
             return;
         }
         ui->loadProgramButton->setEnabled(true);
         ui->start_button->setEnabled(true);
-        qDebug() << "Board opened";
+        printMessage("Board opened");
     } else{
         ui->stop_button->click();
         try {
@@ -158,14 +212,11 @@ void MainWindow::on_connect_button_toggled(bool checked)
             board->disconnectFromCore(1);
             board->close();
         } catch (std::exception &e) {
-            QErrorMessage err(this);
-            err.showMessage(e.what());
-            err.exec();
-            printError(e.what());
+            errorMessage(e.what());
         }
         ui->loadProgramButton->setEnabled(false);
         ui->start_button->setEnabled(false);
-        qDebug() << "Board closed";
+        printMessage("Board closed");
     }
 }
 
@@ -173,48 +224,50 @@ void MainWindow::on_profilerCheck_stateChanged(int arg1)
 {
     program->profilerEnabled = arg1;
     if(program->profilerEnabled )
-        qDebug() << "Profiler enabled";
+        printMessage("Profiler enabled");
     else
-        qDebug() << "Profiler disabled";
+        printMessage("Profiler disabled");
 }
 
 void MainWindow::on_OpenButton_toggled(bool checked)
 {
     qDebug() << "opening board";
+
+    unsigned int count = BoardMC12101Local::getBoardCount();
+    printMessage(QString("Founded %1 boards").arg(count));
+
     if(checked){
-        try{
-            int count = BoardMC12101Local::getBoardCount();
-            if (count < 1){
-                throw std::runtime_error("Error: Can't find board");
+        for(int i = 0; i < 1; i++){
+            try{
+                if (count < 1){
+                    throw std::runtime_error("Error: Can't find board");
+                }
+
+                board = new BoardMC12101Local(0);
+
+                ui->connect_button->setEnabled(true);
+                printMessage("board opened");
+                break;
+            } catch(std::exception &e){
+                errorMessage(e.what());
+                ui->OpenButton->setChecked(false);
+                if(board) delete board;
+                QThread::msleep(1000);
             }
-            qDebug() << "Founded " << count << " boards";
-
-            board = new BoardMC12101Local(0);
-
-            ui->connect_button->setEnabled(true);
-            qDebug() << "board opened";
-        } catch(std::exception &e){
-            QErrorMessage err(this);
-            err.showMessage(e.what());
-            err.exec();
-            printError(e.what());
-            ui->OpenButton->setChecked(false);
-            if(board) delete board;
-            return;
         }
     } else{
 
-        qDebug() << "Main destructor";
-        if(program && program->is_run){
+        printMessage("Main destructor");
+        /*if(program && program->is_run){
             program->is_run = false;
             program->wait();
-        }
-        qDebug() << "program quit";
+        }*/
+        printMessage("program quit");
         ui->connect_button->setChecked(false);
         ui->connect_button->setEnabled(false);
         delete board;
         board = nullptr;
-        qDebug() << "board closed";
+        printMessage("board closed");
     }
 }
 
@@ -224,7 +277,7 @@ void MainWindow::on_getImageCheck_toggled(bool checked)
     if(program){
         program->hostImageIsRefreshing = checked;
     } else{
-        qWarning() << "Program not exist";
+        printMessage("Program not exist");
     }
 }
 
@@ -235,12 +288,9 @@ void MainWindow::on_resetButton_clicked()
             board->reset();
         else
             throw std::runtime_error("Board not opened");
-        qDebug() << "board reseted";
+        printMessage("board reseted");
     }catch(std::exception &e){
-        QErrorMessage err(this);
-        err.showMessage(e.what());
-        err.exec();
-        printError(e.what());
+        errorMessage(e.what());
     }
 }
 
@@ -250,24 +300,18 @@ void MainWindow::on_loadProgramButton_clicked()
     QFile file1(ui->program1_filename->text());
 
     if(!file0.exists() || !file1.exists()){
-        QErrorMessage err(this);
-        err.showMessage("Program not selected");
-        err.exec();
-        printError("Program not selected");
+        errorMessage("Program not selected");
         return;
     }
     try{
         board->loadProgram(ui->program0_filename->text().toStdString().c_str(), 0);
         board->loadProgram(ui->program1_filename->text().toStdString().c_str(), 1);
-        qDebug() << "board program 0: " << board->programNames[0];
-        qDebug() << "board program 1: " << board->programNames[1];
+        printMessage(QString("board program 0: %1").arg(board->getProgramName(0)));
+        printMessage(QString("board program 1: %1").arg(board->getProgramName(1)));
     } catch(std::exception &e){
-        QErrorMessage err(this);
-        err.showMessage(e.what());
-        err.exec();
-        printError(e.what());
+        errorMessage(e.what());
         return;
     }
-    qDebug() << "program loaded";
+    printMessage("program loaded");
 }
 

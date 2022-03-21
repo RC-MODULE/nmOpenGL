@@ -10,30 +10,42 @@
 #include <string>
 #include <QScrollBar>
 #include <QFile>
+#include <QTimer>
 #include "boardmc12101.h"
 
 using namespace std;
 
-class PrintNmLogThread : public QThread
+class PrintNmLog : public QObject
 {
+    Q_OBJECT
 public:
     stringstream out[2];
     stringstream err[2];
     stringstream in[2];
 
     const char *filename[2];
-    QPlainTextEdit *logs[2];
 
-    QTextStream *textstream[2];
-    QFile *file[2];
+    QTextStream textstream[2];
+    QFile file[2];
 
     BoardMC12101 *board;
-    std::atomic<bool> is_run;
 
-    PrintNmLogThread(BoardMC12101 *board, QPlainTextEdit *plane0, QPlainTextEdit *plane1);
-    ~PrintNmLogThread();
+    PrintNmLog(BoardMC12101 *board);
+    ~PrintNmLog();
 
+    std::atomic_bool is_run;
+
+signals:
+    void started();
+    void updated(QString text, int core);
+    void finished();
+public slots:
     void run();
+private slots:
+    void start();
+    void update();
+    void stop();
+
 };
 
 #endif // REFRESH_H

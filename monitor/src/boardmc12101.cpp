@@ -1,4 +1,4 @@
-#include "boardmc12101.h"
+#include "boardmc12101_local.h"
 #include "mc12101load.h"
 #include <sstream>
 #include <stdio.h>
@@ -47,7 +47,6 @@ BoardMC12101Local::BoardMC12101Local(int boardIndex){
         io_accessed[i] = false;
         static_cast<BoardMC12101Local *>(this)->setIO(i, &std::cout, &std::cerr, &std::cin);
     }
-    //PL_SetTimeout(MC12101_SYNC_TIMEOUT);
 }
 
 BoardMC12101Local::~BoardMC12101Local(){
@@ -139,7 +138,10 @@ void BoardMC12101Local::loadProgram(const char *filename, int core ){
         }
     }
     strcpy(programNames[core], filename);
+}
 
+const char *BoardMC12101Local::getProgramName(int core){
+    return programNames[core];
 }
 
 void BoardMC12101Local::setIO(int core, ostream *_out, ostream *_err, istream *_in){
@@ -149,21 +151,25 @@ void BoardMC12101Local::setIO(int core, ostream *_out, ostream *_err, istream *_
 }
 
 void BoardMC12101Local::setIO(int core, const char *outfilename){
-    file_log[core] = fopen(outfilename, "w+");
+    strcpy(logFileNames[core], outfilename);
+    /*file_log[core] = fopen(outfilename, "w+");
     if(file_log[core] == 0){
         throw BoardMC12101Error(this, "set IO error");
-    }
+    }*/
 }
 
 void BoardMC12101Local::openIO(const char *filename, int core){
     if(int error = PL_GetAccess(desc, core, &io_access[core])){
         throw BoardMC12101Error(this, "Opening IO error", error);
     }
+    file_log[core] = fopen(logFileNames[core], "w+");
+    if(file_log[core] == 0){
+        throw BoardMC12101Error("fopen error");
+    }
     if(file_log[core]){
         io_services[core] = new IO_Service(filename, io_access[core], file_log[core]);
     } else {
         //io_services[core] = new IO_Service(filename, io_access[core], NULL, 1, nm_cout[core], nm_cerr[core], nm_cin[core]);
-        io_services[core] = new IO_Service(filename, io_access[core], NULL);
     }
     io_accessed[core] = true;
 }
@@ -171,11 +177,7 @@ void BoardMC12101Local::openIO(const char *filename, int core){
 void BoardMC12101Local::flushIO(int core){
     if(file_log[core]){
         try{
-            //closeIO(core);
-            //openIO(programNames[core], core);
-            //io_services[core]->dispatch();
-            //delete io_services[core];
-            //io_services[core] = new IO_Service(programNames[core], io_access[core], file_log[core]);
+            fflush(file_log[core]);
         } catch (...){
             std::cerr << "nm io error" << std::endl;
         }
@@ -197,34 +199,100 @@ void BoardMC12101Local::reset(){
     if(int error = PL_ResetBoard(desc)){
         throw BoardMC12101Error(this, "Reset board error", error);
     }
+    if(int error = PL_LoadInitCode(desc)){
+        throw BoardMC12101Error(this, "Load init code error", error);
+    }
+
 }
 
 BoardMC12101Error::BoardMC12101Error(BoardMC12101 *_board, const char *_message, int _error)
 {
     stringstream mes;
     board = _board;
-    mes << _message << ": " << errors[_error];
-    message = mes.str();
     error = _error;
+    if(error < sizeof(errors) / sizeof(char *))
+        mes << _message << ": " << errors[error];
+    else
+        mes << _message << ": " << error;
+    message = mes.str();
+}
+
+BoardMC12101Error::BoardMC12101Error(const char *_message, int _error)
+{
+    stringstream mes;
+    error = _error;
+    if(error < sizeof(errors) / sizeof(char *))
+        mes << _message << ": " << errors[error];
+    else
+        mes << _message << ": " << error;
+    message = mes.str();
 }
 
 BoardMC12101::~BoardMC12101(){
 
 }
 
+/*BoardMC12101CoreLocal::BoardMC12101CoreLocal(PL_Board *boardDesc){
+    mBoard = boardDesc;
+    mAccess = nullptr;
+    connect();
+}
+
+void BoardMC12101CoreLocal::connect(){
+    if(int error = PL_GetAccess(mBoard, 0, &mAccess)){
+        throw BoardMC12101Error("Can't get access", error);
+    }
+}
+void BoardMC12101CoreLocal::disconnect(){
+    if(int error = PL_CloseAccess(mAccess)){
+        throw BoardMC12101Error("Can't close access", error);
+    }
+    mAccess = nullptr;
+}
 
 int BoardMC12101CoreLocal::sync(int value){
-    return 0;
+    int result;
+    if(int error = PL_Sync(mAccess, value, &result)){
+        throw BoardMC12101Error("Can't get access", error);
+    }
+    return result;
 }
 
 void BoardMC12101CoreLocal::readMemBlock(PL_Addr src, void* dst, int size32){
-
+    if(int error = PL_ReadMemBlock(mAccess, static_cast<PL_Word *>(dst), src, size32)){
+        stringstream str;
+        str << "Read mem block error: src=0x" << hex << src << ", dst=0x" << hex << dst << ", size32=" << size32;
+        throw BoardMC12101Error(str.str().c_str(), error);
+    }
 }
 
 void BoardMC12101CoreLocal::writeMemBlock(void* src, PL_Addr dst, int size32){
-
+    if(int error = PL_WriteMemBlock(mAccess, static_cast<PL_Word *>(src), dst, size32)){
+        stringstream str;
+        str << "Write mem block error: src=0x" << hex << src << ", dst=0x" << hex << dst << ", size32=" << size32;
+        throw BoardMC12101Error(str.str().c_str(), error);
+    }
 }
 
-void BoardMC12101CoreLocal::loadProgram(const char *filename, int core ) {
-
+void BoardMC12101CoreLocal::loadProgram(const char *filename) {
+    if(int error = PL_LoadProgramFile(mAccess, filename)){
+        stringstream str;
+        str << "Load program " << filename << " failed";
+        throw BoardMC12101Error(str.str().c_str(), error);
+    }
+    strcpy(programName, filename);
 }
+
+const char *BoardMC12101CoreLocal::getFileName(){
+    return programName;
+}
+
+void BoardMC12101CoreLocal::setTimeout(uint32_t time){
+    if(int error = PL_SetTimeout(time)){
+        throw BoardMC12101Error("Can't set timeout", error);
+    }
+}
+
+BoardMC12101 *BoardMC12101CoreLocal::getBoard(){
+    return nullptr;
+}*/
