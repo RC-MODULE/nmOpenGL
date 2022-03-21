@@ -69,10 +69,16 @@ BoardMC12101Local::~BoardMC12101Local(){
 
 int BoardMC12101Local::getBoardCount(){
     unsigned int count = 0;
-    if(PL_GetBoardCount(&count)){
-        throw BoardMC12101Error(nullptr, "Can't open driver");
+    if(int error = PL_GetBoardCount(&count)){
+        throw BoardMC12101Error(nullptr, "Can't open driver", error);
     }
     return count;
+}
+
+void BoardMC12101Local::setTimeout(uint32_t time){
+    if(int error = PL_SetTimeout(time)){
+        throw BoardMC12101Error(this, "Can't set timeout", error);
+    }
 }
 
 void BoardMC12101Local::connectToCore(int core){

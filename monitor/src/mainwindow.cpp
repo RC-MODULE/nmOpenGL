@@ -61,6 +61,12 @@ MainWindow::MainWindow(QWidget *parent)
             m_timeFrameCount = 0;
         }
     });
+
+    program->programFinished.attach([this](){
+        if(ui->stop_button->isEnabled()){
+            ui->stop_button->click();
+        }
+    });
     qDebug() << "program created";
 
 
@@ -118,7 +124,6 @@ void MainWindow::on_stop_button_clicked()
         program->is_run = false;
         program->wait();
     }
-    //ui->resetButton->click();
 
     ui->profilerCheck->setEnabled(true);
     ui->start_button->setEnabled(true);
@@ -143,6 +148,7 @@ void MainWindow::on_connect_button_toggled(bool checked)
         ui->start_button->setEnabled(true);
         qDebug() << "Board opened";
     } else{
+        ui->stop_button->click();
         try {
             board->disconnectFromCore(0);
             board->disconnectFromCore(1);
@@ -151,6 +157,7 @@ void MainWindow::on_connect_button_toggled(bool checked)
             printError(e.what());
         }
         ui->loadProgramButton->setEnabled(false);
+        ui->start_button->setEnabled(false);
         qDebug() << "Board closed";
     }
 }

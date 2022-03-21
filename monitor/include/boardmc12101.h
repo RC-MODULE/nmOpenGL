@@ -55,6 +55,7 @@ public:
     virtual void disconnectFromCore(int core) = 0;
 
     virtual int sync(int value, int core = 0) = 0;
+    virtual void setTimeout(uint32_t time){};
 
     virtual void readMemBlock(PL_Addr src, void* dst, int size32, int core = 0) = 0;
     virtual void writeMemBlock(void* src, PL_Addr dst, int size32, int core = 0) = 0;
@@ -108,6 +109,7 @@ public:
     void disconnectFromCore(int core) override;
 
     int sync(int value, int core = 0) override;
+    void setTimeout(uint32_t time) override;
 
     void readMemBlock(PL_Addr src, void* dst, int size32, int core = 0) override;
     void writeMemBlock(void* src, PL_Addr dst, int size32, int core = 0) override;

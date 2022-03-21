@@ -30,6 +30,7 @@ void ProfilerModel::init(){
 }
 
 void ProfilerModel::updateList(){
+    if(head == 0) return;
     int count = profiler_count(mBoard, head, 0);
 
     ProfilerData *data = new ProfilerData[count];
@@ -54,7 +55,6 @@ ProfilerModel::ProfilerModel(BoardMC12101 *board, QObject *parent)
 {
     mBoard = board;
     head = 0;
-    //updateList();
 }
 
 int ProfilerModel::rowCount(const QModelIndex &parent) const {
@@ -78,6 +78,8 @@ QVariant ProfilerModel::headerData(int section, Qt::Orientation orientation, int
 
 QVariant ProfilerModel::data(const QModelIndex &index, int role) const {
 
+    if(profilerVector.size() <= index.row())
+        return QVariant();
     if(role == Qt::DisplayRole){
         switch(index.column()){
         case 0:

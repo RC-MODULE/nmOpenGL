@@ -50,6 +50,7 @@ public:
 
     Subject refreshImageEvent;
     Subject initedProgramEvent;
+    Subject programFinished;
     PrintNmLogThread *logThread;
 
     bool init();
