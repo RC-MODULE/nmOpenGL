@@ -52,10 +52,10 @@ bool HostProgram::init(){
 
         if(profilerEnabled){
             model->head = m_board->sync(0, 0);
+            model->init();
             if(!is_run) return false;
             qDebug() << "Get profiler head addr: 0x" << hex << model->head;
         }
-        model->init();
     }
     catch (std::exception &e){
         qCritical() << __FILE__ << ":" << __LINE__ << ": error: " << e.what();

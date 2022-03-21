@@ -293,7 +293,7 @@
    </widget>
    <widget class="QPushButton" name="resetButton">
     <property name="enabled">
-     <bool>false</bool>
+     <bool>true</bool>
     </property>
     <property name="geometry">
      <rect>
@@ -327,7 +327,7 @@
      <x>0</x>
      <y>0</y>
      <width>1023</width>
-     <height>22</height>
+     <height>20</height>
     </rect>
    </property>
   </widget>

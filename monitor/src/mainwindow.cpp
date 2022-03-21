@@ -36,7 +36,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     program = new HostProgram(board);
     program->initedProgramEvent.attach([this](){
-        ui->profilerTableView->setModel(program->model);
+        if(program->profilerEnabled)
+            ui->profilerTableView->setModel(program->model);
     });
     program->refreshImageEvent.attach([this](){
         QImage image((const uchar *)program->getImage(), 768, 768, QImage::Format_RGB32);
@@ -140,6 +141,9 @@ void MainWindow::on_connect_button_toggled(bool checked)
             board->connectToCore(0);
             board->connectToCore(1);
         } catch (std::exception &e) {
+            QErrorMessage err(this);
+            err.showMessage(e.what());
+            err.exec();
             printError(e.what());
             ui->OpenButton->setChecked(false);
             return;
@@ -154,6 +158,9 @@ void MainWindow::on_connect_button_toggled(bool checked)
             board->disconnectFromCore(1);
             board->close();
         } catch (std::exception &e) {
+            QErrorMessage err(this);
+            err.showMessage(e.what());
+            err.exec();
             printError(e.what());
         }
         ui->loadProgramButton->setEnabled(false);
@@ -187,6 +194,9 @@ void MainWindow::on_OpenButton_toggled(bool checked)
             ui->connect_button->setEnabled(true);
             qDebug() << "board opened";
         } catch(std::exception &e){
+            QErrorMessage err(this);
+            err.showMessage(e.what());
+            err.exec();
             printError(e.what());
             ui->OpenButton->setChecked(false);
             if(board) delete board;
@@ -227,9 +237,10 @@ void MainWindow::on_resetButton_clicked()
             throw std::runtime_error("Board not opened");
         qDebug() << "board reseted";
     }catch(std::exception &e){
+        QErrorMessage err(this);
+        err.showMessage(e.what());
+        err.exec();
         printError(e.what());
-    } catch (...){
-        printError("Unknown error");
     }
 }
 
@@ -251,6 +262,9 @@ void MainWindow::on_loadProgramButton_clicked()
         qDebug() << "board program 0: " << board->programNames[0];
         qDebug() << "board program 1: " << board->programNames[1];
     } catch(std::exception &e){
+        QErrorMessage err(this);
+        err.showMessage(e.what());
+        err.exec();
         printError(e.what());
         return;
     }
