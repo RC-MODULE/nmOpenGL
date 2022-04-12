@@ -22,7 +22,8 @@ extern "C"{
 
 #ifdef DEBUG_LEVEL
 #define DEBUG_TEST_OK()     	 if(DEBUG_LEVEL > 0) { printf("OK   %s\n", __FUNCTION__); }
-#define DEBUG_PLOG_FILE()        if(DEBUG_LEVEL > 0) { printf("%s: \n", __FILE__); }
+#define DEBUG_PLOG_FILE()        if(DEBUG_LEVEL > 0) { printf("%s\n", __FILE__); }
+#define DEBUG_PLOG_FUNCTION()    if(DEBUG_LEVEL > 2) { printf("%s\n", __FUNCTION__); }
 
 #define DEBUG_PLOG_LEVEL_0(...)  if(DEBUG_LEVEL > 0) { printf(__VA_ARGS__); }
 #define DEBUG_PLOG_LEVEL_1(...)  if(DEBUG_LEVEL > 1) { printf(__VA_ARGS__); }

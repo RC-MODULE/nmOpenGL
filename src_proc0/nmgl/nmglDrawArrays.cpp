@@ -15,6 +15,7 @@
 #include "nmprofiler.h"
 
 #include "raster_float.h"
+#include "debugprint.h"
 
 
 SECTION(".data_imu6")	ArrayManager<float> vertexAM;
@@ -78,7 +79,7 @@ void printMatrix(mat4nm32f* matrix);
 
 SECTION(".text_nmgl")
 void nmglDrawArrays(NMGLenum mode, NMGLint first, NMGLsizei count) {
-
+	DEBUG_PLOG_FUNCTION();
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
 	if (cntxt->vertexArray.enabled == NMGL_FALSE) {
 		return;

@@ -1,11 +1,13 @@
 #include "demo3d_nm0.h"
 #include "nmblas.h"
 #include "nmgl.h"
+#include "debugprint.h"
 
 
 #pragma code_section ".text_nmgl"
 SECTION(".text_nmgl")
 void nmglPushMatrix() {
+	DEBUG_PLOG_FUNCTION();
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
 	if (cntxt->currentMatrixStack->current < cntxt->currentMatrixStack->size - 1) {
 		nmblas_scopy(16, (float*)&cntxt->currentMatrixStack->base[cntxt->currentMatrixStack->current], 1,

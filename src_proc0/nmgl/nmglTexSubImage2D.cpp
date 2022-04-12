@@ -1,4 +1,5 @@
 #include "demo3d_nm0.h"
+#include "debugprint.h"
 
 
 #pragma code_section ".text_nmgl"
@@ -6,6 +7,7 @@
 extern NMGLint getTexelSizeUbytes(NMGLint format);
 void nmglTexSubImage2D (NMGLenum target, NMGLint level, NMGLint xoffset, NMGLint yoffset, NMGLsizei width, NMGLsizei height, NMGLenum format, NMGLenum type, const void *pixels)
 {
+	DEBUG_PLOG_FUNCTION();
 	//int size=0;
 	int i=0,j=0;
 	NMGLint tSize=0;

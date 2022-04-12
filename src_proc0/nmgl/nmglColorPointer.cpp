@@ -1,9 +1,11 @@
 #include "demo3d_nm0.h"
 #include "nmgl.h"
+#include "debugprint.h"
 
 
 SECTION(".text_nmgl")
 void nmglColorPointer(NMGLint size, NMGLenum type, NMGLsizei stride, const NMGLvoid *pointer) {
+	DEBUG_PLOG_FUNCTION();
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
 	if(size!=4){
 		cntxt->error = NMGL_INVALID_VALUE;

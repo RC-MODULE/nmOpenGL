@@ -2,6 +2,7 @@
 
 //#include "nmgl.h"
 #include "demo3d_nm0.h"
+#include "debugprint.h"
 //#include "malloc.h" //func malloc
 //#include "nmtype.h" //func malloc32
 //#define DEBUG
@@ -28,6 +29,7 @@ Texel size in NMGLubytes
 */
 NMGLint getTexelSizeUbytes(NMGLint format)
 {
+	DEBUG_PLOG_FUNCTION();
 	switch(format)
 	{
 		case NMGL_RGB:

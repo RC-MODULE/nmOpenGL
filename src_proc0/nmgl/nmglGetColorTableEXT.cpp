@@ -1,4 +1,5 @@
 #include "demo3d_nm0.h"
+#include "debugprint.h"
 
 SECTION(".text_nmgl")
 
@@ -8,6 +9,7 @@ void nmglGetColorTableEXT (NMGLenum target, NMGLenum format, NMGLenum type,void 
 
 void nmglGetColorTableEXT (NMGLenum target, NMGLenum format, NMGLenum type,void *data)
 {
+	DEBUG_PLOG_FUNCTION();
 	int i=0;
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
 	if ((target != NMGL_TEXTURE_2D)&& (target != NMGL_SHARED_TEXTURE_PALETTE_EXT )) {cntxt->error=NMGL_INVALID_ENUM;return;}

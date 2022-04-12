@@ -2,6 +2,7 @@
 #include "nmpp.h"
 #include "nmgl.h"
 #include "utility_float.h"
+#include "debugprint.h"
 
 #include <math.h>
 
@@ -9,6 +10,7 @@
 
 SECTION(".text_nmgl")
 void nmglScalef(NMGLfloat scaleX, NMGLfloat scaleY, NMGLfloat scaleZ) {
+	DEBUG_PLOG_FUNCTION();
 	mat4nm32f temp ={scaleX,0,0,0,
 					 0,scaleY,0,0,
 					 0,0,scaleZ,0,

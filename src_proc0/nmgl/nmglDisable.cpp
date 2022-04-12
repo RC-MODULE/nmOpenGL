@@ -4,12 +4,14 @@
 #include "nmpp.h"
 #include "ringbuffer.h"
 #include "nmglservice_nm0.h"
+#include "debugprint.h"
 
 
 #pragma code_section ".text_nmgl"
 
 SECTION(".text_nmgl")
 void nmglDisable(NMGLenum cap) {
+	DEBUG_PLOG_FUNCTION();
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
 	NM_Command command;
 	switch (cap) {

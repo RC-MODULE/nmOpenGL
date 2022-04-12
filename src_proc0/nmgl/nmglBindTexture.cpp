@@ -1,6 +1,7 @@
 
 #include "demo3d_nm0.h"
 //#include "nmgl.h"
+#include "debugprint.h"
 
 
 #pragma code_section ".text_nmgl"
@@ -30,6 +31,7 @@ TexObject* texObjCreate(NMGLenum target,NMGLuint texture,NMGL_Context_NM0 *cntxt
 
 void nmglBindTexture (NMGLenum target, NMGLuint texture)
 {
+	DEBUG_PLOG_FUNCTION();
 	TexObject* txp=NULL;
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
 	if(target != NMGL_TEXTURE_2D){cntxt->error=NMGL_INVALID_ENUM;return;}

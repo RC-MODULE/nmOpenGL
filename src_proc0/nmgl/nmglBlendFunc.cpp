@@ -1,9 +1,10 @@
 #include "demo3d_nm0.h"
 #include "nmgl.h"
+#include "debugprint.h"
 
 
 void nmglBlendFunc (NMGLenum sfactor, NMGLenum dfactor){
-    
+    DEBUG_PLOG_FUNCTION();
     NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
     switch(sfactor)
     {

@@ -1,6 +1,7 @@
 #include "demo3d_nm0.h"
 #include "nmgl.h"
 #include "utility_float.h"
+#include "debugprint.h"
 
 #include <math.h>
 
@@ -8,6 +9,7 @@
 
 SECTION(".text_nmgl")
 void nmglOrthof (NMGLfloat left, NMGLfloat right, NMGLfloat bottom, NMGLfloat top, NMGLfloat zNear, NMGLfloat zFar){
+	DEBUG_PLOG_FUNCTION();
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
 	mat4nm32f temp ={2/(right-left),0,0,0,
 					 0,2/(top-bottom),0,0,

@@ -1,6 +1,7 @@
 #include "demo3d_nm1.h"
+#include "debugprint.h"
 
-#define DEBUG_LEVEL 1
+//#define DEBUG_LEVEL 1
 
 SECTION(".text_demo3d") void NMGL_SetActiveTexture(NMGL_Context_NM1 *cntxt, NM_Command *command) {
 	cntxt->texState.activeTexUnitIndex = command->params[0].ui;

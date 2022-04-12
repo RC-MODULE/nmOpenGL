@@ -1,6 +1,7 @@
 #include "demo3d_nm0.h"
 #include "nmgl.h"
 #include "nmglservice_nm0.h"
+#include "debugprint.h"
 
 
 #pragma code_section ".text_nmgl"
@@ -8,6 +9,7 @@
 SECTION(".text_nmgl")
 void nmglHint (NMGLenum target, NMGLenum mode)
 {
+	DEBUG_PLOG_FUNCTION();
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
 	
 	if ((target != NMGL_PERSPECTIVE_CORRECTION_HINT	&&

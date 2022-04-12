@@ -2,6 +2,7 @@
 #include "nmpp.h"
 #include "nmgl.h"
 #include "utility_float.h"
+#include "debugprint.h"
 
 #include <math.h>
 
@@ -9,6 +10,7 @@
 
 SECTION(".text_nmgl")
 void nmglRotatef(NMGLfloat angle, NMGLfloat x, NMGLfloat y, NMGLfloat z) {
+	DEBUG_PLOG_FUNCTION();
 	mat4nm32f temp ={1,0,0,0,
 					 0,1,0,0,
 					 0,0,1,0,

@@ -1,12 +1,14 @@
 #include "demo3d_nm0.h"
 #include "nmgl.h"
 #include "lighting.h"
+#include "debugprint.h"
 
 
 #pragma code_section ".text_nmgl"
 
 SECTION(".text_nmgl")
 void nmglLightf(NMGLenum color, NMGLenum pname, NMGLfloat param) {
+	DEBUG_PLOG_FUNCTION();
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
 	LightingInfo* lightingInfo = &cntxt->lightingInfo;
 	color -= NMGL_LIGHT0;

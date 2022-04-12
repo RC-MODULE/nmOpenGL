@@ -1,4 +1,5 @@
 #include "demo3d_nm0.h"
+#include "debugprint.h"
 //SECTION(".textures_mipmap_mem")  NMGLubyte mem_palette[NMGL_MAX_PALETTE_WIDTH*RGBA_TEXEL_SIZE_UBYTE*(NMGL_MAX_TEX_OBJECTS+1)];// zero is for shared palette
 
 
@@ -32,6 +33,7 @@ void nmglColorTableEXT (NMGLenum target, NMGLenum internalformat, NMGLsizei widt
 
 void nmglColorTableEXT (NMGLenum target, NMGLenum internalformat, NMGLsizei width, NMGLenum format, NMGLenum type, const void *data)
 {
+	DEBUG_PLOG_FUNCTION();
 	int i=0;
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
 	NMGLubyte *palette_p=0;

@@ -48,7 +48,7 @@ CXX_FLAGS	 	 = -std=c++11
 C_FLAGS 	 	 = -std=c99
 
 ifeq ($(CONFIGURATION),Debug)
-CC_FLAGS	+= -DDEBUG -DDEBUG_LEVEL=1
+CC_FLAGS	+= -DDEBUG -DDEBUG_LEVEL=2
 endif
 #=================== SOURCE & OBJECTS COLLECTION ===========================
 .SUFFIXES:

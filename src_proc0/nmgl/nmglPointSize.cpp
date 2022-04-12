@@ -2,12 +2,14 @@
 #include "nmgl.h"
 #include "math.h"
 #include "nmglservice_nm0.h"
+#include "debugprint.h"
 
 
 #pragma code_section ".text_nmgl"
 
 SECTION(".text_nmgl")
 void nmglPointSize(NMGLfloat size) {
+	DEBUG_PLOG_FUNCTION();
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
 	if (size <= 0) {
 		cntxt->error = NMGL_INVALID_VALUE;

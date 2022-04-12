@@ -3,6 +3,7 @@
 #include "stdio.h"
 #include "nmgl.h"
 #include "segment.h"
+#include "debugprint.h"
 
 
 #pragma code_section ".text_nmgl"
@@ -12,6 +13,7 @@ SECTION(".data_imu7") float viewportValues_f[4];
 
 SECTION(".text_nmgl")
 void nmglViewport(NMGLint x, NMGLint y, NMGLsizei width, NMGLsizei height) {
+	DEBUG_PLOG_FUNCTION();
 	NMGL_Context_NM0* cntxt = NMGL_Context_NM0::getContext();
 	if (width < 0 || height < 0) {
 		cntxt->error = NMGL_INVALID_VALUE;

@@ -47,8 +47,6 @@ SECTION(".data_imu0") float w2[POLYGONS_SIZE];
 
 
 int exitNM1 = 0;
-#define PRINT(...) printf(__VA_ARGS__);
-//#define PRINT(...) 
 
 SECTION(".data_imu0") HalRingBufferData<NM_Command, PRIORITY_SIZE> linkSynchro;
 SECTION(".data_imu0") HalRingBufferConnector<NM_Command, PRIORITY_SIZE> linkConnector(&linkSynchro);
@@ -81,16 +79,16 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 	//---------- start nm program ------------
 	NMGL_Context_NM1 *cntxt;
 	ImageData* imagesData;
-	PRINT("nm1 initialization\n");
+	DEBUG_PLOG_LEVEL_1("nm1 initialization\n");
 	try {
 		int fromNm0 = halSync(0xC0DE0001, 0);		// send handshake to host
 		if (fromNm0 != 0xC0DE0000) {					// get  handshake from host
 			throw -1;
 		}
-		PRINT("handshake nm0 passed\n");
+		DEBUG_PLOG_LEVEL_1("handshake nm0 passed\n");
 		NMGLSynchroData* synchroData = (NMGLSynchroData*)halSyncAddr(0, 0);
 		nmglSynchro.init(synchroData);
-		PRINT("get synchro data\n");
+		DEBUG_PLOG_LEVEL_1("get synchro data\n");
 
 		setHeap(0);
 		NMGL_Context_NM1::bind(&nmglContext);
@@ -99,7 +97,7 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 		cntxt->texState.palette_pointers[0] = (NMGLubyte *)halSyncAddr(0, 0);
 		cntxt->texState.paletts_widths_pointers[0] = (unsigned int*)halSyncAddr(0, 0);
 		cntxt->polygon.stipple.pattern = (NMGLubyte *)halSyncAddr(0, 0);
-		PRINT("get textState\n");
+		DEBUG_PLOG_LEVEL_1("get textState\n");
 
 		setHeap(11);
 		cntxt->patterns = myMallocT<PatternsArray>();
@@ -107,7 +105,7 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 		setHeap(13);
 		hostCreatePatterns(cntxt->patterns);
 		halSleep(10);
-		PRINT("patterns inited\n");
+		DEBUG_PLOG_LEVEL_1("patterns inited\n");
 
 		cntxt->defaultFramebuffer = (NMGL_Framebuffer *)halSyncAddr(0, 0);
 
@@ -119,7 +117,7 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 		cntxt->texState.init();
 		cntxt->init_elements();
 		cntxt->shadeModel=NMGL_SMOOTH;
-		PRINT("texState inited\n");
+		DEBUG_PLOG_LEVEL_1("texState inited\n");
 	}
 	catch (int &e) {
 		if (e == -2) {
@@ -130,9 +128,9 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 #ifdef TEST_NMGL_TEX_FUNC
 	halSyncAddr((void*)cntxt, 0);	
 #endif //TEST_NMGL_TEX_FUNC
-	PRINT("sync with nm0...");
+	DEBUG_PLOG_LEVEL_1("sync with nm0...");
 	halSync(0x600DB00F, 0);	// send ok to host
-	PRINT("OK\n");
+	DEBUG_PLOG_LEVEL_1("OK\n");
 	
 #ifdef __GNUC__
 	halInstrCacheEnable();
@@ -179,7 +177,7 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 	cntxt->t0 = clock();
 	cntxt->pointSize = 1;
 
-	PRINT("Buffers inited");
+	DEBUG_PLOG_LEVEL_1("Buffers inited\n");
 
 //TEXTURING_PART
 	cntxt->x0 = x0;
@@ -200,9 +198,9 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 	cntxt->w1 = w1;
 	cntxt->w2 = w2;
 
-	PRINT("sync with nm0...");
+	DEBUG_PLOG_LEVEL_1("sync with nm0...");
 	halSync(0x600D600D, 0);
-	PRINT("OK\n");
+	DEBUG_PLOG_LEVEL_1("OK\n");
 
 	return 0;
 } 

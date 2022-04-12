@@ -1,5 +1,6 @@
 #include "demo3d_nm0.h"
 #include "nmgl.h"
+#include "debugprint.h"
 
 #include "nmpp.h"
 
@@ -8,6 +9,7 @@
 SECTION(".text_nmgl")
 void nmglColor4f(NMGLfloat red, NMGLfloat green, NMGLfloat blue, NMGLfloat alpha)
 {
+	DEBUG_PLOG_FUNCTION();
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
 	cntxt->currentColor.vec[0] = red;
 	cntxt->currentColor.vec[1] = green;
@@ -18,6 +20,7 @@ void nmglColor4f(NMGLfloat red, NMGLfloat green, NMGLfloat blue, NMGLfloat alpha
 SECTION(".text_nmgl")
 void nmglColor4ub(NMGLubyte red, NMGLubyte green, NMGLubyte blue, NMGLubyte alpha)
 {
+	DEBUG_PLOG_FUNCTION();
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
 	cntxt->currentColor.vec[0] = (float)red / RED_COEFF;
 	cntxt->currentColor.vec[1] = (float)green / GREEN_COEFF;
@@ -28,6 +31,7 @@ void nmglColor4ub(NMGLubyte red, NMGLubyte green, NMGLubyte blue, NMGLubyte alph
 SECTION(".text_nmgl")
 void nmglColor4fv(NMGLfloat *v)
 {
+	DEBUG_PLOG_FUNCTION();
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
 	cntxt->currentColor.vec[0] = v[0];
 	cntxt->currentColor.vec[1] = v[1];
@@ -38,6 +42,7 @@ void nmglColor4fv(NMGLfloat *v)
 SECTION(".text_nmgl")
 void nmglColor4ubv(NMGLubyte *v)
 {
+	DEBUG_PLOG_FUNCTION();
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
 	cntxt->currentColor.vec[0] = (float)v[0];
 	cntxt->currentColor.vec[1] = (float)v[1];

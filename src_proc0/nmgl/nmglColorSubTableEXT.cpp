@@ -1,4 +1,5 @@
 #include "demo3d_nm0.h"
+#include "debugprint.h"
 
 SECTION(".text_nmgl")
 
@@ -9,6 +10,7 @@ void nmglColorSubTableEXT (NMGLenum target, NMGLsizei start, NMGLsizei count, NM
 extern NMGLubyte mem_palette[NMGL_MAX_PALETTE_WIDTH*RGBA_TEXEL_SIZE_UBYTE*NMGL_MAX_TEX_OBJECTS];
 void nmglColorSubTableEXT (NMGLenum target, NMGLsizei start, NMGLsizei count, NMGLenum format, NMGLenum type, const void *data)
 {
+	DEBUG_PLOG_FUNCTION();
 	int i=0;
 	NMGL_Context_NM0 *cntxt = NMGL_Context_NM0::getContext();
 	NMGLubyte* p;
