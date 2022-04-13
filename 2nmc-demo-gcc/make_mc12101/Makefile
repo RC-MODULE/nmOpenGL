@@ -105,7 +105,7 @@ dump:
 build: $(TARGET)
 	
 $(TMP_DIR):
-	-mkdir -p "$(@)"
+	-mkdir "$(@)"
 
 $(TARGET): $(TMP_DIR) $(OBJECTS) nmc4vars_win.mk Makefile lib
 	$(CC) $(CC_FLAGS) $(LINKER_FLAGS) $(OBJECTS) $(LIBS)
@@ -120,7 +120,7 @@ lib:
 	$(MAKE) -C $(ROOT)/make ARCH=nmc4_$(CORE) -j4 lib
 
 $(OUT_DIR):
-	-mkdir -p "$(@)"
+	-mkdir "$(@)"
 	
 $(TMP_DIR)/%.o: %.asm Makefile
 	$(AS) -MMD -c -mmas $(AS_FLAGS) $(<) -o$(@) $(INC_DIRS)

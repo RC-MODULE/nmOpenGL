@@ -7,10 +7,9 @@ nmc4vars_win.mk:
 	-copy "$(NMC_GCC_TOOLPATH)\nmc4-ide\include\nmc4vars_win.mk" nmc4vars_win.mk
 
 -include 		 nmc4vars_win.mk
+-include 		 $(ROOT)/global.mk
 SHELL 			 = cmd
 endif
-#ERRECHO			 = 2>&1|cerrecho
-ERRECHO			 = 
 
 
 ARCH             ?=nmc4
@@ -101,10 +100,10 @@ $(TARGET): $(TMP_DIR) $(OUT_DIR) $(OBJECTS)
 	
 
 $(TMP_DIR):
-	mkdir -p "$(@)"
+	mkdir "$(@)"
 	
 $(OUT_DIR): 
-	mkdir -p "$(@)"
+	mkdir "$(@)"
 
 #depend: .depend
 #
