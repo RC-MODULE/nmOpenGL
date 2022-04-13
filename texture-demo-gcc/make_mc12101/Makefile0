@@ -46,6 +46,9 @@ ROOT = ../..
 
 #============== PROJECT & BUILD CONFIGURATION ==========
 #
+HAL ?= $(ROOT)/hal
+NMPP ?= $(ROOT)/nmpp
+VSHELL ?= $(ROOT)/vshell
 
 
 

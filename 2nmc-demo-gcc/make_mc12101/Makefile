@@ -8,6 +8,9 @@ include 		 nmc4vars_win.mk
 endif
 
 DEBUG ?= y
+HAL ?= $(ROOT)/hal
+NMPP ?= $(ROOT)/nmpp
+VSHELL ?= $(ROOT)/vshell
 
 ifeq ($(CORE),float)
 CORE_NUM	= 0

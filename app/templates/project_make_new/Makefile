@@ -4,6 +4,9 @@ ROOT = ../..
 include $(ROOT)/global.mk
 include 		 nmc4vars_win.mk
 DEBUG := y
+HAL ?= $(ROOT)/hal
+NMPP ?= $(ROOT)/nmpp
+VSHELL ?= $(ROOT)/vshell
 
 ifeq ($(CORE),float)
 CORE_NUM	= 0
