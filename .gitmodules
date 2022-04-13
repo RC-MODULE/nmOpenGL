@@ -1,3 +1,6 @@
 [submodule "nmpp"]
 	path = nmpp
 	url = https://github.com/RC-MODULE/nmpp.git
+[submodule "hal"]
+	path = hal
+	url = https://github.com/RC-MODULE/hal.git
