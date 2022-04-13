@@ -19,13 +19,16 @@ obj/
 obj_x86/
 x86/
 
-# 
+# Qt
 *.user
 *.stash
 debug/
 release/
+build-*/
+.tmp/
 monitor/Makefile*
 ui_*
+moc_*
 log_nmc0.txt
 log_nmc1.txt
 
