@@ -1,5 +1,7 @@
 GNUWIN32  ?=c:/gnuwin32/bin
-NMPP      ?=$(ROOT)
+HAL ?= $(ROOT)/hal
+NMPP ?= $(ROOT)/nmpp
+VSHELL ?= $(ROOT)/vshell
 DEVKIT    ?=$(ROOT)/deps/dev-kit-master
 ARMTOOLCH ?=$(DEVKIT)/arm-rcm-linux-gnueabihf
 NEURO     ?=$(DEVKIT)/nmsdk
