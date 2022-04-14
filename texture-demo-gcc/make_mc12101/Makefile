@@ -1,55 +1,142 @@
 ROOT = ../..
+
+
 include $(ROOT)/global.mk
-# BUILD AND RUN MAKEFILE
-# This makefile builds simple nmc-application containing single cpp-file  
-# Rule 'run' executes the application on MC12101 board and stores return code in ".exitcode"  file
+
+ifeq ($(OS),Windows_NT)
+include 		 nmc4vars_win.mk
+endif
+
+DEBUG ?= y
+
+ifeq ($(CORE),float)
+CORE_NUM	= 0
+else ifeq($(CORE),fixed)
+CORE_NUM	= 1
+else
+$(error unknown core)
+endif
+
+#-------------- target & input dirs -------------------
+
+PROJECT          = main$(CORE_NUM)
+ifdef DEBUG
+PROJECT 		 = main$(CORE_NUM)d
+endif
+OUT_DIR          = .
+TARGET           = $(OUT_DIR)/$(PROJECT).abs
+INC_DIRS         = -I"$(NMPP)/include" -I$(HAL)/include -I$(ROOT)/include -I$(ROOT)/utilities/include -I$(ROOT)/context/include -I../src_target0
+SRC_DIRS         = $(ROOT)/nmglvs_mc12101-gcc/src_nmc$(CORE_NUM) ../src_target$(CORE_NUM)
+
+ifeq ($(OS),Windows_NT)
+LIB_DIRS         = -L"$(NMC_GCC_TOOLPATH)/nmc4-ide/lib" -L"$(NMPP)/lib" -L"$(HAL)/lib" -L"$(ROOT)/lib" -L$(MC12101)/lib
+else
+LIB_DIRS         = -L"$(NMPP)/lib" -L"$(HAL)/lib" -L"$(ROOT)/lib" -L$(MC12101)/lib -L/usr/local/lib
+endif
+
+
+ifdef DEBUG
+TMP_DIR          = Debug/nmc$(CORE_NUM)
+else
+TMP_DIR          = Release/nmc$(CORE_NUM)
+endif
+#-------------- RELEASE/ALL config -------------------
+CC 				 = nmc-g++
+CC_FLAGS	 	 = -O2 -fno-builtin-printf -std=c++11 -mnmc4-$(CORE)
+AS               = nmc-gcc 	
+AS_FLAGS    	 = -mnmc4-$(CORE)
+ifeq ($(CORE),float)
+LIBS             = -lnmopengl_nmc4f -lnmpp-nmc4f -lhal-mc12101
+else ifeq($(CORE),fixed)
+LIBS             = -lnmopengl_nmc4 -lnmpp-nmc4 -lhal-mc12101
+endif
+MAP		         = $(PROJECT).map
+CFG				 = ldscript-nmc$(CORE_NUM).ld
+LINKER_FLAGS     = -Xlinker -Map=$(MAP) $(LIB_DIRS) "-Wl,-T$(CFG)" -Wl,--whole-archive -lmc12101 -Wl,--no-whole-archive -o$(TARGET)
+
+ifdef DEBUG
+	CC_FLAGS	+= -DDEBUG 
+else
+	CC_FLAGS	+= -DNDEBUG
+endif
+
+ifeq ($(CORE),fixed)
+	CC_FLAGS	+= -DDEBUG_LEVEL=2
+endif
+#=================== SOURCE & OBJECTS COLLECTION ===========================
 
 .SUFFIXES:
 
+# regular search of *.c *.cpp,*.asm sources in all $(SRC_DIRS)
+ALL_CPP =$(wildcard $(addsuffix /*.cpp, $(SRC_DIRS)))
+ALL_ASM =$(wildcard $(addsuffix /*.asm, $(SRC_DIRS)))
+ALL_C   =$(wildcard $(addsuffix /*.c, $(SRC_DIRS)))
 
-ifndef MC12101
-$(warning *** WARNING: 'MC12101' environment variable is not defined! Board SDK might not have installed correctly. )
-endif 
+VPATH   = $(SRC_DIRS)
 
-BOARD    = mc12101
-HOST     = $(BOARD)-host
+# collecting of objects
+OBJECTS_CPP = $(notdir $(patsubst %.cpp,%.o,$(ALL_CPP)))
+OBJECTS_ASM = $(notdir $(patsubst %.asm,%.o,$(ALL_ASM)))
+OBJECTS_C   = $(notdir $(patsubst %.c,%.o,$(ALL_C)))
+OBJECTS     = $(addprefix $(TMP_DIR)/, $(OBJECTS_C) $(OBJECTS_CPP)  $(OBJECTS_ASM))
 
-TARGET0  = main0.abs
-TARGET1  = main1.abs
+#======================== BUILD RULES ====================================
+.PHONY:all  clean skip
 
-VS ?= vs2015 
-#PATH:=$(MC12101)/bin;$(PATH)
-all: $(TARGET0) $(TARGET1)  $(HOST)
-
-nm0 $(TARGET0): 
-	$(MAKE) -f Makefile0 
-
-nm1 $(TARGET1):
-	$(MAKE) -f Makefile1
+.DEFAULT_GOAL=all
+all:
+	$(MAKE) CORE=float -j4 build
+	$(MAKE) CORE=fixed -j4 build
+ifeq ($(OS),Windows_NT)	
+	$(MAKE) -f Makefile_host
+endif
+	@echo all done!	
+nm0:
+	$(MAKE) CORE=float -j4 build
+	@echo all done!	
+nm1:
+	$(MAKE) CORE=fixed -j4 build
 	
-host $(HOST): $(VS)
+run:
+	$(MAKE) -f Makefile_host run
 
-profile: profile0 profile1
-profile0:
-	$(MAKE) -f Makefile0 profile
-profile1:
-	$(MAKE) -f Makefile1 profile
+dump:
+	nmc-objdump -d -s -x -l $(PROJECT).abs > $(PROJECT).dasm
+build: $(TARGET)
+	
+$(TMP_DIR):
+	-mkdir "$(@)"
+
+$(TARGET): $(TMP_DIR) $(OBJECTS) nmc4vars_win.mk Makefile lib
+	$(CC) $(CC_FLAGS) $(LINKER_FLAGS) $(OBJECTS) $(LIBS)
+	@echo nm$(CORE_NUM) done
+
+nmc4vars_win.mk:
+ifeq ($(OS),Windows_NT)
+	copy "$(NMC_GCC_TOOLPATH)\nmc4-ide\include\nmc4vars_win.mk" nmc4vars_win.mk
+endif	
+
+lib:
+	$(MAKE) -C $(ROOT)/make ARCH=nmc4_$(CORE) -j4 lib
+
+$(OUT_DIR):
+	-mkdir "$(@)"
+	
+$(TMP_DIR)/%.o: %.asm Makefile
+	$(AS) -MMD -c -mmas $(AS_FLAGS) $(<) -o$(@) $(INC_DIRS)
+$(TMP_DIR)/%.o: %.s Makefile
+	$(AS) -MMD -c -mgas $(AS_FLAGS) $(<) -o$(@) $(INC_DIRS)
+	
+$(TMP_DIR)/%.o: %.cpp Makefile
+	$(CC) -MMD -c $(CC_FLAGS) $(<) -o$(@) $(INC_DIRS)
+
+$(TMP_DIR)/%.o: %.c Makefile
+	$(CC) -MMD -c $(CC_FLAGS) $(<) -o$(@) $(INC_DIRS)
 	
 	
-vs2005: $(HOST).vcproj 
-	"$(VS80COMNTOOLS)vsvars32" && vcbuild $(HOST).vcproj
+$(PROFILE):
+	python $(HAL)/script/profiler.py > $(PROFILE)
+profile: $(TARGET)
+	python $(HAL)/script/profiler.py $(MAP) > $(PROFILE)
 
-vs2015:	$(HOST).vcxproj
-	"$(VS140COMNTOOLS)vsvars32" && msbuild $(HOST).vcxproj /p:Configuration=Release /p:Platform=x64
-
-$(HOST).vcproj:
-	premake5 vs2005
-
-$(HOST).vcxproj:	
-	premake5 vs2015 
-
-
-run: $(TARGET0) $(TARGET1) $(HOST)
-	bin\x64\Release\$(HOST)-x64
-	
 include $(ROOT)/clean.mk
