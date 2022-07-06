@@ -5,16 +5,20 @@
 #include <QFile>
 #include <exception>
 
-HostProgram::HostProgram(BoardMC12101 *board, QObject *parent) : QObject(parent){
-    m_board = board;
+HostProgram::HostProgram(QObject *parent) : QObject(parent){
+
     is_run = false;
     profilerEnabled = false;
 
     hostImageIsRefreshing = true;
 
+    model = new ProfilerModel(this);
 
-    model = new ProfilerModel(m_board, parent);
+}
 
+void HostProgram::setBoard(BoardMC12101 *board){
+    m_board = board;
+    model->setBoard(board);
 }
 
 int *HostProgram::getImage(){
@@ -26,10 +30,46 @@ HostProgram::~HostProgram(){
 
 
 void HostProgram::run(){
-    if(!init()){
+    try {
+        m_board->connectToCore(0);
+
+        m_board->setTimeout(500);
+        int handshake = m_board->sync(0xC0DE0086, 0);
+        m_board->setTimeout(0);
+        if(!is_run){
+            emit finished();
+            return;
+        }
+        if (handshake != 0xC0DE0000) {
+            throw std::runtime_error("Error: Handshake with mc12101-nmc0 wrong!");
+        }
+        qDebug() << "Handshake passed";
+
+
+        fb = (NMGL_Framebuffer *)m_board->sync(profilerEnabled, 0);
+        if(!is_run){
+            emit finished();
+            return;
+        }
+        qDebug() << "Framebuffer addr: " << hex << fb;
+
+        if(profilerEnabled){
+            model->head = m_board->sync(0, 0);
+            model->init();
+            if(!is_run){
+                emit finished();
+                return;
+            }
+            qDebug() << "Get profiler head addr: 0x" << hex << model->head;
+        }
+    }
+    catch (std::exception &e){
+        qCritical() << __FILE__ << ":" << __LINE__ << ": error: " << e.what();
+        is_run = false;
         emit finished();
         return;
     }
+    emit inited();
 
     while(is_run){
         if(fb == NULL) continue;
@@ -52,37 +92,5 @@ void HostProgram::run(){
     emit finished();
 }
 
-bool HostProgram::init(){
-    try {
-        m_board->setTimeout(500);
-        int handshake = m_board->sync(0xC0DE0086, 0);
-        m_board->setTimeout(0);
-        if(!is_run) return false;
-        if (handshake != 0xC0DE0000) {
-            throw std::runtime_error("Error: Handshake with mc12101-nmc0 wrong!");
-        }
-        qDebug() << "Handshake passed";
-
-
-        fb = (NMGL_Framebuffer *)m_board->sync(profilerEnabled, 0);
-        if(!is_run) return false;
-        qDebug() << "Framebuffer addr: " << hex << fb;
-
-        if(profilerEnabled){
-            model->head = m_board->sync(0, 0);
-            model->init();
-            if(!is_run) return false;
-            qDebug() << "Get profiler head addr: 0x" << hex << model->head;
-        }
-    }
-    catch (std::exception &e){
-        qCritical() << __FILE__ << ":" << __LINE__ << ": error: " << e.what();
-        is_run = false;
-        return false;
-    }
-    if(!is_run) return false;
-    emit inited();
-    return true;
-}
 
 

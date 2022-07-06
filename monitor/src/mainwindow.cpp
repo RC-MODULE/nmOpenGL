@@ -32,6 +32,7 @@ void MainWindow::errorMessage(const QString &message){
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
+    , hostThread(this->thread())
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
@@ -40,15 +41,19 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->program1, &QPushButton::clicked, this, [this](){this->setAbsFile(this->ui->program1_filename);});
 
     board = nullptr;
-    program = nullptr;
 
+    program = new HostProgram();
+    nmLog = new PrintNmLog();
 
     ui->start_button->setEnabled(false);
     ui->stop_button->setEnabled(false);
     ui->loadProgramButton->setEnabled(false);
-    ui->OpenButton->click();
+    ui->connect_button->setEnabled(false);
+    //ui->remoteBoardRadioButton->setChecked(false);
+    //ui->OpenButton->click();
 
-    program = new HostProgram(board);
+    //ui->remoteAddrLine->setEnabled(false);
+
 
 
 
@@ -97,7 +102,6 @@ MainWindow::MainWindow(QWidget *parent)
     program->moveToThread(&hostThread);
     connect(&hostThread, &QThread::started, program, &HostProgram::run);
 
-    nmLog = new PrintNmLog(board);
     connect(nmLog, &PrintNmLog::started, this, [this](){
         ui->log_nm0->clear();
         ui->log_nm1->clear();
@@ -106,15 +110,9 @@ MainWindow::MainWindow(QWidget *parent)
     connect(nmLog, &PrintNmLog::updated, this, [this](QString text, int core){
         if(core == 0){
             ui->log_nm0->appendPlainText(text); // Adds the message to the widget
-            //ui->log_nm0->moveCursor (QTextCursor::End);
-            //ui->log_nm0->insertPlainText (text);
-            //ui->log_nm0->moveCursor (QTextCursor::End);
             ui->log_nm0->verticalScrollBar()->setValue(ui->log_nm0->verticalScrollBar()->maximum()); // Scrolls to the bottom
         } else{
             ui->log_nm1->appendPlainText(text); // Adds the message to the widget
-            //ui->log_nm1->moveCursor (QTextCursor::End);
-            //ui->log_nm1->insertPlainText (text);
-            //ui->log_nm1->moveCursor (QTextCursor::End);
             ui->log_nm1->verticalScrollBar()->setValue(ui->log_nm1->verticalScrollBar()->maximum()); // Scrolls to the bottom
         }
     });
@@ -160,8 +158,8 @@ void MainWindow::on_start_button_clicked()
     if(!program->is_run){
         program->is_run = true;
         hostThread.start();
-        nmLog->is_run = true;
-        logThread.start();
+        //nmLog->is_run = true;
+        //logThread.start();
 
         printMessage("start");
 
@@ -195,8 +193,6 @@ void MainWindow::on_connect_button_toggled(bool checked)
     if(checked){
         try {
             board->open();
-            board->connectToCore(0);
-            board->connectToCore(1);
         } catch (std::exception &e) {
             errorMessage(e.what());
             ui->OpenButton->setChecked(false);
@@ -208,8 +204,6 @@ void MainWindow::on_connect_button_toggled(bool checked)
     } else{
         ui->stop_button->click();
         try {
-            board->disconnectFromCore(0);
-            board->disconnectFromCore(1);
             board->close();
         } catch (std::exception &e) {
             errorMessage(e.what());
@@ -245,6 +239,9 @@ void MainWindow::on_OpenButton_toggled(bool checked)
 
                 board = new BoardMC12101Local(0);
 
+                program->setBoard(board);
+                nmLog->setBoard(board);
+
                 ui->connect_button->setEnabled(true);
                 printMessage("board opened");
                 break;
@@ -256,13 +253,6 @@ void MainWindow::on_OpenButton_toggled(bool checked)
             }
         }
     } else{
-
-        printMessage("Main destructor");
-        /*if(program && program->is_run){
-            program->is_run = false;
-            program->wait();
-        }*/
-        printMessage("program quit");
         ui->connect_button->setChecked(false);
         ui->connect_button->setEnabled(false);
         delete board;
@@ -296,6 +286,8 @@ void MainWindow::on_resetButton_clicked()
 
 void MainWindow::on_loadProgramButton_clicked()
 {
+
+
     QFile file0(ui->program0_filename->text());
     QFile file1(ui->program1_filename->text());
 
@@ -304,6 +296,8 @@ void MainWindow::on_loadProgramButton_clicked()
         return;
     }
     try{
+        board->connectToCore(0);
+        board->connectToCore(1);
         board->loadProgram(ui->program0_filename->text().toStdString().c_str(), 0);
         board->loadProgram(ui->program1_filename->text().toStdString().c_str(), 1);
         printMessage(QString("board program 0: %1").arg(board->getProgramName(0)));
@@ -312,6 +306,8 @@ void MainWindow::on_loadProgramButton_clicked()
         errorMessage(e.what());
         return;
     }
+    board->disconnectFromCore(0);
+    board->disconnectFromCore(1);
     printMessage("program loaded");
 }
 

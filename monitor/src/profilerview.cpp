@@ -51,11 +51,15 @@ void ProfilerModel::updateList(){
     emit dataChanged( topLeft, bottomRight );
 }
 
-ProfilerModel::ProfilerModel(BoardMC12101 *board, QObject *parent)
+ProfilerModel::ProfilerModel(QObject *parent)
     : QAbstractTableModel(parent)
 {
-    mBoard = board;
     head = 0;
+}
+
+void ProfilerModel::setBoard(BoardMC12101 *board)
+{
+    mBoard = board;
 }
 
 int ProfilerModel::rowCount(const QModelIndex &parent) const {

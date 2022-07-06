@@ -18,7 +18,8 @@ win32:DEFINES += _ITERATOR_DEBUG_LEVEL=0
 linux-g++:QMAKE_CXXFLAGS += -fpermissive
 #QMAKE_CXXFLAGS += /MT
 
-INCLUDEPATH  += $$PWD/include $(MC12101)/include $$PWD/../include $(HAL)/include
+INCLUDEPATH  += $$PWD/include $(MC12101)/include $$PWD/../include $(HAL)/include $(MC12101_RPC)/include
+message(mc12101 + $(MC12101_RPC))
 HEADERS += $$PWD/include/*.h $$PWD/../include/framebuffer.h $(HAL)/include/*.h \
     include/iobserver.h
 SOURCES += $$PWD/src/*.cpp \

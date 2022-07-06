@@ -139,6 +139,9 @@
     </property>
    </widget>
    <widget class="QPushButton" name="connect_button">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
     <property name="geometry">
      <rect>
       <x>900</x>
@@ -215,6 +218,9 @@
     </property>
    </widget>
    <widget class="QCheckBox" name="getImageCheck">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
     <property name="geometry">
      <rect>
       <x>620</x>
@@ -240,7 +246,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="imagetab">
      <attribute name="title">
@@ -321,6 +327,60 @@
     </property>
     <property name="text">
      <string>Load programs</string>
+    </property>
+   </widget>
+   <widget class="QRadioButton" name="localBoardRadioButton">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>620</x>
+      <y>210</y>
+      <width>201</width>
+      <height>19</height>
+     </rect>
+    </property>
+    <property name="tabletTracking">
+     <bool>false</bool>
+    </property>
+    <property name="text">
+     <string>Local board</string>
+    </property>
+    <property name="checked">
+     <bool>true</bool>
+    </property>
+    <property name="autoRepeat">
+     <bool>false</bool>
+    </property>
+    <property name="autoExclusive">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QRadioButton" name="remoteBoardRadioButton">
+    <property name="geometry">
+     <rect>
+      <x>620</x>
+      <y>240</y>
+      <width>201</width>
+      <height>19</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Remote board</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="remoteAddrLine">
+    <property name="geometry">
+     <rect>
+      <x>640</x>
+      <y>270</y>
+      <width>311</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="placeholderText">
+     <string>address:port</string>
     </property>
    </widget>
   </widget>

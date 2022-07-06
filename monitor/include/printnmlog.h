@@ -30,7 +30,8 @@ public:
 
     BoardMC12101 *board;
 
-    PrintNmLog(BoardMC12101 *board);
+    PrintNmLog();
+    void setBoard(BoardMC12101 *board);
     ~PrintNmLog();
 
     std::atomic_bool is_run;

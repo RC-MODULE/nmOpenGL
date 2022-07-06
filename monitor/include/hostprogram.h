@@ -44,17 +44,17 @@ public:
     bool profilerEnabled;
 
 
+
     ProfilerModel *model;
     QTableView *mTableView;
 
     bool hostImageIsRefreshing;
 
-    bool init();
-
     NMGL_Framebuffer *fb;
-    HostProgram(BoardMC12101 *board, QObject *parent = nullptr);
+    HostProgram(QObject *parent = nullptr);
 
     int *getImage();
+    void setBoard(BoardMC12101 *board);
 
     ~HostProgram();
 

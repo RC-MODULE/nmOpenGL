@@ -5,7 +5,15 @@
 
 
 
-PrintNmLog::PrintNmLog(BoardMC12101 *_board) : QObject(nullptr){
+PrintNmLog::PrintNmLog() : QObject(nullptr){
+
+
+    //timer.setInterval(1000);
+    //connect(&timer, &QTimer::timeout, this, &PrintNmLog::update);
+
+}
+
+void PrintNmLog::setBoard(BoardMC12101 *_board){
     try{
         board = _board;
         filename[0] = "log_nmc0.txt";
@@ -19,10 +27,6 @@ PrintNmLog::PrintNmLog(BoardMC12101 *_board) : QObject(nullptr){
     } catch (...){
         qCritical() << "Ups!";
     }
-
-    //timer.setInterval(1000);
-    //connect(&timer, &QTimer::timeout, this, &PrintNmLog::update);
-
 }
 
 PrintNmLog::~PrintNmLog(){
