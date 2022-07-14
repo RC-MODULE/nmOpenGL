@@ -13,6 +13,10 @@
 #include "printnmlog.h"
 
 
+#include "boardmc12101_local.h"
+#include "boardmc12101_remote.h"
+
+
 //using namespace std;
 
 #define printError(message) qCritical() << __FILE__ << ":" << __LINE__ << ": " << message
@@ -39,6 +43,13 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(ui->program0, &QPushButton::clicked, this, [this](){this->setAbsFile(this->ui->program0_filename);});
     connect(ui->program1, &QPushButton::clicked, this, [this](){this->setAbsFile(this->ui->program1_filename);});
+
+    connect(ui->localRadioButton, &QRadioButton::clicked, this, [this](){
+        qDebug() << "asdasdasd";
+    });
+    connect(ui->remoteRadioButton, &QRadioButton::toggled, this, [this](bool state){
+        ui->remoteAddrLine->setEnabled(state);
+    });
 
     board = nullptr;
 
@@ -237,7 +248,16 @@ void MainWindow::on_OpenButton_toggled(bool checked)
                     throw std::runtime_error("Error: Can't find board");
                 }
 
-                board = new BoardMC12101Local(0);
+                if(ui->localRadioButton->isChecked()){
+                    board = new BoardMC12101Local(0);
+                } else if(ui->remoteRadioButton->isChecked()){
+                    QUrl url = QUrl(QString("tcp://%1").arg(ui->remoteAddrLine->text()));
+                    if(url.isValid()){
+                        board = new BoardMC12101Remote(url.host().toStdString().c_str(), url.port(), 0);
+                    } else{
+                        throw std::runtime_error("Error: Invalid addr");
+                    }
+                }
 
                 program->setBoard(board);
                 nmLog->setBoard(board);

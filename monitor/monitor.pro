@@ -12,14 +12,12 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TEMPLATE = app
 
-LIBS = -L$(MC12101)/lib -lmc12101load -lio_host
-#LIBS = -L$(MC12101)/lib -L$(HAL)/lib -lmc12101load
+LIBS = -L$(MC12101)/lib -L$(MC12101_RPC)/lib -lmc12101load -lmc12101load_rpc -lio_host
 win32:DEFINES += _ITERATOR_DEBUG_LEVEL=0
+win32:QMAKE_CXXFLAGS += /MT
 linux-g++:QMAKE_CXXFLAGS += -fpermissive
-#QMAKE_CXXFLAGS += /MT
 
 INCLUDEPATH  += $$PWD/include $(MC12101)/include $$PWD/../include $(HAL)/include $(MC12101_RPC)/include
-message(mc12101 + $(MC12101_RPC))
 HEADERS += $$PWD/include/*.h $$PWD/../include/framebuffer.h $(HAL)/include/*.h \
     include/iobserver.h
 SOURCES += $$PWD/src/*.cpp \

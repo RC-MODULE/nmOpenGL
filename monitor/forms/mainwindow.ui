@@ -329,59 +329,69 @@
      <string>Load programs</string>
     </property>
    </widget>
-   <widget class="QRadioButton" name="localBoardRadioButton">
-    <property name="enabled">
-     <bool>true</bool>
-    </property>
+   <widget class="QGroupBox" name="groupBox">
     <property name="geometry">
      <rect>
       <x>620</x>
-      <y>210</y>
-      <width>201</width>
-      <height>19</height>
+      <y>200</y>
+      <width>371</width>
+      <height>121</height>
      </rect>
     </property>
-    <property name="tabletTracking">
-     <bool>false</bool>
+    <property name="title">
+     <string>GroupBox</string>
     </property>
-    <property name="text">
-     <string>Local board</string>
-    </property>
-    <property name="checked">
-     <bool>true</bool>
-    </property>
-    <property name="autoRepeat">
-     <bool>false</bool>
-    </property>
-    <property name="autoExclusive">
-     <bool>true</bool>
-    </property>
-   </widget>
-   <widget class="QRadioButton" name="remoteBoardRadioButton">
-    <property name="geometry">
-     <rect>
-      <x>620</x>
-      <y>240</y>
-      <width>201</width>
-      <height>19</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Remote board</string>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="remoteAddrLine">
-    <property name="geometry">
-     <rect>
-      <x>640</x>
-      <y>270</y>
-      <width>311</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="placeholderText">
-     <string>address:port</string>
-    </property>
+    <widget class="QRadioButton" name="localRadioButton">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>20</y>
+       <width>84</width>
+       <height>19</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Local board</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QRadioButton" name="remoteRadioButton">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>50</y>
+       <width>84</width>
+       <height>19</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>RadioButton</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="remoteAddrLine">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>80</y>
+       <width>241</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="readOnly">
+      <bool>false</bool>
+     </property>
+     <property name="placeholderText">
+      <string>host_address:port</string>
+     </property>
+    </widget>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">

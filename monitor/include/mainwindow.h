@@ -9,12 +9,13 @@
 
 #include "hostprogram.h"
 #include "framebuffer.h"
-#include "boardmc12101_local.h"
 #include "printnmlog.h"
 
 #include "profilerview.h"
 
 #include "ui_mainwindow.h"
+
+#include "boardmc12101.h"
 
 using namespace std;
 
