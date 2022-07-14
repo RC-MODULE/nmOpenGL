@@ -51,10 +51,13 @@ private:
     char logFileNames[MC12101_COUNT_OF_CORES][1024];
     FILE *file_log[MC12101_COUNT_OF_CORES];
 public:
-    BoardMC12101Remote(const char* hostaddr, int port, int index = 0);
+    BoardMC12101Remote(int index = 0);
     ~BoardMC12101Remote() override ;
 
     static int getBoardCount();
+
+    void connectToHost(const char* hostaddr, int port);
+    void disconnectFromHost();
 
     void open() override;
     void close() override;

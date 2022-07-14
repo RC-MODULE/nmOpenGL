@@ -8,7 +8,6 @@
 #include <QErrorMessage>
 #include <QMessageBox>
 
-
 #include <iostream>
 #include "printnmlog.h"
 
@@ -238,22 +237,17 @@ void MainWindow::on_OpenButton_toggled(bool checked)
 {
     qDebug() << "opening board";
 
-    unsigned int count = BoardMC12101Local::getBoardCount();
-    printMessage(QString("Founded %1 boards").arg(count));
-
     if(checked){
         for(int i = 0; i < 1; i++){
             try{
-                if (count < 1){
-                    throw std::runtime_error("Error: Can't find board");
-                }
 
                 if(ui->localRadioButton->isChecked()){
                     board = new BoardMC12101Local(0);
                 } else if(ui->remoteRadioButton->isChecked()){
                     QUrl url = QUrl(QString("tcp://%1").arg(ui->remoteAddrLine->text()));
                     if(url.isValid()){
-                        board = new BoardMC12101Remote(url.host().toStdString().c_str(), url.port(), 0);
+                        board = new BoardMC12101Remote(0);
+                        static_cast<BoardMC12101Remote*>(board)->connectToHost(url.host().toStdString().c_str(), url.port());
                     } else{
                         throw std::runtime_error("Error: Invalid addr");
                     }

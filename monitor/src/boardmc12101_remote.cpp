@@ -36,7 +36,14 @@ bool BoardMC12101Remote::isOpened() const{
     return is_opened;
 }
 
-BoardMC12101Remote::BoardMC12101Remote(const char* hostaddr, int port, int boardIndex){
+void BoardMC12101Remote::connectToHost(const char* hostaddr, int port){
+    RPL_ConnectToHost(hostaddr, port);
+}
+void BoardMC12101Remote::disconnectFromHost(){
+    RPL_DisconnectFromHost();
+}
+
+BoardMC12101Remote::BoardMC12101Remote(int boardIndex){
     _boardIndex = boardIndex;
     is_opened = false;
     for(int i = 0; i < MC12101_COUNT_OF_CORES; i++){
@@ -44,7 +51,7 @@ BoardMC12101Remote::BoardMC12101Remote(const char* hostaddr, int port, int board
         io_accessed[i] = false;
         static_cast<BoardMC12101Remote *>(this)->setIO(i, &std::cout, &std::cerr, &std::cin);
     }
-    RPL_ConnectToHost(hostaddr, port);
+
 }
 
 BoardMC12101Remote::~BoardMC12101Remote(){
