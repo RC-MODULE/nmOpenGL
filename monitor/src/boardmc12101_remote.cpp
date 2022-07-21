@@ -37,7 +37,10 @@ bool BoardMC12101Remote::isOpened() const{
 }
 
 void BoardMC12101Remote::connectToHost(const char* hostaddr, int port){
-    RPL_ConnectToHost(hostaddr, port);
+    int error = RPL_ConnectToHost(hostaddr, port);
+    if( error != RPL_OK){
+        throw BoardMC12101Error(nullptr, "Failed connecting to remote server", error);
+    }
 }
 void BoardMC12101Remote::disconnectFromHost(){
     RPL_DisconnectFromHost();

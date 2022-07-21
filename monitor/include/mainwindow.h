@@ -35,6 +35,8 @@ public:
 
     void setAbsFile(QLineEdit *outFilename);
 
+
+
 private slots:
 
     void on_start_button_clicked();
