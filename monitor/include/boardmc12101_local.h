@@ -85,6 +85,50 @@ public:
 
 };
 
+class BoardMC12101IO_Local : public BoardMC12101IO{
+private:
+    BoardMC12101Local *mBoard;
+    PL_Board *mDescriptor;
+    PL_Access *mAccess;
+    char programName[512];
+    char outputFileName[512];
+    // BoardMC12101IO interface
+    PL_Access *getAccess(){
+        /*if(mAccess == nullptr){
+            if(int error = PL_GetAccess(mDescriptor, core, &mAccess)){
+                throw BoardMC12101Error("Failed get access for io");
+            }
+        }*/
+        return mAccess;
+    }
+
+public:
+    BoardMC12101IO_Local(){
+        mBoard = nullptr;
+        mAccess = nullptr;
+    }
+    void setBoard(BoardMC12101 *board) override{
+        BoardMC12101Local *localBoard = dynamic_cast<BoardMC12101Local *>(board);
+        if(localBoard){
+            mBoard = board;
+        }
+    }
+    void setOut(int core, const char *outfilename) override{
+    }
+    void setProgram(int core, const char *programAbsFile) override{
+
+    }
+    bool open() override{
+        return false;
+    }
+    void close() override{
+
+    }
+    void flush() override{
+
+    }
+};
+
 /*class BoardMC12101CoreLocal : public BoardMC12101Core{
 private:
     PL_Access *mAccess;

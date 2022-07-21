@@ -50,6 +50,7 @@ private:
     //std::map<int, BoardMC12101CoreRemote*> cores;
     char logFileNames[MC12101_COUNT_OF_CORES][1024];
     FILE *file_log[MC12101_COUNT_OF_CORES];
+    bool is_connected;
 public:
     BoardMC12101Remote(int index = 0);
     ~BoardMC12101Remote() override ;
@@ -64,6 +65,7 @@ public:
     void reset() override;
 
     bool isOpened() const override;
+    bool isConnected() const;
 
     void connectToCore(int core) override;
     void disconnectFromCore(int core) override;

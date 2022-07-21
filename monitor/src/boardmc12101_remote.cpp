@@ -18,6 +18,9 @@ void BoardMC12101Remote::open()
     if(is_opened){
         return;
     }
+    if(!is_connected){
+        throw BoardMC12101Error(this, "No connection");
+    }
     if(RPL_GetBoardDesc(_boardIndex, &desc)){
         throw BoardMC12101Error(this, "Can't open board");
     }
@@ -35,20 +38,29 @@ void BoardMC12101Remote::close()
 bool BoardMC12101Remote::isOpened() const{
     return is_opened;
 }
+bool BoardMC12101Remote::isConnected() const{
+    return is_connected;
+}
 
 void BoardMC12101Remote::connectToHost(const char* hostaddr, int port){
     int error = RPL_ConnectToHost(hostaddr, port);
     if( error != RPL_OK){
         throw BoardMC12101Error(nullptr, "Failed connecting to remote server", error);
+    } else{
+        is_connected = true;
     }
 }
 void BoardMC12101Remote::disconnectFromHost(){
-    RPL_DisconnectFromHost();
+    if(is_connected){
+        RPL_DisconnectFromHost();
+        is_connected = false;
+    }
 }
 
 BoardMC12101Remote::BoardMC12101Remote(int boardIndex){
     _boardIndex = boardIndex;
     is_opened = false;
+    is_connected = false;
     for(int i = 0; i < MC12101_COUNT_OF_CORES; i++){
         accessed[i] = false;
         io_accessed[i] = false;

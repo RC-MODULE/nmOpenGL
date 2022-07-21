@@ -152,13 +152,10 @@ void BoardMC12101Local::setIO(int core, ostream *_out, ostream *_err, istream *_
 
 void BoardMC12101Local::setIO(int core, const char *outfilename){
     strcpy(logFileNames[core], outfilename);
-    /*file_log[core] = fopen(outfilename, "w+");
-    if(file_log[core] == 0){
-        throw BoardMC12101Error(this, "set IO error");
-    }*/
 }
 
 void BoardMC12101Local::openIO(const char *filename, int core){
+
     if(int error = PL_GetAccess(desc, core, &io_access[core])){
         throw BoardMC12101Error(this, "Opening IO error", error);
     }

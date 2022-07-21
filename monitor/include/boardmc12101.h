@@ -69,11 +69,13 @@ public:
     virtual void setBoard(BoardMC12101 *board) = 0;
 };
 
-class BoardMC12101_IO{
+class BoardMC12101IO{
 public:
-    virtual void setIO(ostream *_out, ostream *_err, istream *_in) = 0;
-    virtual void setIO(int core, const char *outfilename) = 0;
-    virtual void open(const char *filename) = 0;
+    virtual void setBoard(BoardMC12101 *board) = 0;
+    virtual void setOut(int core, const char *outfilename) = 0;
+    virtual void setProgram(int core, const char *programAbsFile) = 0;
+    virtual bool open() = 0;
+    virtual void flush() = 0;
     virtual void close() = 0;
 };
 

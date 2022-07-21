@@ -6,20 +6,7 @@
             "type": "shell",
             "group": "build",
             //"command": "scons",
-            "dependsOn": [ "Build host", "Build nm0", "Build nm1"],
-        },
-        {
-            "label": "Build host",
-            "type": "shell",
-            "group": {
-                "kind": "build",
-                "isDefault": true,
-            },
-            "command": "scons",
-            "args": [ "host", "debug=1", "-j4", "${config:errecho}" ],
-            "options": {
-                "cwd": "${workspaceFolder}"
-            }
+            "dependsOn": [ "Build nm0", "Build nm1"],
         },
         {
             "label": "Build nm0",
@@ -48,53 +35,14 @@
             }
         },
         {
-            "label": "Clean nm0",
+            "label": "Clean",
             "type": "shell",
             "group": {
                 "kind": "build",
                 "isDefault": true
             },
-            "command": "scons",
-            "args": [ "-c", "nm0", "-j4" ],
-            "options": {
-                "cwd": "${workspaceFolder}"
-            }
-        },
-        {
-            "label": "Clean nm1",
-            "type": "shell",
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            },
-            "command": "scons",
-            "args": [ "-c", "nm1", "-j4" ],
-            "options": {
-                "cwd": "${workspaceFolder}"
-            }
-        },
-        {
-            "label": "Clean all",
-            "type": "shell",
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            },
-            "command": "scons",
-            "args": [ "-c", "-j4" ],
-            "options": {
-                "cwd": "${workspaceFolder}"
-            }
-        },
-        {
-            "label": "Clean host",
-            "type": "shell",
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            },
-            "command": "scons",
-            "args": [ "-c", "-j4", "host" ],
+            "command": "make",
+            "args": [ "clean", "-j4" ],
             "options": {
                 "cwd": "${workspaceFolder}"
             }

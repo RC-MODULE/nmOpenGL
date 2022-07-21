@@ -113,7 +113,8 @@
 	},
 
 	"settings": {
-		"errecho": "2>&1|cerrecho",
+		//"errecho": "2>&1|cerrecho",
+		"errecho": "",
 		"files.exclude": {
 			"**/.git": true,
 			"**/.svn": true,
@@ -195,10 +196,6 @@
 				"configurations": [
 					{
 						"folder": "make_mc12101",
-						"name": "launch host",
-					},
-					{
-						"folder": "make_mc12101",
 						"name": "launch nm0"
 					},
 					{
@@ -219,10 +216,6 @@
 				"configurations": [
 					{
 						"folder": "make_mc12101",
-						"name": "launch host",
-					},
-					{
-						"folder": "make_mc12101",
 						"name": "launch nm0-qemu"
 					},
 					{
@@ -237,22 +230,6 @@
 					"order": 1
 				}
 				//"preLaunchTask": "run monitor",
-			},
-			{
-				"name": "Launch only host",
-				"configurations": [
-					{
-						"folder": "make_mc12101",
-						"name": "launch host",
-					}
-				],
-				"preLaunchTask": "run nm",
-				"stopAll": true,
-				"presentation": {
-					"hidden": false,
-					"group": "",
-					"order": 1
-				}
 			}
 		]
 	}

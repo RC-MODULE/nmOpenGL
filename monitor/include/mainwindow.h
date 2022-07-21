@@ -31,8 +31,6 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-    void loadProgram(const char *filename, int core);
-
     void setAbsFile(QLineEdit *outFilename);
 
 
@@ -42,8 +40,6 @@ private slots:
     void on_start_button_clicked();
 
     void on_stop_button_clicked();
-
-    void on_connect_button_toggled(bool checked);
 
     void on_profilerCheck_stateChanged(int arg1);
 
@@ -57,6 +53,8 @@ private slots:
 
 private:
 
+
+
     void printMessage(const QString &message);
     void errorMessage(const QString &message);
     BoardMC12101 *board;
@@ -65,7 +63,6 @@ private:
     PrintNmLog *nmLog;
 
     QThread hostThread;
-    QThread logThread;
     Ui::MainWindow *ui;
 };
 #endif // MAINWINDOW_H

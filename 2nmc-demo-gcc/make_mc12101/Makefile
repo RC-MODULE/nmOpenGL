@@ -60,9 +60,8 @@ else
 	CC_FLAGS	+= -DNDEBUG
 endif
 
-ifeq ($(CORE),fixed)
-	CC_FLAGS	+= -DDEBUG_LEVEL=2
-endif
+CC_FLAGS	+= -DDEBUG_LEVEL=1
+
 #=================== SOURCE & OBJECTS COLLECTION ===========================
 
 .SUFFIXES:
@@ -87,25 +86,23 @@ OBJECTS     = $(addprefix $(TMP_DIR)/, $(OBJECTS_C) $(OBJECTS_CPP)  $(OBJECTS_AS
 all:
 	$(MAKE) CORE=float -j4 build
 	$(MAKE) CORE=fixed -j4 build
-ifeq ($(OS),Windows_NT)	
-	$(MAKE) -f Makefile_host
-endif
 	@echo all done!	
 nm0:
 	$(MAKE) CORE=float -j4 build
 	@echo all done!	
 nm1:
 	$(MAKE) CORE=fixed -j4 build
-	
-run:
-	$(MAKE) -f Makefile_host run
 
 dump:
 	nmc-objdump -d -s -x -l $(PROJECT).abs > $(PROJECT).dasm
 build: $(TARGET)
 	
 $(TMP_DIR):
+ifeq ($(OS),Windows_NT)
 	-mkdir "$(@)"
+else
+	-mkdir -p "$(@)"
+endif
 
 $(TARGET): $(TMP_DIR) $(OBJECTS) nmc4vars_win.mk Makefile lib
 	$(CC) $(CC_FLAGS) $(LINKER_FLAGS) $(OBJECTS) $(LIBS)

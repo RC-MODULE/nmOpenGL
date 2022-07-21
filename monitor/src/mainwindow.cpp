@@ -43,29 +43,68 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->program0, &QPushButton::clicked, this, [this](){this->setAbsFile(this->ui->program0_filename);});
     connect(ui->program1, &QPushButton::clicked, this, [this](){this->setAbsFile(this->ui->program1_filename);});
 
-    connect(ui->localRadioButton, &QRadioButton::clicked, this, [this](){
-        qDebug() << "asdasdasd";
-    });
-    connect(ui->remoteRadioButton, &QRadioButton::toggled, this, [this](bool state){
-        ui->remoteAddrLine->setEnabled(state);
+    connect(ui->ioButton, &QPushButton::clicked, this, [this](){
+        nmLog->setBoard(board);
+        QFile files[2];
+        files[0].setFileName(ui->program0_filename->text());
+        files[1].setFileName(ui->program1_filename->text());
+        if(files[0].exists() && files[1].exists()){
+            nmLog->setProgram(ui->program0_filename->text(), 0);
+            nmLog->setProgram(ui->program1_filename->text(), 1);
+            if(nmLog->isRun()){
+                nmLog->stop();
+            }
+            nmLog->start();
+        }
     });
 
-    board = nullptr;
+    connect(ui->localRadioButton, &QRadioButton::toggled, this, [this](bool checked){
+        if(checked){
+            board = new BoardMC12101Local(0);
+            program->setBoard(board);
+            nmLog->setBoard(board);
+            qDebug() << "create local";
+        } else{
+            if(board) delete board;
+            qDebug() << "delete local";
+        }
+    });
+    connect(ui->remoteRadioButton, &QRadioButton::toggled, this, [this](bool checked){
+        ui->remoteAddrLine->setEnabled(checked);
+        ui->serverConnectButton->setEnabled(checked);
+        if(checked){
+            board = new BoardMC12101Remote(0);
+            program->setBoard(board);
+            nmLog->setBoard(board);
+            qDebug() << "create remote";
+        } else{
+            if(ui->serverConnectButton->isChecked()) ui->serverConnectButton->click();
+            if(board) delete board;
+            qDebug() << "delete remote";
+        }
+    });
+    connect(ui->serverConnectButton, &QPushButton::toggled, this, [this](bool checked){
+        if(checked){
+            QUrl url = QUrl(QString("tcp://%1").arg(ui->remoteAddrLine->text()));
+            try{
+                static_cast<BoardMC12101Remote*>(board)->connectToHost(url.host().toStdString().c_str(), url.port());
+                printMessage("Connected to remote server");
+            } catch (std::exception &e){
+                errorMessage(e.what());
+                ui->serverConnectButton->setChecked(false);
+                printMessage("Disconnected from remote server");
+            }
+        } else{
+            if(static_cast<BoardMC12101Remote*>(board)->isConnected()){
+                static_cast<BoardMC12101Remote*>(board)->disconnectFromHost();
+            }
+        }
+    });
 
+
+    board = new BoardMC12101Local(0);
     program = new HostProgram();
     nmLog = new PrintNmLog();
-
-    ui->start_button->setEnabled(false);
-    ui->stop_button->setEnabled(false);
-    ui->loadProgramButton->setEnabled(false);
-    ui->connect_button->setEnabled(false);
-    //ui->remoteBoardRadioButton->setChecked(false);
-    //ui->OpenButton->click();
-
-    //ui->remoteAddrLine->setEnabled(false);
-
-
-
 
     connect(program, &HostProgram::inited, this, [this](){
         if(program->profilerEnabled){
@@ -102,13 +141,6 @@ MainWindow::MainWindow(QWidget *parent)
         }
     });
 
-    connect(program, &HostProgram::finished, this, [this](){
-        if(ui->stop_button->isEnabled()){
-            ui->stop_button->click();
-        }
-    });
-
-    printMessage("program created");
     program->moveToThread(&hostThread);
     connect(&hostThread, &QThread::started, program, &HostProgram::run);
 
@@ -126,21 +158,16 @@ MainWindow::MainWindow(QWidget *parent)
             ui->log_nm1->verticalScrollBar()->setValue(ui->log_nm1->verticalScrollBar()->maximum()); // Scrolls to the bottom
         }
     });
-    nmLog->moveToThread(&logThread);
-    connect(&logThread, &QThread::started, nmLog, &PrintNmLog::run);
 
 }
 
 MainWindow::~MainWindow()
 {
     qDebug() << "Main destructor";
+    hostThread.terminate();
     program->is_run = false;
-    hostThread.quit();
-    hostThread.wait();
     qDebug() << "program quit";
-    nmLog->is_run = false;
-    logThread.quit();
-    logThread.wait();
+    nmLog->stop();
     qDebug() << "nm io quit";
     if (program) delete program;
     qDebug() << "delete program";
@@ -165,64 +192,33 @@ void MainWindow::setAbsFile(QLineEdit *outFilename){
 
 void MainWindow::on_start_button_clicked()
 {
+    if(!board->isOpened()){
+        errorMessage("Board not opened");
+        return;
+    }
     if(!program->is_run){
         program->is_run = true;
         hostThread.start();
-        //nmLog->is_run = true;
-        //logThread.start();
 
         printMessage("start");
 
         ui->profilerCheck->setEnabled(false);
-        ui->start_button->setEnabled(false);
-        ui->stop_button->setEnabled(true);
     } else{
-        printMessage("already started");
+        errorMessage("already started");
     }
 }
 
 void MainWindow::on_stop_button_clicked()
 {
     printMessage("stoping...");
-    printMessage("wait program");
+    if(nmLog->isRun())
+        nmLog->stop();
+    hostThread.terminate();
     program->is_run = false;
-    hostThread.quit();
-    hostThread.wait();
-    nmLog->is_run = false;
-    logThread.quit();
-    logThread.wait();
     ui->profilerCheck->setEnabled(true);
-    ui->start_button->setEnabled(true);
-    ui->stop_button->setEnabled(false);
     printMessage("stop");
 }
 
-
-void MainWindow::on_connect_button_toggled(bool checked)
-{
-    if(checked){
-        try {
-            board->open();
-        } catch (std::exception &e) {
-            errorMessage(e.what());
-            ui->OpenButton->setChecked(false);
-            return;
-        }
-        ui->loadProgramButton->setEnabled(true);
-        ui->start_button->setEnabled(true);
-        printMessage("Board opened");
-    } else{
-        ui->stop_button->click();
-        try {
-            board->close();
-        } catch (std::exception &e) {
-            errorMessage(e.what());
-        }
-        ui->loadProgramButton->setEnabled(false);
-        ui->start_button->setEnabled(false);
-        printMessage("Board closed");
-    }
-}
 
 void MainWindow::on_profilerCheck_stateChanged(int arg1)
 {
@@ -240,38 +236,30 @@ void MainWindow::on_OpenButton_toggled(bool checked)
     if(checked){
         for(int i = 0; i < 1; i++){
             try{
-
-                if(ui->localRadioButton->isChecked()){
-                    board = new BoardMC12101Local(0);
-                } else if(ui->remoteRadioButton->isChecked()){
-                    QUrl url = QUrl(QString("tcp://%1").arg(ui->remoteAddrLine->text()));
-                    if(url.isValid()){
-                        board = new BoardMC12101Remote(0);
-                        static_cast<BoardMC12101Remote*>(board)->connectToHost(url.host().toStdString().c_str(), url.port());
-                    } else{
-                        throw std::runtime_error("Error: Invalid addr");
-                    }
-                }
+                board->open();
 
                 program->setBoard(board);
                 nmLog->setBoard(board);
 
-                ui->connect_button->setEnabled(true);
-                printMessage("board opened");
+                ui->loadProgramButton->setEnabled(true);
+                ui->ioButton->setEnabled(true);
+                printMessage("Board opened");
                 break;
             } catch(std::exception &e){
                 errorMessage(e.what());
                 ui->OpenButton->setChecked(false);
-                if(board) delete board;
-                QThread::msleep(1000);
             }
         }
     } else{
-        ui->connect_button->setChecked(false);
-        ui->connect_button->setEnabled(false);
-        delete board;
-        board = nullptr;
-        printMessage("board closed");
+        ui->stop_button->click();
+        try {
+            board->close();
+        } catch (std::exception &e) {
+            errorMessage(e.what());
+        }
+        ui->loadProgramButton->setEnabled(false);
+        ui->ioButton->setEnabled(false);
+        printMessage("Board closed");
     }
 }
 
@@ -288,7 +276,7 @@ void MainWindow::on_getImageCheck_toggled(bool checked)
 void MainWindow::on_resetButton_clicked()
 {
     try{
-        if(board && board->isOpened())
+        if(board->isOpened())
             board->reset();
         else
             throw std::runtime_error("Board not opened");
@@ -316,12 +304,12 @@ void MainWindow::on_loadProgramButton_clicked()
         board->loadProgram(ui->program1_filename->text().toStdString().c_str(), 1);
         printMessage(QString("board program 0: %1").arg(board->getProgramName(0)));
         printMessage(QString("board program 1: %1").arg(board->getProgramName(1)));
+        board->disconnectFromCore(0);
+        board->disconnectFromCore(1);
     } catch(std::exception &e){
         errorMessage(e.what());
         return;
     }
-    board->disconnectFromCore(0);
-    board->disconnectFromCore(1);
     printMessage("program loaded");
 }
 
