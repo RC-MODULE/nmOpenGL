@@ -351,12 +351,12 @@
      <rect>
       <x>620</x>
       <y>250</y>
-      <width>151</width>
+      <width>181</width>
       <height>21</height>
      </rect>
     </property>
     <property name="text">
-     <string>Getting image</string>
+     <string>Load image to host</string>
     </property>
     <property name="checked">
      <bool>true</bool>

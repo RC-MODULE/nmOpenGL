@@ -62,6 +62,7 @@
             "preLaunchTask": "run nm1-qemu"
             //"runToMain": true
         },
+
         {
             "cwd": "${workspaceFolder}/src",
             "executable": "main0.abs",

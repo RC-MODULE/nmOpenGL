@@ -38,6 +38,10 @@ PrintNmLog::~PrintNmLog(){
 
 void PrintNmLog::start(){
     try{
+        if(isRun()){
+            qDebug() << "logs already run";
+            return;
+        }
         qDebug() << "log: program name0:" << QString(programName[0]);
         qDebug() << "log: program name1:" << QString(programName[1]);
         board->openIO(programName[0], 0);

@@ -3,7 +3,6 @@
 
 #include "hal_target.h"
 #include <time.h>
-#include "nmdef.h"
 #include "ringbuffert.h"
 #include "stdio.h"
 #include "link.h"
@@ -103,7 +102,8 @@ struct CommandArgument {
 
 struct NM_Command{
 	int instr;
-	CommandArgument params[7];
+	int sizeOfParam;
+	CommandArgument params[8];
 };
 
 #define PRIORITY_SIZE 256

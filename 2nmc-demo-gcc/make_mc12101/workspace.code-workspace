@@ -169,8 +169,7 @@
 		"editor.parameterHints.enabled": true,
 
 		"C_Cpp.default.includePath": [
-			"${workspaceFolder}/../../include/**",
-			"d:\\GIT\\nmOpenGL\\**",
+			"${workspaceRoot}/../../include",
 			"/home/i.zhilenkov/nmOpenGL/include",
 			"/home/i.zhilenkov/nmOpenGL/utilities/include",
 			"/home/i.zhilenkov/nmOpenGL/context/include",

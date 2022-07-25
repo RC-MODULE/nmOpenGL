@@ -32,7 +32,7 @@ public:
     BoardMC12101 *mBoard;
     int head;
 
-    void init();
+    void init(int nm_profiler_head);
 
     std::map<unsigned, QString> funcNames;
     std::vector<ProfilerData> profilerVector;

@@ -106,14 +106,16 @@ MainWindow::MainWindow(QWidget *parent)
     program = new HostProgram();
     nmLog = new PrintNmLog();
 
+    //connect(ui->profilerCheck, &QCheckBox::toggled, program, &HostProgram::setProfileEnabled);
+
     connect(program, &HostProgram::inited, this, [this](){
-        if(program->profilerEnabled){
+        if(program->profilerEnabled()){
             ui->profilerTableView->setModel(program->model);
         }
     });
 
     connect(program, &HostProgram::update, this, [this](){
-        if(program->profilerEnabled){
+        if(program->profilerEnabled()){
             ui->profilerTableView->reset();
         }
     });
@@ -222,11 +224,7 @@ void MainWindow::on_stop_button_clicked()
 
 void MainWindow::on_profilerCheck_stateChanged(int arg1)
 {
-    program->profilerEnabled = arg1;
-    if(program->profilerEnabled )
-        printMessage("Profiler enabled");
-    else
-        printMessage("Profiler disabled");
+    program->setProfileEnabled(arg1);
 }
 
 void MainWindow::on_OpenButton_toggled(bool checked)

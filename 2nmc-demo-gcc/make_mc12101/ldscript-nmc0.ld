@@ -195,6 +195,14 @@ SECTIONS
   {
     *(.data_hal_syncro);
   } > SYNCRO
+  .nmgl_remote.bss : ALIGN(0x8)
+  {
+    *(.nmgl_remote.bss);
+  } > EMI0
+  .nmgl_remote : ALIGN(0x8)
+  {
+    *(.nmgl_remote);
+  } > EMI0
   .rpc_services.bss : ALIGN(0x8)
   {
     *(.rpc_services.bss);

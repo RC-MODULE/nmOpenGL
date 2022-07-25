@@ -9,40 +9,21 @@
 //#include "debugprint.h"
 #include "data_NM_32.h"
 #include "data_2_sphere.h"
+#include "nmglremote.h"
 
 
 SECTION(".text_shared0") int main()
 {
 	printf("nm0 start\n");
-#if defined(__GNUC__) && defined(DEBUG)
-	//nmprofiler_init();
-	//nmprofiler_disable();
-#endif // __GNUC__
 
 	nmglvsNm0Init();
 
 	setHeap(10);
-	//float* vertices_DDR = (float*)halMalloc32(2000 * 12);
-	//float* normal_DDR = (float*)halMalloc32(2000 * 12);
-	//float* vertices_DDR2 = (float*)halMalloc32(2000 * 12);
-	//float* normal_DDR2 = (float*)halMalloc32(2000 * 12);
 	int ok;
 
 	int amountPolygons = stl_NM_32_amount;
 	float* vertices_DDR = stl_NM_32_vertices;
 	float* normal_DDR = stl_NM_32_normals;
-	//int amountPolygons = halHostSync(0);
-	//sync1
-	//halHostSyncAddr(vertices_DDR);
-	//sync2
-	//halHostSyncAddr(normal_DDR);
-
-	//int amountPolygons2 = halHostSync(0);
-	//halHostSyncAddr(vertices_DDR2);
-
-	//sync2
-	//halHostSyncAddr(normal_DDR2);
-	//ok = halHostSync((int)0x600D600D);
 	
 	int amountPolygons2 = stl_2_sphere_amount;
 	float* vertices_DDR2 = stl_2_sphere_vertices;
@@ -80,6 +61,7 @@ SECTION(".text_shared0") int main()
 
 	int counter = 0;
 	while(nmglvsNm0Run()){
+		NMGL_RemoteAccessProcessEvents();
 		nmglEnableClientState(NMGL_VERTEX_ARRAY);
 		nmglEnableClientState(NMGL_NORMAL_ARRAY);
 

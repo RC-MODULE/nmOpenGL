@@ -5,10 +5,11 @@
 #include <QFile>
 #include <exception>
 
+
 HostProgram::HostProgram(QObject *parent) : QObject(parent){
 
     is_run = false;
-    profilerEnabled = false;
+    mProfilerEnabled = false;
 
     hostImageIsRefreshing = true;
 
@@ -28,14 +29,18 @@ HostProgram::~HostProgram(){
     delete model;
 }
 
+void HostProgram::setProfileEnabled(bool check){
+    //nmglConnector.setProfile(check);
+    mProfilerEnabled = check;
+}
 
 void HostProgram::run(){
     try {
+        nmglConnector.setBoard(m_board);
         m_board->connectToCore(0);
 
         m_board->setTimeout(500);
         int handshake = m_board->sync(0xC0DE0086, 0);
-        m_board->setTimeout(0);
         if(!is_run){
             emit finished();
             return;
@@ -44,24 +49,22 @@ void HostProgram::run(){
             throw std::runtime_error("Error: Handshake with mc12101-nmc0 wrong!");
         }
         qDebug() << "Handshake passed";
-
-
-        fb = (NMGL_Framebuffer *)m_board->sync(profilerEnabled, 0);
-        if(!is_run){
-            emit finished();
-            return;
-        }
-        qDebug() << "Framebuffer addr: " << hex << fb;
-
-        if(profilerEnabled){
-            model->head = m_board->sync(0, 0);
-            model->init();
-            if(!is_run){
-                emit finished();
-                return;
+        m_board->setTimeout(0);
+        PL_Addr remoteNmAddr = m_board->sync(0xC0DE0086, 0);
+        nmglConnector.connect(remoteNmAddr);
+        float progress = 0;
+        qDebug() << "progress: " << progress;
+        while(nmglConnector.initializingProcess() < 1){
+            if(progress != nmglConnector.initializingProcess()){
+                progress = nmglConnector.initializingProcess();
+                qDebug() << "progress: " << progress;
             }
-            qDebug() << "Get profiler head addr: 0x" << hex << model->head;
+            QThread::msleep(2);
         }
+        fb = nmglConnector.framebuffer();
+        qDebug() << "framebuffer: " << std::hex << fb;
+        qDebug() << "head: " << std::hex << nmglConnector.profilerHeadAddr();
+        model->init(nmglConnector.profilerHeadAddr());
     }
     catch (std::exception &e){
         qCritical() << __FILE__ << ":" << __LINE__ << ": error: " << e.what();
@@ -77,7 +80,7 @@ void HostProgram::run(){
         while(frameBufferIsEmpty(fb)){
             std::this_thread::sleep_for(std::chrono::milliseconds(2));
         }
-        if(profilerEnabled) model->updateList();
+        if(profilerEnabled()) model->updateList();
         if(hostImageIsRefreshing){
             readColorFrontNM(imageTemp, fb, 0, 0, WIDTH_IMAGE, HEIGHT_IMAGE);
             for(int y = 0; y < HEIGHT_IMAGE; y++){

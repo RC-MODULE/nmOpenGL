@@ -9,6 +9,8 @@
 #include "profilerview.h"
 #include "iobserver.h"
 
+#include "nmglconnector.h"
+
 #include "printnmlog.h"
 
 #define WIDTH_IMAGE 768
@@ -29,6 +31,7 @@ protected:
     int imageTemp[WIDTH_IMAGE * HEIGHT_IMAGE];
     int imageDraw[WIDTH_IMAGE * HEIGHT_IMAGE];
 
+    NMGL_Connector nmglConnector;
     BoardMC12101 *m_board = 0;
     QLabel* m_label;
 
@@ -38,10 +41,13 @@ protected:
     void readColorFrontNM(void *data, NMGL_Framebuffer *fb, int x, int y, int width, int height);
     void readDepthNM(void *data, NMGL_Framebuffer *fb, int x, int y, int width, int height);
 
+    bool mProfilerEnabled;
 public:
+    bool profilerEnabled() const {
+        return mProfilerEnabled;
+    }
     QString programNames[2];
     std::atomic<bool> is_run;
-    bool profilerEnabled;
 
 
 
@@ -63,6 +69,7 @@ signals:
     void update();
     void finished();
 public slots:
+    void setProfileEnabled(bool check);
     void run();
     void stop(){
         is_run = false;

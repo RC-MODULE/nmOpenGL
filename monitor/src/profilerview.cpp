@@ -23,7 +23,8 @@ int profiler_read(BoardMC12101 *board, unsigned head_addr, ProfilerData* profile
 
 #define printError(message) qCritical() << __FILE__ << ":" << __LINE__ << ": " << message
 
-void ProfilerModel::init(){
+void ProfilerModel::init(int nm_profiler_head){
+    head = nm_profiler_head;
     int count = profiler_count(mBoard, head, 0);
     qDebug() << hex << "count: " << count;
     profilerVector.resize(count);

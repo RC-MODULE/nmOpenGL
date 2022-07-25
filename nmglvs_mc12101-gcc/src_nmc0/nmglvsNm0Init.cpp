@@ -8,6 +8,7 @@
 #include "context_float.h"
 #include "debugprint.h"
 #include "nmprofiler.h"
+#include "nmglremote.h"
 
 #ifdef STACK_TRACE_ENABLED
 #include "stacktrace.h"
@@ -86,6 +87,7 @@ template<class T> inline T* myMallocT(int count) {
 	return result;
 }
 
+
 SECTION(".data_imu0") NMGL_Context_NM0 *NMGL_Context_NM0::context;
 
 extern int nmprofiler_head_addr;
@@ -99,8 +101,7 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 	NMGLSynchroData* synchroData;
 	NMGL_Context_NM0 *cntxt;
 	ImageData* imagesData;
-
-
+	NMGL_RemoteAccess *remoteAccess = NMGL_RemoteAccessInstance();
 
 	DEBUG_PLOG_LEVEL_0("handshake\n");
 	int fromHost = halHostSync(0xC0DE0000);		// send handshake to host
@@ -109,6 +110,8 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 		return 1;
 	}
 	DEBUG_PLOG_LEVEL_0("Handshake OK\n");
+	halHostSyncAddr(remoteAccess);		// send handshake to host
+
 
 	try {
 		
@@ -160,10 +163,14 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
     	    return -1;
     	}
 		halSyncAddr(PolygonsStipplePattern_p, 1);
-		
+
+		remoteAccess->initializingProcess = 0.3f;
+
 		setHeap(7);
 		NMGL_Context_NM0::create();
 		cntxt = NMGL_Context_NM0::getContext();
+		remoteAccess->framebuffer = &cntxt->defaultFramebuffer;
+		printf("remoteAccess->framebuffer=0x%x, offset=%d\n", remoteAccess->framebuffer);
 		cntxt->synchro.init(synchroData);		
 
 		cntxt->polygon.stipple.pattern = PolygonsStipplePattern_p;
@@ -224,6 +231,8 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 		cntxt->normalResult2 = colorResult;
 		cntxt->texResult2 = texResult2;
 
+		remoteAccess->initializingProcess = 0.5f;
+
 		//Allocate memory for textures.
 		//Must be in EMI. 
 		//EMI has enough space and does not require address mapping at mc12101
@@ -248,6 +257,7 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 
 		halSyncAddr(&cntxt->defaultFramebuffer, 1);
 		DEBUG_PLOG_LEVEL_0("Share image with nmc1 OK!\n");
+		remoteAccess->initializingProcess = 0.7f;
 
 #ifdef TEST_NMGL_TEX_FUNC
 		cntxtAddr_nm1 = (void*)halSyncAddr(0, 1);
@@ -321,7 +331,7 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 	//halDmaInitC();
 #endif // __GNUC__
 	//sync4
-	
+	remoteAccess->initializingProcess = 0.9f;
 	nmglClearColor(0, 0, 0, 1.0f);
 	nmglClearDepthf(1);
 	nmglViewport(0, 0, WIDTH_IMAGE, HEIGHT_IMAGE);
@@ -335,8 +345,9 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 	halSync(0x600D600D, 1);
 
 
+	remoteAccess->initializingProcess = 1;
 	DEBUG_PLOG_LEVEL_0("nmOpenGL inited!\n");
-	int profiler_enabled = halHostSyncAddr(&cntxt->defaultFramebuffer);
+	/*int profiler_enabled = halHostSyncAddr(remoteAccess->framebuffer);
 	DEBUG_PLOG_LEVEL_0("Send addr of framebuffer\n");
 #ifdef __NM__
 	if(profiler_enabled){
@@ -344,7 +355,9 @@ SECTION(".text_nmglvs") int nmglvsNm0Init()
 		halHostSync(nmprofiler_head_addr);
 		//nmprofiler_disabled();
 	}
-#endif
+#endif*/
+	NMGL_RemoteAccessProcessEvents();
+	
 	return 0;
 } 
 
