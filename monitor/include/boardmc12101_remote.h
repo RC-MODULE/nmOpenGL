@@ -73,8 +73,8 @@ public:
     int sync(int value, int core = 0) override;
     void setTimeout(uint32_t time) override;
 
-    void readMemBlock(PL_Addr src, void* dst, int size32, int core = 0) override;
-    void writeMemBlock(void* src, PL_Addr dst, int size32, int core = 0) override;
+    void readMemBlock(int src, void* dst, int size32, int core = 0) override;
+    void writeMemBlock(void* src, int dst, int size32, int core = 0) override;
 
     void loadProgram(const char *filename, int core ) override;
     const char*getProgramName(int core) override;

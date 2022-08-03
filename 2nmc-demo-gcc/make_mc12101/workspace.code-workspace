@@ -4,9 +4,6 @@
 			"path": "."
 		},
 		{
-			"path": "../src_host"
-		},
-		{
 			"path": "../src_target0"
 		},
 		{
@@ -169,20 +166,18 @@
 		"editor.parameterHints.enabled": true,
 
 		"C_Cpp.default.includePath": [
-			"${workspaceRoot}/../../include",
-			"/home/i.zhilenkov/nmOpenGL/include",
-			"/home/i.zhilenkov/nmOpenGL/utilities/include",
-			"/home/i.zhilenkov/nmOpenGL/context/include",
+			"d:/GIT/nmOpenGL/include/**",
 			"${env:NMPP}/include/**",
 			"${env:HAL}/include/**",
-			"${env:VSHELL}/include/**",
-			"${env:NMC_GCC_TOOLPATH}/../nmkit/mc12101sdk/**",
 			"${env:NMC_GCC_TOOLPATH}/nmc4-ide/**",
 			"${env:MC12101}/include**"
 		],
 		"C_Cpp.default.cStandard": "c11",
 		"C_Cpp.default.cppStandard": "c++11",
-		"C_Cpp.default.configurationProvider": "ms-vscode.makefile-tools"
+		"C_Cpp.default.configurationProvider": "ms-vscode.makefile-tools",
+		"files.associations": {
+			"cstdio": "cpp"
+		}
 
 		//"C_Cpp.default.intelliSenseMode": "gcc-x64"
 	},

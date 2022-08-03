@@ -1,4 +1,4 @@
-#include <time.h>
+//#include <time.h>
 #include "hal.h"
 #include "hal_target.h"
 #include "nmpp.h"
@@ -174,7 +174,7 @@ SECTION(".text_nmglvs") int nmglvsNm1Init()
 	cntxt->zBuffPoints = (nm32s**)(cntxt->buffer2 + 2 * POLYGONS_SIZE);
 	cntxt->imagePoints = (nm32s**)(cntxt->buffer2 + 4 * POLYGONS_SIZE);
 
-	cntxt->t0 = clock();
+	//cntxt->t0 = clock();
 	cntxt->pointSize = 1;
 
 	DEBUG_PLOG_LEVEL_0("Buffers inited\n");

@@ -7,14 +7,15 @@
 #include "mc12101load.h"
 #include "boardmc12101.h"
 #include <map>
-
+#include "io_host.h"
+/*
 #ifdef unix
 #include "io_host_lin.h"
 #endif
 
 #ifdef _WIN32
 #include "io_host_win.h"
-#endif
+#endif*/
 
 
 using namespace std;
@@ -23,6 +24,8 @@ using namespace std;
 
 class BoardMC12101CoreLocal;
 class BoardMC12101Local;
+
+
 
 
 
@@ -69,8 +72,8 @@ public:
     int sync(int value, int core = 0) override;
     void setTimeout(uint32_t time) override;
 
-    void readMemBlock(PL_Addr src, void* dst, int size32, int core = 0) override;
-    void writeMemBlock(void* src, PL_Addr dst, int size32, int core = 0) override;
+    void readMemBlock(int src, void* dst, int size32, int core = 0) override;
+    void writeMemBlock(void* src, int dst, int size32, int core = 0) override;
 
     void loadProgram(const char *filename, int core ) override;
     const char*getProgramName(int core) override;
@@ -110,7 +113,7 @@ public:
     void setBoard(BoardMC12101 *board) override{
         BoardMC12101Local *localBoard = dynamic_cast<BoardMC12101Local *>(board);
         if(localBoard){
-            mBoard = board;
+            mBoard = localBoard;
         }
     }
     void setOut(int core, const char *outfilename) override{
@@ -128,6 +131,7 @@ public:
 
     }
 };
+
 
 /*class BoardMC12101CoreLocal : public BoardMC12101Core{
 private:

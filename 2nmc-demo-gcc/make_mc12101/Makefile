@@ -29,7 +29,7 @@ INC_DIRS         = -I"$(NMPP)/include" -I$(HAL)/include -I$(ROOT)/include -I$(RO
 SRC_DIRS         = $(ROOT)/nmglvs_mc12101-gcc/src_nmc$(CORE_NUM) ../src_target$(CORE_NUM)
 
 ifeq ($(OS),Windows_NT)
-LIB_DIRS         = -L"$(NMC_GCC_TOOLPATH)/nmc4-ide/lib" -L"$(NMPP)/lib" -L"$(HAL)/lib" -L"$(ROOT)/lib" -L$(MC12101)/lib
+LIB_DIRS         = -L"$(NMPP)/lib" -L"$(HAL)/lib" -L"$(ROOT)/lib" -L$(MC12101)/lib -L"$(NMC_GCC_TOOLPATH)/nmc4-ide/lib" 
 else
 LIB_DIRS         = -L"$(NMPP)/lib" -L"$(HAL)/lib" -L"$(ROOT)/lib" -L$(MC12101)/lib -L/usr/local/lib
 endif
@@ -52,7 +52,7 @@ LIBS             = -lnmopengl_nmc4 -lnmpp-nmc4 -lhal-mc12101
 endif
 MAP		         = $(PROJECT).map
 CFG				 = ldscript-nmc$(CORE_NUM).ld
-LINKER_FLAGS     = -Xlinker -Map=$(MAP) $(LIB_DIRS) "-Wl,-T$(CFG)" -Wl,--whole-archive -lmc12101 -Wl,--no-whole-archive -o$(TARGET)
+LINKER_FLAGS     = -Xlinker -Map=$(MAP) $(LIB_DIRS) "-Wl,-T$(CFG)" -Wl,--whole-archive -lmc12101load_nm -lnm6407_io_nmc -Wl,--no-whole-archive -o$(TARGET)
 
 ifdef DEBUG
 	CC_FLAGS	+= -DDEBUG 

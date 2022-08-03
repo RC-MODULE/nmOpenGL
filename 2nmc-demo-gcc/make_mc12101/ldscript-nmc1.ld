@@ -131,14 +131,27 @@ SECTIONS
   {
     *(.data_hal_syncro);
   } > SYNCRO
-  .rpc_services.bss : ALIGN(0x8)
-  {
-    *(.rpc_services.bss);
-  } > EMI1
+
   .rpc_services : ALIGN(0x8)
   {
-    *(.rpc_services);
+    KEEP(*libnm6407_io_nmc.a:*(.rpc_services));
   } > EMI1
+
+  .rpc_services.bss (NOLOAD) : ALIGN(0x8)
+  {
+    *libnm6407_io_nmc.a:*(.rpc_services.bss);
+  } > EMI1
+
+  .rpc_services_hal : ALIGN(0x8)
+  {
+    KEEP(*libhal-mc12101.a:*(.rpc_services));
+  } > EMI1
+
+  .rpc_services_hal.bss (NOLOAD) : ALIGN(0x8)
+  {
+    *libhal-mc12101.a:*(.rpc_services.bss);
+  } > EMI1
+  
   .heap : ALIGN(0x8)
   {
 	*(.heap);

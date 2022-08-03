@@ -1,6 +1,6 @@
 #include "hal_target.h"
 #include "hal.h"
-#include <time.h>
+//#include <time.h>
 #include <nmpp.h>
 #include "demo3d_nm0.h"
 #include "cache.h"
@@ -67,8 +67,6 @@ NMGLubyte* palettes_p; // texture palette memory
 unsigned int* palettes_widths_p; // texture palettes widths memory
 NMGLubyte* PolygonsStipplePattern_p;
 int counter = 0;
-
-#define PRINT_ADDR(a) printf(#a"=%p\n", a)
 
 template<class T> inline T* myMallocT() {
 	

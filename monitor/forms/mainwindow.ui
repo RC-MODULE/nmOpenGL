@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1023</width>
-    <height>632</height>
+    <width>1027</width>
+    <height>800</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -136,7 +136,7 @@
    <widget class="QTabWidget" name="tabWidget_2">
     <property name="geometry">
      <rect>
-      <x>610</x>
+      <x>620</x>
       <y>30</y>
       <width>401</width>
       <height>171</height>
@@ -449,14 +449,24 @@
      <bool>false</bool>
     </property>
    </widget>
+   <widget class="QPlainTextEdit" name="outputText">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>590</y>
+      <width>1001</width>
+      <height>171</height>
+     </rect>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1023</width>
-     <height>22</height>
+     <width>1027</width>
+     <height>21</height>
     </rect>
    </property>
   </widget>

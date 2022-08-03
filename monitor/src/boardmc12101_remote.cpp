@@ -133,16 +133,16 @@ int BoardMC12101Remote::sync(int value, int core){
 }
 
 
-void BoardMC12101Remote::readMemBlock(PL_Addr src, void* dst, int size32, int core){
-    if(int error = RPL_ReadMemBlock(access[core], static_cast<PL_Word *>(dst), src, size32)){
+void BoardMC12101Remote::readMemBlock(int src, void* dst, int size32, int core){
+    if(int error = RPL_ReadMemBlock(access[core], static_cast<RPL_Word *>(dst), src, size32)){
         stringstream str;
         str << "Read mem block error: src=0x" << hex << src << ", dst=0x" << hex << dst << ", size32=" << size32;
         throw BoardMC12101Error(this, str.str().c_str(), error);
     }
 }
 
-void BoardMC12101Remote::writeMemBlock(void* src, PL_Addr dst, int size32, int core){
-    if(int error = RPL_WriteMemBlock(access[core], static_cast<PL_Word *>(src), dst, size32)){
+void BoardMC12101Remote::writeMemBlock(void* src, int dst, int size32, int core){
+    if(int error = RPL_WriteMemBlock(access[core], static_cast<RPL_Word *>(src), dst, size32)){
         stringstream str;
         str << "Write mem block error: src=0x" << hex << src << ", dst=0x" << hex << dst << ", size32=" << size32;
         throw BoardMC12101Error(this, str.str().c_str(), error);

@@ -12,6 +12,7 @@ PrintNmLog::PrintNmLog() : QObject(nullptr){
 
     file[0].setFileName(filename[0]);
     file[1].setFileName(filename[1]);
+
 }
 
 void PrintNmLog::setBoard(BoardMC12101 *_board){
@@ -21,8 +22,6 @@ void PrintNmLog::setBoard(BoardMC12101 *_board){
         board->setIO(1, filename[1]);
     } catch (std::exception e){
         qCritical() << e.what();
-    } catch (...){
-        qCritical() << "Ups!";
     }
 }
 
@@ -42,8 +41,6 @@ void PrintNmLog::start(){
             qDebug() << "logs already run";
             return;
         }
-        qDebug() << "log: program name0:" << QString(programName[0]);
-        qDebug() << "log: program name1:" << QString(programName[1]);
         board->openIO(programName[0], 0);
         board->openIO(programName[1], 1);
 
@@ -52,7 +49,7 @@ void PrintNmLog::start(){
             textstream[0].setDevice(&file[0]);
             textstream[1].setDevice(&file[1]);
         } else{
-            qCritical() << "PrintNmLogThread error";
+            qCritical() << "PrintNmLog error";
         }
         timer.start(1000);
         emit started();
@@ -71,28 +68,40 @@ void PrintNmLog::stop(){
         board->closeIO(1);
         file[0].close();
         file[1].close();
+        timer.stop();
     }
     emit finished();
 }
 
 void PrintNmLog::update(){
-
     board->flushIO(0);
     board->flushIO(1);
 
+    file[0].flush();
+    file[1].flush();
+
     while(!textstream[0].atEnd()){
-        QString temp = textstream[0].readLine();
-        if(!temp.isEmpty()){
-            emit updated(temp, 0);
+        int bytes = file[0].bytesAvailable();
+        if(bytes > 0){
+            auto mes = textstream[0].read(bytes);
+            emit updated(mes, 0);
         }
     }
 
     while(!textstream[1].atEnd()){
+        int bytes = file[1].bytesAvailable();
+        if(bytes > 0){
+            auto mes = textstream[1].read(bytes);
+            emit updated(mes, 1);
+        }
+    }
+
+    /*while(!textstream[1].atEnd()){
         QString temp = textstream[1].readLine();
         if(!temp.isEmpty()){
             emit updated(temp, 1);
         }
-    }
+    }*/
 
 
 }

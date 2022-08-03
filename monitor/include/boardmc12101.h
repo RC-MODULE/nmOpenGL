@@ -36,8 +36,8 @@ public:
     virtual int sync(int value, int core = 0) = 0;
     virtual void setTimeout(uint32_t time){};
 
-    virtual void readMemBlock(PL_Addr src, void* dst, int size32, int core = 0) = 0;
-    virtual void writeMemBlock(void* src, PL_Addr dst, int size32, int core = 0) = 0;
+    virtual void readMemBlock(int src, void* dst, int size32, int core = 0) = 0;
+    virtual void writeMemBlock(void* src, int dst, int size32, int core = 0) = 0;
 
     virtual void loadProgram(const char *filename, int core ) = 0;
     virtual const char *getProgramName(int core) = 0;
@@ -64,6 +64,7 @@ public:
     virtual void loadProgram(const char *filename) = 0;
     virtual const char *getFileName() = 0;
     virtual void setTimeout(uint32_t time){};
+    //virtual int descriptor(){};
 
     virtual BoardMC12101 *getBoard() = 0;
     virtual void setBoard(BoardMC12101 *board) = 0;

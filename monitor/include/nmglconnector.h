@@ -25,7 +25,7 @@ public:
 
     bool connect(PL_Addr remote);
 
-    void waitForInitialization(){
+    void waitForInitialization() {
         while(initializingProcess() < 1);
     }
 
@@ -39,7 +39,7 @@ public:
 
     NMGL_Framebuffer *framebuffer();
 
-    PL_Addr profilerHeadAddr() const{
+    PL_Addr profilerHeadAddr(){
         checkCommandConnector();
 
         size_t offset = offsetof(NMGL_RemoteAccess, nmprofiler_head_addr) / 4;

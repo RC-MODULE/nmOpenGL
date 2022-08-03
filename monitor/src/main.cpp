@@ -5,10 +5,9 @@
 
 int main(int argc, char* argv[]){
     QApplication a(argc, argv);
-    qDebug() << "monitor thread: " << QThread::currentThread();
-    qDebug() << "monitor core applictaion: " << QCoreApplication::instance();
-    qDebug() << "argc: " << argc;
+    QCoreApplication::setApplicationName("nmOpenGL monitor");
     MainWindow w;
+    w.setWindowTitle(QCoreApplication::applicationName());
     w.show();
     return a.exec();
 }

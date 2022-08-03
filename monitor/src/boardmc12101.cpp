@@ -58,6 +58,11 @@ BoardMC12101Local::~BoardMC12101Local(){
             if (int error = PL_CloseAccess(access[core]))
                 std::cerr << "Fail close access " << core << ": " << BoardMC12101Error::errors[error] << std::endl;
         if(io_accessed[core])
+            for(int i = 0; i < 2; i++){
+                if(io_services[core] != NULL){
+                    IO_ServiceStop(&io_services[core]);
+                }
+            }
             if (int error = PL_CloseAccess(io_access[core]))
                 std::cerr << "Fail close io access " << core << ": " << BoardMC12101Error::errors[error] << std::endl;
     }
@@ -113,7 +118,7 @@ int BoardMC12101Local::sync(int value, int core){
 }
 
 
-void BoardMC12101Local::readMemBlock(PL_Addr src, void* dst, int size32, int core){
+void BoardMC12101Local::readMemBlock(int src, void* dst, int size32, int core){
     if(int error = PL_ReadMemBlock(access[core], static_cast<PL_Word *>(dst), src, size32)){
         stringstream str;
         str << "Read mem block error: src=0x" << hex << src << ", dst=0x" << hex << dst << ", size32=" << size32;
@@ -121,8 +126,11 @@ void BoardMC12101Local::readMemBlock(PL_Addr src, void* dst, int size32, int cor
     }
 }
 
-void BoardMC12101Local::writeMemBlock(void* src, PL_Addr dst, int size32, int core){
-    if(int error = PL_WriteMemBlock(access[core], static_cast<PL_Word *>(src), dst, size32)){
+void BoardMC12101Local::writeMemBlock(void* src, int dst, int size32, int core){
+    if(int error = PL_WriteMemBlock(access[core],
+                                    reinterpret_cast<PL_Word *>(src),
+                                    static_cast<PL_Addr>(dst),
+                                    static_cast<PL_Word>(size32))){
         stringstream str;
         str << "Write mem block error: src=0x" << hex << src << ", dst=0x" << hex << dst << ", size32=" << size32;
         throw BoardMC12101Error(this, str.str().c_str(), error);
@@ -164,8 +172,13 @@ void BoardMC12101Local::openIO(const char *filename, int core){
         throw BoardMC12101Error("fopen error");
     }
     if(file_log[core]){
-        io_services[core] = new IO_Service(filename, io_access[core], file_log[core]);
+        io_services[core] = IO_ServiceStart(filename, io_access[core], file_log[core]);
+        if(io_services[core] == NULL){
+            throw BoardMC12101Error("IO_service not created");
+            fclose(file_log[core]);
+        }
     } else {
+        io_services[core] = IO_ServiceStart(filename, io_access[core], NULL);
         //io_services[core] = new IO_Service(filename, io_access[core], NULL, 1, nm_cout[core], nm_cerr[core], nm_cin[core]);
     }
     io_accessed[core] = true;
@@ -185,9 +198,11 @@ void BoardMC12101Local::flushIO(int core){
 }
 
 void BoardMC12101Local::closeIO(int core){
+    IO_ServiceStop(&io_services[core]);
+    io_services[core] = NULL;
     if(file_log[core])
         fclose(file_log[core]);
-    delete io_services[core];
+    //delete io_services[core];
     PL_CloseAccess(io_access[core]);
     io_accessed[core] = false;
 }
@@ -226,7 +241,6 @@ BoardMC12101Error::BoardMC12101Error(const char *_message, int _error)
 }
 
 BoardMC12101::~BoardMC12101(){
-
 }
 
 /*BoardMC12101CoreLocal::BoardMC12101CoreLocal(PL_Board *boardDesc){

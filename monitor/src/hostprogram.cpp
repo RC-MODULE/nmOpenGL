@@ -7,7 +7,6 @@
 
 
 HostProgram::HostProgram(QObject *parent) : QObject(parent){
-
     is_run = false;
     mProfilerEnabled = false;
 

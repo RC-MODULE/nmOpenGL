@@ -17,6 +17,8 @@
 
 #include "boardmc12101.h"
 
+#include "memory.h"
+
 using namespace std;
 
 QT_BEGIN_NAMESPACE
@@ -59,8 +61,8 @@ private:
     void errorMessage(const QString &message);
     BoardMC12101 *board;
 
-    HostProgram *program;
-    PrintNmLog *nmLog;
+    std::unique_ptr<HostProgram> program;
+    std::unique_ptr<PrintNmLog> nmLog;
 
     QThread hostThread;
     Ui::MainWindow *ui;

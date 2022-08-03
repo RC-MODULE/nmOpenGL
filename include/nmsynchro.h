@@ -2,7 +2,7 @@
 #define __NMSYNCHRO_H_INCLUDED__
 
 #include "hal_target.h"
-#include <time.h>
+//#include <time.h>
 #include "ringbuffert.h"
 #include "stdio.h"
 #include "link.h"

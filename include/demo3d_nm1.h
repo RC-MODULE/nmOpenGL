@@ -91,7 +91,7 @@ public:
 	int pointSize;						///< Диаметр точек в режиме отрисовки GL_POINTS. Не должен быть больше 32
 
 	SimpleBuffer<int> buffers[BUFFERS_COUNT];
-	clock_t t0, t1;	
+	//clock_t t0, t1;	
 
 	DepthBuffer depthBuffer;			///< Структура для работы с целым буфером глубины
 	ImageBufferRgb8888 colorBuffer;		///< Структура для работы с целым цветным буфером

@@ -5,11 +5,13 @@
 static BoardMC12101 *board;
 
 void* pushFunc(const void *src, void *dst, unsigned int size){
-    board->writeMemBlock(src, reinterpret_cast<PL_Addr>(dst), size);
+    board->writeMemBlock((void *)src, (int)(dst), size);
+    return nullptr;
 }
 
 void* popFunc(const void *src, void *dst, unsigned int size){
-    board->readMemBlock(reinterpret_cast<PL_Addr>(src), dst, size);
+    board->readMemBlock((int)(src), dst, size);
+    return nullptr;
 }
 
 void NMGL_Connector::checkCommandConnector(){

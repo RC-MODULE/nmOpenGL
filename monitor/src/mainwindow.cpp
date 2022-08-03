@@ -21,6 +21,8 @@
 #define printError(message) qCritical() << __FILE__ << ":" << __LINE__ << ": " << message
 void MainWindow::printMessage(const QString &message){
     ui->statusbar->showMessage(message);
+    ui->outputText->appendPlainText(message);
+    ui->outputText->verticalScrollBar()->setValue(ui->outputText->verticalScrollBar()->maximum());
     qDebug() << message;
 }
 
@@ -103,29 +105,29 @@ MainWindow::MainWindow(QWidget *parent)
 
 
     board = new BoardMC12101Local(0);
-    program = new HostProgram();
-    nmLog = new PrintNmLog();
+    program = std::make_unique<HostProgram>();
+    nmLog = std::make_unique<PrintNmLog>();
 
     //connect(ui->profilerCheck, &QCheckBox::toggled, program, &HostProgram::setProfileEnabled);
 
-    connect(program, &HostProgram::inited, this, [this](){
+    connect(program.get(), &HostProgram::inited, this, [this](){
         if(program->profilerEnabled()){
             ui->profilerTableView->setModel(program->model);
         }
     });
 
-    connect(program, &HostProgram::update, this, [this](){
+    connect(program.get(), &HostProgram::update, this, [this](){
         if(program->profilerEnabled()){
             ui->profilerTableView->reset();
         }
     });
-    connect(program, &HostProgram::update, this, [this](){
+    connect(program.get(), &HostProgram::update, this, [this](){
         QImage image((const uchar *)program->getImage(), 768, 768, QImage::Format_RGB32);
         ui->imagedraw->setPixmap(QPixmap::fromImage(image).scaled(ui->imagedraw->size()));
         ui->imagedraw->update();
     });
 
-    connect(program, &HostProgram::update, this, [this](){
+    connect(program.get(), &HostProgram::update, this, [this](){
         static int m_frameCount = 0;
         static int m_timeFrameCount = 0;
         static QTime m_time;
@@ -144,14 +146,14 @@ MainWindow::MainWindow(QWidget *parent)
     });
 
     program->moveToThread(&hostThread);
-    connect(&hostThread, &QThread::started, program, &HostProgram::run);
+    connect(&hostThread, &QThread::started, program.get(), &HostProgram::run);
 
-    connect(nmLog, &PrintNmLog::started, this, [this](){
+    connect(nmLog.get(), &PrintNmLog::started, this, [this](){
         ui->log_nm0->clear();
         ui->log_nm1->clear();
     });
 
-    connect(nmLog, &PrintNmLog::updated, this, [this](QString text, int core){
+    connect(nmLog.get(), &PrintNmLog::updated, this, [this](QString text, int core){
         if(core == 0){
             ui->log_nm0->appendPlainText(text); // Adds the message to the widget
             ui->log_nm0->verticalScrollBar()->setValue(ui->log_nm0->verticalScrollBar()->maximum()); // Scrolls to the bottom
@@ -171,8 +173,6 @@ MainWindow::~MainWindow()
     qDebug() << "program quit";
     nmLog->stop();
     qDebug() << "nm io quit";
-    if (program) delete program;
-    qDebug() << "delete program";
     if (board) delete board;
     qDebug() << "board closed";
     delete ui;
@@ -214,7 +214,7 @@ void MainWindow::on_stop_button_clicked()
 {
     printMessage("stoping...");
     if(nmLog->isRun())
-        nmLog->stop();
+        nmLog->stop();    
     hostThread.terminate();
     program->is_run = false;
     ui->profilerCheck->setEnabled(true);
@@ -286,8 +286,6 @@ void MainWindow::on_resetButton_clicked()
 
 void MainWindow::on_loadProgramButton_clicked()
 {
-
-
     QFile file0(ui->program0_filename->text());
     QFile file1(ui->program1_filename->text());
 

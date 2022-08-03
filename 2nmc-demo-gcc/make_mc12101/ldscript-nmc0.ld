@@ -195,7 +195,7 @@ SECTIONS
   {
     *(.data_hal_syncro);
   } > SYNCRO
-  .nmgl_remote.bss : ALIGN(0x8)
+  .nmgl_remote.bss (NOLOAD) : ALIGN(0x8)
   {
     *(.nmgl_remote.bss);
   } > EMI0
@@ -203,13 +203,25 @@ SECTIONS
   {
     *(.nmgl_remote);
   } > EMI0
-  .rpc_services.bss : ALIGN(0x8)
-  {
-    *(.rpc_services.bss);
-  } > EMI0
+
   .rpc_services : ALIGN(0x8)
   {
-    *(.rpc_services);
+    KEEP(*libnm6407_io_nmc.a:*(.rpc_services));
+  } > EMI0
+
+  .rpc_services.bss (NOLOAD) : ALIGN(0x8)
+  {
+    *libnm6407_io_nmc.a:*(.rpc_services.bss);
+  } > EMI0
+
+  .rpc_services_hal : ALIGN(0x8)
+  {
+    KEEP(*libhal-mc12101.a:*(.rpc_services));
+  } > EMI0
+
+  .rpc_services_hal.bss (NOLOAD) : ALIGN(0x8)
+  {
+    *libhal-mc12101.a:*(.rpc_services.bss);
   } > EMI0
   
   .heap : ALIGN(0x8)
